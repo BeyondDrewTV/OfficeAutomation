@@ -25,12 +25,32 @@ A lightweight Python pipeline to:
 
 ## Setup
 
-From the project root:
+From the project root (`OfficeAutomation/lead_engine`):
+
+### Windows PowerShell
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+> `source .venv/bin/activate` is for macOS/Linux shells and will fail in PowerShell.
+
+### macOS/Linux (bash/zsh)
 
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate
 ```
+
+## One-click Windows scripts
+
+If you prefer a double-click flow in File Explorer:
+
+- `run_lead_engine_windows.bat` creates/activates `.venv` and runs draft generation.
+- `send_approved_emails_windows.bat` creates/activates `.venv` and runs live sending for approved rows.
+
+Both scripts are in the `lead_engine/` folder.
 
 ## Input data
 
