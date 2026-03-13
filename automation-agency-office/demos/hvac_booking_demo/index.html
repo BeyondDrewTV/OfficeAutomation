@@ -1,111 +1,132 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Summit HVAC Booking Automation Demo</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <header class="topbar">
-      <div class="brand-wrap">
-        <div class="brand-mark" aria-hidden="true">SH</div>
-        <div>
-          <p class="brand-name">Summit HVAC</p>
-          <p class="brand-tag">Booking Automation Demo</p>
-        </div>
-      </div>
-      <span class="demo-pill">Demo #1 · Local Service Workflow</span>
-    </header>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Summit HVAC | Booking Workflow Prototype</title>
+<link rel="stylesheet" href="style.css">
+</head>
 
-    <main class="container">
-      <section class="hero">
-        <h1>See how service requests turn into confirmed appointments automatically.</h1>
-        <p>
-          This walkthrough shows a practical, no-hype workflow for capturing a customer request,
-          scheduling a visit, sending confirmation, and queuing reminders.
-        </p>
-      </section>
+<body>
 
-      <section class="grid">
-        <article class="panel">
-          <h2>Service Request Form</h2>
-          <form id="bookingForm" novalidate>
-            <label>
-              Full name
-              <input type="text" id="fullName" required placeholder="e.g., Jamie Carter" />
-            </label>
+<header class="topbar">
+<div class="brand">
+<div class="logo">SH</div>
+<div>
+<h2>Summit HVAC</h2>
+<p class="tag">Service Request & Booking Workflow</p>
+</div>
+</div>
 
-            <label>
-              Phone number
-              <input type="tel" id="phone" required placeholder="e.g., (555) 210-8821" />
-            </label>
+<span class="badge">Automation Workflow Prototype</span>
+</header>
 
-            <label>
-              Service type
-              <select id="serviceType" required>
-                <option value="">Select service</option>
-                <option>AC Repair</option>
-                <option>Heating Repair</option>
-                <option>Seasonal Tune-Up</option>
-                <option>New System Estimate</option>
-              </select>
-            </label>
+<main class="container">
 
-            <label>
-              Preferred date
-              <input type="date" id="preferredDate" required />
-            </label>
+<section class="hero">
+<h1>Turn service requests into confirmed appointments automatically.</h1>
 
-            <label>
-              Short issue description
-              <textarea id="issue" rows="3" required placeholder="What issue are you experiencing?"></textarea>
-            </label>
+<p>
+Capture customer requests, schedule visits faster, and remove manual
+back-and-forth from your service desk.
+</p>
+</section>
 
-            <button type="submit" id="submitBtn">Run Booking Automation</button>
-            <p class="hint">Demo only — this does not submit to a real backend.</p>
-          </form>
-        </article>
+<section class="grid">
 
-        <article class="panel">
-          <h2>Automation Workflow</h2>
-          <ol class="workflow" id="workflowList">
-            <li data-step="captured">
-              <span class="dot"></span>
-              <div><strong>Lead Captured</strong><p>Request details are stored and tagged.</p></div>
-            </li>
-            <li data-step="scheduled">
-              <span class="dot"></span>
-              <div><strong>Appointment Scheduled</strong><p>Earliest matching slot is selected.</p></div>
-            </li>
-            <li data-step="confirmed">
-              <span class="dot"></span>
-              <div><strong>Confirmation Generated</strong><p>Customer gets visit summary instantly.</p></div>
-            </li>
-            <li data-step="reminder">
-              <span class="dot"></span>
-              <div><strong>Reminder Queued</strong><p>Auto-reminder is queued before appointment time.</p></div>
-            </li>
-          </ol>
-        </article>
-      </section>
+<div class="panel">
 
-      <section class="panel result-panel" id="resultPanel" aria-live="polite">
-        <h2>Result Panel</h2>
-        <p class="result-empty">Submit a sample request to run the workflow.</p>
-        <div class="confirmation-card hidden" id="confirmationCard"></div>
-      </section>
+<h2>New Service Request</h2>
 
-      <section class="value-strip panel">
-        <h2>Why local service teams use this workflow</h2>
-        <ul>
-          <li><strong>Fewer missed bookings:</strong> every request is captured in one flow.</li>
-          <li><strong>Faster response time:</strong> confirmations are generated right away.</li>
-          <li><strong>Less manual scheduling work:</strong> reminders and status updates are automated.</li>
-        </ul>
-      </section>
-    </main>
+<form id="bookingForm">
 
-    <script src="script.js"></script>
-  </body>
+<label>
+Full Name
+<input id="fullName" required>
+</label>
+
+<label>
+Phone
+<input id="phone" required>
+</label>
+
+<label>
+Service Type
+<select id="serviceType">
+<option>AC Repair</option>
+<option>Heating Repair</option>
+<option>Seasonal Tune-Up</option>
+<option>New System Estimate</option>
+</select>
+</label>
+
+<label>
+Preferred Date
+<input type="date" id="preferredDate">
+</label>
+
+<label>
+Issue
+<textarea id="issue"></textarea>
+</label>
+
+<button id="submitBtn">Process Booking Workflow</button>
+
+<p class="hint">
+Interactive prototype showing a booking automation workflow.
+</p>
+
+</form>
+
+</div>
+
+<div class="panel">
+
+<h2>Workflow Status</h2>
+
+<ol id="workflowList">
+
+<li>Lead Captured</li>
+<li>Appointment Scheduled</li>
+<li>Confirmation Sent</li>
+<li>Reminder Queued</li>
+
+</ol>
+
+</div>
+
+</section>
+
+<section class="panel result-panel">
+
+<h2>Booking Outcome</h2>
+
+<p class="result-empty">
+Submit a request to preview the completed booking workflow.
+</p>
+
+<div id="confirmationCard"></div>
+
+</section>
+
+<section class="panel value-strip">
+
+<h2>Why HVAC teams adopt this workflow</h2>
+
+<ul>
+
+<li><strong>Faster response to new leads</strong></li>
+<li><strong>Fewer missed bookings</strong></li>
+<li><strong>Less manual scheduling</strong></li>
+<li><strong>Better customer follow-through</strong></li>
+
+</ul>
+
+</section>
+
+</main>
+
+<script src="script.js"></script>
+
+</body>
 </html>
