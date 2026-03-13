@@ -22,10 +22,11 @@ The existing deterministic internals remain:
 
 ## Launch the operator panel
 
-From repo root:
+From repo root (either command works):
 
 ```bat
 launch_operator_panel.bat
+start_dashboard.bat
 ```
 
 Or directly:
