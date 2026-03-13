@@ -115,7 +115,7 @@ def run(
     input_path = Path(input_csv)
 
     if discover.strip():
-        prospects = discover_prospects_by_industry(
+        discovered_rows = discover_prospects_by_industry(
             industry=discover.strip(),
             limit=limit if limit > 0 else 30,
             seed_city=city or None,
@@ -123,7 +123,14 @@ def run(
             pending_queue_csv=DEFAULT_PENDING_CSV,
             contact_history_csv=DEFAULT_CONTACT_HISTORY_CSV,
         )
-        discovered = len(prospects)
+        discovered = len(discovered_rows)
+        if discovered > 0:
+            prospects = discovered_rows
+        else:
+            print(f"Discovered 0 prospects for industry={discover.strip()}. Falling back to input CSV: {input_path}")
+            prospects = load_prospects_from_csv(input_path)
+            if limit > 0:
+                prospects = prospects[:limit]
     else:
         prospects = load_prospects_from_csv(input_path)
         if limit > 0:
