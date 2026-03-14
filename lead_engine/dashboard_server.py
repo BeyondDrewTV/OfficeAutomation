@@ -36,7 +36,7 @@ PROSPECTS_CSV = DEFAULT_PROSPECTS_CSV
 PENDING_COLUMNS = [
     "business_name", "city", "state", "website", "phone", "contact_method",
     "industry", "to_email", "subject", "body", "approved", "sent_at",
-    "scoring_reason", "final_priority_score",
+    "scoring_reason", "final_priority_score", "automation_opportunity",
 ]
 
 app = Flask(__name__)

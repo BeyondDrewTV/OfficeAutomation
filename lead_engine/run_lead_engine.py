@@ -11,6 +11,7 @@ from intelligence.website_scan_agent import scan_website
 from outreach.email_draft_agent import draft_email
 from scoring.opportunity_scoring_agent import score_opportunity
 from send.email_sender_agent import count_send_eligible_rows
+from datetime import date, timedelta
 
 
 PENDING_COLUMNS = [
@@ -20,6 +21,7 @@ PENDING_COLUMNS = [
     "website",
     "phone",
     "contact_method",
+    "industry",
     "to_email",
     "subject",
     "body",
@@ -27,6 +29,7 @@ PENDING_COLUMNS = [
     "sent_at",
     "scoring_reason",
     "final_priority_score",
+    "automation_opportunity",
 ]
 
 
@@ -66,11 +69,41 @@ def _parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def _update_prospect_status(input_path: Path, drafted_names: Set[str]) -> None:
+    """Mark drafted prospects with status=drafted in prospects.csv."""
+    if not input_path.exists() or not drafted_names:
+        return
+    with input_path.open("r", newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        fieldnames = list(reader.fieldnames or [])
+        rows = list(reader)
+
+    # Ensure status column exists
+    if "status" not in fieldnames:
+        fieldnames.append("status")
+
+    for row in rows:
+        name = row.get("business_name", "").strip().lower()
+        if name in drafted_names and row.get("status", "") == "new":
+            row["status"] = "drafted"
+
+    with input_path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
 def run(input_csv: str | Path = DEFAULT_PROSPECTS_CSV, limit: int = 0, skip_scan: bool = False) -> None:
     input_path = Path(input_csv)
     prospects = load_prospects_from_csv(input_path)
     if limit > 0:
         prospects = prospects[:limit]
+
+    # Only process prospects that haven't been drafted or sent yet
+    prospects = [
+        p for p in prospects
+        if p.get("status", "new") in ("", "new")
+    ]
 
     pending_rows = _read_pending_rows(DEFAULT_PENDING_CSV)
     existing_keys: Set[Tuple[str, str]] = {dedupe_key_for_prospect(row) for row in pending_rows}
@@ -78,6 +111,7 @@ def run(input_csv: str | Path = DEFAULT_PROSPECTS_CSV, limit: int = 0, skip_scan
     drafted = 0
     skipped = 0
     websites_scanned = 0
+    drafted_names: Set[str] = set()
 
     for prospect in prospects:
         key = dedupe_key_for_prospect(prospect)
@@ -105,6 +139,9 @@ def run(input_csv: str | Path = DEFAULT_PROSPECTS_CSV, limit: int = 0, skip_scan
             skipped += 1
             continue
 
+        # Pull email already found during discovery (no re-scrape needed)
+        to_email = prospect.get("to_email", "").strip()
+
         pending_rows.append(
             {
                 "business_name": prospect.get("business_name", "").strip(),
@@ -113,19 +150,26 @@ def run(input_csv: str | Path = DEFAULT_PROSPECTS_CSV, limit: int = 0, skip_scan
                 "website": website.strip(),
                 "phone": prospect.get("phone", "").strip(),
                 "contact_method": prospect.get("contact_method", "").strip(),
-                "to_email": "",
+                "industry": prospect.get("industry", "").strip(),
+                "to_email": to_email,
                 "subject": subject,
                 "body": body,
                 "approved": "false",
                 "sent_at": "",
                 "scoring_reason": scoring_reason,
                 "final_priority_score": str(final_priority_score),
+                "automation_opportunity": scan_result.get("automation_opportunity", "unknown"),
             }
         )
         existing_keys.add(key)
+        drafted_names.add(prospect.get("business_name", "").strip().lower())
         drafted += 1
 
     _write_pending_rows(DEFAULT_PENDING_CSV, pending_rows)
+
+    # Write status=drafted back to prospects.csv so re-runs skip these
+    _update_prospect_status(input_path, drafted_names)
+
     approved_ready = count_send_eligible_rows(DEFAULT_PENDING_CSV)
 
     print(

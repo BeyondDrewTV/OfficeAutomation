@@ -21,6 +21,49 @@ CHAT_VENDOR_TOKENS = [
     "hubspot",
     "freshchat",
     "olark",
+    "tidio",
+    "crisp.chat",
+    "liveagent",
+]
+
+# Facebook Messenger plugin tokens
+FB_MESSENGER_TOKENS = [
+    "fb-messenger",
+    "facebook-messenger",
+    "fb-customerchat",
+    "customer_chat",
+    "m.me/",
+    "messenger.com/t/",
+    "connect.facebook.net",
+]
+
+# "Call Now" button patterns
+CALL_NOW_TOKENS = [
+    "call now",
+    "call us now",
+    "call today",
+    "click to call",
+    "tap to call",
+    "tel:",
+]
+
+# Online scheduling / appointment tool tokens
+SCHEDULING_TOOL_TOKENS = [
+    "calendly",
+    "acuityscheduling",
+    "square appointments",
+    "squareup.com",
+    "schedulicity",
+    "setmore",
+    "booksy",
+    "vagaro",
+    "mindbody",
+    "timely",
+    "fresha",
+    "picktime",
+    "simplybook",
+    "10to8",
+    "appointy",
 ]
 
 BOOKING_KEYWORDS = [
@@ -102,12 +145,16 @@ def scan_website(website_url: str, timeout_seconds: int = DEFAULT_TIMEOUT_SECOND
         "has_email_visible": False,
         "has_phone_visible": False,
         "has_chat_widget": False,
+        "has_fb_messenger": False,
+        "has_call_now_button": False,
         "has_online_booking_keywords": False,
+        "has_scheduling_tool": False,
         "has_request_quote_cta": False,
         "has_schedule_service_cta": False,
         "mobile_friendly_hint": False,
         "weak_website_signals": [],
         "positive_conversion_signals": [],
+        "automation_opportunity": "unknown",
     }
 
     if not _is_valid_url(website_url):
@@ -167,6 +214,16 @@ def scan_website(website_url: str, timeout_seconds: int = DEFAULT_TIMEOUT_SECOND
         if any(token in html_lower for token in CHAT_VENDOR_TOKENS):
             result["has_chat_widget"] = True
 
+        if any(token in html_lower for token in FB_MESSENGER_TOKENS):
+            result["has_fb_messenger"] = True
+
+        if any(token in html_lower for token in CALL_NOW_TOKENS):
+            result["has_call_now_button"] = True
+
+        if any(token in html_lower for token in SCHEDULING_TOOL_TOKENS):
+            result["has_scheduling_tool"] = True
+            cta_found = True
+
         if any(keyword in html_lower for keyword in BOOKING_KEYWORDS):
             result["has_online_booking_keywords"] = True
             cta_found = True
@@ -197,8 +254,12 @@ def scan_website(website_url: str, timeout_seconds: int = DEFAULT_TIMEOUT_SECOND
         positive_signals.append("quote cta")
     if result["has_schedule_service_cta"]:
         positive_signals.append("schedule cta")
-    if result["has_chat_widget"]:
+    if result["has_chat_widget"] or result["has_fb_messenger"]:
         positive_signals.append("chat widget")
+    if result["has_scheduling_tool"]:
+        positive_signals.append("scheduling tool")
+    if result["has_call_now_button"]:
+        positive_signals.append("call now button")
     if result["mobile_friendly_hint"]:
         positive_signals.append("mobile viewport")
 
@@ -217,5 +278,31 @@ def scan_website(website_url: str, timeout_seconds: int = DEFAULT_TIMEOUT_SECOND
 
     result["weak_website_signals"] = weak_signals
     result["positive_conversion_signals"] = positive_signals
+    result["automation_opportunity"] = _classify_automation_opportunity(result)
 
     return result
+
+
+def _classify_automation_opportunity(result: Dict[str, object]) -> str:
+    """
+    Deterministic automation opportunity label derived from scan signals.
+
+    Priority order — first matching rule wins:
+      missed_after_hours  → phone visible + call-now button + no chat + no scheduling
+      no_chat             → contact form present + no chat widget at all
+      no_booking          → phone/form present but no scheduling tool or booking keywords
+      unknown             → fallback
+    """
+    has_any_chat = result.get("has_chat_widget") or result.get("has_fb_messenger")
+    has_booking  = result.get("has_scheduling_tool") or result.get("has_online_booking_keywords")
+    phone        = result.get("has_phone_visible")
+    call_btn     = result.get("has_call_now_button")
+    form         = result.get("has_contact_form")
+
+    if phone and call_btn and not has_any_chat and not has_booking:
+        return "missed_after_hours"
+    if form and not has_any_chat:
+        return "no_chat"
+    if (phone or form) and not has_booking:
+        return "no_booking"
+    return "unknown"
