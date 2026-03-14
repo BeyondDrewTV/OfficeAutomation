@@ -93,6 +93,60 @@ def _fetch(url: str, headers: dict = None) -> dict | str | None:
         return None
 
 
+# Domains that indicate a directory listing, not the business's own site
+_FALLBACK_BLOCKED_DOMAINS = {
+    "facebook.com", "fb.com",
+    "yelp.com",
+    "instagram.com",
+    "yellowpages.com", "whitepages.com", "bbb.org",
+    "angieslist.com", "angi.com", "thumbtack.com", "houzz.com",
+    "tripadvisor.com", "foursquare.com", "mapquest.com",
+    "google.com", "bing.com", "yahoo.com",
+    "linkedin.com", "twitter.com", "tiktok.com",
+}
+
+
+def find_business_website_fallback(business_name: str, city: str) -> tuple[str, str]:
+    """
+    Search Google for a business website when Places API returns none.
+
+    Returns (website_url, scan_note) where website_url may be "" on failure.
+    Never raises — fails silently so the pipeline is never blocked.
+    """
+    try:
+        query = quote(f"{business_name} {city} official website")
+        url = f"https://www.google.com/search?q={query}&num=5"
+        html = _fetch(url, headers={
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/124.0.0.0 Safari/537.36"
+            )
+        })
+        if not html or not isinstance(html, str):
+            return "", ""
+
+        # Extract all href= URLs from search result anchors
+        hrefs = re.findall(r'href="(https?://[^"]+)"', html)
+        for href in hrefs:
+            parsed = urlparse(href)
+            domain = parsed.netloc.lower().replace("www.", "")
+            # Skip Google-internal redirect URLs
+            if not domain or "google." in domain:
+                continue
+            # Skip directory / social listings
+            if any(blocked in domain for blocked in _FALLBACK_BLOCKED_DOMAINS):
+                continue
+            # Looks like a real business site — take just the root
+            root = f"{parsed.scheme}://{parsed.netloc}"
+            return root, "website discovered via search fallback"
+
+    except Exception:
+        pass  # Never block the pipeline
+
+    return "", ""
+
+
 def _is_asset_email(candidate: str) -> bool:
     """Return True if the candidate looks like an asset filename, not a real email."""
     local_part = candidate.split("@")[0]
@@ -298,12 +352,19 @@ def discover_prospects(industry: str, city: str, state: str,
                 phone = phone or (details.get("nationalPhoneNumber") or "").replace(" ", "").replace("-", "").replace("(","").replace(")","").replace("+1","")
                 website = website or (details.get("websiteUri") or "").strip()
 
+        # Search fallback: find website if Places API returned none
+        fallback_note = ""
+        if not website:
+            website, fallback_note = find_business_website_fallback(name, city)
+
         # Try to get email from website
         email = ""
         if scrape_emails and website:
             email = _scrape_email_from_website(website) or ""
 
         status = f"website={bool(website)} email={email or 'none'}"
+        if fallback_note:
+            status += f" [{fallback_note}]"
         print(status)
 
         row = {
@@ -315,7 +376,7 @@ def discover_prospects(industry: str, city: str, state: str,
             "contact_method": "email" if email else ("website" if website else "phone"),
             "industry": industry,
             "likely_opportunity": "",
-            "priority_score": "",
+            "priority_score": fallback_note,  # scan_notes stored here
             "to_email": email,
             "status": "new",
             "email_sent": "",
