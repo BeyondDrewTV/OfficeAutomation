@@ -32,7 +32,7 @@ PROSPECTS_CSV = BASE_DIR / "data" / "prospects.csv"
 PROSPECTS_COLUMNS = [
     "business_name", "city", "state", "website",
     "phone", "contact_method", "industry", "likely_opportunity", "priority_score",
-    "to_email", "status", "email_sent", "sent_at", "followup_due",
+    "to_email", "status", "email_sent", "sent_at", "followup_due", "scan_notes",
 ]
 
 TIMEOUT = 8
@@ -376,12 +376,13 @@ def discover_prospects(industry: str, city: str, state: str,
             "contact_method": "email" if email else ("website" if website else "phone"),
             "industry": industry,
             "likely_opportunity": "",
-            "priority_score": fallback_note,  # scan_notes stored here
+            "priority_score": "",
             "to_email": email,
             "status": "new",
             "email_sent": "",
             "sent_at": "",
             "followup_due": "",
+            "scan_notes": fallback_note,
         }
         new_rows.append(row)
         existing.add(name.lower())
