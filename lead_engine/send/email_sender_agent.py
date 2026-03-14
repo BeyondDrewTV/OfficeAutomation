@@ -26,6 +26,8 @@ PENDING_EMAIL_COLUMNS = [
     "sent_at",
     "scoring_reason",
     "final_priority_score",
+    "automation_opportunity",
+    "do_not_contact",
 ]
 
 
@@ -85,7 +87,8 @@ def _is_send_eligible(row: Dict[str, str]) -> bool:
     approved = (row.get("approved", "").strip().lower() == "true")
     unsent = not (row.get("sent_at") or "").strip()
     has_recipient = bool((row.get("to_email") or "").strip())
-    return approved and unsent and has_recipient
+    opted_out = (row.get("do_not_contact", "").strip().lower() == "true")
+    return approved and unsent and has_recipient and not opted_out
 
 
 def _update_prospects_sent_status(pending_csv_path: Path, sent_names: set) -> None:

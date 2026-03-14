@@ -312,6 +312,7 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
       <button class="btn btn-success" id="panel-approve-btn" onclick="panelApprove()" style="flex:1">✓ Approve</button>
       <button class="btn btn-ghost" id="panel-unapprove-btn" onclick="panelUnapprove()" style="display:none">Undo Approve</button>
       <button class="btn btn-ghost" onclick="closePanel()">Close</button>
+      <button class="btn btn-ghost" onclick="panelOptOut()" title="Mark as do not contact — blocks future sends">🚫 Opt Out</button>
       <button class="btn btn-danger" onclick="panelDelete()">Delete</button>
     </div>
   </div>
@@ -545,6 +546,20 @@ async function panelDelete() {
   const gi = allRows.indexOf(row);
   const res = await api('/api/delete_row',{index:gi});
   if (res.ok) { closePanel(); await loadAll(); toast('Deleted','info'); }
+}
+
+async function panelOptOut() {
+  const row = filteredRows[panelIdx];
+  if (!row||!confirm('Mark as do not contact? This blocks all future sends to this lead.')) return;
+  const gi = allRows.indexOf(row);
+  const res = await api('/api/opt_out_row',{index:gi});
+  if (res.ok) { row.do_not_contact='true'; row.approved='false'; fillPanel(row,panelIdx); renderTable(); toast('Marked as do not contact','info'); }
+}
+
+async function resetProspectStatus(businessName) {
+  const res = await api('/api/reset_prospect_status',{business_name:businessName});
+  if (res.ok) toast(`Reset ${businessName} — will re-draft on next run`,'ok');
+  else toast('Reset failed: '+res.error,'err');
 }
 
 // ── Row actions ───────────────────────────────────────────────────────────────

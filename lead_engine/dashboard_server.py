@@ -43,7 +43,7 @@ PROSPECTS_CSV = DEFAULT_PROSPECTS_CSV
 PENDING_COLUMNS = [
     "business_name", "city", "state", "website", "phone", "contact_method",
     "industry", "to_email", "subject", "body", "approved", "sent_at",
-    "scoring_reason", "final_priority_score", "automation_opportunity",
+    "scoring_reason", "final_priority_score", "automation_opportunity", "do_not_contact",
 ]
 
 app = Flask(__name__)
@@ -275,6 +275,58 @@ def api_discover():
         return jsonify({"ok": True, "found": len(rows), "total_queue": len(pending)})
     except Exception as exc:
         return jsonify({"ok": False, "error": str(exc)}), 500
+
+
+@app.route("/api/opt_out_row", methods=["POST"])
+def api_opt_out_row():
+    """Mark a lead as do_not_contact=true. Blocks it from future sends."""
+    idx = request.json.get("index")
+    rows = _read_pending()
+    if idx is None or not (0 <= idx < len(rows)):
+        return jsonify({"ok": False, "error": "Invalid index"}), 400
+    rows[idx]["do_not_contact"] = "true"
+    rows[idx]["approved"] = "false"
+    _write_pending(rows)
+    # Also mark in prospects.csv
+    name = rows[idx].get("business_name", "").strip().lower()
+    if name and PROSPECTS_CSV.exists():
+        with PROSPECTS_CSV.open("r", newline="", encoding="utf-8-sig") as f:
+            reader = csv.DictReader(f)
+            fieldnames = list(reader.fieldnames or [])
+            prows = list(reader)
+        if "do_not_contact" not in fieldnames:
+            fieldnames.append("do_not_contact")
+        for pr in prows:
+            if pr.get("business_name", "").strip().lower() == name:
+                pr["do_not_contact"] = "true"
+        with PROSPECTS_CSV.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(prows)
+    return jsonify({"ok": True})
+
+
+@app.route("/api/reset_prospect_status", methods=["POST"])
+def api_reset_prospect_status():
+    """Reset a prospect's status to 'new' so the pipeline will re-draft it."""
+    business_name = (request.json.get("business_name") or "").strip().lower()
+    if not business_name or not PROSPECTS_CSV.exists():
+        return jsonify({"ok": False, "error": "business_name required"}), 400
+    with PROSPECTS_CSV.open("r", newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        fieldnames = list(reader.fieldnames or [])
+        rows = list(reader)
+    updated = 0
+    for row in rows:
+        if row.get("business_name", "").strip().lower() == business_name:
+            row["status"] = "new"
+            updated += 1
+    if updated:
+        with PROSPECTS_CSV.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+    return jsonify({"ok": True, "updated": updated})
 
 
 if __name__ == "__main__":

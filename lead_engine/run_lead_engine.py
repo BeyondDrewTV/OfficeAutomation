@@ -30,6 +30,7 @@ PENDING_COLUMNS = [
     "scoring_reason",
     "final_priority_score",
     "automation_opportunity",
+    "do_not_contact",
 ]
 
 
