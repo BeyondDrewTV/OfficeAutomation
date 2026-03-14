@@ -63,7 +63,18 @@ def _send_email_via_gmail(to_email: str, subject: str, body: str) -> None:
     message["From"] = f"{sender_name} <{sender}>"
     message["To"] = to_email
     message["Subject"] = subject
+
+    # Plain text is the primary content — keeps emails looking human
     message.set_content(body)
+
+    # HTML alternative: plain text wrapped in minimal styled markup
+    html_body = (
+        "<html><body style='font-family:Arial,Helvetica,sans-serif;"
+        "font-size:14px;color:#1e1e1e;line-height:1.7;max-width:600px'>"
+        + body.replace("\n\n", "</p><p>").replace("\n", "<br>")
+        + "</p></body></html>"
+    )
+    message.add_alternative(html_body, subtype="html")
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
         smtp.login(sender, app_password)

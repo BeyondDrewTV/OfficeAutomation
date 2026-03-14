@@ -15,6 +15,13 @@ from threading import Timer
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+# Load .env from project root so credentials work outside the .bat launcher
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+except ImportError:
+    pass  # python-dotenv not installed; rely on environment variables set externally
+
 try:
     from flask import Flask, jsonify, request
 except ImportError:
