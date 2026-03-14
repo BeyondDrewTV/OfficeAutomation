@@ -51,115 +51,108 @@ def detect_industry(business_name: str, provided_industry: str = "") -> str:
 # ---------------------------------------------------------------------------
 
 # (subject, body) tuples — 3 variants per opportunity
+# Tone: one person talking to one person. No brand voice. No product language.
+# Model: "I noticed you're manually doing X, I can automate that."
 _TEMPLATES: Dict[str, List[Tuple[str, str]]] = {
 
     "missed_after_hours": [
         (
-            "Quick question about after-hours calls",
-            "Hi {name} team - do after-hours calls ever go to voicemail? "
-            "A lot of {industry} businesses in {city} lose jobs that way. "
-            "There's a simple setup that texts callers back instantly and "
-            "captures their info even when you're off the clock. "
-            "Would that be worth a quick look?",
+            "after-hours calls?",
+            "Hey {name} - quick question. "
+            "When someone calls after hours and you're not there, what happens to that lead? "
+            "Most {industry} businesses in {city} lose those jobs without ever knowing. "
+            "I built a simple fix that texts callers back instantly so you capture them before they call someone else. "
+            "Worth a quick look?",
         ),
         (
-            "After-hours leads slipping through?",
-            "Hey {name} - saw your number on the site. "
-            "Quick question: what happens when someone calls at 9pm and you're not there? "
-            "Most {industry} shops lose those leads for good. "
-            "I set up a simple auto-response that captures them before they call a competitor. "
+            "missed calls?",
+            "Hi {name} - noticed your number is on the site. "
+            "Quick one - what happens when someone calls at 9pm and gets voicemail? "
+            "For most {industry} shops that's a lost job. "
+            "I set up an auto-response that captures those leads automatically. "
+            "15 minutes to show you if you're curious.",
+        ),
+        (
+            "quick question",
+            "Hey {name} - do calls after hours ever go unanswered? "
+            "It's the number one way {industry} businesses in {city} lose work they never knew they had. "
+            "I built a text-back system that captures those leads automatically - takes about a week to set up. "
             "Want me to show you how it works?",
-        ),
-        (
-            "Missing calls after hours?",
-            "Hi {name} team - one thing I see a lot with {industry} companies in {city}: "
-            "calls after hours go to voicemail and the customer doesn't leave a message. "
-            "I built a fix that auto-texts them back in seconds. "
-            "Takes about a week to set up. "
-            "Curious if that's a problem you're running into?",
         ),
     ],
 
     "no_chat": [
         (
-            "Anyone responding to your website visitors?",
-            "Hi {name} team - noticed you have a contact form but no live chat. "
-            "Visitors who don't fill out forms usually just leave. "
-            "A simple chat widget can catch those people before they go. "
-            "I set these up for {industry} businesses in {city} pretty quickly. "
-            "Worth a 15-minute look?",
+            "website question",
+            "Hey {name} - I was on your site and noticed you have a contact form but no chat. "
+            "Most people won't fill out a form on a first visit - they just leave. "
+            "A simple chat catches them before they go. "
+            "I set these up for {industry} businesses in {city} in about a week. "
+            "Worth a 15-minute call?",
         ),
         (
-            "Website leads going quiet?",
-            "Hey {name} - people landing on your site have a question right now "
-            "but no quick way to ask it. "
-            "A contact form is a barrier; a chat bubble isn't. "
-            "I help {industry} shops in {city} add a lightweight chat that doesn't "
-            "require anyone to be glued to a screen. "
-            "Interested in how it works?",
+            "quick thought",
+            "Hi {name} - looked at your site. "
+            "You're probably losing visitors who have a question but won't fill out a form. "
+            "A lightweight chat fixes that without anyone having to sit at a screen all day. "
+            "I've set this up for a few {industry} businesses in {city} - happy to show you what it looks like.",
         ),
         (
-            "Quick thought on your site",
-            "Hi {name} team - your site has a form, which is good. "
-            "But most people won't fill one out on a first visit. "
-            "A fast chat option can double the number of people who actually reach out. "
-            "I've set this up for a few {industry} businesses in {city}. "
-            "Want to see what it looks like?",
+            "losing website leads?",
+            "Hey {name} - noticed your site has a form but no way for visitors to ask a quick question. "
+            "That's a lot of people bouncing who were ready to reach out. "
+            "I help {industry} shops in {city} add a simple chat that catches those leads automatically. "
+            "Interested?",
         ),
     ],
 
     "no_booking": [
         (
-            "Are customers calling just to schedule?",
-            "Hi {name} team - do you still take bookings over the phone? "
-            "A lot of {industry} businesses in {city} lose customers who want to "
-            "schedule at 11pm and won't wait until morning to call. "
-            "I set up simple online booking that works around the clock. "
+            "still taking bookings by phone?",
+            "Hey {name} - do customers still have to call to schedule with you? "
+            "A lot of {industry} businesses in {city} lose the people who want to book at 10pm and won't wait until morning. "
+            "I set up simple online booking - works around the clock, takes about a week. "
             "Want to see how other local shops are using it?",
         ),
         (
-            "Online booking for {industry} - worth it?",
-            "Hey {name} - quick one. "
-            "If a customer visits your site at midnight ready to book, "
-            "can they? Most {industry} shops in {city} still rely on phone calls, "
-            "which means they lose the late-night decisions. "
-            "I set up lightweight booking in about a week. "
-            "Curious if that's something you've thought about?",
+            "quick question",
+            "Hi {name} - if someone visits your site at midnight ready to schedule, can they? "
+            "Most {industry} shops in {city} still rely on phone calls for booking, which means they miss the late decisions. "
+            "I set up lightweight online booking in about a week, flat fee. "
+            "Curious if that's something on your radar?",
         ),
         (
-            "Losing bookings to the phone?",
-            "Hi {name} team - saw you're operating in {city}. "
-            "One pattern I keep seeing with {industry} businesses: "
-            "customers want to book but won't call during business hours. "
-            "Adding online booking catches those quietly lost jobs. "
-            "Takes less than a week to set up. "
-            "Is that something on your radar?",
+            "losing late bookings?",
+            "Hey {name} - one pattern I see a lot with {industry} businesses: "
+            "customers want to book after hours but won't call. They just move on. "
+            "Online booking running 24/7 catches those jobs. "
+            "Takes less than a week to set up - is that worth a quick call?",
         ),
     ],
 
     "unknown": [
         (
-            "Quick automation idea for {name}",
-            "Hi {name} team - I work with {industry} businesses in {city} on one thing: "
-            "cutting out the manual back-and-forth with customers. "
-            "Scheduling, follow-ups, reminders - all the stuff that eats time "
-            "but doesn't need a human. "
-            "Worth a 15-minute call to see if any of it fits?",
+            "quick question",
+            "Hey {name} - I help {industry} businesses in {city} automate the repetitive stuff - "
+            "missed calls, follow-ups, scheduling. "
+            "The kind of admin work that takes up time but doesn't need a human. "
+            "Not a big pitch - just wondering if any of that sounds familiar. "
+            "Worth a 15-minute call?",
         ),
         (
-            "One idea for {name}",
-            "Hey {name} - quick note. "
-            "I help local {industry} shops in {city} stop losing time to repetitive customer tasks. "
-            "Things like follow-ups, booking confirmations, and missed-call responses. "
-            "Flat fee, set up in about a week. "
-            "Want me to send over a quick example?",
+            "automation idea",
+            "Hi {name} - I noticed {industry} businesses in {city} often handle "
+            "scheduling and follow-ups manually. "
+            "I can automate that - flat fee, set up in about a week. "
+            "Happy to send a quick example if it's useful.",
         ),
         (
-            "Saving time at {name}",
-            "Hi {name} team - I specialize in simple automations for {industry} businesses in {city}. "
-            "Nothing complicated - just cutting out the manual steps that eat your day. "
-            "Most owners I work with are surprised how fast it runs. "
-            "Interested in a quick look?",
+            "saving time on admin?",
+            "Hey {name} - quick one. "
+            "I work with {industry} shops in {city} on one specific thing: "
+            "cutting out the manual back-and-forth that eats their day. "
+            "Follow-ups, missed calls, booking - all automatable. "
+            "Want to see what that looks like for a business like yours?",
         ),
     ],
 }
@@ -183,7 +176,7 @@ def _variant(business_name: str, n: int = 3) -> int:
     return int(digest[:8], 16) % n
 
 
-_SIGN_OFF = "\n\nBest,\nDrew\nCopperline"
+_SIGN_OFF = "\n\nBest,\nDrew"
 
 
 def _fill(template: str, name: str, city: str, industry: str) -> str:

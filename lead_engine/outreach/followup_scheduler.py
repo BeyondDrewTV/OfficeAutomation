@@ -40,21 +40,21 @@ SEND_WINDOW_END   = 18  # 6pm
 # ── Follow-up copy ────────────────────────────────────────────────────────────
 
 FOLLOWUP_1_SUBJECTS = {
-    "plumbing":     "Re: automation idea for {name}",
-    "hvac":         "Re: service reminder automation for {name}",
-    "electrical":   "Re: lead capture idea for {name}",
-    "dental":       "Re: appointment follow-up idea for {name}",
-    "salon":        "Re: no-show reduction for {name}",
-    "general":      "Re: quick automation idea for {name}",
+    "plumbing":     "Re: missed calls",
+    "hvac":         "Re: quick question",
+    "electrical":   "Re: quick question",
+    "dental":       "Re: missed appointments",
+    "salon":        "Re: no-shows",
+    "general":      "Re: quick question",
 }
 
 FOLLOWUP_2_SUBJECTS = {
-    "plumbing":     "Last note — {name}",
-    "hvac":         "Last note — {name}",
-    "electrical":   "Last note — {name}",
-    "dental":       "Last note — {name}",
-    "salon":        "Last note — {name}",
-    "general":      "Last note — {name}",
+    "plumbing":     "last note",
+    "hvac":         "last note",
+    "electrical":   "last note",
+    "dental":       "last note",
+    "salon":        "last note",
+    "general":      "last note",
 }
 
 
@@ -72,15 +72,15 @@ def _followup_body(step: int, business_name: str, city: str, industry: str) -> s
             f"Just following up on my note from last week about lead follow-up for {ind} businesses in {city}.\n\n"
             f"I help local service businesses stop losing leads after hours and respond faster "
             f"to new enquiries. Happy to send a quick example if that's easier than a call.\n\n"
-            "Best,\nDrew\nCopperline"
+            "Best,\nDrew"
         )
     else:
         return (
             f"Hi {business_name} team,\n\n"
-            f"Last note — I reached out a couple of times about Copperline Lead Follow-Up, "
-            f"which helps {ind} businesses in {city} respond to new leads faster and stop losing jobs after hours.\n\n"
-            f"If timing isn't right, no worries. Feel free to reach out anytime.\n\n"
-            "Best,\nDrew\nCopperline"
+            f"Last note - I reached out a couple of times about automating lead follow-up "
+            f"for {ind} businesses in {city}.\n\n"
+            f"If the timing's not right, no worries at all. Feel free to reach out anytime.\n\n"
+            "Best,\nDrew"
         )
 
 
