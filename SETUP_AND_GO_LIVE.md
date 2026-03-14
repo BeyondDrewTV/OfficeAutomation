@@ -60,17 +60,15 @@ All three demos are in: `automation-agency-office/demos/`
 **Cold email goal:** Get a 15-minute call, not a sale.
 
 **On the call:**
-1. "What's the one admin task that eats most of your week?"
+1. "How do you handle a new lead that comes in after hours?"
 2. Listen. Don't talk yet.
-3. Show the relevant demo LIVE.
-4. "I can have this running for you in 7 days. Here's what it costs."
+3. Show the After-Hours Lead Capture demo LIVE.
+4. "I can have Copperline Lead Follow-Up running for you in 7 days. Here's what it costs."
 5. Send proposal same day.
 
-**Pricing:**
-- After-hours lead capture: **$900** + $150/month
-- Appointment reminder system: **$1,200** + $200/month
-- FAQ chatbot: **$1,000** + $200/month
-- Bundle all 3: **$2,500** + $450/month (save $600)
+**Pricing — Copperline Lead Follow-Up:**
+- Setup fee: **$900** (one-time)
+- Monthly: **$150/month** (keeps it running, monitored, updated)
 
 **Always:** 50% upfront before you start. Non-negotiable.
 

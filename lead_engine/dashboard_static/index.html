@@ -261,8 +261,8 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
     </table>
     <div id="empty-state" class="empty" style="display:none">
       <div class="empty-icon">📭</div>
-      <h3>No leads yet</h3>
-      <p>Click <strong>Discover + Draft</strong> to generate outreach from your prospects</p>
+      <h3>No leads in queue</h3>
+      <p>Use <strong>Discover + Draft</strong> to find local service businesses and generate outreach emails</p>
     </div>
   </div>
 </div>
@@ -624,7 +624,7 @@ async function sendDryRun() {
 function confirmSend() {
   const ready = allRows.filter(r=>r.approved==='true'&&!r.sent_at&&r.to_email).length;
   document.getElementById('send-modal-msg').innerHTML =
-    `<strong>${ready} email${ready!==1?'s':''}</strong> will be sent live from your Gmail. Only approved rows with a <code>to_email</code> are included.`;
+    `<strong>${ready} email${ready!==1?'s':''}</strong> will be sent from your Gmail account as Drew @ Copperline. Only approved rows with a <code>to_email</code> are included. This cannot be undone.`;
   document.getElementById('send-modal').classList.add('open');
 }
 

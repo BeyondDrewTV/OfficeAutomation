@@ -57,8 +57,9 @@ def _send_email_via_gmail(to_email: str, subject: str, body: str) -> None:
     if not sender or not app_password:
         raise RuntimeError("GMAIL_ADDRESS and GMAIL_APP_PASSWORD must be set for live sends.")
 
+    sender_name = os.getenv("SENDER_DISPLAY_NAME", "Drew @ Copperline")
     message = EmailMessage()
-    message["From"] = sender
+    message["From"] = f"{sender_name} <{sender}>"
     message["To"] = to_email
     message["Subject"] = subject
     message.set_content(body)
@@ -75,6 +76,36 @@ def _is_send_eligible(row: Dict[str, str]) -> bool:
     return approved and unsent and has_recipient
 
 
+def _update_prospects_sent_status(pending_csv_path: Path, sent_names: set) -> None:
+    """Write email_sent=true and sent_at back to prospects.csv for sent rows."""
+    if not sent_names:
+        return
+    prospects_csv = Path(pending_csv_path).resolve().parent.parent / "data" / "prospects.csv"
+    if not prospects_csv.exists():
+        return
+    with prospects_csv.open("r", newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        fieldnames = list(reader.fieldnames or [])
+        rows = list(reader)
+
+    for col in ("email_sent", "sent_at", "status"):
+        if col not in fieldnames:
+            fieldnames.append(col)
+
+    now = datetime.now(timezone.utc).isoformat()
+    for row in rows:
+        name = row.get("business_name", "").strip().lower()
+        if name in sent_names:
+            row["email_sent"] = "true"
+            row["sent_at"] = now
+            row["status"] = "sent"
+
+    with prospects_csv.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
 def process_pending_emails(pending_csv_path: str | Path, dry_run: bool = True) -> Dict[str, int]:
     """Process pending queue safely. Dry run by default."""
     rows = _read_pending_rows(pending_csv_path)
@@ -83,6 +114,7 @@ def process_pending_emails(pending_csv_path: str | Path, dry_run: bool = True) -
     approved_ready = sum(1 for row in rows if _is_send_eligible(row))
     sent = 0
     failed = 0
+    sent_names: set = set()
 
     for row in rows:
         if not _is_send_eligible(row):
@@ -99,6 +131,7 @@ def process_pending_emails(pending_csv_path: str | Path, dry_run: bool = True) -
         try:
             _send_email_via_gmail(to_email, subject, body)
             row["sent_at"] = datetime.now(timezone.utc).isoformat()
+            sent_names.add((row.get("business_name") or "").strip().lower())
             sent += 1
         except Exception as exc:
             failed += 1
@@ -106,6 +139,7 @@ def process_pending_emails(pending_csv_path: str | Path, dry_run: bool = True) -
 
     if not dry_run:
         _write_pending_rows(pending_csv_path, rows)
+        _update_prospects_sent_status(Path(pending_csv_path), sent_names)
 
     skipped = drafted - approved_ready
     stats = {

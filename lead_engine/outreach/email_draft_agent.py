@@ -183,6 +183,9 @@ def _variant(business_name: str, n: int = 3) -> int:
     return int(digest[:8], 16) % n
 
 
+_SIGN_OFF = "\n\nBest,\nDrew\nCopperline"
+
+
 def _fill(template: str, name: str, city: str, industry: str) -> str:
     industry_display = industry.replace("_", " ")
     return (
@@ -231,13 +234,12 @@ def draft_email(prospect: Dict[str, str], final_priority_score: int) -> Tuple[st
     subject_tmpl, body_tmpl = variants[idx]
 
     subject = _fill(subject_tmpl, business_name, city, industry)
-    body    = _fill(body_tmpl,    business_name, city, industry)
+    body_text = _fill(body_tmpl, business_name, city, industry)
 
-    # Guard: word count
-    wc = _word_count(body)
+    # Guard: word count (sign-off excluded from limit)
+    wc = _word_count(body_text)
     if wc > _WORD_LIMIT:
-        # Truncate at sentence boundary as safety net
-        sentences = body.replace("?", ".").split(".")
+        sentences = body_text.replace("?", ".").split(".")
         trimmed = []
         running = 0
         for s in sentences:
@@ -246,7 +248,9 @@ def draft_email(prospect: Dict[str, str], final_priority_score: int) -> Tuple[st
                 break
             trimmed.append(s)
             running += words
-        body = ". ".join(trimmed).strip() + "."
+        body_text = ". ".join(trimmed).strip() + "."
+
+    body = body_text + _SIGN_OFF
 
     # Guard: banned words
     _check_banned(body)
