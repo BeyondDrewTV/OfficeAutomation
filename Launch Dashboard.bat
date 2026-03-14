@@ -23,10 +23,14 @@ if errorlevel 1 (
     pip install flask -q
 )
 
-REM ── Credentials ────────────────────────────────────────────
-set GOOGLE_PLACES_API_KEY=AIzaSyDwPpHiyTnQ9rK5GBWJyyp0i8Nagfw4Wa4
-set GMAIL_ADDRESS=Drewyomantas@gmail.com
-set GMAIL_APP_PASSWORD=ztzx fald tisa mrol
+REM ── Load credentials from .env ─────────────────────────────
+if exist "%~dp0.env" (
+    for /f "usebackq tokens=1,* delims==" %%A in ("%~dp0.env") do (
+        if not "%%A"=="" set %%A=%%B
+    )
+) else (
+    echo WARNING: .env file not found. Credentials not loaded.
+)
 REM ────────────────────────────────────────────────────────────
 
 echo  Starting dashboard server...

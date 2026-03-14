@@ -77,6 +77,12 @@ def index():
     return html_path.read_text(encoding="utf-8")
 
 
+@app.route("/static/<path:filename>")
+def static_files(filename):
+    from flask import send_from_directory
+    return send_from_directory(BASE_DIR / "dashboard_static", filename)
+
+
 @app.route("/api/status")
 def api_status():
     rows = _read_pending()
