@@ -5,6 +5,7 @@ import csv
 import os
 import smtplib
 import sys
+import time
 from datetime import datetime, timezone
 from email.message import EmailMessage
 from pathlib import Path
@@ -133,6 +134,11 @@ def process_pending_emails(pending_csv_path: str | Path, dry_run: bool = True) -
             row["sent_at"] = datetime.now(timezone.utc).isoformat()
             sent_names.add((row.get("business_name") or "").strip().lower())
             sent += 1
+            # Rate limit: pause between sends to avoid Gmail spam flags
+            send_delay = int(os.getenv("SEND_DELAY_SECONDS", "45"))
+            if send_delay > 0:
+                print(f"  [rate limit] waiting {send_delay}s before next send...")
+                time.sleep(send_delay)
         except Exception as exc:
             failed += 1
             print(f"[SEND FAILED] {to_email} | {exc}")

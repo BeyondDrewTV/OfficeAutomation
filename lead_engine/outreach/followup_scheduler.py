@@ -30,8 +30,12 @@ FOLLOWUP_DAYS = [5, 10]
 PENDING_COLUMNS = [
     "business_name", "city", "state", "website", "phone", "contact_method",
     "industry", "to_email", "subject", "body", "approved", "sent_at",
-    "scoring_reason", "final_priority_score",
+    "scoring_reason", "final_priority_score", "automation_opportunity",
 ]
+
+# Time window for queuing follow-ups (local hour, 24h)
+SEND_WINDOW_START = 8   # 8am
+SEND_WINDOW_END   = 18  # 6pm
 
 # ── Follow-up copy ────────────────────────────────────────────────────────────
 
@@ -164,7 +168,17 @@ def _already_queued(pending_rows: List[Dict], business_name: str, step: int) -> 
     return False
 
 
+def _within_send_window() -> bool:
+    """Return True only if local time is within the configured send window."""
+    local_hour = datetime.now().hour
+    return SEND_WINDOW_START <= local_hour < SEND_WINDOW_END
+
+
 def run_followup_scheduler(dry_run: bool = False) -> Dict[str, int]:
+    if not dry_run and not _within_send_window():
+        print(f"  [scheduler] Outside send window ({SEND_WINDOW_START}:00–{SEND_WINDOW_END}:00). Skipping.")
+        return {"queued": 0, "skipped": 0}
+
     now = datetime.now(timezone.utc)
     fieldnames, prospect_rows = _read_prospects()
     pending_rows = _read_pending()
@@ -211,8 +225,9 @@ def run_followup_scheduler(dry_run: bool = False) -> Dict[str, int]:
             "body":                body,
             "approved":            "false",
             "sent_at":             "",
-            "scoring_reason":      f"follow-up #{step}",
-            "final_priority_score": row.get("priority_score", ""),
+            "scoring_reason":       f"follow-up #{step}",
+            "final_priority_score":  row.get("priority_score", ""),
+            "automation_opportunity": row.get("automation_opportunity", ""),
         }
 
         followup_due_date = (now + timedelta(days=FOLLOWUP_DAYS[step - 1])).date().isoformat()
