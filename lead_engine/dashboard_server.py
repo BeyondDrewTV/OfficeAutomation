@@ -134,7 +134,7 @@ def _preset_followup_days(campaign_key: str) -> int:
             return int(p.get("followup_days", _DEFAULT_FOLLOWUP_DAYS))
     return _DEFAULT_FOLLOWUP_DAYS
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=None)  # disable built-in /static/ route; custom route below serves dashboard_static/
 
 def _read_pending() -> list:
     if not PENDING_CSV.exists():
