@@ -7,6 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="/static/copperline-favicon.svg">
 <!-- Leaflet CSS — loaded only once; used by Map Search tab -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTLSeB68ARYJipY1SQ==" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin="anonymous" defer></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 :root{
@@ -3526,16 +3527,26 @@ function mapClearCircle() {
 }
 
 function _mapInit() {
-  if (_mapInstance) return;  // already initialised
-  if (typeof L === 'undefined') { console.error('Leaflet not loaded'); return; }
+  if (_mapInstance) {
+    // Already initialised — tab just became visible, fix tile rendering
+    setTimeout(() => _mapInstance.invalidateSize(), 50);
+    return;
+  }
+  if (typeof L === 'undefined') {
+    // Leaflet script still loading (defer) — retry in 100 ms
+    setTimeout(_mapInit, 100);
+    return;
+  }
   const container = document.getElementById('map-container');
   if (!container) return;
   _mapInstance = L.map('map-container', { zoomControl: true }).setView([MAP_DEFAULT_LAT, MAP_DEFAULT_LNG], 12);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    attribution: '\u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 18,
   }).addTo(_mapInstance);
   _mapInstance.on('click', (e) => { _mapDrawCircle(e.latlng.lat, e.latlng.lng); });
+  // invalidateSize after container is fully visible
+  setTimeout(() => _mapInstance.invalidateSize(), 50);
 }
 
 async function mapSearch() {
@@ -3564,7 +3575,5 @@ async function mapSearch() {
 }
 
 </script>
-<!-- Leaflet JS — deferred so it does not block page load -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin="anonymous" defer></script>
 </body>
 </html>
