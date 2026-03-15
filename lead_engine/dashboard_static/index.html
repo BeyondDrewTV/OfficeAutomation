@@ -1024,22 +1024,27 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
 <div class="mc-wrap">
   <div class="mc-section-hdr">
     <h2>🔍 Search History</h2>
-    <span class="mc-muted" style="font-size:12px">Every Discover run is logged here automatically</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="mc-muted" style="font-size:12px">Every Discover run logged here</span>
+      <button class="btn btn-ghost" onclick="loadSearchHistory()">↻ Refresh</button>
+    </div>
   </div>
+  <div id="sh-summary"></div>
   <div class="mc-card" style="padding:0">
     <table class="mc-table" id="search-history-table">
       <thead>
         <tr>
           <th>Date / Time</th>
           <th>City</th>
-          <th>State</th>
+          <th>ST</th>
           <th>Industry</th>
-          <th style="text-align:center">New Found</th>
-          <th style="text-align:center">Status</th>
+          <th style="text-align:center">Found</th>
+          <th style="text-align:center">Result</th>
+          <th style="text-align:center">Action</th>
         </tr>
       </thead>
       <tbody id="search-history-tbody">
-        <tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">Loading…</td></tr>
+        <tr><td colspan="7" class="mc-muted" style="text-align:center;padding:24px">Loading…</td></tr>
       </tbody>
     </table>
   </div>
@@ -2932,32 +2937,79 @@ function cvOpenInOutreach(idx) {
 
 
 // ── Search History ────────────────────────────────────────────────────────────
+function _shRerun(city, state, industry) {
+  // Pre-fill the discover bar on the Outreach page and fire the search
+  const cityEl     = document.getElementById('d-city');
+  const stateEl    = document.getElementById('d-state');
+  const industryEl = document.getElementById('d-industry');
+  if (cityEl)     cityEl.value     = city;
+  if (stateEl)    stateEl.value    = state;
+  if (industryEl) {
+    // Try to select the matching option; fall through if not found
+    const opt = Array.from(industryEl.options).find(o => o.value === industry);
+    if (opt) industryEl.value = industry;
+  }
+  switchPage('outreach', document.querySelector('[data-page=outreach]'));
+  // Brief delay so the page switch renders before the API call fires
+  setTimeout(() => discoverLeads(), 120);
+}
+
 async function loadSearchHistory() {
+  const wrap  = document.getElementById('search-history-wrap');
   const tbody = document.getElementById('search-history-tbody');
-  tbody.innerHTML = '<tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">Loading…</td></tr>';
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="7" class="mc-muted" style="text-align:center;padding:24px">Loading…</td></tr>';
   try {
     const rows = await api('/api/search_history');
     if (!rows.length) {
-      tbody.innerHTML = '<tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">No searches yet — run Discover + Draft to get started.</td></tr>';
+      if (wrap) wrap.querySelector('#sh-summary')?.remove();
+      tbody.innerHTML = '<tr><td colspan="7" class="mc-muted" style="text-align:center;padding:24px">No searches yet — run Discover + Draft to get started.</td></tr>';
       return;
     }
+
+    // Compute summary stats
+    const totalSearches = rows.length;
+    const totalFound    = rows.reduce((a, r) => a + (r.found || 0), 0);
+    const zeroRows      = rows.filter(r => !r.found).length;
+    const citiesSet     = new Set(rows.map(r => (r.city + '|' + r.state).toLowerCase()));
+
+    const summaryEl = document.getElementById('sh-summary');
+    if (summaryEl) {
+      summaryEl.innerHTML = `
+        <div class="ops-stat-row" style="margin-bottom:14px">
+          <div class="ops-stat"><div class="ops-stat-n" style="color:var(--blue)">${totalSearches}</div><div class="ops-stat-l">Searches Run</div></div>
+          <div class="ops-stat"><div class="ops-stat-n" style="color:var(--green)">${totalFound}</div><div class="ops-stat-l">Total Found</div></div>
+          <div class="ops-stat"><div class="ops-stat-n" style="color:var(--blue)">${citiesSet.size}</div><div class="ops-stat-l">Unique Cities</div></div>
+          <div class="ops-stat"><div class="ops-stat-n" style="color:${zeroRows ? 'var(--amber)' : 'var(--green)'}">${zeroRows}</div><div class="ops-stat-l">Zero-Result Runs</div></div>
+        </div>`;
+    }
+
     tbody.innerHTML = rows.map(r => {
-      const statusCls = r.status === 'ok' ? 'color:var(--green)' :
-                        r.status === 'all_duplicates' ? 'color:var(--amber)' : 'color:var(--red)';
-      const statusLabel = r.status === 'ok' ? `✓ ${r.found} new` :
-                          r.status === 'all_duplicates' ? '— all dupes' : '✗ error';
-      const foundCls = r.found > 0 ? 'font-weight:600' : 'color:var(--muted)';
-      return `<tr>
+      const isZero   = !r.found;
+      const isDupe   = r.status === 'all_duplicates';
+      const isErr    = r.status === 'error';
+      const rowBg    = isZero && !isDupe ? 'background:rgba(245,166,35,.04)' : '';
+      const statusCls = isErr    ? 'color:var(--red)'   :
+                        isDupe   ? 'color:var(--amber)'  :
+                        isZero   ? 'color:var(--amber)'  : 'color:var(--green)';
+      const statusLabel = isErr   ? '✗ error'  :
+                          isDupe  ? '— dupes'  :
+                          isZero  ? '— 0 new'  : `✓ ${r.found}`;
+      const foundCls    = r.found > 0 ? 'font-weight:600' : 'color:var(--muted)';
+      const rerunTitle  = `Re-run: ${r.industry} in ${r.city}, ${r.state}`;
+      return `<tr style="${rowBg}">
         <td class="mc-muted" style="font-size:11px;white-space:nowrap">${escHtml(r.ts)}</td>
         <td style="font-weight:500">${escHtml(r.city)}</td>
         <td class="mc-mono">${escHtml(r.state)}</td>
         <td><span class="tag-industry">${escHtml(r.industry)}</span></td>
-        <td style="text-align:center;${foundCls}">${r.found}</td>
+        <td style="text-align:center;${foundCls}">${r.found ?? 0}</td>
         <td style="text-align:center;${statusCls};font-size:12px;font-weight:600">${statusLabel}${r.error ? `<div style="font-size:10px;color:var(--muted);font-weight:400">${escHtml(r.error)}</div>` : ''}</td>
+        <td><button class="tp-btn tp-btn-run" title="${escHtml(rerunTitle)}"
+          onclick="_shRerun(${JSON.stringify(r.city)},${JSON.stringify(r.state)},${JSON.stringify(r.industry)})">⚡ Re-run</button></td>
       </tr>`;
     }).join('');
   } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">Error loading history: ${e}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="mc-muted" style="text-align:center;padding:24px">Error loading history: ${e}</td></tr>`;
   }
 }
 
