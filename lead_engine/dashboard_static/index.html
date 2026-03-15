@@ -3821,6 +3821,25 @@ function _mapClearCoverage() {
   if (btn) btn.style.display = 'none';
 }
 
+function _mapAreaLabel(markers) {
+  // Derive a human-readable area name from result city data.
+  // No API calls — heuristic only. Returns null if data is too sparse.
+  if (!markers || markers.length === 0) return null;
+  const freq = {};
+  markers.forEach(({ city }) => {
+    const c = (city || '').trim();
+    if (c) freq[c] = (freq[c] || 0) + 1;
+  });
+  const cities = Object.keys(freq);
+  if (cities.length === 0) return null;
+  cities.sort((a, b) => freq[b] - freq[a]);
+  const top = cities[0];
+  const cityTotal = Object.values(freq).reduce((s, n) => s + n, 0);
+  // Use top city if it covers >=30% of results that have city data
+  if (freq[top] / cityTotal >= 0.3) return top;
+  return top; // still better than coords even if coverage is low
+}
+
 function _mapRenderHistory() {
   const wrap = document.getElementById('map-history');
   const list = document.getElementById('mh-list');
@@ -3831,9 +3850,11 @@ function _mapRenderHistory() {
     const row = document.createElement('div');
     row.className = 'mh-item';
     const miles = (entry.radiusM / 1609.34).toFixed(1);
+    const primaryText = entry.label || `${entry.lat.toFixed(3)}, ${entry.lng.toFixed(3)}`;
+    const secondaryText = `${miles} mi — ${entry.found} found`;
     row.innerHTML =
-      `<span class="mh-item-label">${entry.lat.toFixed(3)}, ${entry.lng.toFixed(3)} &mdash; ${miles} mi</span>` +
-      `<span class="mh-item-meta">${entry.found} found</span>`;
+      `<span class="mh-item-label" title="${entry.lat.toFixed(4)}, ${entry.lng.toFixed(4)}">${primaryText}</span>` +
+      `<span class="mh-item-meta">${secondaryText}</span>`;
     row.addEventListener('click', () => {
       _mapRadiusM = entry.radiusM;
       _mapDrawCircle(entry.lat, entry.lng);
@@ -3978,7 +3999,8 @@ async function mapSearch() {
         if (btn) btn.style.display = '';
       }
       // Append to session search history
-      _mapSearchHistory.unshift({ lat: _mapCenter.lat, lng: _mapCenter.lng, radiusM: _mapRadiusM, found: res.places_found || 0 });
+      const _histLabel = _mapAreaLabel(res.markers || []);
+      _mapSearchHistory.unshift({ lat: _mapCenter.lat, lng: _mapCenter.lng, radiusM: _mapRadiusM, found: res.places_found || 0, label: _histLabel });
       if (_mapSearchHistory.length > MAP_HISTORY_MAX) _mapSearchHistory.length = MAP_HISTORY_MAX;
       _mapRenderHistory();
     } else {
