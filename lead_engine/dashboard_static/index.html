@@ -528,6 +528,16 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
 .map-status{font-size:12px;color:var(--muted);min-height:18px}
 .btn-coverage{background:transparent;color:var(--dim);border:1px solid var(--border);font-size:11px;padding:4px 9px}
 .btn-coverage:hover{color:var(--muted);border-color:var(--border-hi)}
+#map-history{margin-top:10px;display:none}
+.mh-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.mh-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.mh-clear{font-size:11px;color:var(--dim);cursor:pointer;background:none;border:none;padding:0;font-family:var(--sans)}
+.mh-clear:hover{color:var(--muted)}
+.mh-list{display:flex;flex-direction:column;gap:2px}
+.mh-item{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-size:12px;transition:background .1s}
+.mh-item:hover{background:var(--surface2)}
+.mh-item-label{color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mh-item-meta{font-size:11px;color:var(--dim);white-space:nowrap;margin-left:8px;flex-shrink:0}
 .map-instructions{font-size:12px;color:var(--muted);line-height:1.6;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px}
 /* ── Sub-navigation ──────────────────────────────────────────────── */
 .sub-nav{display:flex;align-items:center;gap:0;border-bottom:1px solid var(--border);background:var(--surface2);padding:0 24px}
@@ -1139,6 +1149,13 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
         </div>
       </div>
       <div id="map-status" class="map-status" style="margin-top:8px"></div>
+      <div id="map-history">
+        <div class="mh-hdr">
+          <span class="mh-title">Recent Searches</span>
+          <button class="mh-clear" onclick="_mapClearHistory()">Clear history</button>
+        </div>
+        <div class="mh-list" id="mh-list"></div>
+      </div>
 </div>
 </div>
 
@@ -3792,6 +3809,8 @@ let _mapDragMarker    = null;   // edge drag handle marker
 let _mapCenter        = null;   // {lat, lng}
 let _mapRadiusM       = 2000;   // current radius in metres
 let _mapCoverageCircles = [];   // prior search overlays (session only, not persisted)
+let _mapSearchHistory   = [];   // session search history [{lat, lng, radiusM, found}]
+const MAP_HISTORY_MAX   = 10;   // max entries kept, newest-first
 const MAP_DEFAULT_LAT = 42.2711;  // Rockford, IL
 const MAP_DEFAULT_LNG = -89.0940;
 
@@ -3800,6 +3819,37 @@ function _mapClearCoverage() {
   _mapCoverageCircles = [];
   const btn = document.getElementById('btnClearCoverage');
   if (btn) btn.style.display = 'none';
+}
+
+function _mapRenderHistory() {
+  const wrap = document.getElementById('map-history');
+  const list = document.getElementById('mh-list');
+  if (!wrap || !list) return;
+  if (_mapSearchHistory.length === 0) { wrap.style.display = 'none'; return; }
+  list.innerHTML = '';
+  _mapSearchHistory.forEach((entry) => {
+    const row = document.createElement('div');
+    row.className = 'mh-item';
+    const miles = (entry.radiusM / 1609.34).toFixed(1);
+    row.innerHTML =
+      `<span class="mh-item-label">${entry.lat.toFixed(3)}, ${entry.lng.toFixed(3)} &mdash; ${miles} mi</span>` +
+      `<span class="mh-item-meta">${entry.found} found</span>`;
+    row.addEventListener('click', () => {
+      _mapRadiusM = entry.radiusM;
+      _mapDrawCircle(entry.lat, entry.lng);
+      if (_mapInstance) _mapInstance.setView([entry.lat, entry.lng], _mapInstance.getZoom());
+    });
+    list.appendChild(row);
+  });
+  wrap.style.display = '';
+}
+
+function _mapClearHistory() {
+  _mapSearchHistory = [];
+  const wrap = document.getElementById('map-history');
+  const list = document.getElementById('mh-list');
+  if (wrap) wrap.style.display = 'none';
+  if (list) list.innerHTML = '';
 }
 
 function _mapMetresToMiles(m) { return (m / 1609.34).toFixed(2); }
@@ -3927,6 +3977,10 @@ async function mapSearch() {
         const btn = document.getElementById('btnClearCoverage');
         if (btn) btn.style.display = '';
       }
+      // Append to session search history
+      _mapSearchHistory.unshift({ lat: _mapCenter.lat, lng: _mapCenter.lng, radiusM: _mapRadiusM, found: res.places_found || 0 });
+      if (_mapSearchHistory.length > MAP_HISTORY_MAX) _mapSearchHistory.length = MAP_HISTORY_MAX;
+      _mapRenderHistory();
     } else {
       toast('Search error: ' + res.error, 'err');
       statusEl.textContent = res.error || 'Search returned no new results.';
