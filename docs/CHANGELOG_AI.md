@@ -7,6 +7,28 @@ Update this file at the end of every pass.
 
 ## 2026-03-15
 
+### Step 3 — Results Side Panel (Discovery Map)
+
+**Goal:** Show a scrollable list of discovered businesses alongside the map
+after a discovery search completes.
+
+**Changes:**
+- Added CSS: `#map-layout`, `#map-results-panel`, `.mrp-hdr`, `.mrp-list`,
+  `.mrp-item`, `.mrp-name`, `.mrp-meta`, `.mrp-dot` classes
+- Added `#map-layout` flex wrapper in HTML around `#map-container` and new panel
+- Added `#map-results-panel` div with header (`mrp-count`) and scrollable list
+- Added `_mapResultItems[]` module variable storing `{biz, marker}` pairs
+- Added `_mapRenderPanel()` — renders list items, binds click to
+  `zoomToShowLayer()` + `openPopup()` per marker
+- Extended `_mapClearResultMarkers()` to reset `_mapResultItems` and hide panel
+- Extended `_mapPlaceResultMarkers()` to push to `_mapResultItems` and call render
+
+**File changed:** `lead_engine/dashboard_static/index.html`
+
+**Commit:** `c0caa17`
+
+---
+
 ### Step 2 — Marker Clustering (Discovery Map)
 
 **Goal:** Group discovery result markers into cluster bubbles that split on

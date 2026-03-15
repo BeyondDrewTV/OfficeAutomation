@@ -12,15 +12,15 @@ Lead Acquisition Engine
 Discovery Map System
 
 ## Current Build Pass
-Step 3 — Results Side Panel (not yet started)
+Step 4 — Search Visible Area (not yet started)
 
 ## Last Completed Pass
-Step 2 — Marker Clustering
+Step 3 — Results Side Panel
 
-Commit: `38da7c3`
+Commit: `c0caa17`
 
 ## Next Pass
-Results Side Panel — scrollable business list alongside the map
+Step 4 — Search Visible Area button (scope to be defined)
 
 ## Upcoming Passes
 - Search Visible Area button

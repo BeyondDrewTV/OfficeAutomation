@@ -4,36 +4,37 @@
 Discovery Map — Frontend Improvements
 
 ## Status
-Step 2 complete. Step 3 not yet started.
+Step 3 complete. Step 4 not yet started.
 
 ---
 
 ## Completed: Step 2 — Marker Clustering
-
-Markers returned from `/api/discover_area` now cluster automatically via
-`Leaflet.markercluster`. Zoom splits clusters; zoom out regroups them.
 Commit: `38da7c3`
 
 ---
 
-## Next: Step 3 — Results Side Panel
+## Completed: Step 3 — Results Side Panel
 
-After a discovery search completes, display a scrollable list of discovered
-businesses in a panel alongside the map.
+After discovery, a scrollable panel appears to the right of the map listing
+each discovered business with name, city, and email indicator. Clicking a
+row calls `zoomToShowLayer` + `openPopup` to surface the marker through
+any active cluster.
+
+Commit: `c0caa17`
+
+---
+
+## Next: Step 4 — Search Visible Area Button
+
+Add a button that tiles the current map viewport into a grid of small-radius
+cells and runs sequential `/api/discover_area` calls across each cell.
 
 ### Scope
-- Frontend only
-- `dashboard_static/index.html` only
-
-### Direction
-- Panel appears on the right side of the map view after search completes
-- Lists each discovered business: name, city, email presence indicator
-- Clicking a list item opens the marker popup on the map
-- Panel is cleared when a new search area is drawn
+- Frontend: button, progress UI, tiling logic
+- Backend: may require a new endpoint or reuse existing `/api/discover_area`
+- To be fully scoped before implementation begins
 
 ### Out of Scope
-- Backend changes
-- Search tiling or grid discovery
 - Territory heatmaps
 - Industry saturation metrics
 - Deployment changes

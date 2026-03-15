@@ -12,27 +12,24 @@ Lead Acquisition Engine
 Discovery Map System
 
 ## Last Completed Pass
-Step 2 — Marker Clustering on Discovery Map
+Step 3 — Results Side Panel
 
-- Loaded `Leaflet.markercluster` v1.5.3 via CDN
-- Added `_mapClusterGroup` variable and initialized in `_mapInit()`
-- Result markers now route through `MarkerClusterGroup` instead of directly to map
-- `_mapClearResultMarkers()` updated to use `clearLayers()`
-- Drag handle and circle markers unchanged
+- Added `#map-layout` flex wrapper around map and panel
+- Added `#map-results-panel` (260px, hidden until results exist)
+- Added `_mapResultItems[]` array storing `{biz, marker}` pairs
+- Added `_mapRenderPanel()` — builds list DOM, binds click to `zoomToShowLayer` + `openPopup`
+- Extended `_mapClearResultMarkers()` to clear panel
+- Extended `_mapPlaceResultMarkers()` to populate items and call render
+
+Commit: `c0caa17`
+
+## Previous Pass
+Step 2 — Marker Clustering on Discovery Map
 
 Commit: `38da7c3`
 
-## Previous Pass
-Step 1 — Dashboard Navigation Restructure
-
-Reduced nav from 13 tabs to 5 parent sections with sub-tabs.
-
-Sections: Pipeline | Discovery | Clients | Health | Tools
-
-Commit: `1dc811a`
-
 ## Next Pass
-Results Side Panel — show discovered business list alongside the map
+Step 4 — Search Visible Area button
 
 ## Upcoming Passes
 - Search Visible Area button
