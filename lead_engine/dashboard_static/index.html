@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Copperline — Outreach Dashboard</title>
+<title>Copperline — Operations Hub</title>
 <link rel="icon" type="image/svg+xml" href="/static/copperline-favicon.svg">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
@@ -166,6 +166,337 @@ code{font-family:var(--mono);background:var(--surface3);padding:1px 5px;border-r
 .toast-msg.ok{border-left:3px solid var(--green)}.toast-msg.err{border-left:3px solid var(--red)}.toast-msg.info{border-left:3px solid var(--blue)}
 @keyframes slideUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
 input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:pointer}
+/* ── Nav tabs ─────────────────────────────────────────────────────── */
+.app-nav{display:flex;align-items:center;gap:0;border-bottom:2px solid var(--border);background:var(--surface);padding:0 24px}
+.nav-tab{padding:11px 20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:.12s;white-space:nowrap;user-select:none}
+.nav-tab:hover{color:var(--text)}
+.nav-tab.active{color:var(--copper);border-bottom-color:var(--copper)}
+.page{display:none}.page.active{display:block}
+
+/* ── MC shared layout ─────────────────────────────────────────────── */
+.mc-wrap{max-width:1100px;margin:0 auto;padding:24px}
+.mc-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.mc-section-hdr h2{font-size:16px;font-weight:600}
+.mc-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.mc-card-hdr{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2)}
+.mc-card-hdr span{font-size:13px;font-weight:600}
+.mc-card-body{padding:18px}
+.mc-table{width:100%;border-collapse:collapse;font-size:13px}
+.mc-table th{background:var(--surface2);color:var(--muted);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;padding:9px 14px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+.mc-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+.mc-table tr:last-child td{border-bottom:none}
+.mc-table tr:hover td{background:rgba(255,255,255,.02)}
+.mc-mono{font-family:var(--mono);font-size:12px}
+.mc-muted{color:var(--muted);font-size:12px}
+.mc-actions{display:flex;gap:5px;flex-wrap:wrap}
+.tag-industry{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;background:var(--copper-bg);color:var(--copper);border:1px solid rgba(184,115,51,.25)}
+
+/* ── Form ─────────────────────────────────────────────────────────── */
+.mc-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mc-form .full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.form-group label .opt{font-weight:400;color:var(--dim);text-transform:none;letter-spacing:0}
+.form-input,.form-select,.form-textarea{width:100%;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:13px;outline:none;transition:.12s}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--copper);box-shadow:0 0 0 2px var(--copper-glow)}
+.form-textarea{resize:vertical;min-height:72px;font-family:var(--mono);font-size:12px}
+.form-input::placeholder{color:var(--dim)}
+.form-hint{font-size:11px;color:var(--dim);margin-top:1px}
+.form-errors{background:var(--red-bg);border:1px solid rgba(245,101,101,.3);border-radius:var(--rs);padding:10px 14px;margin-bottom:14px}
+.form-errors ul{margin:0;padding-left:18px}
+.form-errors li{font-size:12px;color:var(--red);line-height:1.8}
+.form-success{background:var(--green-bg);border:1px solid rgba(62,207,114,.3);border-radius:var(--rs);padding:10px 14px;margin-bottom:14px;color:var(--green);font-size:13px}
+
+/* ── Leads page ───────────────────────────────────────────────────── */
+.leads-filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.leads-filter-bar label{font-size:11px;color:var(--muted)}
+.status-new{color:var(--amber)}.status-replied{color:var(--green)}.status-closed{color:var(--muted)}
+.lead-msg{max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:12px}
+
+/* ── Reports stub ─────────────────────────────────────────────────── */
+.stub-card{border:2px dashed var(--border);border-radius:var(--r);padding:40px;text-align:center;color:var(--muted)}
+.stub-card h3{font-size:14px;margin-bottom:6px;color:var(--text)}
+.stub-card p{font-size:12px;max-width:360px;margin:0 auto;line-height:1.7}
+
+/* ── Service status pill ──────────────────────────────────────────── */
+.svc-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.svc-online{background:var(--green-bg);color:var(--green);border:1px solid rgba(62,207,114,.25)}
+.svc-offline{background:var(--red-bg);color:var(--red);border:1px solid rgba(245,101,101,.25)}
+.svc-unknown{background:var(--surface3);color:var(--muted);border:1px solid var(--border)}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.badge-replied{background:var(--copper-bg);color:var(--copper);border:1px solid rgba(184,115,51,.3)}
+.badge-stale{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(245,166,35,.3)}
+.reply-snippet{font-size:11px;color:var(--muted);font-style:italic;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px}
+.panel-reply-box{background:var(--surface2);border:1px solid var(--copper);border-radius:var(--rs);padding:12px 14px;margin-top:4px}
+.panel-reply-box .reply-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--copper);margin-bottom:6px}
+.panel-reply-box .reply-body{font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.cp-due{color:var(--amber);font-weight:600}
+.cp-ok{color:var(--green)}
+.cp-never{color:var(--red)}
+.cp-skipped{color:var(--muted)}
+.cp-tier-large{background:#3a2a4a;color:#c084fc;border:1px solid rgba(192,132,252,.3);border-radius:4px;padding:1px 7px;font-size:11px}
+.cp-tier-mid{background:#1e3a2a;color:#4ade80;border:1px solid rgba(74,222,128,.3);border-radius:4px;padding:1px 7px;font-size:11px}
+.cp-tier-small{background:#1e2a3a;color:#60a5fa;border:1px solid rgba(96,165,250,.3);border-radius:4px;padding:1px 7px;font-size:11px}
+.demo-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .15s}
+.demo-modal-overlay.open{opacity:1;pointer-events:all}
+.demo-modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;max-width:460px;width:92%;transform:translateY(6px);transition:transform .15s}
+.demo-modal-overlay.open .demo-modal{transform:translateY(0)}
+.demo-modal h3{font-size:15px;font-weight:600;margin-bottom:4px}
+.demo-modal .demo-biz{font-size:12px;color:var(--muted);margin-bottom:18px}
+.demo-step{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.demo-step:last-child{border-bottom:none}
+.demo-step-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.demo-step-body{flex:1}
+.demo-step-label{font-size:12px;font-weight:600;color:var(--text)}
+.demo-step-detail{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5}
+.demo-step-ok .demo-step-label{color:var(--green)}
+.demo-step-skip .demo-step-label{color:var(--muted)}
+.demo-step-fail .demo-step-label{color:var(--red)}
+
+/* ── Social channel badges ────────────────────────────────────────── */
+.ch-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap;text-decoration:none;cursor:pointer;border:none;font-family:var(--sans);transition:.12s}
+.ch-email{background:rgba(79,142,247,.13);color:var(--blue);border:1px solid rgba(79,142,247,.3)}
+.ch-email:hover{background:rgba(79,142,247,.22)}
+.ch-fb{background:rgba(66,103,178,.18);color:#7b9fd4;border:1px solid rgba(66,103,178,.35)}
+.ch-fb:hover{background:rgba(66,103,178,.28)}
+.ch-ig{background:rgba(225,48,108,.13);color:#e1306c;border:1px solid rgba(225,48,108,.3)}
+.ch-ig:hover{background:rgba(225,48,108,.22)}
+.ch-form{background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.3)}
+.ch-form:hover{background:rgba(245,166,35,.22)}
+.ch-none{background:var(--surface3);color:var(--dim);border:1px solid var(--border)}
+.ch-wrap{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+
+/* ── City autocomplete ────────────────────────────────────────────── */
+.city-ac-wrap{position:relative;display:inline-block}
+.city-ac-wrap input{width:100%}
+.city-ac-list{position:absolute;top:calc(100% + 3px);left:0;min-width:240px;max-width:320px;background:var(--surface);border:1px solid var(--border-hi);border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:600;max-height:260px;overflow-y:auto;display:none}
+.city-ac-list.open{display:block}
+.city-ac-item{padding:8px 12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--border);font-size:12px}
+.city-ac-item:last-child{border-bottom:none}
+.city-ac-item:hover,.city-ac-item.focused{background:var(--surface2)}
+.city-ac-name{font-weight:500;color:var(--text)}
+.city-ac-state{color:var(--dim);font-size:11px}
+.city-ac-status{font-size:10px;font-weight:600;padding:1px 6px;border-radius:10px;white-space:nowrap}
+.cac-due{background:var(--amber-bg);color:var(--amber)}
+.cac-never{background:var(--red-bg);color:var(--red)}
+.cac-checked{background:var(--green-bg);color:var(--green)}
+.cac-skipped{background:var(--surface3);color:var(--muted)}
+.cac-seed{background:var(--surface3);color:var(--dim)}
+.city-ac-filters{display:flex;gap:4px;padding:6px 8px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.caf{padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--muted);transition:.1s}
+.caf:hover,.caf.active{background:var(--surface3);color:var(--text);border-color:var(--border-hi)}
+
+/* ── Panel DM copy section ────────────────────────────────────────── */
+.panel-dm-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;margin-top:4px}
+.panel-dm-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.panel-dm-text{font-size:12px;color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-word;font-family:var(--mono)}
+.btn-copy{background:var(--surface3);border:1px solid var(--border);color:var(--muted);padding:2px 9px;border-radius:var(--rs);font-size:10px;font-weight:600;cursor:pointer;transition:.12s;font-family:var(--sans)}
+.btn-copy:hover{color:var(--text);border-color:var(--border-hi)}
+.btn-copy.copied{color:var(--green);border-color:rgba(62,207,114,.4)}
+
+/* ══════════════════════════════════════════════════════
+   TERRITORY PLANNER — City cards + industry coverage
+   ══════════════════════════════════════════════════════ */
+.tp-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.tp-summary{display:flex;gap:16px;flex-wrap:wrap}
+.tp-stat{text-align:center}
+.tp-stat-n{font-family:var(--mono);font-size:20px;font-weight:600;line-height:1}
+.tp-stat-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.tp-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.tp-search{padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:12px;outline:none;width:160px;transition:.12s}
+.tp-search:focus{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-glow)}
+.tp-cards{display:flex;flex-direction:column;gap:12px}
+
+/* City card */
+.tp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color .15s}
+.tp-card.tp-card-due{border-color:rgba(245,166,35,.4)}
+.tp-card.tp-card-active{border-color:rgba(79,142,247,.3)}
+.tp-card-hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;cursor:pointer;user-select:none;background:var(--surface2);gap:10px;flex-wrap:wrap}
+.tp-card-hdr:hover{background:var(--surface3)}
+.tp-city-name{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.tp-city-meta{font-size:11px;color:var(--muted)}
+.tp-progress-wrap{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tp-progress-bar{width:80px;height:6px;background:var(--surface3);border-radius:3px;overflow:hidden}
+.tp-progress-fill{height:100%;background:var(--copper);border-radius:3px;transition:width .3s}
+.tp-progress-fill.tp-prog-done{background:var(--green)}
+.tp-progress-text{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.tp-card-actions{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+.tp-chevron{color:var(--muted);font-size:12px;transition:transform .2s;flex-shrink:0}
+.tp-card.open .tp-chevron{transform:rotate(180deg)}
+
+/* Industry rows inside card */
+.tp-ind-table{width:100%;border-collapse:collapse}
+.tp-ind-table th{background:var(--surface);color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:7px 18px;text-align:left;border-bottom:1px solid var(--border)}
+.tp-ind-table td{padding:9px 18px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle}
+.tp-ind-table tr:last-child td{border-bottom:none}
+.tp-ind-table tr:hover td{background:rgba(255,255,255,.015)}
+.tp-ind-name{font-weight:500;text-transform:capitalize}
+.tp-ind-status{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
+.tp-s-never{background:rgba(245,101,101,.12);color:var(--red);border:1px solid rgba(245,101,101,.2)}
+.tp-s-checked{background:var(--green-bg);color:var(--green);border:1px solid rgba(62,207,114,.2)}
+.tp-s-due{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(245,166,35,.2)}
+.tp-s-skipped{background:var(--surface3);color:var(--muted);border:1px solid var(--border)}
+.tp-s-exhausted{background:rgba(100,116,139,.1);color:var(--grey);border:1px solid rgba(100,116,139,.2)}
+.tp-ind-acts{display:flex;gap:4px;flex-wrap:wrap}
+.tp-btn{padding:3px 9px;border-radius:var(--rs);font-size:10px;font-weight:600;border:none;cursor:pointer;font-family:var(--sans);transition:.12s;white-space:nowrap}
+.tp-btn-run{background:var(--blue);color:#fff}.tp-btn-run:hover{background:#3d7de8}
+.tp-btn-run:disabled{opacity:.4;cursor:not-allowed}
+.tp-btn-skip{background:var(--surface3);color:var(--muted);border:1px solid var(--border)}.tp-btn-skip:hover{color:var(--text)}
+.tp-btn-exh{background:rgba(100,116,139,.1);color:var(--grey);border:1px solid rgba(100,116,139,.2)}.tp-btn-exh:hover{color:var(--text)}
+.tp-card-footer{padding:10px 18px;border-top:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap;background:var(--surface)}
+.tp-empty{padding:60px 24px;text-align:center;color:var(--muted)}
+.tp-empty-icon{font-size:32px;margin-bottom:8px;opacity:.4}
+
+/* Running state overlay */
+.tp-running{opacity:.6;pointer-events:none}
+.tp-spin{display:inline-block;width:10px;height:10px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:3px}
+
+/* ══════════════════════════════════════════════════════
+   FOLLOW-UP QUEUE — Part 4
+   ══════════════════════════════════════════════════════ */
+.fq-wrap{max-width:1100px;margin:0 auto;padding:24px}
+.fq-group{margin-bottom:22px}
+.fq-group-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.fq-group-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.fq-group-count{font-family:var(--mono);font-size:11px;background:var(--surface2);border:1px solid var(--border);padding:1px 7px;border-radius:10px;color:var(--muted)}
+.fq-group-overdue .fq-group-title{color:var(--red)}
+.fq-group-today   .fq-group-title{color:var(--amber)}
+.fq-group-week    .fq-group-title{color:var(--blue)}
+.fq-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:12px 16px;margin-bottom:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;transition:border-color .12s}
+.fq-card:hover{border-color:var(--border-hi)}
+.fq-card.fq-overdue{border-left:3px solid var(--red)}
+.fq-card.fq-today{border-left:3px solid var(--amber)}
+.fq-info{flex:1;min-width:0}
+.fq-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fq-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:10px;flex-wrap:wrap}
+.fq-due{font-size:11px;font-weight:600;margin-top:4px}
+.fq-due.overdue{color:var(--red)}
+.fq-due.today{color:var(--amber)}
+.fq-due.ok{color:var(--muted)}
+.fq-actions{display:flex;gap:5px;flex-wrap:wrap;align-items:flex-start;flex-shrink:0}
+.fq-result-badge{display:inline-block;padding:1px 7px;border-radius:10px;font-size:10px;font-weight:600}
+.fqr-sent{background:var(--blue-glow);color:var(--blue);border:1px solid rgba(79,142,247,.2)}
+.fqr-submitted{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(245,166,35,.2)}
+.fqr-dm_sent{background:rgba(66,103,178,.15);color:#7b9fd4;border:1px solid rgba(66,103,178,.2)}
+.fqr-no_reply{background:var(--surface3);color:var(--muted);border:1px solid var(--border)}
+.fqr-draft_ready{background:var(--surface3);color:var(--dim);border:1px solid var(--border)}
+.fq-empty{padding:40px;text-align:center;color:var(--muted);font-size:13px}
+
+/* ── Review panel — status buttons (Part 3) ─── */
+.panel-status-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:4px}
+.pstat-btn{padding:6px 4px;border-radius:var(--rs);font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;font-family:var(--sans);transition:.12s;text-align:center}
+.pstat-btn:hover{background:var(--surface3);color:var(--text);border-color:var(--border-hi)}
+.pstat-btn.pstat-active{color:var(--green);border-color:rgba(62,207,114,.4);background:var(--green-bg)}
+.pstat-sent{}.pstat-dm{}.pstat-form{}.pstat-replied{color:var(--copper)!important;border-color:rgba(184,115,51,.3)!important}
+.pstat-noint{color:var(--amber)!important}.pstat-bad{color:var(--red)!important}
+.pstat-closed{color:var(--muted)!important}
+.panel-campaign-row{display:flex;align-items:center;gap:8px;margin-top:4px}
+.panel-campaign-row label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.panel-campaign-sel{flex:1;padding:5px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:12px;outline:none}
+.panel-campaign-sel:focus{border-color:var(--copper);box-shadow:0 0 0 2px var(--copper-glow)}
+.panel-best-action{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:var(--rs);background:var(--surface2);border:1px solid var(--border);margin-top:4px}
+.pba-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);white-space:nowrap}
+.pba-btn{flex:1;padding:7px 12px;border-radius:var(--rs);font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:var(--sans);transition:.12s;text-align:center}
+.pba-email{background:var(--blue);color:#fff}.pba-email:hover{background:#3d7de8}
+.pba-form{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(245,166,35,.3)}.pba-form:hover{background:rgba(245,166,35,.22)}
+.pba-fb{background:rgba(66,103,178,.18);color:#7b9fd4;border:1px solid rgba(66,103,178,.3)}.pba-fb:hover{background:rgba(66,103,178,.28)}
+.pba-ig{background:rgba(225,48,108,.13);color:#e1306c;border:1px solid rgba(225,48,108,.2)}.pba-ig:hover{background:rgba(225,48,108,.22)}
+.pba-none{background:var(--surface3);color:var(--dim);border:1px solid var(--border);cursor:default}
+.attempt-counter{font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--surface3);border:1px solid var(--border);padding:1px 7px;border-radius:10px}
+
+/* ── Opportunity score badges (Part 3) ───────────────────────────── */
+.opp-badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;white-space:nowrap;letter-spacing:.02em}
+.opp-high{background:rgba(62,207,114,.15);color:#3ecf72;border:1px solid rgba(62,207,114,.3)}
+.opp-mid{background:rgba(245,166,35,.13);color:var(--amber);border:1px solid rgba(245,166,35,.3)}
+.opp-low{background:rgba(100,116,139,.1);color:var(--grey);border:1px solid rgba(100,116,139,.2)}
+
+/* ── Social Outreach page (Part 1) ───────────────────────────────── */
+.sq-wrap{max-width:1100px;margin:0 auto;padding:24px}
+.sq-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.sq-hdr h2{font-size:16px;font-weight:600}
+.sq-stats{display:flex;gap:16px}
+.sq-stat-n{font-family:var(--mono);font-size:20px;font-weight:600;line-height:1}
+.sq-stat-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.sq-filters{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.sq-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:14px 16px;margin-bottom:8px;transition:border-color .12s}
+.sq-card:hover{border-color:var(--border-hi)}
+.sq-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.sq-biz{font-weight:600;font-size:13px}
+.sq-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:10px;flex-wrap:wrap}
+.sq-insight{font-size:11px;color:var(--copper);background:var(--copper-bg);border:1px solid rgba(184,115,51,.2);border-radius:var(--rs);padding:6px 10px;margin-top:8px;line-height:1.5}
+.sq-draft-wrap{margin-top:10px;display:flex;flex-direction:column;gap:6px}
+.sq-draft-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:9px 12px}
+.sq-draft-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+.sq-draft-text{font-size:12px;font-family:var(--mono);color:var(--text);line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:100px;overflow-y:auto}
+.sq-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
+.sq-empty{padding:60px 24px;text-align:center;color:var(--muted)}
+.sq-empty-icon{font-size:36px;margin-bottom:10px;opacity:.4}
+
+/* ── Send Sprint page (Part 4) ───────────────────────────────────── */
+.sprint-wrap{max-width:680px;margin:40px auto;padding:24px}
+.sprint-hdr{text-align:center;margin-bottom:28px}
+.sprint-hdr h2{font-size:18px;font-weight:700;margin-bottom:4px}
+.sprint-hdr p{font-size:12px;color:var(--muted)}
+.sprint-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.sprint-card-top{padding:20px 22px 16px;border-bottom:1px solid var(--border)}
+.sprint-biz{font-size:20px;font-weight:700;margin-bottom:4px}
+.sprint-meta{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:10px}
+.sprint-channel-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:20px;font-size:11px;font-weight:700}
+.sprint-ch-email{background:rgba(79,142,247,.15);color:var(--blue);border:1px solid rgba(79,142,247,.3)}
+.sprint-ch-facebook{background:rgba(66,103,178,.18);color:#7b9fd4;border:1px solid rgba(66,103,178,.3)}
+.sprint-ch-instagram{background:rgba(225,48,108,.13);color:#e1306c;border:1px solid rgba(225,48,108,.2)}
+.sprint-ch-contact_form{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(245,166,35,.3)}
+.sprint-insight{font-size:11px;color:var(--copper);background:var(--copper-bg);border:1px solid rgba(184,115,51,.2);border-radius:var(--rs);padding:7px 11px;margin-top:8px;line-height:1.5}
+.sprint-draft-wrap{padding:16px 22px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.sprint-draft-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
+.sprint-draft-text{font-size:12px;font-family:var(--mono);color:var(--text);line-height:1.7;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto}
+.sprint-actions{padding:16px 22px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sprint-btn-sent{background:var(--green);color:#0e1a12;font-size:13px;font-weight:700;padding:9px 20px;border:none;border-radius:var(--rs);cursor:pointer;font-family:var(--sans);transition:.12s}
+.sprint-btn-sent:hover{background:#2fb85c}
+.sprint-btn-open{background:var(--surface2);color:var(--blue);border:1px solid rgba(79,142,247,.3);font-size:12px;font-weight:600;padding:9px 16px;border-radius:var(--rs);cursor:pointer;font-family:var(--sans);transition:.12s}
+.sprint-btn-open:hover{background:rgba(79,142,247,.1)}
+.sprint-btn-skip{background:var(--surface2);color:var(--muted);border:1px solid var(--border);font-size:12px;font-weight:600;padding:9px 14px;border-radius:var(--rs);cursor:pointer;font-family:var(--sans);transition:.12s}
+.sprint-btn-skip:hover{color:var(--text);border-color:var(--border-hi)}
+.sprint-btn-copy{background:var(--surface3);color:var(--muted);border:1px solid var(--border);font-size:11px;font-weight:600;padding:9px 12px;border-radius:var(--rs);cursor:pointer;font-family:var(--sans);transition:.12s;margin-left:auto}
+.sprint-btn-copy:hover{color:var(--text)}.sprint-btn-copy.copied{color:var(--green)}
+.sprint-counter{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:8px}
+.sprint-progress{height:3px;background:var(--surface3)}
+.sprint-progress-fill{height:100%;background:var(--copper);transition:width .3s}
+.sprint-empty{padding:80px 24px;text-align:center;color:var(--muted)}
+.sprint-empty-icon{font-size:48px;margin-bottom:12px;opacity:.35}
+.sprint-channel-bar{display:flex;gap:6px;justify-content:center;margin-bottom:20px;flex-wrap:wrap}
+.sprint-filter-btn{padding:5px 14px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:.12s;font-family:var(--sans)}
+.sprint-filter-btn.active,.sprint-filter-btn:hover{background:var(--surface3);color:var(--text);border-color:var(--border-hi)}
+.sprint-score-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+
+/* ── Conversations page (Part 6) ─────────────────────────────────── */
+.cv-wrap{max-width:1100px;margin:0 auto;padding:24px}
+.cv-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.cv-hdr h2{font-size:16px;font-weight:600}
+.cv-grid{display:grid;grid-template-columns:320px 1fr;gap:16px;min-height:500px}
+@media(max-width:800px){.cv-grid{grid-template-columns:1fr}}
+.cv-list{display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:calc(100vh - 220px)}
+.cv-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;cursor:pointer;transition:all .12s}
+.cv-item:hover,.cv-item.active{border-color:var(--copper);background:var(--copper-bg)}
+.cv-item-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cv-item-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.cv-item-snippet{font-size:11px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:italic}
+.cv-item-ts{font-size:10px;color:var(--dim);margin-top:3px;font-family:var(--mono)}
+.cv-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column}
+.cv-panel-hdr{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.cv-panel-biz{font-size:15px;font-weight:700}
+.cv-panel-meta{font-size:12px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-top:2px}
+.cv-panel-body{flex:1;padding:18px 20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+.cv-reply-box{background:var(--surface2);border:1px solid var(--copper);border-radius:var(--rs);padding:12px 14px}
+.cv-reply-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--copper);margin-bottom:6px}
+.cv-reply-body{font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.cv-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:5px}
+.cv-textarea{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--mono);font-size:12px;outline:none;resize:vertical;min-height:90px;line-height:1.6;transition:.12s}
+.cv-textarea:focus{border-color:var(--copper);box-shadow:0 0 0 2px var(--copper-glow)}
+.cv-quick-actions{display:flex;gap:6px;flex-wrap:wrap}
+.cv-empty{padding:80px 24px;text-align:center;color:var(--muted)}
+.cv-empty-icon{font-size:40px;margin-bottom:10px;opacity:.35}
+.cv-fire{color:var(--copper);font-size:12px;font-weight:700}
 </style>
 </head>
 <body>
@@ -174,33 +505,78 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
   <div class="hdr-l">
     <div class="dot" style="background:var(--copper);box-shadow:0 0 10px var(--copper-glow)"></div>
     <h1 style="letter-spacing:-.02em">Copperline</h1>
-    <span class="tag">Outreach Dashboard</span>
+    <span class="tag">Operations Hub</span>
   </div>
   <div class="hdr-r">
+    <span id="mc-svc-status" class="svc-pill svc-unknown" title="Missed Call Service">● Service</span>
     <button class="btn btn-ghost" onclick="loadAll()">↻ Refresh</button>
   </div>
 </header>
 
 <div style="height:2px;background:var(--copper);opacity:.7"></div>
+
+<!-- App Navigation -->
+<nav class="app-nav">
+  <div class="nav-tab active" data-page="outreach" onclick="switchPage('outreach',this)">📤 Outreach</div>
+  <div class="nav-tab" data-page="followup" onclick="switchPage('followup',this)" id="nav-followup">🔁 Follow-Up</div>
+  <div class="nav-tab" data-page="social" onclick="switchPage('social',this)" id="nav-social">📲 Social</div>
+  <div class="nav-tab" data-page="sprint" onclick="switchPage('sprint',this)" id="nav-sprint">⚡ Sprint</div>
+  <div class="nav-tab" data-page="conversations" onclick="switchPage('conversations',this)" id="nav-conversations">💬 Conversations</div>
+  <div class="nav-tab" data-page="cities" onclick="switchPage('cities',this)">🗺 Territory</div>
+  <div class="nav-tab" data-page="health" onclick="switchPage('health',this)" id="nav-health">🩺 Health</div>
+  <div class="nav-tab" data-page="exceptions" onclick="switchPage('exceptions',this)" id="nav-exceptions">⚠ Exceptions</div>
+  <div class="nav-tab" data-page="mc-clients" onclick="switchPage('mc-clients',this)">📞 Clients</div>
+  <div class="nav-tab" data-page="mc-new" onclick="switchPage('mc-new',this)">＋ New Client</div>
+  <div class="nav-tab" data-page="mc-reports" onclick="switchPage('mc-reports',this)">📊 Reports</div>
+  <div class="nav-tab" data-page="searches" onclick="switchPage('searches',this)">🔍 Searches</div>
+</nav>
+
+<!-- ══════════════ PAGE: OUTREACH ══════════════ -->
+<div class="page active" id="page-outreach">
+
 <div class="stats">
   <div class="stat"><div class="stat-n blue" id="s-prospects">—</div><div class="stat-lbl">Prospects</div></div>
   <div class="stat"><div class="stat-n blue" id="s-drafted">—</div><div class="stat-lbl">Drafted</div></div>
   <div class="stat"><div class="stat-n amber" id="s-pending">—</div><div class="stat-lbl">Pending</div></div>
   <div class="stat"><div class="stat-n green" id="s-approved">—</div><div class="stat-lbl">Approved</div></div>
   <div class="stat"><div class="stat-n grey" id="s-sent">—</div><div class="stat-lbl">Sent</div></div>
+  <div class="stat" style="cursor:pointer" onclick="setFilter('replied',document.querySelector('[data-filter=replied]'))" title="Click to view replies">
+    <div class="stat-n" id="s-replied" style="color:var(--copper)">—</div>
+    <div class="stat-lbl" style="display:flex;align-items:center;gap:5px">
+      Replied
+      <span id="reply-pulse" style="display:none;width:7px;height:7px;border-radius:50%;background:var(--copper);box-shadow:0 0 8px var(--copper-glow);animation:pulse 1.4s ease-in-out infinite"></span>
+    </div>
+  </div>
+  <div class="stat" style="cursor:pointer" onclick="setFilter('stale',document.querySelector('[data-filter=stale]'))" title="Drafts with outdated copy — regenerate before sending">
+    <div class="stat-n" id="s-stale" style="color:var(--amber)">—</div>
+    <div class="stat-lbl">Stale Copy</div>
+  </div>
 </div>
 
 <div class="discover-bar">
   <div class="discover-inner">
     <span class="discover-label">🔍 New Leads</span>
     <select id="d-industry" class="d-input"><option value="">Loading…</option></select>
-    <input id="d-city" class="d-input" type="text" placeholder="City" value="Rockford">
-    <input id="d-state" class="d-input d-state" type="text" placeholder="ST" value="IL" maxlength="2">
+    <div class="city-ac-wrap" style="display:inline-block">
+      <input id="d-city" class="d-input" type="text" placeholder="City" value="Rockford"
+             autocomplete="off" oninput="cityAcInput('d')" onfocus="cityAcInput('d')" onkeydown="cityAcKey(event,'d')"
+             onblur="cityAcCloseDelay('d')">
+      <div class="city-ac-list" id="d-city-ac">
+        <div class="city-ac-filters">
+          <span class="caf active" data-acf="d-all"    onclick="cityAcSetFilter('d','all',this)">All</span>
+          <span class="caf"        data-acf="d-due"    onclick="cityAcSetFilter('d','due',this)" style="color:var(--amber)">⚠ Due</span>
+          <span class="caf"        data-acf="d-never"  onclick="cityAcSetFilter('d','never',this)">● Never</span>
+          <span class="caf"        data-acf="d-nearby" onclick="cityAcSetFilter('d','nearby',this)">📍 Nearby</span>
+        </div>
+        <div id="d-city-ac-items"></div>
+      </div>
+    </div>
+    <input id="d-state" class="d-input d-state" type="text" placeholder="ST" value="IL" maxlength="2"
+           oninput="cityAcInput('d')">
     <input id="d-limit" class="d-input d-num" type="number" value="20" min="1" max="60">
     <button id="btnDiscover" class="btn btn-primary" onclick="discoverLeads()"><span class="spin"></span>⚡ Discover + Draft</button>
     <button id="btnTestKey" class="btn btn-ghost" onclick="testApiKey()">🔑 Test Key</button>
     <button id="btnFollowup" class="btn btn-ghost" onclick="runFollowups()"><span class="spin"></span>🔁 Follow-Ups</button>
-    <button id="btnExtract" class="btn btn-ghost" onclick="extractEmails()"><span class="spin"></span>📧 Find Emails</button>
   </div>
   <div id="api-key-notice" class="api-notice" style="display:none">
     ⚠️ <strong>GOOGLE_PLACES_API_KEY not set.</strong> Add it to Launch Dashboard.bat
@@ -210,11 +586,13 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
 <div class="toolbar">
   <div class="toolbar-l">
     <div class="filter-tabs">
-      <div class="ftab active" data-filter="all" onclick="setFilter('all',this)">All</div>
+      <div class="ftab active" data-filter="active" onclick="setFilter('active',this)" title="Unsent leads that need action — default view">⚡ Active</div>
+      <div class="ftab" data-filter="all" onclick="setFilter('all',this)">All</div>
       <div class="ftab" data-filter="pending" onclick="setFilter('pending',this)">Pending</div>
       <div class="ftab" data-filter="approved" onclick="setFilter('approved',this)">Approved</div>
       <div class="ftab" data-filter="sent" onclick="setFilter('sent',this)">Sent</div>
-      <div class="ftab" data-filter="has_email" onclick="setFilter('has_email',this)">Has Email</div>
+      <div class="ftab" data-filter="replied" onclick="setFilter('replied',this)" style="color:var(--copper)">★ Replied</div>
+      <div class="ftab" data-filter="stale" onclick="setFilter('stale',this)" style="color:var(--amber)" title="Rows with old copy — regenerate before sending">⚠ Stale</div>
       <div class="ftab" data-filter="no_email" onclick="setFilter('no_email',this)">No Email</div>
       <div class="ftab" data-filter="high_score" onclick="setFilter('high_score',this)">High Score</div>
     </div>
@@ -223,13 +601,15 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
   </div>
   <div class="toolbar-r">
     <select class="sort-select" id="sortSelect" onchange="renderTable()">
+      <option value="opp_desc">Opp Score ↓</option>
       <option value="default">Sort: Default</option>
-      <option value="score_desc">Score ↓</option>
-      <option value="score_asc">Score ↑</option>
+      <option value="score_desc">Fit Score ↓</option>
+      <option value="score_asc">Fit Score ↑</option>
       <option value="name_asc">Name A–Z</option>
       <option value="name_desc">Name Z–A</option>
     </select>
     <button class="btn btn-ghost" onclick="approveAll()">✓ Approve All</button>
+    <button id="btnCheckReplies" class="btn btn-ghost" onclick="checkReplies()" title="Poll Gmail inbox for replies to sent emails"><span class="spin"></span>★ Check Replies</button>
     <button id="btnSendDry" class="btn btn-ghost" onclick="sendDryRun()"><span class="spin"></span>Preview Send</button>
     <button id="btnSendLive" class="btn btn-success" onclick="confirmSend()"><span class="spin"></span>▶ Send Approved</button>
   </div>
@@ -250,9 +630,10 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
         <tr>
           <th class="td-chk"><input type="checkbox" id="chk-all" onchange="toggleCheckAll(this)"></th>
           <th class="td-biz">Business</th>
-          <th class="td-email">Email</th>
+          <th class="td-email">Email / Channels</th>
           <th class="td-subject">Subject</th>
-          <th class="td-score">Score</th>
+          <th class="td-score">Fit</th>
+          <th style="width:90px;white-space:nowrap">Opp</th>
           <th class="td-status">Status</th>
           <th class="td-actions">Actions</th>
         </tr>
@@ -265,6 +646,218 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
       <p>Use <strong>Discover + Draft</strong> to find local service businesses and generate outreach emails</p>
     </div>
   </div>
+</div>
+
+<!-- END PAGE: OUTREACH -->
+</div>
+
+<!-- ══════════════ PAGE: SOCIAL OUTREACH ══════════════ -->
+<div class="page" id="page-social">
+<div class="sq-wrap">
+  <div class="sq-hdr">
+    <div>
+      <h2>📲 Social Outreach Queue</h2>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Leads without email — reach via Facebook, Instagram, or contact form</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span id="sq-count-badge" class="tag">—</span>
+      <button class="btn btn-ghost" onclick="socialLoad()">↻ Refresh</button>
+    </div>
+  </div>
+  <div class="sq-filters" id="sq-filters">
+    <span class="ftab active" data-sqf="all"      onclick="sqSetFilter('all',this)">All</span>
+    <span class="ftab"        data-sqf="facebook"  onclick="sqSetFilter('facebook',this)">f Facebook</span>
+    <span class="ftab"        data-sqf="instagram" onclick="sqSetFilter('instagram',this)">◎ Instagram</span>
+    <span class="ftab"        data-sqf="form"      onclick="sqSetFilter('form',this)">⊟ Contact Form</span>
+    <span class="ftab"        data-sqf="unsent"    onclick="sqSetFilter('unsent',this)">● Not Yet Sent</span>
+  </div>
+  <div id="sq-container">
+    <div class="sq-empty"><div class="sq-empty-icon">📭</div><p>Loading…</p></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ PAGE: SEND SPRINT ══════════════ -->
+<div class="page" id="page-sprint">
+<div class="sprint-wrap">
+  <div class="sprint-hdr">
+    <h2>⚡ Send Sprint</h2>
+    <p>Process leads one at a time — fast outreach mode</p>
+  </div>
+  <div class="sprint-channel-bar">
+    <button class="sprint-filter-btn active" data-spf="any"          onclick="spSetFilter('any',this)">All Channels</button>
+    <button class="sprint-filter-btn"        data-spf="email"        onclick="spSetFilter('email',this)">✉ Email</button>
+    <button class="sprint-filter-btn"        data-spf="social"       onclick="spSetFilter('social',this)">💬 Social DM</button>
+    <button class="sprint-filter-btn"        data-spf="form"         onclick="spSetFilter('form',this)">⊟ Contact Form</button>
+  </div>
+  <div class="sprint-progress"><div class="sprint-progress-fill" id="sprint-progress-fill" style="width:0%"></div></div>
+  <div id="sprint-container" style="margin-top:0">
+    <div class="sprint-empty"><div class="sprint-empty-icon">⚡</div><p>Loading sprint queue…</p></div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ PAGE: CONVERSATIONS ══════════════ -->
+<div class="page" id="page-conversations">
+<div class="cv-wrap">
+  <div class="cv-hdr">
+    <div>
+      <h2>💬 Conversations</h2>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Leads that have replied — manage the conversation</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" onclick="convLoad()">↻ Refresh</button>
+    </div>
+  </div>
+  <div class="cv-grid">
+    <div class="cv-list" id="cv-list">
+      <div class="cv-empty"><div class="cv-empty-icon">💬</div><p>Loading…</p></div>
+    </div>
+    <div class="cv-panel" id="cv-panel">
+      <div class="cv-empty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center">
+        <div class="cv-empty-icon">←</div>
+        <p>Select a conversation</p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="page" id="page-mc-clients">
+<div class="mc-wrap">
+  <div class="mc-section-hdr">
+    <h2>📞 Missed Call Clients</h2>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span id="mc-health-detail" class="mc-muted"></span>
+      <button class="btn btn-primary" onclick="switchPage('mc-new',document.querySelector('[data-page=mc-new]'))">＋ New Client</button>
+    </div>
+  </div>
+  <div id="mc-clients-container">
+    <div class="mc-muted">Loading clients…</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ PAGE: MC LEADS ══════════════ (shown by JS navigation) -->
+<div class="page" id="page-mc-leads">
+<div class="mc-wrap">
+  <div class="mc-section-hdr">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="btn btn-ghost" onclick="switchPage('mc-clients',document.querySelector('[data-page=mc-clients]'))">← Back</button>
+      <h2 id="mc-leads-title">Leads</h2>
+    </div>
+    <span id="mc-leads-count" class="tag"></span>
+  </div>
+  <div class="leads-filter-bar">
+    <label>Date (YYYY-MM-DD)</label>
+    <input type="text" id="mc-leads-date" class="form-input" style="width:140px" placeholder="2025-06-01" oninput="mcLoadLeads()">
+    <label>Caller</label>
+    <input type="text" id="mc-leads-caller" class="form-input" style="width:140px" placeholder="+1815…" oninput="mcLoadLeads()">
+    <button class="btn btn-ghost" onclick="mcClearFilters()">Clear</button>
+  </div>
+  <div id="mc-leads-container">
+    <div class="mc-muted">Select a client to view leads.</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ PAGE: MC NEW CLIENT ══════════════ -->
+<div class="page" id="page-mc-new">
+<div class="mc-wrap" style="max-width:680px">
+  <div class="mc-section-hdr">
+    <h2>＋ Onboard New Client</h2>
+  </div>
+  <div class="mc-card">
+    <div class="mc-card-hdr"><span>Client Details</span></div>
+    <div class="mc-card-body">
+      <div id="mc-form-errors" style="display:none"></div>
+      <div id="mc-form-success" style="display:none"></div>
+      <div class="mc-form">
+        <div class="form-group">
+          <label>Client ID <span class="opt">(unique slug)</span></label>
+          <input type="text" id="f-client_id" class="form-input" placeholder="rockford_pro_plumbing">
+          <span class="form-hint">Lowercase, underscores only. e.g. smith_hvac</span>
+        </div>
+        <div class="form-group">
+          <label>Business Name</label>
+          <input type="text" id="f-business_name" class="form-input" placeholder="Rockford Pro Plumbing">
+        </div>
+        <div class="form-group">
+          <label>Owner Phone</label>
+          <input type="text" id="f-owner_phone" class="form-input" placeholder="+18155550100">
+        </div>
+        <div class="form-group">
+          <label>Owner Email <span class="opt">(optional)</span></label>
+          <input type="email" id="f-owner_email" class="form-input" placeholder="owner@business.com">
+        </div>
+        <div class="form-group">
+          <label>Twilio Number</label>
+          <input type="text" id="f-twilio_number" class="form-input" placeholder="+18005550101">
+        </div>
+        <div class="form-group">
+          <label>Google Sheet ID <span class="opt">(optional)</span></label>
+          <input type="text" id="f-spreadsheet_id" class="form-input" placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms">
+          <span class="form-hint">The long ID from the Sheet URL. Paste after /d/</span>
+        </div>
+        <div class="form-group">
+          <label>Sheet Tab Name <span class="opt">(optional)</span></label>
+          <input type="text" id="f-sheet_name" class="form-input" placeholder="Leads">
+          <span class="form-hint">Leave blank to use client_id</span>
+        </div>
+        <div class="form-group">
+          <label>Notify Via</label>
+          <select id="f-notification_channel" class="form-select">
+            <option value="sms">SMS</option>
+            <option value="email">Email</option>
+            <option value="both">Both</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label>Auto-SMS Message <span class="opt">(sent to caller immediately)</span></label>
+          <textarea id="f-auto_sms_message" class="form-textarea" placeholder="Hi! Sorry we missed your call at [Business]. How can we help? Reply here and we'll get right back to you."></textarea>
+        </div>
+        <div class="form-group full">
+          <label>Acknowledgment SMS <span class="opt">(optional reply after lead logs)</span></label>
+          <textarea id="f-ack_sms_message" class="form-textarea" placeholder="Thanks for reaching out! We'll have someone contact you shortly."></textarea>
+        </div>
+      </div>
+      <div style="margin-top:18px;display:flex;gap:10px">
+        <button class="btn btn-primary" onclick="mcSubmitNewClient()">✓ Save &amp; Onboard</button>
+        <button class="btn btn-ghost" onclick="mcResetForm()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="mc-card" style="margin-top:8px">
+    <div class="mc-card-hdr"><span>Next Steps After Saving</span></div>
+    <div class="mc-card-body" style="color:var(--muted);font-size:13px;line-height:1.9">
+      <ol style="padding-left:20px">
+        <li>Share Google Sheet with service account email from <code>.env</code></li>
+        <li>Buy/assign a Twilio number in the Twilio console</li>
+        <li>Set Twilio webhook → <code>POST https://your-domain/incoming_call</code></li>
+        <li>Set Twilio SMS webhook → <code>POST https://your-domain/incoming_sms</code></li>
+        <li>Restart the <code>missed_call_product/app.py</code> server to pick up the new client</li>
+        <li>Send a test SMS from the Clients tab to confirm</li>
+      </ol>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ PAGE: MC REPORTS ══════════════ -->
+<div class="page" id="page-mc-reports">
+<div class="mc-wrap">
+  <div class="mc-section-hdr">
+    <h2>📊 Reports</h2>
+    <span class="tag">Coming Soon</span>
+  </div>
+  <div id="mc-reports-container">
+    <div class="stub-card">
+      <h3>Monthly Lead Reports</h3>
+      <p>Per-client summaries — total calls captured, reply rate, lead-to-contact time — will appear here once the reporting module is built. In the meantime, view live leads from the Clients tab.</p>
+    </div>
+  </div>
+  <div id="mc-reports-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:20px"></div>
+</div>
 </div>
 
 <!-- REVIEW PANEL -->
@@ -305,7 +898,20 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
         <div class="panel-score-row">
           <div class="score-chip sc-3" id="panel-score-chip">—</div>
           <div class="panel-reason" id="panel-reason"></div>
+          <span id="panel-opp-badge" style="margin-left:auto"></span>
         </div>
+      </div>
+      <!-- AI Insight section — shown when lead_insight_sentence exists -->
+      <div class="panel-section" id="panel-insight-section" style="display:none">
+        <div class="panel-label">💡 AI Insight</div>
+        <div id="panel-insight-signals" style="font-size:10px;color:var(--muted);margin-bottom:4px"></div>
+        <div id="panel-insight-text" class="sq-insight"></div>
+      </div>
+      <!-- Social channels section — shown when social data exists -->
+      <div class="panel-section" id="panel-social-section" style="display:none">
+        <div class="panel-label">Outreach Channels</div>
+        <div id="panel-channels-wrap" class="ch-wrap"></div>
+        <div id="panel-social-drafts"></div>
       </div>
     </div>
     <div class="panel-footer">
@@ -316,6 +922,120 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
       <button class="btn btn-danger" onclick="panelDelete()">Delete</button>
     </div>
   </div>
+</div>
+
+<!-- ══════════════ PAGE: FOLLOW-UP QUEUE ══════════════ -->
+<div class="page" id="page-followup">
+<div class="fq-wrap">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+    <div style="display:flex;align-items:center;gap:12px">
+      <h2 style="font-size:16px;font-weight:600">🔁 Follow-Up Queue</h2>
+      <span id="fq-total-badge" class="tag"></span>
+    </div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap">
+      <button class="btn btn-ghost" onclick="fqLoad()">↻ Refresh</button>
+    </div>
+  </div>
+  <div id="fq-container">
+    <div class="fq-empty">Loading…</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ PAGE: CITIES / TERRITORY ══════════════ -->
+<div class="page" id="page-cities">
+<div class="mc-wrap">
+
+  <!-- Header + summary stats -->
+  <div class="tp-header">
+    <div>
+      <h2 style="font-size:16px;font-weight:600">🗺 Territory Planner</h2>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">City × Industry coverage command center</div>
+    </div>
+    <div class="tp-summary">
+      <div class="tp-stat"><div class="tp-stat-n blue" id="tp-stat-cities">—</div><div class="tp-stat-l">Cities</div></div>
+      <div class="tp-stat"><div class="tp-stat-n" style="color:var(--red)" id="tp-stat-uncovered">—</div><div class="tp-stat-l">Uncovered</div></div>
+      <div class="tp-stat"><div class="tp-stat-n amber" id="tp-stat-due">—</div><div class="tp-stat-l">Due</div></div>
+      <div class="tp-stat"><div class="tp-stat-n green" id="tp-stat-leads">—</div><div class="tp-stat-l">Total Leads</div></div>
+    </div>
+  </div>
+
+  <!-- Add city + filter bar -->
+  <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+    <div>
+      <div class="panel-label" style="margin-bottom:3px">Add City</div>
+      <div class="city-ac-wrap" style="display:inline-block">
+        <input type="text" id="cp-city" class="form-input" style="width:160px" placeholder="City name"
+               autocomplete="off" oninput="cityAcInput('cp')" onfocus="cityAcInput('cp')"
+               onkeydown="cityAcKey(event,'cp')" onblur="cityAcCloseDelay('cp')">
+        <div class="city-ac-list" id="cp-city-ac">
+          <div class="city-ac-filters">
+            <span class="caf active" onclick="cityAcSetFilter('cp','all',this)">All</span>
+            <span class="caf" onclick="cityAcSetFilter('cp','due',this)" style="color:var(--amber)">⚠ Due</span>
+            <span class="caf" onclick="cityAcSetFilter('cp','never',this)">● Never</span>
+            <span class="caf" onclick="cityAcSetFilter('cp','nearby',this)">📍 Nearby</span>
+          </div>
+          <div id="cp-city-ac-items"></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="panel-label" style="margin-bottom:3px">State</div>
+      <input type="text" id="cp-state" class="form-input" style="width:55px" placeholder="IL" maxlength="2">
+    </div>
+    <button class="btn btn-primary" onclick="tpAddCity()" style="height:34px">＋ Add City</button>
+    <div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
+      <span class="ftab active" data-tpf="all"    onclick="tpSetFilter('all',this)">All</span>
+      <span class="ftab" data-tpf="due"    onclick="tpSetFilter('due',this)" style="color:var(--amber)">⚠ Due</span>
+      <span class="ftab" data-tpf="active" onclick="tpSetFilter('active',this)" style="color:var(--blue)">▶ Active</span>
+      <span class="ftab" data-tpf="open"   onclick="tpSetFilter('open',this)">● Has Gaps</span>
+      <input type="text" id="tp-search" class="tp-search" placeholder="Search city…" oninput="tpRender()">
+    </div>
+  </div>
+
+  <!-- Cards container -->
+  <div class="tp-cards" id="tp-cards">
+    <div class="tp-empty"><div class="tp-empty-icon">🗺</div><div>Loading territory…</div></div>
+  </div>
+
+  <div class="mc-muted" style="margin-top:14px;font-size:11px;line-height:1.7">
+    💡 Each city shows coverage across <strong id="tp-ind-count">10</strong> target industries.
+    Run industries directly from the card — no need to switch to Outreach.
+    Cities sort by most uncovered industries first.
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ PAGE: SEARCHES ══════════════ -->
+<div class="page" id="page-searches">
+<div class="mc-wrap">
+  <div class="mc-section-hdr">
+    <h2>🔍 Search History</h2>
+    <span class="mc-muted" style="font-size:12px">Every Discover run is logged here automatically</span>
+  </div>
+  <div class="mc-card" style="padding:0">
+    <table class="mc-table" id="search-history-table">
+      <thead>
+        <tr>
+          <th>Date / Time</th>
+          <th>City</th>
+          <th>State</th>
+          <th>Industry</th>
+          <th style="text-align:center">New Found</th>
+          <th style="text-align:center">Status</th>
+        </tr>
+      </thead>
+      <tbody id="search-history-tbody">
+        <tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="mc-muted" style="margin-top:12px;font-size:11px;line-height:1.6">
+    💡 <strong>Tip:</strong> Google Places returns up to 20 results per search, biased toward popular businesses.
+    For a metro area like Chicago, search individual neighborhoods (Wicker Park, Pilsen, Oak Park, Evanston)
+    to surface smaller owner-operated shops that don't appear in a city-wide search.
+  </div>
+</div>
 </div>
 
 <!-- SEND MODAL -->
@@ -330,15 +1050,62 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
   </div>
 </div>
 
+<!-- DEMO RESULT MODAL -->
+<div class="demo-modal-overlay" id="demo-modal-overlay" onclick="if(event.target===this)closeDemoModal()">
+  <div class="demo-modal">
+    <h3>🎬 Demo Test Complete</h3>
+    <div class="demo-biz" id="demo-modal-biz"></div>
+    <div id="demo-modal-steps"></div>
+    <div style="margin-top:18px;display:flex;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeDemoModal()">Close</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
+
+<!-- ══════════════ PAGE: HEALTH ══════════════ -->
+<div class="page" id="page-health">
+<style>
+.ops-wrap{max-width:1000px;margin:0 auto;padding:24px}
+.ops-section-hdr{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.ops-stat-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:4px}
+.ops-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:14px 20px;min-width:110px;text-align:center}
+.ops-stat-n{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1}
+.ops-stat-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+.ops-notice{padding:10px 14px;border-radius:var(--rs);font-size:12px;margin-top:8px}
+.ops-notice-green{background:var(--green-bg);color:var(--green);border:1px solid rgba(62,207,114,.25)}
+.ops-notice-amber{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(245,166,35,.25)}
+.ops-notice-red{background:var(--red-bg);color:var(--red);border:1px solid rgba(245,101,101,.25)}
+.ops-table{width:100%;border-collapse:collapse;font-size:13px;background:var(--surface);border-radius:var(--rs);overflow:hidden}
+.ops-table th{background:var(--surface2);color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:9px 14px;text-align:left;border-bottom:1px solid var(--border)}
+.ops-table td{padding:10px 14px;border-bottom:1px solid var(--border)}
+.ops-table tr:last-child td{border-bottom:none}
+.ops-table tr:hover td{background:rgba(255,255,255,.02)}
+.ops-loading{padding:60px;text-align:center;color:var(--muted);font-size:13px}
+.ops-error{padding:20px;color:var(--red);font-size:13px;background:var(--red-bg);border-radius:var(--rs)}
+.ex-counts{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:4px}
+.ex-count-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:12px 18px;min-width:130px;text-align:center}
+.ex-count-n{font-family:var(--mono);font-size:20px;font-weight:700;line-height:1}
+.ex-count-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+.ex-flag{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;border:1px solid;margin:1px 2px;background:rgba(0,0,0,.15)}
+</style>
+<div class="ops-wrap"><div id="health-body"><div class="ops-loading">Click the 🩺 Health tab to load.</div></div></div>
+</div>
+
+<!-- ══════════════ PAGE: EXCEPTIONS ══════════════ -->
+<div class="page" id="page-exceptions">
+<div class="ops-wrap"><div id="exceptions-body"><div class="ops-loading">Click the ⚠ Exceptions tab to load.</div></div></div>
+</div>
 
 <script>
 'use strict';
 let allRows = [];
 let filteredRows = [];
-let currentFilter = 'all';
+let currentFilter = 'active';
 let panelIdx = -1;
 let panelSaveTimer = null;
+let status_draft_version = '';
 
 async function api(path, body) {
   const opts = body !== undefined
@@ -349,17 +1116,26 @@ async function api(path, body) {
 }
 
 async function loadAll() {
-  const [status, queue] = await Promise.all([api('/api/status'), api('/api/queue')]);
-  document.getElementById('s-prospects').textContent = status.prospects_loaded ?? '—';
-  document.getElementById('s-drafted').textContent   = status.total_drafted ?? '—';
-  document.getElementById('s-pending').textContent   = status.pending_approval ?? '—';
-  document.getElementById('s-approved').textContent  = status.approved_unsent ?? '—';
-  document.getElementById('s-sent').textContent      = status.sent ?? '—';
-  allRows = queue;
-  renderTable();
-  if (panelIdx >= 0 && document.getElementById('panel-overlay').classList.contains('open')) {
-    const row = filteredRows[panelIdx];
-    if (row) fillPanel(row, panelIdx);
+  try {
+    const [status, queue] = await Promise.all([api('/api/status'), api('/api/queue')]);
+    document.getElementById('s-prospects').textContent = status.prospects_loaded ?? '—';
+    document.getElementById('s-drafted').textContent   = status.total_drafted ?? '—';
+    document.getElementById('s-pending').textContent   = status.pending_approval ?? '—';
+    document.getElementById('s-approved').textContent  = status.approved_unsent ?? '—';
+    document.getElementById('s-sent').textContent      = status.sent ?? '—';
+    _updateRepliedStat(status.replied ?? 0);
+    document.getElementById('s-stale').textContent = status.stale_drafts ?? '—';
+    status_draft_version = status.current_draft_version ?? '';
+    allRows = Array.isArray(queue) ? queue : [];
+    if (!Array.isArray(queue)) console.error('Queue API returned non-array:', queue);
+    renderTable();
+    if (panelIdx >= 0 && document.getElementById('panel-overlay').classList.contains('open')) {
+      const row = filteredRows[panelIdx];
+      if (row) fillPanel(row, panelIdx);
+    }
+  } catch(err) {
+    console.error('loadAll failed:', err);
+    toast('Failed to load queue — check server is running', 'err');
   }
 }
 
@@ -370,16 +1146,30 @@ async function loadStats() {
   document.getElementById('s-pending').textContent   = s.pending_approval ?? '—';
   document.getElementById('s-approved').textContent  = s.approved_unsent ?? '—';
   document.getElementById('s-sent').textContent      = s.sent ?? '—';
+  _updateRepliedStat(s.replied ?? 0);
+  document.getElementById('s-stale').textContent = s.stale_drafts ?? '—';
+}
+
+function _updateRepliedStat(count) {
+  document.getElementById('s-replied').textContent = count;
+  const pulse = document.getElementById('reply-pulse');
+  if (pulse) pulse.style.display = count > 0 ? 'inline-block' : 'none';
 }
 
 function applyFiltersAndSort() {
+  const _TERMINAL = new Set(['replied','not_interested','bad_lead','no_contact_route','closed']);
   let rows = [...allRows];
   const q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
   const sort = document.getElementById('sortSelect').value;
 
-  if (currentFilter === 'pending')    rows = rows.filter(r => r.approved !== 'true' && !r.sent_at);
-  else if (currentFilter === 'approved') rows = rows.filter(r => r.approved === 'true' && !r.sent_at);
-  else if (currentFilter === 'sent')  rows = rows.filter(r => !!r.sent_at);
+  if (currentFilter === 'active') {
+    // Default view: unsent leads that aren't in a terminal state — the actionable inbox
+    rows = rows.filter(r => !r.sent_at && !_TERMINAL.has(r.contact_result || ''));
+  } else if (currentFilter === 'pending')  rows = rows.filter(r => r.approved !== 'true' && !r.sent_at);
+  else if (currentFilter === 'approved')   rows = rows.filter(r => r.approved === 'true' && !r.sent_at);
+  else if (currentFilter === 'sent')       rows = rows.filter(r => !!r.sent_at);
+  else if (currentFilter === 'replied')    rows = rows.filter(r => r.replied === 'true');
+  else if (currentFilter === 'stale')      rows = rows.filter(r => !r.sent_at && r.draft_version !== status_draft_version);
   else if (currentFilter === 'has_email')  rows = rows.filter(r => r.to_email && r.to_email.includes('@'));
   else if (currentFilter === 'no_email')   rows = rows.filter(r => !r.to_email || !r.to_email.includes('@'));
   else if (currentFilter === 'high_score') rows = rows.filter(r => parseInt(r.final_priority_score) >= 4);
@@ -389,10 +1179,18 @@ function applyFiltersAndSort() {
     (r.city||'').toLowerCase().includes(q) ||
     (r.subject||'').toLowerCase().includes(q));
 
-  if (sort === 'score_desc') rows.sort((a,b) => (parseInt(b.final_priority_score)||0)-(parseInt(a.final_priority_score)||0));
-  else if (sort === 'score_asc') rows.sort((a,b) => (parseInt(a.final_priority_score)||0)-(parseInt(b.final_priority_score)||0));
-  else if (sort === 'name_asc') rows.sort((a,b) => (a.business_name||'').localeCompare(b.business_name||''));
-  else if (sort === 'name_desc') rows.sort((a,b) => (b.business_name||'').localeCompare(a.business_name||''));
+  if (sort === 'opp_desc')   rows.sort((a,b) => (b.opp_score||parseInt(b.opportunity_score)||0) - (a.opp_score||parseInt(a.opportunity_score)||0));
+  else if (sort === 'score_desc') rows.sort((a,b) => (parseInt(b.final_priority_score)||0)-(parseInt(a.final_priority_score)||0));
+  else if (sort === 'score_asc')  rows.sort((a,b) => (parseInt(a.final_priority_score)||0)-(parseInt(b.final_priority_score)||0));
+  else if (sort === 'name_asc')   rows.sort((a,b) => (a.business_name||'').localeCompare(b.business_name||''));
+  else if (sort === 'name_desc')  rows.sort((a,b) => (b.business_name||'').localeCompare(a.business_name||''));
+  else {
+    // default: opp score desc
+    rows.sort((a,b) =>
+      (b.opp_score||parseInt(b.opportunity_score)||0) -
+      (a.opp_score||parseInt(a.opportunity_score)||0)
+    );
+  }
 
   filteredRows = rows;
 }
@@ -402,9 +1200,23 @@ function scoreClass(s) { return 'sc-' + Math.max(1, Math.min(5, parseInt(s)||3))
 function scoreTip(s) { const n=Math.max(1,Math.min(5,parseInt(s)||3)); return `${n} — ${SCORE_LABELS[n]||''}`; }
 
 function statusBadge(row) {
+  if (row.replied === 'true') return '<span class="badge badge-replied">★ Replied</span>';
   if (row.sent_at) return '<span class="badge badge-sent">✓ Sent</span>';
+  if (!row.sent_at && status_draft_version && row.draft_version !== status_draft_version)
+    return '<span class="badge badge-stale" title="Old copy — regenerate before sending">⚠ Stale</span>';
   if (row.approved === 'true') return '<span class="badge badge-approved">● Approved</span>';
   return '<span class="badge badge-pending">○ Pending</span>';
+}
+
+function oppScoreBadge(row) {
+  const score = parseInt(row.opp_score ?? row.opportunity_score) || 0;
+  const lbl   = row.opp_priority || (score >= 60 ? 'High' : score >= 30 ? 'Medium' : 'Low');
+  const cls   = lbl === 'High' ? 'opp-high' : lbl === 'Medium' ? 'opp-mid' : 'opp-low';
+  if (!score) return '<span style="color:var(--dim);font-size:11px">—</span>';
+  return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+    <span class="opp-badge ${cls}">${lbl}</span>
+    <span style="font-family:var(--mono);font-size:10px;color:var(--muted)">${score}</span>
+  </div>`;
 }
 
 function escHtml(s) {
@@ -424,12 +1236,16 @@ function renderTable() {
     const gi = allRows.indexOf(row);
     const sc = parseInt(row.final_priority_score) || 3;
     const sentClass = row.sent_at ? 'row-sent' : '';
+    const repliedClass = row.replied === 'true' ? 'row-replied' : '';
     const emailHtml = row.to_email
       ? `<div class="email-cell">${escHtml(row.to_email)}</div>`
       : `<div class="email-missing">no email</div>`;
+    const channelBadges = channelBadgesInline(row);
     const scanNote = row.scan_note ? `<div class="scan-note">${escHtml(row.scan_note)}</div>` : '';
     const siteLink = row.website ? `<span><a href="${escHtml(row.website)}" target="_blank">🌐 site</a></span>` : '';
     const phoneHtml = row.phone ? `<span>📞 ${escHtml(row.phone)}</span>` : '';
+    const replySnip = row.replied === 'true' && row.reply_snippet
+      ? `<div class="reply-snippet">↩ ${escHtml(row.reply_snippet.substring(0,80))}</div>` : '';
 
     const approveBtn = row.sent_at
       ? `<span style="color:var(--dim);font-size:10px">sent</span>`
@@ -437,7 +1253,7 @@ function renderTable() {
         ? `<button class="act act-unapprove" onclick="event.stopPropagation();unapproveRow(${gi})">Undo</button>`
         : `<button class="act act-approve" onclick="event.stopPropagation();approveRow(${gi})">Approve</button>`;
 
-    return `<tr class="${sentClass}" onclick="openPanel(${fi})">
+    return `<tr class="${sentClass} ${repliedClass}" onclick="openPanel(${fi})">
       <td class="td-chk" onclick="event.stopPropagation()">
         <input type="checkbox" class="row-chk" data-gi="${gi}" onchange="updateBulkBar()">
       </td>
@@ -446,9 +1262,10 @@ function renderTable() {
         <div class="biz-meta">${escHtml(row.city)}, ${escHtml(row.state)}</div>
         <div class="biz-meta" style="display:flex;gap:8px">${phoneHtml}${siteLink}</div>
       </td>
-      <td class="td-email">${emailHtml}${scanNote}</td>
-      <td class="td-subject"><div class="subj-text">${escHtml(row.subject)}</div></td>
+      <td class="td-email">${emailHtml}${channelBadges}${scanNote}</td>
+      <td class="td-subject"><div class="subj-text">${escHtml(row.subject)}</div>${replySnip}</td>
       <td class="td-score"><div class="score-chip ${scoreClass(row.final_priority_score)}" data-tip="${scoreTip(row.final_priority_score)}">${sc}</div></td>
+      <td>${oppScoreBadge(row)}</td>
       <td class="td-status">${statusBadge(row)}</td>
       <td class="td-actions" onclick="event.stopPropagation()">
         <div class="row-acts">
@@ -477,7 +1294,7 @@ function openPanel(fi) {
   document.getElementById('panel-overlay').classList.add('open');
 }
 
-function fillPanel(row, fi) {
+async function fillPanel(row, fi) {
   document.getElementById('panel-biz-title').textContent = row.business_name || 'Review';
   document.getElementById('panel-pos').textContent = `${fi+1} / ${filteredRows.length}`;
   document.getElementById('btn-prev').disabled = fi === 0;
@@ -504,16 +1321,164 @@ function fillPanel(row, fi) {
   chip.dataset.tip = scoreTip(row.final_priority_score);
   document.getElementById('panel-reason').textContent = row.scoring_reason || '';
 
+  // ── Opportunity score badge ───────────────────────────────────────────────
+  const oppEl = document.getElementById('panel-opp-badge');
+  if (oppEl) {
+    const os  = parseInt(row.opp_score ?? row.opportunity_score) || 0;
+    const opl = row.opp_priority || (os >= 60 ? 'High' : os >= 30 ? 'Medium' : 'Low');
+    const opc = opl === 'High' ? 'opp-high' : opl === 'Medium' ? 'opp-mid' : 'opp-low';
+    oppEl.innerHTML = os
+      ? `<span class="opp-badge ${opc}">${opl}</span> <span style="font-family:var(--mono);font-size:10px;color:var(--muted)">${os}</span>`
+      : '';
+  }
+
+  // ── Lead insight ──────────────────────────────────────────────────────────
+  const insightSec  = document.getElementById('panel-insight-section');
+  const insightTxt  = document.getElementById('panel-insight-text');
+  const insightSigs = document.getElementById('panel-insight-signals');
+  if (insightSec && insightTxt) {
+    const sentence = row.lead_insight_sentence || '';
+    if (sentence) {
+      insightTxt.textContent = sentence;
+      if (insightSigs) {
+        const sigs = (row.lead_insight_signals || '').split('|').filter(Boolean);
+        insightSigs.textContent = sigs.length ? 'Signals: ' + sigs.join(', ') : '';
+      }
+      insightSec.style.display = '';
+    } else {
+      insightSec.style.display = 'none';
+    }
+  }
+
+  // ── Reply display ─────────────────────────────────────────────────────────
+  let replyBox = document.getElementById('panel-reply-box');
+  if (row.replied === 'true') {
+    if (!replyBox) {
+      replyBox = document.createElement('div');
+      replyBox.id = 'panel-reply-box';
+      replyBox.className = 'panel-reply-box';
+      document.getElementById('panel-score-chip').closest('.panel-section').after(replyBox);
+    }
+    const ts = row.replied_at ? new Date(row.replied_at).toLocaleString() : '';
+    replyBox.innerHTML =
+      `<div class="reply-label">★ Reply received${ts ? ' — ' + ts : ''}</div>` +
+      `<div class="reply-body">${escHtml(row.reply_snippet || '(no preview available)')}</div>`;
+    replyBox.style.display = 'block';
+  } else {
+    if (replyBox) replyBox.style.display = 'none';
+  }
+
   const ab = document.getElementById('panel-approve-btn');
   const ub = document.getElementById('panel-unapprove-btn');
   if (row.sent_at) { ab.style.display='none'; ub.style.display='none'; }
   else if (row.approved === 'true') { ab.style.display='none'; ub.style.display=''; }
   else { ab.style.display=''; ub.style.display='none'; }
+  // ── Best-next-action + quick-log + campaign ───────────────────────────────
+  const _gi = allRows.indexOf(row);
+  await _loadPresets();
+  let _panelExtra = document.getElementById('panel-extra-sections');
+  if (!_panelExtra) {
+    _panelExtra = document.createElement('div');
+    _panelExtra.id = 'panel-extra-sections';
+    document.getElementById('panel-body').appendChild(_panelExtra);
+  }
+  _panelExtra.innerHTML =
+    '<div class="panel-section"><div class="panel-label">Quick Log</div>'
+    + _panelStatusGridHtml(row, _gi) + '</div>'
+    + '<div class="panel-section"><div class="panel-label" style="margin-bottom:2px">Best Next Action</div>'
+    + _panelBestActionHtml(row, _gi) + '</div>'
+    + '<div class="panel-section">' + _panelCampaignHtml(row) + '</div>';
+
+  // ── Social channels + DM drafts section ──────────────────────────────────
+  const socialSec   = document.getElementById('panel-social-section');
+  const chWrap      = document.getElementById('panel-channels-wrap');
+  const draftsWrap  = document.getElementById('panel-social-drafts');
+  const badges      = channelBadgesHtml(row);
+
+  if (badges) {
+    socialSec.style.display = '';
+    chWrap.innerHTML = badges;
+
+    // Build draft boxes for each available channel
+    const draftBlocks = [];
+    const _pdm = (label, text, ch, logResult) => {
+      if (!text) return '';
+      const safeText = escHtml(text);
+      const safeJs   = JSON.stringify(text);
+      return `<div class="panel-dm-box" style="margin-top:6px">
+        <div class="panel-dm-label">
+          <span>${label}</span>
+          <button class="btn-copy" onclick="panelCopyText(this,${safeJs})">Copy</button>
+        </div>
+        <div class="panel-dm-text">${safeText}</div>
+      </div>`;
+    };
+
+    if (row.facebook_dm_draft || row.social_dm_text)
+      draftBlocks.push(_pdm('f Facebook DM', row.facebook_dm_draft || row.social_dm_text));
+    if (row.instagram_dm_draft)
+      draftBlocks.push(_pdm('◎ Instagram DM', row.instagram_dm_draft));
+    if (row.contact_form_message)
+      draftBlocks.push(_pdm('⊟ Contact Form Message', row.contact_form_message));
+
+    if (draftsWrap) draftsWrap.innerHTML = draftBlocks.join('');
+  } else {
+    socialSec.style.display = 'none';
+  }
+}
+
+function panelCopyText(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => toast('Copy failed — select text manually', 'err'));
 }
 
 function closePanel() { document.getElementById('panel-overlay').classList.remove('open'); panelIdx = -1; }
 function closePanelOnOverlay(e) { if (e.target===document.getElementById('panel-overlay')) closePanel(); }
 function navigatePanel(dir) { const n=panelIdx+dir; if(n>=0&&n<filteredRows.length) openPanel(n); }
+
+// ── Social channel badge helpers ──────────────────────────────────────────────
+function channelBadgesHtml(row) {
+  const parts = [];
+  if (row.to_email && row.to_email.includes('@'))
+    parts.push(`<span class="ch-badge ch-email" title="Email found — use outreach queue">✉ Email</span>`);
+  if (row.facebook_url)
+    parts.push(`<a class="ch-badge ch-fb" href="${escHtml(row.facebook_url)}" target="_blank" title="Open Facebook page">f Facebook</a>`);
+  if (row.instagram_url)
+    parts.push(`<a class="ch-badge ch-ig" href="${escHtml(row.instagram_url)}" target="_blank" title="Open Instagram profile">◎ Instagram</a>`);
+  if (row.contact_form_url)
+    parts.push(`<a class="ch-badge ch-form" href="${escHtml(row.contact_form_url)}" target="_blank" title="Open contact form">⊟ Form</a>`);
+  if (!parts.length)
+    parts.push(`<span class="ch-badge ch-none">No channel found</span>`);
+  return parts.join('');
+}
+
+// Render channel badges inline in the email column of the queue table
+function channelBadgesInline(row) {
+  const parts = [];
+  if (row.to_email && row.to_email.includes('@'))
+    parts.push(`<span class="ch-badge ch-email" style="font-size:9px;padding:1px 5px">✉</span>`);
+  if (row.facebook_url)
+    parts.push(`<a class="ch-badge ch-fb" href="${escHtml(row.facebook_url)}" target="_blank"
+      onclick="event.stopPropagation()" style="font-size:9px;padding:1px 5px" title="Facebook">f</a>`);
+  if (row.instagram_url)
+    parts.push(`<a class="ch-badge ch-ig" href="${escHtml(row.instagram_url)}" target="_blank"
+      onclick="event.stopPropagation()" style="font-size:9px;padding:1px 5px" title="Instagram">◎</a>`);
+  if (row.contact_form_url)
+    parts.push(`<a class="ch-badge ch-form" href="${escHtml(row.contact_form_url)}" target="_blank"
+      onclick="event.stopPropagation()" style="font-size:9px;padding:1px 5px" title="Contact form">⊟</a>`);
+  return parts.length ? `<div class="ch-wrap" style="margin-top:2px">${parts.join('')}</div>` : '';
+}
+
+function panelCopyDm(btn) {
+  const text = document.getElementById('panel-dm-text')?.textContent || '';
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => toast('Copy failed — select text manually', 'err'));
+}
 
 function panelFieldChanged(field, value) {
   const row = filteredRows[panelIdx];
@@ -671,11 +1636,142 @@ async function discoverLeads() {
   toast(`Searching ${industry} in ${city}, ${state}…`,'info');
   try {
     const res = await api('/api/discover',{industry,city,state,limit});
-    if (res.ok) { await loadAll(); toast(`Found ${res.found} new — ${res.total_queue} total in queue`,'ok'); document.getElementById('api-key-notice').style.display='none'; }
-    else { if (res.error?.includes('GOOGLE_PLACES_API_KEY')) document.getElementById('api-key-notice').style.display='block'; toast('Discover error: '+res.error,'err'); }
+    if (res.ok) {
+      await loadAll();
+      toast(`Found ${res.found} new — ${res.total_queue} total in queue`,'ok');
+      document.getElementById('api-key-notice').style.display='none';
+      // Refresh search history if that tab is open
+      if (document.getElementById('page-searches')?.classList.contains('active')) loadSearchHistory();
+      // Always refresh Cities data (record_discovery is called server-side on every run)
+      if (document.getElementById('page-cities')?.classList.contains('active')) tpLoad();
+      else { /* pre-fetch silently so Cities tab shows fresh data on next visit */
+        fetch('/api/territory').then(r=>r.json()).then(d=>{ _tpData = d.cities||[]; _tpIndustries = d.industries||[]; _tpUpdateStats(); }).catch(()=>{}); }
+    }
+    else {
+      if (res.error?.includes('GOOGLE_PLACES_API_KEY')) document.getElementById('api-key-notice').style.display='block';
+      toast('Discover error: '+res.error,'err');
+    }
   } catch(e) { toast('Connection error','err'); }
   btn.classList.remove('loading'); btn.disabled=false;
 }
+
+// ── City Autocomplete ─────────────────────────────────────────────────────────
+// Shared state for two instances: 'd' (discover bar) and 'cp' (city planner add form)
+const _acState = {
+  d:  { filter: 'all', items: [], focusIdx: -1 },
+  cp: { filter: 'all', items: [], focusIdx: -1 },
+};
+
+function _acListEl(ns)  { return document.getElementById(`${ns}-city-ac`); }
+function _acItemsEl(ns) { return document.getElementById(`${ns}-city-ac-items`); }
+function _acInputEl(ns) { return document.getElementById(`${ns}-city`); }
+function _acStateEl(ns) { return document.getElementById(`${ns}-state`); }
+
+function _acStatusBadge(s, tracked) {
+  if (!tracked) return `<span class="city-ac-status cac-seed">seed</span>`;
+  const map = {
+    due: ['cac-due','⚠ Due'],
+    never_checked: ['cac-never','● Never'],
+    checked: ['cac-checked','✓ Done'],
+    skipped: ['cac-skipped','— Skip'],
+  };
+  const [cls, label] = map[s] || ['cac-seed', s];
+  return `<span class="city-ac-status ${cls}">${label}</span>`;
+}
+
+function _acRenderItems(ns) {
+  const st    = _acState[ns];
+  const items = st.items;
+  const el    = _acItemsEl(ns);
+  if (!el) return;
+
+  let filtered = items;
+  if (st.filter === 'due')    filtered = items.filter(i => i.status === 'due' || i.status === 'never_checked');
+  if (st.filter === 'never')  filtered = items.filter(i => i.status === 'never_checked');
+  if (st.filter === 'nearby') filtered = items.filter(i => i.tracked);
+
+  if (!filtered.length) {
+    el.innerHTML = `<div class="city-ac-item"><span class="city-ac-name" style="color:var(--muted)">No cities found</span></div>`;
+    return;
+  }
+
+  el.innerHTML = filtered.map((item, idx) => `
+    <div class="city-ac-item${st.focusIdx===idx?' focused':''}" data-idx="${idx}"
+         onmousedown="cityAcSelect('${ns}','${escHtml(item.city)}')">
+      <div>
+        <span class="city-ac-name">${escHtml(item.city)}</span>
+        <span class="city-ac-state"> ${escHtml(item.state)}</span>
+      </div>
+      ${_acStatusBadge(item.status, item.tracked)}
+    </div>`).join('');
+}
+
+async function cityAcInput(ns) {
+  const inp   = _acInputEl(ns);
+  const stEl  = _acStateEl(ns);
+  const query = (inp?.value || '').trim();
+  const state = (stEl?.value || 'IL').trim().toUpperCase();
+  if (!state || state.length < 2) return;
+
+  const url = `/api/cities/suggest?state=${encodeURIComponent(state)}&q=${encodeURIComponent(query)}&limit=40`;
+  try {
+    const res = await fetch(url);
+    _acState[ns].items    = await res.json();
+    _acState[ns].focusIdx = -1;
+    _acRenderItems(ns);
+    _acListEl(ns)?.classList.add('open');
+  } catch(e) { /* silent */ }
+}
+
+function cityAcSelect(ns, cityName) {
+  const inp = _acInputEl(ns);
+  if (inp) inp.value = cityName;
+  _acListEl(ns)?.classList.remove('open');
+  // If in the discover bar, also trigger a state refresh
+  if (ns === 'd') cityAcInput('d');
+}
+
+function cityAcCloseDelay(ns) {
+  setTimeout(() => _acListEl(ns)?.classList.remove('open'), 180);
+}
+
+function cityAcSetFilter(ns, filter, el) {
+  _acState[ns].filter = filter;
+  // update active tab styling within this dropdown only
+  const list = _acListEl(ns);
+  if (list) list.querySelectorAll('.caf').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  _acRenderItems(ns);
+}
+
+function cityAcKey(e, ns) {
+  const st = _acState[ns];
+  const itemEls = _acItemsEl(ns)?.querySelectorAll('.city-ac-item') || [];
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    st.focusIdx = Math.min(st.focusIdx + 1, itemEls.length - 1);
+    _acRenderItems(ns);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    st.focusIdx = Math.max(st.focusIdx - 1, -1);
+    _acRenderItems(ns);
+  } else if (e.key === 'Enter' && st.focusIdx >= 0) {
+    e.preventDefault();
+    const focused = _acItemsEl(ns)?.querySelector('.city-ac-item.focused');
+    const cityName = focused?.querySelector('.city-ac-name')?.textContent;
+    if (cityName) cityAcSelect(ns, cityName);
+  } else if (e.key === 'Escape') {
+    _acListEl(ns)?.classList.remove('open');
+  }
+}
+
+// Close autocomplete when clicking outside
+document.addEventListener('click', e => {
+  ['d','cp'].forEach(ns => {
+    const wrap = _acInputEl(ns)?.closest('.city-ac-wrap');
+    if (wrap && !wrap.contains(e.target)) _acListEl(ns)?.classList.remove('open');
+  });
+});
 
 async function loadIndustries() {
   try {
@@ -684,18 +1780,6 @@ async function loadIndustries() {
     sel.innerHTML = list.map(i=>`<option value="${i}">${i.replace('_',' ')}</option>`).join('');
     sel.value='plumbing';
   } catch(e) {}
-}
-
-async function extractEmails() {
-  const btn=document.getElementById('btnExtract');
-  btn.classList.add('loading'); btn.disabled=true;
-  toast('Scanning websites for emails…','info');
-  try {
-    const res = await api('/api/extract_emails',{});
-    if (res.ok) { const s=res.stats; await loadAll(); toast(`Found ${s.found} of ${s.scanned} scanned`,s.found>0?'ok':'info'); }
-    else toast('Extract error: '+res.error,'err');
-  } catch(e) { toast('Connection error','err'); }
-  btn.classList.remove('loading'); btn.disabled=false;
 }
 
 async function testApiKey() {
@@ -727,7 +1811,1343 @@ function toast(msg, type='info') {
   setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); },4500);
 }
 
-// Keyboard shortcuts when panel open
+// ── Page navigation ───────────────────────────────────────────────────────────
+let _currentPage = 'outreach';
+
+// ==================================================================
+// PAGE NAVIGATION
+// ==================================================================
+function switchPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const page = document.getElementById('page-' + name);
+  if (page) page.classList.add('active');
+  if (el) el.classList.add('active');
+  if (name === 'cities')        tpLoad();
+  if (name === 'followup')      fqLoad();
+  if (name === 'searches')      loadSearchHistory();
+  if (name === 'mc-clients')    mcLoadClients();
+  if (name === 'social')        socialLoad();
+  if (name === 'sprint')        sprintLoad();
+  if (name === 'conversations') convLoad();
+  if (name === 'health')        healthLoad();
+  if (name === 'exceptions')    exceptionsLoad();
+}
+
+// ==================================================================
+// TERRITORY PLANNER  (tp*)
+// ==================================================================
+let _tpData       = [];
+let _tpIndustries = [];
+let _tpFilter     = 'all';
+let _tpOpen       = new Set();
+
+async function tpLoad() {
+  try {
+    const d = await fetch('/api/territory').then(r => r.json());
+    _tpData       = d.cities || [];
+    _tpIndustries = d.industries || [];
+    const el = document.getElementById('tp-ind-count');
+    if (el) el.textContent = _tpIndustries.length;
+    _tpUpdateStats();
+    tpRender();
+  } catch(e) {
+    const c = document.getElementById('tp-cards');
+    if (c) c.innerHTML = '<div class="tp-empty"><div class="tp-empty-icon">\u26A0\uFE0F</div><div>Failed to load territory data</div></div>';
+  }
+}
+
+function _tpUpdateStats() {
+  const s = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  s('tp-stat-cities',    _tpData.length);
+  s('tp-stat-uncovered', _tpData.reduce((a,c) => a+(c.never_count||0), 0));
+  s('tp-stat-due',       _tpData.reduce((a,c) => a+(c.due_count||0), 0));
+  s('tp-stat-leads',     _tpData.reduce((a,c) => a+(c.leads_found||0), 0));
+}
+
+function tpSetFilter(f, el) {
+  _tpFilter = f;
+  document.querySelectorAll('[data-tpf]').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  tpRender();
+}
+
+function tpRender() {
+  const q = (document.getElementById('tp-search')?.value || '').trim().toLowerCase();
+  let cities = [..._tpData];
+  if (q) cities = cities.filter(c => c.city.toLowerCase().includes(q) || c.state.toLowerCase().includes(q));
+  if (_tpFilter === 'due')    cities = cities.filter(c => c.city_is_due || c.due_count > 0);
+  if (_tpFilter === 'active') cities = cities.filter(c => c.covered_count > 0);
+  if (_tpFilter === 'open')   cities = cities.filter(c => c.never_count > 0);
+  const container = document.getElementById('tp-cards');
+  if (!container) return;
+  if (!cities.length) {
+    container.innerHTML = '<div class="tp-empty"><div class="tp-empty-icon">\uD83D\uDDFA\uFE0F</div><div>No cities match this filter. Add a city above.</div></div>';
+    return;
+  }
+  container.innerHTML = cities.map(c => _tpCityCard(c)).join('');
+}
+
+function _tpKey(c) { return (c.city + '|' + c.state).toLowerCase(); }
+
+function _tpFmt(iso) {
+  if (!iso) return '\u2014';
+  try { return new Date(iso).toLocaleDateString(); } catch(e) { return iso; }
+}
+
+function _tpCityCard(c) {
+  const key     = _tpKey(c);
+  const isOpen  = _tpOpen.has(key);
+  const covered = c.covered_count || 0;
+  const total   = c.total_industries || _tpIndustries.length;
+  const pct     = total > 0 ? Math.round(covered / total * 100) : 0;
+  const progDone = pct >= 100 ? ' tp-prog-done' : '';
+  const cardCls  = c.city_is_due ? 'tp-card tp-card-due' : covered > 0 ? 'tp-card tp-card-active' : 'tp-card';
+  const openCls  = isOpen ? ' open' : '';
+
+  let statusHtml = c.city_is_due
+    ? '<span class="tp-ind-status tp-s-due">\u26A0 Due</span>'
+    : !c.last_checked_at
+      ? '<span class="tp-ind-status tp-s-never">\u25CF Never</span>'
+      : '<span class="tp-ind-status tp-s-checked">\u2713 Active</span>';
+
+  const nextInd = (c.industry_rows || []).find(r => r.status === 'due' || r.status === 'never_checked');
+  const nextHint = nextInd
+    ? '<span style="font-size:10px;color:var(--muted)">Next: <strong style="color:var(--text)">' + escHtml(nextInd.industry) + '</strong></span>'
+    : '';
+
+  const cj = JSON.stringify(c.city);
+  const sj = JSON.stringify(c.state);
+
+  const indContent = isOpen ? (
+    '<table class="tp-ind-table"><thead><tr><th>Industry</th><th>Status</th><th>Leads</th><th>Last Run</th><th style=\"text-align:right\">Actions</th></tr></thead><tbody>'
+    + (c.industry_rows || []).map(r => _tpIndRow(c, r)).join('')
+    + '</tbody></table>'
+    + '<div class="tp-card-footer">'
+    + '<button class="tp-btn tp-btn-run" onclick="tpRunNext(' + cj + ',' + sj + ',this)"><span class="tp-spin" style="display:none"></span>\u26A1 Run Next</button>'
+    + '<button class="tp-btn tp-btn-run" style="background:var(--green);color:#0e1a12" onclick="tpRunRemaining(' + cj + ',' + sj + ',this)" title="Run all uncovered industries">\u25B6\u25B6 Run Remaining</button>'
+    + '<button class="tp-btn" style="background:var(--copper-bg);color:var(--copper);border:1px solid rgba(184,115,51,.3)" onclick="tpOpenLeads(' + cj + ',' + sj + ')">\uD83D\uDCCB Open Leads</button>'
+    + '<button class="tp-btn tp-btn-skip" onclick="tpSkipCity(' + cj + ',' + sj + ')">Skip City</button>'
+    + '</div>'
+  ) : '';
+
+  return '<div class="' + cardCls + openCls + '" id="tp-card-' + key.replace(/[^a-z0-9]/g, '-') + '">'
+    + '<div class="tp-card-hdr" onclick="tpToggle(' + JSON.stringify(key) + ')">'
+    + '<div style="display:flex;flex-direction:column;gap:3px">'
+    + '<div class="tp-city-name">' + escHtml(c.city) + ', ' + escHtml(c.state) + ' ' + statusHtml + '</div>'
+    + '<div class="tp-city-meta">' + (c.leads_found||0) + ' leads \u00B7 Last: ' + _tpFmt(c.last_checked_at) + ' \u00B7 Next: ' + _tpFmt(c.next_check_at) + ' \u00B7 ' + (c.tier||'mid') + '</div>'
+    + nextHint
+    + '</div>'
+    + '<div style="display:flex;align-items:center;gap:12px">'
+    + '<div class="tp-progress-wrap"><div class="tp-progress-bar"><div class="tp-progress-fill' + progDone + '" style="width:' + pct + '%"></div></div>'
+    + '<span class="tp-progress-text">' + covered + ' / ' + total + '</span></div>'
+    + '<span class="tp-chevron">\u25BC</span>'
+    + '</div></div>'
+    + indContent
+    + '</div>';
+}
+
+function _tpIndRow(city, r) {
+  const sm = { never_checked:['tp-s-never','\u25CF Not run'], checked:['tp-s-checked','\u2713 Done'], due:['tp-s-due','\u26A0 Due'], skipped:['tp-s-skipped','\u2014 Skipped'], exhausted:['tp-s-exhausted','\u2717 Exhausted'] };
+  const [cls, label] = sm[r.status] || ['tp-s-never', r.status];
+  const cj = JSON.stringify(city.city), sj = JSON.stringify(city.state), ij = JSON.stringify(r.industry);
+  const runBtn = r.status !== 'exhausted'
+    ? '<button class="tp-btn tp-btn-run" onclick="tpRunIndustry(' + cj + ',' + sj + ',' + ij + ',this)"><span class="tp-spin" style="display:none"></span>\u26A1 Run</button>'
+    : '';
+  const exhBtn = r.status !== 'exhausted'
+    ? '<button class="tp-btn tp-btn-exh" onclick="tpExhaustIndustry(' + cj + ',' + sj + ',' + ij + ')">\u2717</button>'
+    : '';
+  return '<tr><td class="tp-ind-name">' + escHtml(r.industry) + '</td>'
+    + '<td><span class="tp-ind-status ' + cls + '">' + label + '</span></td>'
+    + '<td>' + (r.leads_found||0) + (r.new_leads_last_run ? ' <span style="color:var(--green);font-size:10px">+' + r.new_leads_last_run + '</span>' : '') + '</td>'
+    + '<td style="color:var(--muted)">' + _tpFmt(r.last_checked_at) + '</td>'
+    + '<td><div class="tp-ind-acts" style="justify-content:flex-end">' + runBtn
+    + '<button class="tp-btn tp-btn-skip" onclick="tpSkipIndustry(' + cj + ',' + sj + ',' + ij + ')">Skip</button>'
+    + exhBtn + '</div></td></tr>';
+}
+
+function tpToggle(key) {
+  // Toggle open/closed state in _tpOpen
+  if (_tpOpen.has(key)) {
+    _tpOpen.delete(key);
+  } else {
+    _tpOpen.add(key);
+  }
+
+  // Mutate the existing card DOM in-place — no full re-render
+  const safeKey = key.replace(/[^a-z0-9]/g, '-');
+  const card = document.getElementById('tp-card-' + safeKey);
+  if (!card) { tpRender(); return; } // fallback if card not found
+
+  const isNowOpen = _tpOpen.has(key);
+  card.classList.toggle('open', isNowOpen);
+
+  // Find the city data object
+  const [cityName, stateName] = key.split('|');
+  const c = _tpData.find(d =>
+    d.city.toLowerCase() === cityName.toLowerCase() &&
+    d.state.toLowerCase() === stateName.toLowerCase()
+  );
+  if (!c) return;
+
+  // Remove any existing footer/table that was injected
+  const existing = card.querySelector('.tp-ind-table');
+  const existingFooter = card.querySelector('.tp-card-footer');
+  if (existing) existing.remove();
+  if (existingFooter) existingFooter.remove();
+
+  // If now open, inject the industry table + footer
+  if (isNowOpen) {
+    const cj = JSON.stringify(c.city);
+    const sj = JSON.stringify(c.state);
+    const indHtml = '<table class="tp-ind-table"><thead><tr>'
+      + '<th>Industry</th><th>Status</th><th>Leads</th><th>Last Run</th>'
+      + '<th style="text-align:right">Actions</th>'
+      + '</tr></thead><tbody>'
+      + (c.industry_rows || []).map(r => _tpIndRow(c, r)).join('')
+      + '</tbody></table>'
+      + '<div class="tp-card-footer">'
+      + '<button class="tp-btn tp-btn-run" onclick="tpRunNext(' + cj + ',' + sj + ',this)"><span class="tp-spin" style="display:none"></span>\u26A1 Run Next</button>'
+      + '<button class="tp-btn tp-btn-run" style="background:var(--green);color:#0e1a12" onclick="tpRunRemaining(' + cj + ',' + sj + ',this)" title="Run all uncovered industries">\u25B6\u25B6 Run Remaining</button>'
+      + '<button class="tp-btn" style="background:var(--copper-bg);color:var(--copper);border:1px solid rgba(184,115,51,.3)" onclick="tpOpenLeads(' + cj + ',' + sj + ')">\uD83D\uDCCB Open Leads</button>'
+      + '<button class="tp-btn tp-btn-skip" onclick="tpSkipCity(' + cj + ',' + sj + ')">Skip City</button>'
+      + '</div>';
+    card.insertAdjacentHTML('beforeend', indHtml);
+  }
+}
+
+function _tpSetBtnLoading(btn, on) {
+  if (!btn) return;
+  const sp = btn.querySelector('.tp-spin');
+  if (sp) sp.style.display = on ? 'inline-block' : 'none';
+  btn.disabled = on;
+}
+
+async function tpRunIndustry(city, state, industry, btn) {
+  _tpSetBtnLoading(btn, true);
+  const limit = parseInt(document.getElementById('d-limit')?.value || '20');
+  try {
+    const res = await api('/api/discover', { industry, city, state, limit });
+    if (res.ok) { toast('\u2713 ' + res.found + ' new leads \u2014 ' + city + ' ' + industry, 'ok'); await tpLoad(); await loadAll(); _tpOpen.add(_tpKey({city,state})); tpRender(); }
+    else toast(res.error || 'Discover failed', 'err');
+  } catch(e) { toast('Connection error', 'err'); }
+  _tpSetBtnLoading(btn, false);
+}
+
+async function tpRunNext(city, state, btn) {
+  _tpSetBtnLoading(btn, true);
+  try {
+    const res = await api('/api/territory/next_industry', { city, state });
+    if (res.ok && res.industry) {
+      toast('Running ' + res.industry + ' in ' + city + '\u2026', 'info');
+      const limit = parseInt(document.getElementById('d-limit')?.value || '20');
+      const dr = await api('/api/discover', { industry: res.industry, city, state, limit });
+      if (dr.ok) { toast('\u2713 ' + dr.found + ' new leads \u2014 ' + city + ' ' + res.industry, 'ok'); await tpLoad(); await loadAll(); _tpOpen.add(_tpKey({city,state})); tpRender(); }
+      else toast(dr.error || 'Discover failed', 'err');
+    } else toast('No next industry found', 'info');
+  } catch(e) { toast('Connection error', 'err'); }
+  _tpSetBtnLoading(btn, false);
+}
+
+async function tpRunRemaining(city, state, btn) {
+  const entry = _tpData.find(c => c.city.toLowerCase()===city.toLowerCase() && c.state.toLowerCase()===state.toLowerCase());
+  if (!entry) return;
+  const toRun = (entry.industry_rows||[]).filter(r => r.status==='never_checked').map(r=>r.industry);
+  if (!toRun.length) { toast('All industries already covered for ' + city, 'info'); return; }
+  if (!confirm('Run ' + toRun.length + ' industries for ' + city + '? This will make ' + toRun.length + ' API calls.')) return;
+  _tpSetBtnLoading(btn, true);
+  const limit = parseInt(document.getElementById('d-limit')?.value || '20');
+  let total = 0;
+  for (const ind of toRun) {
+    try { const r = await api('/api/discover', {industry:ind,city,state,limit}); if (r.ok) total += r.found||0; } catch(e) {}
+  }
+  toast('\u2713 Finished ' + toRun.length + ' industries in ' + city + ' \u2014 ' + total + ' new leads', 'ok');
+  await tpLoad(); await loadAll(); _tpOpen.add(_tpKey({city,state})); tpRender();
+  _tpSetBtnLoading(btn, false);
+}
+
+async function tpSkipIndustry(city, state, industry) {
+  await api('/api/territory/skip_industry', {city,state,industry});
+  toast('Skipped ' + industry + ' in ' + city, 'info');
+  await tpLoad(); _tpOpen.add(_tpKey({city,state})); tpRender();
+}
+
+async function tpExhaustIndustry(city, state, industry) {
+  await api('/api/territory/mark_exhausted', {city,state,industry});
+  toast('Marked ' + industry + ' exhausted in ' + city, 'info');
+  await tpLoad(); _tpOpen.add(_tpKey({city,state})); tpRender();
+}
+
+async function tpSkipCity(city, state) {
+  await fetch('/api/cities/skip', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({city,state})});
+  toast('Skipped ' + city, 'info');
+  await tpLoad();
+}
+
+function tpOpenLeads(city, state) {
+  switchPage('outreach', document.querySelector('[data-page=outreach]'));
+  const box = document.getElementById('searchBox');
+  if (box) { box.value = city; renderTable(); }
+}
+
+async function tpAddCity() {
+  const city  = (document.getElementById('cp-city')?.value || '').trim();
+  const state = (document.getElementById('cp-state')?.value || '').trim().toUpperCase();
+  if (!city || !state) { toast('Enter city and state', 'err'); return; }
+  await api('/api/cities/add', {city, state});
+  const inp = document.getElementById('cp-city'); if (inp) inp.value = '';
+  toast('Added ' + city + ', ' + state, 'ok');
+  await tpLoad(); _tpOpen.add(_tpKey({city,state})); tpRender();
+}
+
+// ==================================================================
+// FOLLOW-UP QUEUE  (fq*)
+// ==================================================================
+let _fqData = null;
+
+async function fqLoad() {
+  const container = document.getElementById('fq-container');
+  if (container) container.innerHTML = '<div class="fq-empty">Loading\u2026</div>';
+  try { _fqData = await api('/api/followup_queue'); fqRender(); }
+  catch(e) { if (container) container.innerHTML = '<div class="fq-empty">Failed to load follow-ups</div>'; }
+}
+
+function fqRender() {
+  if (!_fqData) return;
+  const {overdue, today, this_week, upcoming, counts} = _fqData;
+  const badge = document.getElementById('fq-total-badge');
+  if (badge) badge.textContent = counts.total + ' due';
+  const nav = document.getElementById('nav-followup');
+  if (nav) nav.textContent = counts.overdue + counts.today > 0
+    ? '\uD83D\uDD01 Follow-Up (' + (counts.overdue + counts.today) + ')' : '\uD83D\uDD01 Follow-Up';
+  const container = document.getElementById('fq-container');
+  if (!container) return;
+  if (counts.total === 0) { container.innerHTML = '<div class="fq-empty">\uD83C\uDF89 No follow-ups due. Queue is clear.</div>'; return; }
+  const groups = [
+    {title:'\uD83D\uDD34 Overdue',   rows:overdue,   cls:'fq-group fq-group-overdue'},
+    {title:'\uD83D\uDFE1 Due Today', rows:today,     cls:'fq-group fq-group-today'},
+    {title:'\uD83D\uDD35 This Week', rows:this_week, cls:'fq-group fq-group-week'},
+    {title:'\u25A1 Upcoming',         rows:upcoming,  cls:'fq-group'},
+  ];
+  container.innerHTML = groups.filter(g=>g.rows.length).map(g =>
+    '<div class="' + g.cls + '">'
+    + '<div class="fq-group-hdr"><span class="fq-group-title">' + g.title + '</span><span class="fq-group-count">' + g.rows.length + '</span></div>'
+    + g.rows.map(r => _fqCard(r)).join('')
+    + '</div>'
+  ).join('');
+}
+
+function _fqFmtDue(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso), now = new Date();
+    const diff = Math.floor((d - now) / 86400000);
+    if (diff < -1) return Math.abs(diff) + ' days ago';
+    if (diff === -1) return 'yesterday';
+    if (diff === 0) return 'today';
+    if (diff === 1) return 'tomorrow';
+    return d.toLocaleDateString();
+  } catch(e) { return iso; }
+}
+
+function _fqCard(r) {
+  const idx     = r.index;
+  const result  = r.contact_result || 'draft_ready';
+  const channel = r.last_contact_channel || '\u2014';
+  const attempts = r.contact_attempt_count || '0';
+  const due = r.next_followup_at || r.sent_at || '';
+  const isOverdue = due && new Date(due) < new Date();
+  const cardCls = isOverdue ? 'fq-card fq-overdue' : 'fq-card';
+  const dueLbl  = isOverdue ? 'overdue' : 'ok';
+  const resBadge = '<span class="fq-result-badge fqr-' + escHtml(result) + '">' + result.replace('_',' ') + '</span>';
+  const bestBtn = _fqBestBtn(r, idx);
+  return '<div class="' + cardCls + '">'
+    + '<div class="fq-info">'
+    + '<div class="fq-name">' + escHtml(r.business_name) + '</div>'
+    + '<div class="fq-meta"><span>' + escHtml(r.city) + ', ' + escHtml(r.state) + '</span>'
+    + (r.industry ? '<span>' + escHtml(r.industry) + '</span>' : '')
+    + '<span>via ' + escHtml(channel) + '</span>'
+    + '<span>' + attempts + ' attempt' + (attempts !== '1' ? 's' : '') + '</span>'
+    + resBadge + '</div>'
+    + (due ? '<div class="fq-due ' + dueLbl + '">Due ' + _fqFmtDue(due) + '</div>' : '')
+    + '</div>'
+    + '<div class="fq-actions">' + bestBtn
+    + '<button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="fqSnooze(' + idx + ')">\uD83D\uDCA4 Snooze 7d</button>'
+    + '<button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="fqClose(' + idx + ')">\u2717 Close</button>'
+    + '<button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="fqOpenLead(' + idx + ')">Open \u2192</button>'
+    + '</div></div>';
+}
+
+function _fqBestBtn(r, idx) {
+  if (r.to_email && r.to_email.includes('@'))
+    return `<button class="btn btn-primary" style="font-size:11px;padding:4px 10px" onclick="fqLogAndOpen(${idx},'email','sent')">\u2709 Follow-Up Email</button>`;
+  if (r.facebook_url)
+    return `<button class="btn" style="font-size:11px;padding:4px 10px;background:rgba(66,103,178,.2);color:#7b9fd4;border:1px solid rgba(66,103,178,.3)" onclick="fqLogAndOpenUrl(${idx},'facebook','dm_sent',${JSON.stringify(r.facebook_url)})">f Follow-Up DM</button>`;
+  if (r.instagram_url)
+    return `<button class="btn" style="font-size:11px;padding:4px 10px;background:rgba(225,48,108,.12);color:#e1306c;border:1px solid rgba(225,48,108,.2)" onclick="fqLogAndOpenUrl(${idx},'instagram','dm_sent',${JSON.stringify(r.instagram_url)})">\u25CE DM</button>`;
+  if (r.contact_form_url)
+    return `<button class="btn" style="font-size:11px;padding:4px 10px;background:var(--amber-bg);color:var(--amber);border:1px solid rgba(245,166,35,.3)" onclick="fqLogAndOpenUrl(${idx},'contact_form','submitted',${JSON.stringify(r.contact_form_url)})">\u229F Form</button>`;
+  return '<span style="font-size:11px;color:var(--dim)">No channel</span>';
+}
+
+async function fqLogAndOpen(idx, channel, result) {
+  await api('/api/log_contact', {index:idx, channel, result});
+  await loadAll();
+  const row = allRows[idx];
+  if (row) { const fi = filteredRows.indexOf(row); if (fi >= 0) openPanel(fi); }
+  await fqLoad();
+}
+
+async function fqLogAndOpenUrl(idx, channel, result, url) {
+  await api('/api/log_contact', {index:idx, channel, result});
+  if (url) window.open(url, '_blank');
+  await fqLoad();
+}
+
+async function fqSnooze(idx) {
+  await api('/api/snooze_row', {index:idx, days:7});
+  toast('Snoozed 7 days', 'info');
+  await fqLoad();
+}
+
+async function fqClose(idx) {
+  await api('/api/log_contact', {index:idx, channel:'', result:'closed'});
+  toast('Closed', 'info');
+  await fqLoad();
+}
+
+function fqOpenLead(idx) {
+  switchPage('outreach', document.querySelector('[data-page=outreach]'));
+  setTimeout(() => { const row = allRows[idx]; if (!row) return; const fi = filteredRows.indexOf(row); if (fi >= 0) openPanel(fi); }, 200);
+}
+
+// ==================================================================
+// PANEL  — Best-Next-Action + Quick-Log + Campaign  (Part 1-3)
+// ==================================================================
+let _presets = [];
+async function _loadPresets() {
+  if (_presets.length) return;
+  try { _presets = await api('/api/presets'); } catch(e) {}
+}
+
+function bestChannel(row) {
+  if (row.to_email && row.to_email.includes('@')) return 'email';
+  if (row.contact_form_url) return 'contact_form';
+  if (row.facebook_url)     return 'facebook';
+  if (row.instagram_url)    return 'instagram';
+  return 'none';
+}
+
+function _panelBestActionHtml(row, gi) {
+  const ch = bestChannel(row);
+  const labels  = {email:'\u2709 Send Email', contact_form:'\u229F Submit Form', facebook:'f Open Facebook DM', instagram:'\u25CE Open Instagram DM', none:'No outreach channel'};
+  const classes = {email:'pba-email', contact_form:'pba-form', facebook:'pba-fb', instagram:'pba-ig', none:'pba-none'};
+  const cfUrl = JSON.stringify(row.contact_form_url||'');
+  const fbUrl = JSON.stringify(row.facebook_url||'');
+  const igUrl = JSON.stringify(row.instagram_url||'');
+  const actions = {
+    email:        `panelLogContact(${gi},'email','sent')`,
+    contact_form: `panelLogAndOpenUrl(${gi},'contact_form','submitted',${cfUrl})`,
+    facebook:     `panelLogAndOpenUrl(${gi},'facebook','dm_sent',${fbUrl})`,
+    instagram:    `panelLogAndOpenUrl(${gi},'instagram','dm_sent',${igUrl})`,
+    none:         '',
+  };
+  const onclick = actions[ch] ? ` onclick="${actions[ch]}"` : '';
+  const attempts = row.contact_attempt_count || '0';
+  return '<div class="panel-best-action">'
+    + '<span class="pba-label">Best Action</span>'
+    + `<button class="pba-btn ${classes[ch]}"${onclick}>${labels[ch]}</button>`
+    + '<span class="attempt-counter">' + attempts + ' sent</span>'
+    + '</div>';
+}
+
+function _panelStatusGridHtml(row, gi) {
+  const cur = row.contact_result || '';
+  const btns = [
+    {r:'sent',           ch:'email',        l:'\u2709 Email Sent'},
+    {r:'dm_sent',        ch:'facebook',     l:'\uD83D\uDCAC DM Sent'},
+    {r:'submitted',      ch:'contact_form', l:'\u229F Form Submitted'},
+    {r:'replied',        ch:'',             l:'\u2605 Reply Received'},
+    {r:'not_interested', ch:'',             l:'\uD83D\uDC4E Not Interested'},
+    {r:'bad_lead',       ch:'',             l:'\u2717 Bad Lead'},
+    {r:'no_reply',       ch:'',             l:'\uD83D\uDD07 No Reply'},
+    {r:'closed',         ch:'',             l:'\uD83D\uDD12 Closed'},
+  ];
+  return '<div class="panel-status-grid">'
+    + btns.map(b => '<button class="pstat-btn' + (cur===b.r?' pstat-active':'') + '" onclick="panelLogContact(' + gi + ',' + JSON.stringify(b.ch) + ',' + JSON.stringify(b.r) + ')">' + b.l + '</button>').join('')
+    + '</div>';
+}
+
+function _panelCampaignHtml(row) {
+  const cur = row.campaign_key || '';
+  const opts = _presets.map(p => '<option value="' + escHtml(p.key) + '"' + (p.key===cur?' selected':'') + '>' + escHtml(p.name) + '</option>').join('');
+  return '<div class="panel-campaign-row"><label>Campaign</label><select class="panel-campaign-sel" onchange="panelCampaignChanged(this.value)">' + opts + '</select></div>';
+}
+
+function panelCampaignChanged(key) {
+  const row = filteredRows[panelIdx]; if (!row) return;
+  row.campaign_key = key;
+  api('/api/update_row', {index: allRows.indexOf(row), updates:{campaign_key:key}});
+}
+
+async function panelLogContact(gi, channel, result) {
+  const res = await api('/api/log_contact', {index:gi, channel, result});
+  if (res.ok && res.row) {
+    const row = allRows[gi];
+    if (row) {
+      Object.assign(row, {
+        contact_result: result,
+        last_contact_channel: channel || row.last_contact_channel,
+        last_contacted_at: res.row.last_contacted_at,
+        contact_attempt_count: res.row.contact_attempt_count,
+        next_followup_at: res.row.next_followup_at || '',
+      });
+      if (result === 'sent' && res.row.sent_at) row.sent_at = res.row.sent_at;
+      fillPanel(row, panelIdx);
+    }
+    toast('Logged: ' + result, 'ok');
+    renderTable();
+  }
+}
+
+async function panelLogAndOpenUrl(gi, channel, result, url) {
+  await panelLogContact(gi, channel, result);
+  if (url) window.open(url, '_blank');
+}
+
+
+// ==================================================================
+// SOCIAL OUTREACH  (sq*)  — Part 1
+// ==================================================================
+let _sqData = [];
+let _sqFilter = 'all';
+
+async function socialLoad() {
+  const container = document.getElementById('sq-container');
+  if (container) container.innerHTML = '<div class="sq-empty"><div class="sq-empty-icon">📲</div><p>Loading…</p></div>';
+  try {
+    _sqData = await api('/api/social_queue');
+    _sqRender();
+  } catch(e) {
+    if (container) container.innerHTML = '<div class="sq-empty"><p>Failed to load social queue</p></div>';
+  }
+}
+
+function sqSetFilter(f, el) {
+  _sqFilter = f;
+  document.querySelectorAll('[data-sqf]').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  _sqRender();
+}
+
+function _sqRender() {
+  const container = document.getElementById('sq-container');
+  if (!container) return;
+  let rows = [..._sqData];
+  if (_sqFilter === 'facebook')  rows = rows.filter(r => r.facebook_url);
+  if (_sqFilter === 'instagram') rows = rows.filter(r => r.instagram_url);
+  if (_sqFilter === 'form')      rows = rows.filter(r => r.contact_form_url);
+  if (_sqFilter === 'unsent')    rows = rows.filter(r => !r.last_contacted_at);
+
+  const badge = document.getElementById('sq-count-badge');
+  if (badge) badge.textContent = rows.length + ' leads';
+
+  if (!rows.length) {
+    container.innerHTML = '<div class="sq-empty"><div class="sq-empty-icon">📭</div>'
+      + '<h3>No social leads in this filter</h3>'
+      + '<p>Social queue shows leads without an email but with Facebook, Instagram, or a contact form.</p></div>';
+    return;
+  }
+  container.innerHTML = rows.map(r => _sqCard(r)).join('');
+}
+
+function _sqCard(r) {
+  const idx   = r.index;
+  const score = r.opportunity_score || 0;
+  const lbl   = score >= 60 ? 'High' : score >= 30 ? 'Medium' : 'Low';
+  const scCls = score >= 60 ? 'opp-high' : score >= 30 ? 'opp-mid' : 'opp-low';
+  const sent  = r.last_contacted_at ? `<span style="color:var(--green);font-size:11px">✓ Contacted ${_sqFmtDate(r.last_contacted_at)}</span>` : '';
+  const insight = r.lead_insight_sentence
+    ? `<div class="sq-insight">💡 ${escHtml(r.lead_insight_sentence)}</div>` : '';
+
+  const drafts = [];
+  if (r.facebook_dm_draft || r.social_dm_text) {
+    const txt = r.facebook_dm_draft || r.social_dm_text;
+    drafts.push(`<div class="sq-draft-box">
+      <div class="sq-draft-label">
+        <span>f Facebook DM</span>
+        <button class="btn-copy" onclick="sqCopy(this,'${escHtml(txt.replace(/'/g,"\\'"))}')">Copy</button>
+      </div>
+      <div class="sq-draft-text">${escHtml(txt)}</div>
+    </div>`);
+  }
+  if (r.instagram_dm_draft) {
+    const txt = r.instagram_dm_draft;
+    drafts.push(`<div class="sq-draft-box">
+      <div class="sq-draft-label">
+        <span>◎ Instagram DM</span>
+        <button class="btn-copy" onclick="sqCopy(this,'${escHtml(txt.replace(/'/g,"\\'"))}')">Copy</button>
+      </div>
+      <div class="sq-draft-text">${escHtml(txt)}</div>
+    </div>`);
+  }
+  if (r.contact_form_message) {
+    const txt = r.contact_form_message;
+    drafts.push(`<div class="sq-draft-box">
+      <div class="sq-draft-label">
+        <span>⊟ Contact Form Message</span>
+        <button class="btn-copy" onclick="sqCopy(this,'${escHtml(txt.replace(/'/g,"\\'"))}')">Copy</button>
+      </div>
+      <div class="sq-draft-text">${escHtml(txt)}</div>
+    </div>`);
+  }
+
+  const fbBtn  = r.facebook_url
+    ? `<button class="btn btn-ghost" style="font-size:11px" onclick="sqOpenAndCopy(${idx},'facebook',${JSON.stringify(r.facebook_url)},${JSON.stringify(r.facebook_dm_draft||r.social_dm_text||'')})">f Open + Copy DM</button>` : '';
+  const igBtn  = r.instagram_url
+    ? `<button class="btn btn-ghost" style="font-size:11px" onclick="sqOpenAndCopy(${idx},'instagram',${JSON.stringify(r.instagram_url)},${JSON.stringify(r.instagram_dm_draft||r.social_dm_text||'')})">◎ Open + Copy DM</button>` : '';
+  const fmBtn  = r.contact_form_url
+    ? `<button class="btn btn-ghost" style="font-size:11px" onclick="sqOpenAndCopy(${idx},'contact_form',${JSON.stringify(r.contact_form_url)},${JSON.stringify(r.contact_form_message||'')})">⊟ Open Form + Copy</button>` : '';
+  const allBtn = (r.facebook_url || r.instagram_url || r.contact_form_url)
+    ? `<button class="btn btn-ghost" style="font-size:11px" onclick="sqOpenAll(${idx},${JSON.stringify({fb:r.facebook_url||'',ig:r.instagram_url||'',form:r.contact_form_url||''})})">↗ All Channels</button>` : '';
+
+  const logBtns = []
+    .concat(r.facebook_url  ? [`<button class="btn btn-ghost" style="font-size:11px;color:var(--blue)" onclick="sqLog(${idx},'facebook','dm_sent',this)">✓ FB DM Sent</button>`] : [])
+    .concat(r.instagram_url ? [`<button class="btn btn-ghost" style="font-size:11px;color:var(--blue)" onclick="sqLog(${idx},'instagram','dm_sent',this)">✓ IG DM Sent</button>`] : [])
+    .concat(r.contact_form_url ? [`<button class="btn btn-ghost" style="font-size:11px;color:var(--blue)" onclick="sqLog(${idx},'contact_form','submitted',this)">✓ Form Submitted</button>`] : []);
+
+  return `<div class="sq-card">
+    <div class="sq-card-top">
+      <div style="flex:1;min-width:0">
+        <div class="sq-biz">${escHtml(r.business_name)}</div>
+        <div class="sq-meta">
+          <span>${escHtml(r.city)}, ${escHtml(r.state)}</span>
+          ${r.industry ? `<span>${escHtml(r.industry)}</span>` : ''}
+          ${sent}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+        <span class="opp-badge ${scCls}">${lbl}</span>
+        <span style="font-family:var(--mono);font-size:10px;color:var(--muted)">${score}</span>
+      </div>
+    </div>
+    ${insight}
+    ${drafts.length ? `<div class="sq-draft-wrap">${drafts.join('')}</div>` : ''}
+    <div class="sq-actions">
+      ${fbBtn}${igBtn}${fmBtn}${allBtn}
+      <span style="flex:1"></span>
+      ${logBtns.join('')}
+    </div>
+  </div>`;
+}
+
+function _sqFmtDate(iso) {
+  if (!iso) return '';
+  try { return new Date(iso).toLocaleDateString(); } catch(e) { return iso; }
+}
+
+function sqCopy(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => toast('Copy failed', 'err'));
+}
+
+async function sqOpenAndCopy(idx, channel, url, text) {
+  if (text) {
+    try { await navigator.clipboard.writeText(text); toast('Message copied ✓', 'ok'); }
+    catch(e) { toast('Copy failed — use the Copy button', 'err'); }
+  }
+  if (url) window.open(url, '_blank');
+}
+
+function sqOpenAll(idx, urls) {
+  if (urls.fb)   window.open(urls.fb, '_blank');
+  if (urls.ig)   window.open(urls.ig, '_blank');
+  if (urls.form) window.open(urls.form, '_blank');
+}
+
+async function sqLog(idx, channel, result, btn) {
+  if (btn) { btn.disabled = true; btn.textContent = 'Logging…'; }
+  const res = await api('/api/log_contact', {index: idx, channel, result});
+  if (res.ok) {
+    toast('Logged: ' + result.replace('_',' '), 'ok');
+    if (allRows[idx]) Object.assign(allRows[idx], {
+      contact_result: result,
+      last_contact_channel: channel,
+      last_contacted_at: res.row?.last_contacted_at || new Date().toISOString(),
+    });
+    await socialLoad();
+  } else {
+    toast('Log failed: ' + res.error, 'err');
+    if (btn) { btn.disabled = false; btn.textContent = '✓ Log'; }
+  }
+}
+
+
+// ==================================================================
+// SEND SPRINT  (sp*)  — Part 4
+// ==================================================================
+let _spChannel = 'any';
+let _spLead    = null;
+let _spSkipped = new Set();
+let _spTotal   = 0;
+
+async function sprintLoad() {
+  _spSkipped.clear();
+  await _spFetchNext();
+}
+
+function spSetFilter(f, el) {
+  _spChannel = f;
+  document.querySelectorAll('[data-spf]').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  _spSkipped.clear();
+  _spFetchNext();
+}
+
+async function _spFetchNext() {
+  const container = document.getElementById('sprint-container');
+  if (container) container.innerHTML = '<div class="sprint-empty"><div class="sprint-empty-icon" style="font-size:28px;opacity:.5">⏳</div><p>Loading…</p></div>';
+  try {
+    const res = await api(`/api/sprint_next?channel=${_spChannel}`);
+    if (!res.ok || !res.lead) {
+      _spLead = null;
+      _spTotal = 0;
+      _spRenderEmpty();
+      return;
+    }
+    _spLead  = res.lead;
+    _spTotal = res.remaining + 1;
+    _spRender();
+  } catch(e) {
+    if (container) container.innerHTML = '<div class="sprint-empty"><p>Connection error</p></div>';
+  }
+}
+
+function _spRender() {
+  const container = document.getElementById('sprint-container');
+  if (!container || !_spLead) return;
+  const r   = _spLead;
+  const idx = r.index;
+  const ch  = r.best_channel || 'email';
+  const chLabels = {email:'✉ Email', facebook:'f Facebook DM', instagram:'◎ Instagram DM', contact_form:'⊟ Contact Form'};
+  const chClass  = `sprint-ch-${ch}`;
+  const score    = parseInt(r.opportunity_score) || 0;
+  const scLbl    = score >= 60 ? 'High' : score >= 30 ? 'Medium' : 'Low';
+  const scCls    = score >= 60 ? 'opp-high' : score >= 30 ? 'opp-mid' : 'opp-low';
+  const draft    = r.sprint_draft || r.body || '';
+  const insight  = r.lead_insight_sentence
+    ? `<div class="sprint-insight">💡 ${escHtml(r.lead_insight_sentence)}</div>` : '';
+  const openHref = ch === 'email'
+    ? (r.to_email ? `mailto:${r.to_email}?subject=${encodeURIComponent(r.subject||'')}&body=${encodeURIComponent(draft)}` : '')
+    : (ch === 'facebook' ? r.facebook_url : ch === 'instagram' ? r.instagram_url : r.contact_form_url) || '';
+
+  const filled = _spTotal > 0 ? Math.round((_spSkipped.size / _spTotal) * 100) : 0;
+  const progEl = document.getElementById('sprint-progress-fill');
+  if (progEl) progEl.style.width = filled + '%';
+
+  container.innerHTML = `
+    <div class="sprint-card">
+      <div class="sprint-card-top">
+        <div class="sprint-biz">${escHtml(r.business_name)}</div>
+        <div class="sprint-meta">
+          <span>📍 ${escHtml(r.city)}, ${escHtml(r.state)}</span>
+          ${r.industry ? `<span>${escHtml(r.industry)}</span>` : ''}
+          ${r.phone ? `<span>📞 ${escHtml(r.phone)}</span>` : ''}
+        </div>
+        <div class="sprint-score-row">
+          <span class="sprint-channel-pill ${chClass}">${chLabels[ch] || ch}</span>
+          <span class="opp-badge ${scCls}">${scLbl}</span>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--muted)">${score}</span>
+          <span class="sprint-counter" style="margin-left:auto">${_spTotal} left in queue</span>
+        </div>
+        ${insight}
+      </div>
+      <div class="sprint-draft-wrap">
+        <div class="sprint-draft-label">${escHtml(chLabels[ch] || 'Draft')} — ready to send</div>
+        <div class="sprint-draft-text">${escHtml(draft)}</div>
+      </div>
+      <div class="sprint-actions">
+        <button class="sprint-btn-sent" onclick="spSent(${idx})">✓ Sent</button>
+        ${openHref ? `<button class="sprint-btn-open" onclick="spOpenChannel(${idx},${JSON.stringify(openHref)},${JSON.stringify(draft)})">↗ Open + Copy</button>` : ''}
+        <button class="sprint-btn-skip" onclick="spSkip(${idx})">Skip →</button>
+        <button class="sprint-btn-copy" onclick="spCopyDraft(this,${JSON.stringify(draft)})">⎘ Copy</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px;margin-left:4px" onclick="spOpenReview(${idx})">Full Review</button>
+      </div>
+    </div>`;
+}
+
+function _spRenderEmpty() {
+  const container = document.getElementById('sprint-container');
+  if (!container) return;
+  const progEl = document.getElementById('sprint-progress-fill');
+  if (progEl) progEl.style.width = '100%';
+  container.innerHTML = `<div class="sprint-empty">
+    <div class="sprint-empty-icon">🎉</div>
+    <h3 style="font-size:15px;color:var(--text);margin-bottom:6px">Sprint complete!</h3>
+    <p>No more leads in this queue. Switch channel filter or discover new leads.</p>
+    <div style="margin-top:16px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="sprintLoad()">↻ Reload Queue</button>
+      <button class="btn btn-ghost" onclick="switchPage('outreach',document.querySelector('[data-page=outreach]'))">Go to Outreach</button>
+    </div>
+  </div>`;
+}
+
+async function spSent(idx) {
+  const ch = _spLead?.best_channel || 'email';
+  const result = ch === 'contact_form' ? 'submitted' : ch === 'email' ? 'sent' : 'dm_sent';
+  const res = await api('/api/log_contact', {index: idx, channel: ch, result});
+  if (res.ok) {
+    toast('✓ Logged + moving to next', 'ok');
+    if (allRows[idx]) Object.assign(allRows[idx], {
+      contact_result: result,
+      last_contact_channel: ch,
+      last_contacted_at: res.row?.last_contacted_at || new Date().toISOString(),
+      sent_at: ch === 'email' ? (res.row?.sent_at || new Date().toISOString()) : allRows[idx].sent_at,
+    });
+    await _spFetchNext();
+  } else {
+    toast('Log failed: ' + res.error, 'err');
+  }
+}
+
+async function spOpenChannel(idx, url, draft) {
+  if (draft) {
+    try { await navigator.clipboard.writeText(draft); toast('Copied to clipboard ✓', 'ok'); }
+    catch(e) {}
+  }
+  if (url) window.open(url, '_blank');
+}
+
+function spSkip(idx) {
+  _spSkipped.add(idx);
+  toast('Skipped — loading next', 'info');
+  _spFetchNext();
+}
+
+async function spCopyDraft(btn, text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    btn.textContent = '✓ Copied'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '⎘ Copy'; btn.classList.remove('copied'); }, 2000);
+  } catch(e) { toast('Copy failed', 'err'); }
+}
+
+function spOpenReview(idx) {
+  switchPage('outreach', document.querySelector('[data-page=outreach]'));
+  setTimeout(() => {
+    const row = allRows[idx];
+    if (!row) return;
+    const fi = filteredRows.indexOf(row);
+    if (fi >= 0) openPanel(fi);
+    else {
+      currentFilter = 'all';
+      document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+      const allTab = document.querySelector('[data-filter=all]');
+      if (allTab) allTab.classList.add('active');
+      renderTable();
+      setTimeout(() => {
+        const fi2 = filteredRows.indexOf(allRows[idx]);
+        if (fi2 >= 0) openPanel(fi2);
+      }, 100);
+    }
+  }, 200);
+}
+
+
+// ==================================================================
+// CONVERSATIONS  (cv*)  — Part 6
+// ==================================================================
+let _cvData    = [];
+let _cvActive  = null;
+
+async function convLoad() {
+  const list = document.getElementById('cv-list');
+  if (list) list.innerHTML = '<div class="cv-empty"><div class="cv-empty-icon">💬</div><p>Loading…</p></div>';
+  try {
+    _cvData = await api('/api/conversation_queue');
+    _cvRenderList();
+    // Update nav badge
+    const nav = document.getElementById('nav-conversations');
+    if (nav) nav.textContent = _cvData.length > 0
+      ? `💬 Conversations (${_cvData.length})` : '💬 Conversations';
+  } catch(e) {
+    if (list) list.innerHTML = '<div class="cv-empty"><p>Failed to load</p></div>';
+  }
+}
+
+function _cvRenderList() {
+  const list = document.getElementById('cv-list');
+  if (!list) return;
+  if (!_cvData.length) {
+    list.innerHTML = `<div class="cv-empty">
+      <div class="cv-empty-icon">💬</div>
+      <h3 style="font-size:14px;color:var(--text);margin-bottom:5px">No conversations yet</h3>
+      <p style="font-size:12px">Leads will appear here when a reply is detected from Gmail.</p>
+    </div>`;
+    return;
+  }
+  list.innerHTML = _cvData.map((r, i) => {
+    const ts    = r.replied_at ? new Date(r.replied_at).toLocaleString() : '';
+    const isCur = _cvActive === i;
+    return `<div class="cv-item${isCur?' active':''}" onclick="cvSelect(${i})">
+      <div class="cv-item-name">${escHtml(r.business_name)}</div>
+      <div class="cv-item-meta">${escHtml(r.city)}, ${escHtml(r.state)}${r.industry ? ' · '+escHtml(r.industry) : ''}</div>
+      ${r.reply_snippet ? `<div class="cv-item-snippet">↩ ${escHtml(r.reply_snippet.substring(0,70))}</div>` : ''}
+      <div class="cv-item-ts">${ts}</div>
+    </div>`;
+  }).join('');
+}
+
+function cvSelect(i) {
+  _cvActive = i;
+  _cvRenderList();
+  _cvRenderPanel(_cvData[i], i);
+}
+
+function _cvRenderPanel(r, i) {
+  const panel = document.getElementById('cv-panel');
+  if (!panel) return;
+  const idx   = r.index;
+  const ts    = r.replied_at ? new Date(r.replied_at).toLocaleString() : '';
+  const notes = r.conversation_notes || '';
+  const next  = r.conversation_next_step || '';
+
+  panel.innerHTML = `
+    <div class="cv-panel-hdr">
+      <div>
+        <div class="cv-panel-biz">${escHtml(r.business_name)} <span class="cv-fire">🔥 Replied</span></div>
+        <div class="cv-panel-meta">
+          <span>📍 ${escHtml(r.city)}, ${escHtml(r.state)}</span>
+          ${r.phone ? `<span>📞 ${escHtml(r.phone)}</span>` : ''}
+          ${r.to_email ? `<span>✉ ${escHtml(r.to_email)}</span>` : ''}
+          ${r.website ? `<span><a href="${escHtml(r.website)}" target="_blank" style="color:var(--blue)">🌐 site</a></span>` : ''}
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-ghost" style="font-size:11px" onclick="cvOpenInOutreach(${idx})">Open in Outreach →</button>
+      </div>
+    </div>
+    <div class="cv-panel-body">
+      <div>
+        <div class="cv-section-label">Reply received ${ts ? '— ' + ts : ''}</div>
+        <div class="cv-reply-box">
+          <div class="cv-reply-label">★ Inbound Reply</div>
+          <div class="cv-reply-body">${escHtml(r.reply_snippet || '(no preview — check Gmail)')}</div>
+        </div>
+      </div>
+      ${r.lead_insight_sentence ? `<div class="sq-insight">💡 ${escHtml(r.lead_insight_sentence)}</div>` : ''}
+      <div>
+        <div class="cv-section-label">Conversation Notes</div>
+        <textarea id="cv-notes-${i}" class="cv-textarea" placeholder="Add notes about this conversation…"
+          oninput="cvSaveNotes(${idx},${i})">${escHtml(notes)}</textarea>
+      </div>
+      <div>
+        <div class="cv-section-label">Next Step</div>
+        <textarea id="cv-nextstep-${i}" class="cv-textarea" style="min-height:60px" placeholder="e.g. Send demo link, Schedule call…"
+          oninput="cvSaveNextStep(${idx},${i})">${escHtml(next)}</textarea>
+      </div>
+      <div>
+        <div class="cv-section-label">Quick Actions</div>
+        <div class="cv-quick-actions">
+          <button class="btn btn-primary" style="font-size:12px"
+            onclick="cvSendQuick(${idx},'demo')">📎 Send Demo Link</button>
+          <button class="btn btn-ghost" style="font-size:12px"
+            onclick="cvSendQuick(${idx},'call')">📞 Schedule Call</button>
+          <button class="btn btn-ghost" style="font-size:12px"
+            onclick="cvSendQuick(${idx},'case_study')">📄 Send Case Study</button>
+          <button class="btn btn-danger" style="font-size:12px"
+            onclick="cvClose(${idx},${i})">✗ Close Lead</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+let _cvSaveTimer = null;
+function cvSaveNotes(idx, i) {
+  const val = document.getElementById(`cv-notes-${i}`)?.value || '';
+  if (_cvData[i]) _cvData[i].conversation_notes = val;
+  clearTimeout(_cvSaveTimer);
+  _cvSaveTimer = setTimeout(() => api('/api/update_conversation', {index: idx, notes: val}), 600);
+}
+
+function cvSaveNextStep(idx, i) {
+  const val = document.getElementById(`cv-nextstep-${i}`)?.value || '';
+  if (_cvData[i]) _cvData[i].conversation_next_step = val;
+  clearTimeout(_cvSaveTimer);
+  _cvSaveTimer = setTimeout(() => api('/api/update_conversation', {index: idx, next_step: val}), 600);
+}
+
+function cvSendQuick(idx, type) {
+  const row = allRows[idx];
+  if (!row) return;
+  const templates = {
+    demo:       `Hi — here's a quick demo of the Missed Call Text-Back system in action: [INSERT DEMO LINK]. Happy to walk you through it on a call if that's easier.`,
+    call:       `Hi — would love to hop on a quick 10-minute call to show you how this would work for ${row.business_name || 'your business'}. What time works best?`,
+    case_study: `Hi — here's a quick case study showing how a similar service company set this up: [INSERT LINK]. Let me know if you have questions.`,
+  };
+  const text = templates[type] || '';
+  navigator.clipboard.writeText(text).then(() => toast('Template copied — paste into reply ✓', 'ok'))
+    .catch(() => toast('Copy failed', 'err'));
+}
+
+async function cvClose(idx, i) {
+  const res = await api('/api/log_contact', {index: idx, channel: '', result: 'closed'});
+  if (res.ok) {
+    toast('Closed', 'info');
+    _cvData.splice(i, 1);
+    _cvActive = null;
+    _cvRenderList();
+    const panel = document.getElementById('cv-panel');
+    if (panel) panel.innerHTML = '<div class="cv-empty" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center"><p>Select a conversation</p></div>';
+    const nav = document.getElementById('nav-conversations');
+    if (nav) nav.textContent = _cvData.length > 0 ? `💬 Conversations (${_cvData.length})` : '💬 Conversations';
+  }
+}
+
+function cvOpenInOutreach(idx) {
+  switchPage('outreach', document.querySelector('[data-page=outreach]'));
+  setTimeout(() => {
+    const row = allRows[idx];
+    if (!row) return;
+    const fi = filteredRows.indexOf(row);
+    if (fi >= 0) openPanel(fi);
+  }, 200);
+}
+
+
+// ── Search History ────────────────────────────────────────────────────────────
+async function loadSearchHistory() {
+  const tbody = document.getElementById('search-history-tbody');
+  tbody.innerHTML = '<tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">Loading…</td></tr>';
+  try {
+    const rows = await api('/api/search_history');
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">No searches yet — run Discover + Draft to get started.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => {
+      const statusCls = r.status === 'ok' ? 'color:var(--green)' :
+                        r.status === 'all_duplicates' ? 'color:var(--amber)' : 'color:var(--red)';
+      const statusLabel = r.status === 'ok' ? `✓ ${r.found} new` :
+                          r.status === 'all_duplicates' ? '— all dupes' : '✗ error';
+      const foundCls = r.found > 0 ? 'font-weight:600' : 'color:var(--muted)';
+      return `<tr>
+        <td class="mc-muted" style="font-size:11px;white-space:nowrap">${escHtml(r.ts)}</td>
+        <td style="font-weight:500">${escHtml(r.city)}</td>
+        <td class="mc-mono">${escHtml(r.state)}</td>
+        <td><span class="tag-industry">${escHtml(r.industry)}</span></td>
+        <td style="text-align:center;${foundCls}">${r.found}</td>
+        <td style="text-align:center;${statusCls};font-size:12px;font-weight:600">${statusLabel}${r.error ? `<div style="font-size:10px;color:var(--muted);font-weight:400">${escHtml(r.error)}</div>` : ''}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">Error loading history: ${e}</td></tr>`;
+  }
+}
+
+// ── MC helpers ────────────────────────────────────────────────────────────────
+async function mcApi(path, body) {
+  const opts = body !== undefined
+    ? { method: body === null ? 'DELETE' : 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: body === null ? undefined : JSON.stringify(body) }
+    : {};
+  if (body === null) opts.method = 'DELETE';
+  const r = await fetch(path, opts);
+  return r.json();
+}
+
+async function mcCheckHealth() {
+  try {
+    const res = await mcApi('/api/mc/health');
+    const pill = document.getElementById('mc-svc-status');
+    const detail = document.getElementById('mc-health-detail');
+    if (res.ok) {
+      const clients = res.service?.clients_loaded ?? '?';
+      pill.className = 'svc-pill svc-online';
+      pill.textContent = '● Service Online';
+      if (detail) detail.textContent = `${clients} client(s) loaded`;
+    } else {
+      pill.className = 'svc-pill svc-offline';
+      pill.textContent = '● Service Offline';
+      if (detail) detail.textContent = 'Missed call server not running';
+    }
+  } catch(e) {
+    const pill = document.getElementById('mc-svc-status');
+    pill.className = 'svc-pill svc-unknown';
+    pill.textContent = '● Unknown';
+  }
+}
+
+// ── Clients page ──────────────────────────────────────────────────────────────
+let _mcClients = [];
+async function mcLoadClients() {
+  const container = document.getElementById('mc-clients-container');
+  container.innerHTML = '<div class="mc-muted">Loading…</div>';
+  try {
+    _mcClients = await mcApi('/api/mc/clients');
+    mcRenderClients();
+  } catch(e) {
+    container.innerHTML = `<div class="mc-muted">Error loading clients: ${e}</div>`;
+  }
+}
+
+function mcRenderClients() {
+  const container = document.getElementById('mc-clients-container');
+  if (!_mcClients.length) {
+    container.innerHTML = `<div class="stub-card"><h3>No clients yet</h3><p>Click <strong>+ New Client</strong> to onboard your first Missed Call service client.</p></div>`;
+    return;
+  }
+  container.innerHTML = `
+    <div class="mc-card">
+      <table class="mc-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Twilio Number</th>
+            <th>Owner Phone</th>
+            <th>Sheet</th>
+            <th>Notify</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="mc-clients-tbody"></tbody>
+      </table>
+    </div>`;
+  const tbody = document.getElementById('mc-clients-tbody');
+  tbody.innerHTML = _mcClients.map(c => `
+    <tr>
+      <td>
+        <div style="font-weight:500">${escHtml(c.business_name)}</div>
+        <div class="mc-mono mc-muted">${escHtml(c.client_id)}</div>
+        ${c.owner_email ? `<div class="mc-muted" style="font-size:11px">${escHtml(c.owner_email)}</div>` : ''}
+      </td>
+      <td class="mc-mono">${escHtml(c.twilio_number)}</td>
+      <td class="mc-mono">${escHtml(c.owner_phone)}</td>
+      <td>
+        <div style="font-size:12px">${escHtml(c.sheet_name)}</div>
+        ${c.spreadsheet_id ? `<div class="mc-muted" style="font-size:10px;font-family:var(--mono);max-width:140px;overflow:hidden;text-overflow:ellipsis">${escHtml(c.spreadsheet_id.substring(0,20))}…</div>` : '<div class="mc-muted" style="font-size:11px">No sheet ID</div>'}
+      </td>
+      <td><span class="tag-industry">${escHtml(c.notification_channel)}</span></td>
+      <td>
+        <div class="mc-actions">
+          <button class="act act-edit" onclick="mcViewLeads('${escHtml(c.client_id)}','${escHtml(c.business_name)}')">Leads</button>
+          <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="mcRunDemo('${escHtml(c.client_id)}','${escHtml(c.business_name)}')">🎬 Run Demo</button>
+          <button class="act act-del" onclick="mcDeleteClient('${escHtml(c.client_id)}','${escHtml(c.business_name)}')">✕</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+async function mcDeleteClient(cid, name) {
+  if (!confirm(`Remove client "${name}"? This does NOT delete their Google Sheet or Twilio number.`)) return;
+  const res = await fetch('/api/mc/clients/' + encodeURIComponent(cid), {method:'DELETE'});
+  const data = await res.json();
+  if (data.ok) { toast('Client removed','info'); mcLoadClients(); }
+  else toast('Error: ' + data.error, 'err');
+}
+
+async function mcTestSms(cid) {
+  // Kept for backward compatibility — calls run_demo internally now
+  await mcRunDemo(cid, cid);
+}
+
+async function mcRunDemo(cid, name) {
+  toast(`Running demo for ${name}…`, 'info');
+  const res = await mcApi('/api/mc/run_demo', {client_id: cid});
+
+  // Always show the result modal regardless of partial success
+  const bizEl   = document.getElementById('demo-modal-biz');
+  const stepsEl = document.getElementById('demo-modal-steps');
+
+  bizEl.textContent = `${res.business_name || name}  ·  ${cid}`;
+
+  if (!res.ok && !res.steps) {
+    stepsEl.innerHTML = `<div style="color:var(--red);font-size:13px;padding:12px 0">${escHtml(res.error || 'Unknown error')}</div>`;
+  } else {
+    const stepMeta = [
+      { key: 'sms',    icon: '💬', label: 'Auto-SMS to owner phone' },
+      { key: 'sheet',  icon: '📋', label: 'Lead logged to Google Sheets' },
+      { key: 'notify', icon: '🔔', label: 'Owner notification sent' },
+    ];
+    stepsEl.innerHTML = stepMeta.map(({key, icon, label}) => {
+      const s = res.steps?.[key] || {};
+      const cls = s.ok ? 'demo-step-ok' : s.error ? 'demo-step-fail' : 'demo-step-skip';
+      const statusIcon = s.ok ? '✓' : s.error ? '✗' : '–';
+      return `<div class="demo-step ${cls}">
+        <div class="demo-step-icon">${icon}</div>
+        <div class="demo-step-body">
+          <div class="demo-step-label">${statusIcon} ${label}</div>
+          <div class="demo-step-detail">${escHtml(s.detail || '')}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('demo-modal-overlay').classList.add('open');
+}
+
+function closeDemoModal() {
+  document.getElementById('demo-modal-overlay').classList.remove('open');
+}
+
+// ── Leads page ────────────────────────────────────────────────────────────────
+let _mcLeadsClientId = '';
+function mcViewLeads(cid, name) {
+  _mcLeadsClientId = cid;
+  document.getElementById('mc-leads-title').textContent = `Leads — ${name}`;
+  document.getElementById('mc-leads-date').value = '';
+  document.getElementById('mc-leads-caller').value = '';
+  switchPage('mc-leads', null);
+  // Manually highlight nav tab
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  mcLoadLeads();
+}
+
+function mcClearFilters() {
+  document.getElementById('mc-leads-date').value = '';
+  document.getElementById('mc-leads-caller').value = '';
+  mcLoadLeads();
+}
+
+async function mcLoadLeads() {
+  if (!_mcLeadsClientId) return;
+  const container = document.getElementById('mc-leads-container');
+  container.innerHTML = '<div class="mc-muted">Loading…</div>';
+  const date = document.getElementById('mc-leads-date').value.trim();
+  const caller = document.getElementById('mc-leads-caller').value.trim();
+  let url = `/api/mc/clients/${encodeURIComponent(_mcLeadsClientId)}/leads`;
+  const params = [];
+  if (date) params.push('date=' + encodeURIComponent(date));
+  if (caller) params.push('caller=' + encodeURIComponent(caller));
+  if (params.length) url += '?' + params.join('&');
+  try {
+    const res = await mcApi(url);
+    if (!res.ok) { container.innerHTML = `<div class="mc-muted">Error: ${escHtml(res.error)}</div>`; return; }
+    const leads = res.leads;
+    document.getElementById('mc-leads-count').textContent = leads.length + ' leads';
+    if (!leads.length) {
+      container.innerHTML = '<div class="stub-card"><h3>No leads yet</h3><p>Leads will appear here once callers start reaching the Twilio number and replying to the auto-SMS.</p></div>';
+      return;
+    }
+    container.innerHTML = `<div class="mc-card">
+      <table class="mc-table">
+        <thead><tr><th>Timestamp</th><th>Caller</th><th>Message</th><th>Status</th></tr></thead>
+        <tbody>${leads.map(l => {
+          const sc = l.status || '';
+          const scClass = sc === 'replied' ? 'status-replied' : sc === 'new' ? 'status-new' : 'status-closed';
+          return `<tr>
+            <td class="mc-mono" style="white-space:nowrap;font-size:11px">${escHtml(l.timestamp||'')}</td>
+            <td class="mc-mono">${escHtml(l.caller_number||'')}</td>
+            <td><div class="lead-msg">${escHtml(l.message||'')}</div></td>
+            <td><span class="${scClass}" style="font-size:11px;font-weight:600">${escHtml(sc)}</span></td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
+  } catch(e) {
+    container.innerHTML = `<div class="mc-muted">Error: ${e}</div>`;
+  }
+}
+
+// ── New client form ───────────────────────────────────────────────────────────
+function mcResetForm() {
+  ['client_id','business_name','owner_phone','owner_email','twilio_number',
+   'spreadsheet_id','sheet_name','auto_sms_message','ack_sms_message'].forEach(id => {
+    const el = document.getElementById('f-' + id);
+    if (el) el.value = '';
+  });
+  document.getElementById('f-notification_channel').value = 'sms';
+  document.getElementById('mc-form-errors').style.display = 'none';
+  document.getElementById('mc-form-success').style.display = 'none';
+}
+
+async function mcSubmitNewClient() {
+  const errBox = document.getElementById('mc-form-errors');
+  const okBox = document.getElementById('mc-form-success');
+  errBox.style.display = 'none';
+  okBox.style.display = 'none';
+  const data = {
+    client_id: document.getElementById('f-client_id').value.trim(),
+    business_name: document.getElementById('f-business_name').value.trim(),
+    owner_phone: document.getElementById('f-owner_phone').value.trim(),
+    owner_email: document.getElementById('f-owner_email').value.trim(),
+    twilio_number: document.getElementById('f-twilio_number').value.trim(),
+    spreadsheet_id: document.getElementById('f-spreadsheet_id').value.trim(),
+    sheet_name: document.getElementById('f-sheet_name').value.trim(),
+    notification_channel: document.getElementById('f-notification_channel').value,
+    auto_sms_message: document.getElementById('f-auto_sms_message').value.trim(),
+    ack_sms_message: document.getElementById('f-ack_sms_message').value.trim(),
+  };
+  try {
+    const res = await mcApi('/api/mc/clients/new', data);
+    if (res.ok) {
+      okBox.className = 'form-success';
+      okBox.textContent = `✓ Client "${data.client_id}" saved. Click Clients to verify, then set Twilio webhooks and reload the service.`;
+      okBox.style.display = 'block';
+      mcResetForm();
+    } else {
+      errBox.innerHTML = '<ul>' + (res.errors||[res.error||'Unknown error']).map(e=>`<li>${escHtml(e)}</li>`).join('') + '</ul>';
+      errBox.className = 'form-errors';
+      errBox.style.display = 'block';
+    }
+  } catch(e) {
+    errBox.innerHTML = `<ul><li>Connection error: ${e}</li></ul>`;
+    errBox.className = 'form-errors';
+    errBox.style.display = 'block';
+  }
+}
+
+// ── Reports ───────────────────────────────────────────────────────────────────
+async function mcLoadReports() {
+  const grid = document.getElementById('mc-reports-grid');
+  if (!grid) return;
+  // Show per-client lead counts from the clients list
+  try {
+    const clients = await mcApi('/api/mc/clients');
+    if (!clients.length) return;
+    grid.innerHTML = clients.map(c => `
+      <div class="mc-card" style="cursor:pointer" onclick="mcViewLeads('${escHtml(c.client_id)}','${escHtml(c.business_name)}')">
+        <div class="mc-card-hdr"><span>${escHtml(c.business_name)}</span></div>
+        <div class="mc-card-body">
+          <div class="mc-mono" style="font-size:11px;color:var(--muted)">${escHtml(c.twilio_number)}</div>
+          <div style="margin-top:8px;font-size:12px;color:var(--muted)">${c.spreadsheet_id ? '✓ Sheet configured' : '⚠ No sheet ID'}</div>
+          <div style="margin-top:4px;font-size:12px;color:var(--blue)">→ View leads</div>
+        </div>
+      </div>`).join('');
+  } catch(e) {}
+}
+
+// ── Reply checker ─────────────────────────────────────────────────────────────
+async function checkReplies(silent = false) {
+  const btn = document.getElementById('btnCheckReplies');
+  if (btn) { btn.classList.add('loading'); btn.disabled = true; }
+  try {
+    const res = await api('/api/check_replies', {});
+    if (!res.ok) {
+      if (!silent) toast('Reply check failed: ' + (res.error || 'unknown error'), 'err');
+      return;
+    }
+    const r = res.result;
+    if (r.new_replies > 0) {
+      await loadAll(); // refresh table + stat counter
+      toast(`★ ${r.new_replies} new repl${r.new_replies === 1 ? 'y' : 'ies'} — click Replied tab`, 'ok');
+    } else if (!silent) {
+      toast('No new replies found', 'info');
+    }
+    if (r.errors && r.errors.length && !silent) {
+      toast('Reply check warning: ' + r.errors[0], 'err');
+    }
+  } catch (e) {
+    if (!silent) toast('Reply check error: ' + e, 'err');
+  } finally {
+    if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
+  }
+}
+
+// ── Keyboard shortcuts when panel open ───────────────────────────────────────
 document.addEventListener('keydown', e => {
   if (!document.getElementById('panel-overlay').classList.contains('open')) return;
   if (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
@@ -737,10 +3157,160 @@ document.addEventListener('keydown', e => {
   if (e.key==='a'||e.key==='A') panelApprove();
 });
 
-document.addEventListener('DOMContentLoaded', () => { loadAll(); loadIndustries(); });
-document.getElementById('send-modal').addEventListener('click', e => {
-  if (e.target===document.getElementById('send-modal')) closeModal();
+document.addEventListener('DOMContentLoaded', () => {
+  _loadPresets();
+  loadAll();
+  loadIndustries();
+  mcCheckHealth();
+  setInterval(mcCheckHealth, 30000);
+  setInterval(() => checkReplies(true), 300000);
+  const sendModal = document.getElementById('send-modal');
+  if (sendModal) sendModal.addEventListener('click', e => {
+    if (e.target === sendModal) closeModal();
+  });
 });
+
+
+// ══════════════════════════════════════════════════════════════════
+// PAGE: HEALTH  (Queue Health + Approved Unsent + Followups Due)
+// ══════════════════════════════════════════════════════════════════
+async function healthLoad() {
+  const wrap = document.getElementById('health-body');
+  if (!wrap) return;
+  wrap.innerHTML = '<div class="ops-loading">Loading…</div>';
+  try {
+    const [h, s, fq] = await Promise.all([
+      api('/api/queue_health'),
+      api('/api/status'),
+      api('/api/followup_queue')
+    ]);
+    const health   = h.health || {};
+    const counts   = fq.counts || {};
+    const ok       = health.queue_ok;
+    const statusDot = ok
+      ? '<span style="color:var(--green)">✓ Clean</span>'
+      : '<span style="color:var(--red)">⚠ Issues Found</span>';
+
+    wrap.innerHTML = `
+      <div class="ops-section-hdr">Queue Health ${statusDot}</div>
+
+      <div class="ops-stat-row">
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--blue)">${health.total_rows ?? '—'}</div><div class="ops-stat-l">Total Rows</div></div>
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--green)">${health.real_sends ?? '—'}</div><div class="ops-stat-l">Real Sends</div></div>
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--amber)">${health.contact_logged_only ?? '—'}</div><div class="ops-stat-l">Logged Only</div></div>
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--red)">${health.duplicate_rows ?? '—'}</div><div class="ops-stat-l">Duplicates</div></div>
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--red)">${health.invalid_emails ?? '—'}</div><div class="ops-stat-l">Invalid Emails</div></div>
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--amber)">${health.approved_no_email ?? '—'}</div><div class="ops-stat-l">Approved/No Email</div></div>
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--amber)">${health.missing_required ?? '—'}</div><div class="ops-stat-l">Missing Fields</div></div>
+      </div>
+
+      ${health.invalid_email_details && health.invalid_email_details.length ? `
+      <div class="ops-section-hdr" style="margin-top:20px">Invalid Emails</div>
+      <table class="ops-table"><thead><tr><th>Business</th><th>Bad Email</th></tr></thead><tbody>
+      ${health.invalid_email_details.map(e=>`<tr><td>${e.business_name||'—'}</td><td style="color:var(--red);font-family:var(--mono);font-size:12px">${e.email}</td></tr>`).join('')}
+      </tbody></table>` : ''}
+
+      <div class="ops-section-hdr" style="margin-top:20px">Approved but Unsent</div>
+      <div class="ops-stat-row">
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--amber)">${s.approved_unsent ?? '—'}</div><div class="ops-stat-l">Approved Unsent</div></div>
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--green)">${s.sent ?? '—'}</div><div class="ops-stat-l">Real Sends</div></div>
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--muted)">${s.sent_logged_only ?? '—'}</div><div class="ops-stat-l">Logged Only</div></div>
+      </div>
+      ${(s.approved_unsent > 0)
+        ? `<div class="ops-notice ops-notice-amber">⚠ ${s.approved_unsent} row(s) are approved but haven't been sent yet. Switch to the Outreach tab to send them.</div>`
+        : `<div class="ops-notice ops-notice-green">✓ No approved rows waiting to be sent.</div>`}
+
+      <div class="ops-section-hdr" style="margin-top:20px">Follow-Ups Due</div>
+      <div class="ops-stat-row">
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--red)">${counts.overdue ?? 0}</div><div class="ops-stat-l">Overdue</div></div>
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--amber)">${counts.today ?? 0}</div><div class="ops-stat-l">Due Today</div></div>
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--blue)">${counts.this_week ?? 0}</div><div class="ops-stat-l">This Week</div></div>
+        <div class="ops-stat"><div class="ops-stat-n" style="color:var(--muted)">${counts.upcoming ?? 0}</div><div class="ops-stat-l">Upcoming</div></div>
+      </div>
+      ${(counts.overdue > 0)
+        ? `<div class="ops-notice ops-notice-red">🔴 ${counts.overdue} follow-up(s) overdue. Switch to Follow-Up tab to action them.</div>`
+        : (counts.today > 0)
+          ? `<div class="ops-notice ops-notice-amber">🟡 ${counts.today} follow-up(s) due today.</div>`
+          : `<div class="ops-notice ops-notice-green">✓ No overdue follow-ups.</div>`}
+
+      <div style="margin-top:16px">
+        <button class="btn btn-ghost" onclick="healthLoad()"><span class="spin"></span>↻ Refresh Health</button>
+      </div>
+    `;
+  } catch(e) {
+    wrap.innerHTML = `<div class="ops-error">Failed to load health data: ${e.message}</div>`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════
+// PAGE: EXCEPTIONS
+// ══════════════════════════════════════════════════════════════════
+const _EX_LABELS = {
+  INVALID_EMAIL:      { label: 'Invalid Email',        color: 'var(--red)' },
+  MISSING_EMAIL:      { label: 'Missing Email',         color: 'var(--amber)' },
+  ASSET_EMAIL:        { label: 'Asset Filename Email',  color: 'var(--red)' },
+  POSSIBLE_DUPLICATE: { label: 'Possible Duplicate',    color: 'var(--amber)' },
+  PRIOR_CONTACT:      { label: 'Prior Contact (No MID)',color: 'var(--amber)' },
+  DRAFT_ERROR:        { label: 'Draft Error',           color: 'var(--red)' },
+  APPROVED_NO_EMAIL:  { label: 'Approved / No Email',   color: 'var(--red)' },
+  FOLLOWUP_CONFLICT:  { label: 'Followup Conflict',     color: 'var(--amber)' },
+};
+
+async function exceptionsLoad() {
+  const wrap = document.getElementById('exceptions-body');
+  if (!wrap) return;
+  wrap.innerHTML = '<div class="ops-loading">Scanning queue for exceptions…</div>';
+  try {
+    const d = await api('/api/exceptions');
+    if (!d.ok) { wrap.innerHTML = `<div class="ops-error">Error: ${d.error}</div>`; return; }
+
+    const flagBadge = (f) => {
+      const info = _EX_LABELS[f] || { label: f, color: 'var(--muted)' };
+      return `<span class="ex-flag" style="border-color:${info.color};color:${info.color}">${info.label}</span>`;
+    };
+
+    const countRows = Object.entries(d.counts || {}).filter(([,v])=>v>0);
+
+    wrap.innerHTML = `
+      <div class="ops-section-hdr">
+        Exception Summary
+        <span style="font-size:12px;font-weight:400;color:${d.exception_rows>0?'var(--red)':'var(--green)'}">
+          ${d.exception_rows} of ${d.total_rows} rows flagged
+        </span>
+      </div>
+
+      ${countRows.length ? `
+      <div class="ex-counts">
+        ${countRows.map(([f,n])=>`
+          <div class="ex-count-card">
+            <div class="ex-count-n" style="color:${(_EX_LABELS[f]||{}).color||'var(--muted)'}">${n}</div>
+            <div class="ex-count-l">${(_EX_LABELS[f]||{}).label||f}</div>
+          </div>`).join('')}
+      </div>` : `<div class="ops-notice ops-notice-green">✓ No exceptions found. Queue is clean.</div>`}
+
+      ${d.exception_rows > 0 ? `
+      <div class="ops-section-hdr" style="margin-top:20px">Exception Rows</div>
+      <table class="ops-table">
+        <thead><tr><th>Business</th><th>City</th><th>Email</th><th>Flags</th></tr></thead>
+        <tbody>
+          ${(d.rows||[]).map(r=>`
+            <tr>
+              <td style="font-weight:500">${r.business_name||'—'}</td>
+              <td style="color:var(--muted);font-size:12px">${r.city||''}</td>
+              <td style="font-family:var(--mono);font-size:11px;color:${r.to_email?'var(--text)':'var(--amber)'}">${r.to_email||'<em>none</em>'}</td>
+              <td>${(r.exception_flags||[]).map(flagBadge).join(' ')}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>` : ''}
+
+      <div style="margin-top:16px">
+        <button class="btn btn-ghost" onclick="exceptionsLoad()">↻ Refresh Exceptions</button>
+      </div>
+    `;
+  } catch(e) {
+    wrap.innerHTML = `<div class="ops-error">Failed to load exceptions: ${e.message}</div>`;
+  }
+}
 </script>
 </body>
 </html>
