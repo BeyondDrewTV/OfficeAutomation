@@ -2,6 +2,9 @@
 
 Last Updated: 2026-03-15
 
+## Copperline Version
+v0.2
+
 ## Current Phase
 Lead Acquisition Engine
 

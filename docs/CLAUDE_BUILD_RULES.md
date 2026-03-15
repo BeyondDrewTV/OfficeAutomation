@@ -89,3 +89,32 @@ After each completed pass:
 - Update `PROJECT_STATE.md` — Last Completed Pass, Next Pass
 - Update `CURRENT_BUILD.md` — mark completed steps, define next step scope
 - Append to `CHANGELOG_AI.md` — date, pass name, description, commit hash
+
+---
+
+## Automatic Documentation Updates
+
+After completing any implementation pass, update documentation in this order:
+
+**1. Update `docs/PROJECT_STATE.md`**
+- Set Last Updated to today's date
+- Set Last Completed Pass name and commit hash
+- Set Next Pass to the next queued item
+
+**2. Append entry to `docs/CHANGELOG_AI.md`**
+- Date
+- Pass name and description
+- Files touched (exact paths)
+- Commit hash
+
+**3. Update `AI_CONTROL_PANEL.md`**
+- Current Build Pass
+- Last Completed Pass + commit hash
+- Repository Version (if incremented)
+
+**4. If system architecture changed, update `docs/COPPERLINE_OVERVIEW.md`**
+- New tech stack entries
+- New repo structure entries
+- Changed data flow
+
+This documentation update is part of the pass — not optional.

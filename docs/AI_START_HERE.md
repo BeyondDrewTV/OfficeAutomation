@@ -2,12 +2,26 @@
 
 If you are an AI assistant joining this repository, start here.
 
-## Read these files in order
+## Fast AI Startup
 
-1. `docs/PROJECT_STATE.md` — current phase, last commit, next pass
-2. `docs/CURRENT_BUILD.md` — what is approved to build right now
-3. `docs/PROTECTED_SYSTEMS.md` — what must not be touched
-4. `docs/COPPERLINE_OVERVIEW.md` — full system understanding
+If you are a new AI session, read these 4 files:
+
+1. `AI_CONTROL_PANEL.md` — single-file project snapshot
+2. `docs/PROJECT_STATE.md` — current phase, version, last/next pass
+3. `docs/CURRENT_BUILD.md` — approved scope for this session
+4. `docs/PROTECTED_SYSTEMS.md` — what must not be touched
+
+These four files contain the complete project state under ~1,000 tokens.
+Do not start implementing until you have read all four.
+
+## Full Context (if needed)
+
+For deeper understanding, also read:
+
+- `docs/COPPERLINE_OVERVIEW.md` — full system description and repo layout
+- `docs/DISCOVERY_MAP_VISION.md` — map strategy and design philosophy
+- `docs/CLAUDE_BUILD_RULES.md` — implementation discipline and pass report format
+- `docs/CHANGELOG_AI.md` — complete development history
 
 ## What this project is
 
