@@ -12,17 +12,19 @@ Lead Acquisition Engine
 Discovery Map System
 
 ## Last Completed Pass
-Runtime Verification Hotfixes
+Clients Route Fix
 
-- `api()`: throws descriptive `Error` on non-OK HTTP — fixes `SyntaxError: Unexpected end of input` from 404 pages
-- Map click guard: `_mapDrawCircle` only fires when `_mapResultItems` is empty — prevents accidental result wipe
-- `.btn-coverage` contrast raised — button now readable in toolbar
-- Parse check: `vm.Script` PARSE OK on served JS post-fix
+- Aligned frontend `/api/mc/*` paths with actual backend routes
+- `mcLoadClients()`: `/api/mc/clients` → `/api/clients`
+- `mcSaveNewClient()`: `/api/mc/clients/new` → `/api/clients/add`
+- `mcRunDemo()`: `/api/mc/run_demo` → `/api/demo_run`
+- `mcApi()`: added `r.ok` guard (same pattern as `api()` fix)
+- 2 unimplemented routes remain: DELETE client, GET client leads
 
-Commit: `2b202cd`
+Commit: `4c390fe`
 
 ## Previous Completed Pass
-Stabilization Pass — Defensive Fixes (Steps 3–7) — `03faaf8`
+Runtime Verification Hotfixes — `2b202cd`
 
 - Added `_mapAreaLabel(markers)`: frequency-counts `biz.city` from result set, returns most common city name, null if no city data
 - History entry now stores `label` field alongside existing fields

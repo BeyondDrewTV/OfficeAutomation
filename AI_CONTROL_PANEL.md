@@ -15,9 +15,9 @@ Discovery Map System
 Step 8 — Search Visible Area (not yet scoped)
 
 ## Last Completed Pass
-Runtime Verification Hotfixes
+Clients Route Fix
 
-Commit: `2b202cd`
+Commit: `4c390fe`
 
 ## Next Pass
 Step 8 — Search Visible Area (scope questions in CURRENT_BUILD.md)

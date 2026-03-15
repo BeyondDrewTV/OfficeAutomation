@@ -7,6 +7,34 @@ Update this file at the end of every pass.
 
 ## 2026-03-15
 
+### Clients Route Fix
+
+**Root cause:** Frontend was calling `/api/mc/clients`, `/api/mc/clients/new`,
+and `/api/mc/run_demo`. Backend never had those paths — it implements
+`/api/clients`, `/api/clients/add`, and `/api/demo_run` respectively. The
+mismatch caused 404s that surfaced as `SyntaxError: Unexpected end of input`
+before the `api()` HTTP guard was in place.
+
+**Fixes:**
+- `mcApi()`: added `r.ok` guard matching the `api()` fix in `2b202cd`
+- `mcLoadClients()` (×2 call sites): `/api/mc/clients` → `/api/clients`
+- `mcSaveNewClient()`: `/api/mc/clients/new` → `/api/clients/add`
+- `mcRunDemo()`: `/api/mc/run_demo` → `/api/demo_run`
+
+**Remaining unimplemented:** `DELETE /api/mc/clients/{id}` and
+`GET /api/mc/clients/{id}/leads` — no backend routes exist for these.
+Buttons will show a clean error toast. Backend work needed separately.
+
+**Schema note:** Backend client fields use `client_id`, `business_name`,
+`phone`, `sms_reply`. Frontend renders `c.twilio_number` which is not in the
+backend schema — that cell will render blank until schema is aligned.
+
+**File changed:** `lead_engine/dashboard_static/index.html`
+
+**Commit:** `4c390fe`
+
+---
+
 ### Runtime Verification Hotfixes
 
 **Diagnosed from live browser session (5 screenshots + console log).**
