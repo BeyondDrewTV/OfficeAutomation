@@ -7,6 +7,28 @@ Update this file at the end of every pass.
 
 ## 2026-03-15
 
+### Step 5 — Discovery Coverage Memory
+
+**Goal:** Persist prior search areas as faint map overlays for the current
+session so the operator can see where they have already searched.
+
+**Changes:**
+- Added `_mapCoverageCircles[]` module variable
+- Added `_mapClearCoverage()` — calls `.remove()` on each overlay, resets
+  array, hides `btnClearCoverage`
+- Added `.btn-coverage` CSS class for the toolbar button
+- Added `#btnClearCoverage` button to map toolbar (`display:none` by default)
+- Wired `mapSearch()` `res.ok` branch to snapshot `_mapCenter` + `_mapRadiusM`
+  as `L.circle` with `interactive:false`, `dashArray:'4 4'`, `fillOpacity:0.04`,
+  blue tint — pushed to `_mapCoverageCircles[]`, button revealed
+- Active circle, drag handle, clustering, result markers all unchanged
+
+**File changed:** `lead_engine/dashboard_static/index.html`
+
+**Commit:** `f27a472`
+
+---
+
 ### Step 4 — Map Result Usability Polish
 
 **Goal:** Add sort and filter controls to the results panel without touching

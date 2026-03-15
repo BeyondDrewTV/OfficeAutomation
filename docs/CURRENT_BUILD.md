@@ -4,7 +4,7 @@
 Discovery Map — Frontend Improvements
 
 ## Status
-Step 4 complete. Step 5 not yet scoped.
+Step 5 complete. Step 6 not yet scoped.
 
 ---
 
@@ -19,18 +19,23 @@ Commit: `c0caa17`
 ---
 
 ## Completed: Step 4 — Map Result Usability Polish
-
-Added sort and filter controls to the results panel. Sort select (default /
-Name A–Z / City A–Z) and email-only checkbox filter. `_mapRenderPanel()`
-applies filter+sort at render time from control state; `_mapResultItems[]`
-is never mutated. Count shows `(N of M)` when filter active. Controls reset
-on clear.
-
 Commit: `a19bc16`
 
 ---
 
-## Next: Step 5 — Search Visible Area Button
+## Completed: Step 5 — Discovery Coverage Memory
+
+After a successful search, the searched area is snapshotted as a faint blue
+dashed `L.circle` overlay (`interactive:false`, `fillOpacity:0.04`). Overlays
+accumulate per session. A `Clear Coverage` button appears in the toolbar after
+the first search and calls `_mapClearCoverage()` to remove all overlays.
+Active circle and all existing behavior unchanged. No localStorage, no backend.
+
+Commit: `f27a472`
+
+---
+
+## Next: Step 6 — Search Visible Area Button
 
 Scope to be fully defined before implementation begins.
 
@@ -42,6 +47,7 @@ cells and runs sequential `/api/discover_area` calls across each cell.
 - How to handle rate limiting / delays between tile calls?
 - What UI feedback during a multi-tile search?
 - How do accumulated markers from multiple tiles interact with clustering?
+- Coverage memory (Step 5) means tiled searches would auto-populate overlays — confirm desired behavior.
 
 ### Out of Scope for this pass
 - Territory heatmaps

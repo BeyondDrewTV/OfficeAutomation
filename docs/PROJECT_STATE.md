@@ -12,22 +12,23 @@ Lead Acquisition Engine
 Discovery Map System
 
 ## Last Completed Pass
-Step 4 — Map Result Usability Polish
+Step 5 — Discovery Coverage Memory
 
-- Added sort select (default / Name A–Z / City A–Z) and email-only filter checkbox to results panel
-- `_mapRenderPanel()` applies filter+sort from control state; `_mapResultItems[]` never mutated
-- Count updates to show `(N of M)` when filter is active
-- `_mapClearResultMarkers()` resets sort and filter controls on clear
+- Added `_mapCoverageCircles[]` session array
+- Added `_mapClearCoverage()` function
+- On successful search, snapshots `_mapCenter` + `_mapRadiusM` as faint blue dashed `L.circle` overlay (`interactive:false`)
+- `Clear Coverage` button added to toolbar, hidden until first search
+- Active circle and all existing behavior unchanged
+
+Commit: `f27a472`
+
+## Previous Pass
+Step 4 — Map Result Usability Polish
 
 Commit: `a19bc16`
 
-## Previous Pass
-Step 3 — Results Side Panel
-
-Commit: `c0caa17`
-
 ## Next Pass
-Step 5 — Search Visible Area (scope to be defined before implementation)
+Step 6 — Search Visible Area (scope questions still open in CURRENT_BUILD.md)
 
 ## Upcoming Passes
 - Search Visible Area button
