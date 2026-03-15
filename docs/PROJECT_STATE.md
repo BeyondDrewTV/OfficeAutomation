@@ -12,24 +12,22 @@ Lead Acquisition Engine
 Discovery Map System
 
 ## Last Completed Pass
-Step 6 — Discovery History List
+Step 7 — Human-Readable Discovery Labels
 
-- Added `_mapSearchHistory[]` session array (max 10, newest-first)
-- Added `_mapRenderHistory()` and `_mapClearHistory()`
-- Each successful search appends `{lat, lng, radiusM, found}` entry
-- History list renders below map, hidden until first search
-- Click restores `_mapRadiusM`, calls `_mapDrawCircle()`, recenters view
-- Coverage overlays and clustering unchanged
+- Added `_mapAreaLabel(markers)`: frequency-counts `biz.city` from result set, returns most common city name, null if no city data
+- History entry now stores `label` field alongside existing fields
+- `_mapRenderHistory()` uses `entry.label` as primary text, falls back to `lat/lng` coords; secondary shows radius + found count; exact coords preserved as `title` tooltip
+- No new API calls, no reverse geocoding
+
+Commit: `3f86767`
+
+## Previous Pass
+Step 6 — Discovery History List
 
 Commit: `6d79c64`
 
-## Previous Pass
-Step 5 — Discovery Coverage Memory
-
-Commit: `f27a472`
-
 ## Next Pass
-Step 7 — Search Visible Area (scope questions in CURRENT_BUILD.md)
+Step 8 — Search Visible Area (scope questions in CURRENT_BUILD.md)
 
 ## Upcoming Passes
 - Search Visible Area button

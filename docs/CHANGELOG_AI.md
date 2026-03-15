@@ -7,6 +7,26 @@ Update this file at the end of every pass.
 
 ## 2026-03-15
 
+### Step 7 — Human-Readable Discovery Labels
+
+**Goal:** Replace raw coordinates as primary history label with a city name
+derived from already-loaded result data.
+
+**Changes:**
+- Added `_mapAreaLabel(markers)`: frequency-counts `biz.city` across result
+  set, returns most common city name, null if no city data present
+- Wired `mapSearch()` `res.ok`: computes label before history unshift,
+  stores as `label` field on history entry
+- Updated `_mapRenderHistory()`: `entry.label` as primary (fallback to
+  `lat/lng` coords); secondary shows `X.X mi — N found`; exact coords
+  preserved as `title` attribute for hover
+
+**File changed:** `lead_engine/dashboard_static/index.html`
+
+**Commit:** `3f86767`
+
+---
+
 ### Step 6 — Discovery History List
 
 **Goal:** Session-only recent searches list below the map. Click to refocus.

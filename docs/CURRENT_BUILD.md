@@ -4,7 +4,7 @@
 Discovery Map — Frontend Improvements
 
 ## Status
-Step 6 complete. Step 7 not yet scoped.
+Step 7 complete. Step 8 not yet scoped.
 
 ---
 
@@ -12,21 +12,23 @@ Step 6 complete. Step 7 not yet scoped.
 ## Completed: Step 3 — Results Side Panel — `c0caa17`
 ## Completed: Step 4 — Map Result Usability Polish — `a19bc16`
 ## Completed: Step 5 — Discovery Coverage Memory — `f27a472`
+## Completed: Step 6 — Discovery History List — `6d79c64`
 
 ---
 
-## Completed: Step 6 — Discovery History List
+## Completed: Step 7 — Human-Readable Discovery Labels
 
-Session-only history of successful searches, rendered below the map.
-Each entry stores `{lat, lng, radiusM, found}`. Max 10 entries, newest-first.
-Clicking a row sets `_mapRadiusM`, calls `_mapDrawCircle()`, and recenters
-the map view. `_mapClearHistory()` resets. Coverage overlays unaffected.
+`_mapAreaLabel(markers)` frequency-counts `biz.city` across result set and
+returns the most common city name, or null if no city data exists. Label
+stored in history entry as `label` field. `_mapRenderHistory()` uses it as
+primary text with `lat/lng` fallback; secondary line shows radius + found
+count; exact coords available as `title` tooltip on the label span.
 
-Commit: `6d79c64`
+Commit: `3f86767`
 
 ---
 
-## Next: Step 7 — Search Visible Area Button
+## Next: Step 8 — Search Visible Area Button
 
 Scope to be fully defined before implementation begins.
 

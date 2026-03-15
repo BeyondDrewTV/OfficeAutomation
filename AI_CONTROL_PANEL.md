@@ -12,15 +12,15 @@ Lead Acquisition Engine
 Discovery Map System
 
 ## Current Build Pass
-Step 7 — Search Visible Area (not yet scoped)
+Step 8 — Search Visible Area (not yet scoped)
 
 ## Last Completed Pass
-Step 6 — Discovery History List
+Step 7 — Human-Readable Discovery Labels
 
-Commit: `6d79c64`
+Commit: `3f86767`
 
 ## Next Pass
-Step 7 — Search Visible Area (scope questions in CURRENT_BUILD.md)
+Step 8 — Search Visible Area (scope questions in CURRENT_BUILD.md)
 
 ## Upcoming Passes
 - Search Visible Area button
