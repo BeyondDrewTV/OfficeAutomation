@@ -12,15 +12,15 @@ Lead Acquisition Engine
 Discovery Map System
 
 ## Current Build Pass
-Step 6 — Search Visible Area (not yet scoped)
+Step 7 — Search Visible Area (not yet scoped)
 
 ## Last Completed Pass
-Step 5 — Discovery Coverage Memory
+Step 6 — Discovery History List
 
-Commit: `f27a472`
+Commit: `6d79c64`
 
 ## Next Pass
-Step 6 — Search Visible Area (scope questions in CURRENT_BUILD.md)
+Step 7 — Search Visible Area (scope questions in CURRENT_BUILD.md)
 
 ## Upcoming Passes
 - Search Visible Area button

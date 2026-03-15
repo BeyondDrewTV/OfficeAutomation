@@ -12,23 +12,24 @@ Lead Acquisition Engine
 Discovery Map System
 
 ## Last Completed Pass
-Step 5 — Discovery Coverage Memory
+Step 6 — Discovery History List
 
-- Added `_mapCoverageCircles[]` session array
-- Added `_mapClearCoverage()` function
-- On successful search, snapshots `_mapCenter` + `_mapRadiusM` as faint blue dashed `L.circle` overlay (`interactive:false`)
-- `Clear Coverage` button added to toolbar, hidden until first search
-- Active circle and all existing behavior unchanged
+- Added `_mapSearchHistory[]` session array (max 10, newest-first)
+- Added `_mapRenderHistory()` and `_mapClearHistory()`
+- Each successful search appends `{lat, lng, radiusM, found}` entry
+- History list renders below map, hidden until first search
+- Click restores `_mapRadiusM`, calls `_mapDrawCircle()`, recenters view
+- Coverage overlays and clustering unchanged
+
+Commit: `6d79c64`
+
+## Previous Pass
+Step 5 — Discovery Coverage Memory
 
 Commit: `f27a472`
 
-## Previous Pass
-Step 4 — Map Result Usability Polish
-
-Commit: `a19bc16`
-
 ## Next Pass
-Step 6 — Search Visible Area (scope questions still open in CURRENT_BUILD.md)
+Step 7 — Search Visible Area (scope questions in CURRENT_BUILD.md)
 
 ## Upcoming Passes
 - Search Visible Area button

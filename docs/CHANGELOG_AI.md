@@ -7,6 +7,29 @@ Update this file at the end of every pass.
 
 ## 2026-03-15
 
+### Step 6 — Discovery History List
+
+**Goal:** Session-only recent searches list below the map. Click to refocus.
+
+**Changes:**
+- Added `_mapSearchHistory[]`, `MAP_HISTORY_MAX = 10`
+- Added `_mapRenderHistory()`: builds `.mh-item` rows with `lat/lng`, radius
+  in miles, and `found` count; click handler sets `_mapRadiusM`, calls
+  `_mapDrawCircle()`, then `setView()` to recenter
+- Added `_mapClearHistory()`: resets array, hides `#map-history`
+- Added `#map-history` HTML below `#map-status` (hidden until first entry)
+- Added CSS: `#map-history`, `.mh-hdr`, `.mh-title`, `.mh-clear`,
+  `.mh-list`, `.mh-item`, `.mh-item-label`, `.mh-item-meta`
+- Wired `mapSearch()` `res.ok`: `unshift` entry, trim to `MAP_HISTORY_MAX`,
+  call `_mapRenderHistory()`
+- Coverage, clustering, result markers unchanged
+
+**File changed:** `lead_engine/dashboard_static/index.html`
+
+**Commit:** `6d79c64`
+
+---
+
 ### Step 5 — Discovery Coverage Memory
 
 **Goal:** Persist prior search areas as faint map overlays for the current
