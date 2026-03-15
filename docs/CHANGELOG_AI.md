@@ -7,6 +7,26 @@ Update this file at the end of every pass.
 
 ## 2026-03-15
 
+### Step 4 — Map Result Usability Polish
+
+**Goal:** Add sort and filter controls to the results panel without touching
+discovery flow, backend, or clustering.
+
+**Changes:**
+- Added CSS: `.mrp-controls`, `.mrp-ctrl-select`, `.mrp-ctrl-chk` classes
+- Added HTML controls row (`#mrp-controls`) between header and list:
+  sort select (default / Name A–Z / City A–Z) + email-only checkbox
+- Refactored `_mapRenderPanel()` to read filter+sort state from DOM controls
+  before building list; `_mapResultItems[]` is never mutated
+- Count shows `(N of M)` when email filter is active
+- Extended `_mapClearResultMarkers()` to reset `mrp-sort` and `mrp-email-only`
+
+**File changed:** `lead_engine/dashboard_static/index.html`
+
+**Commit:** `a19bc16`
+
+---
+
 ### Step 3 — Results Side Panel (Discovery Map)
 
 **Goal:** Show a scrollable list of discovered businesses alongside the map

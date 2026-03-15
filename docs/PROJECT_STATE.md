@@ -12,24 +12,22 @@ Lead Acquisition Engine
 Discovery Map System
 
 ## Last Completed Pass
-Step 3 — Results Side Panel
+Step 4 — Map Result Usability Polish
 
-- Added `#map-layout` flex wrapper around map and panel
-- Added `#map-results-panel` (260px, hidden until results exist)
-- Added `_mapResultItems[]` array storing `{biz, marker}` pairs
-- Added `_mapRenderPanel()` — builds list DOM, binds click to `zoomToShowLayer` + `openPopup`
-- Extended `_mapClearResultMarkers()` to clear panel
-- Extended `_mapPlaceResultMarkers()` to populate items and call render
+- Added sort select (default / Name A–Z / City A–Z) and email-only filter checkbox to results panel
+- `_mapRenderPanel()` applies filter+sort from control state; `_mapResultItems[]` never mutated
+- Count updates to show `(N of M)` when filter is active
+- `_mapClearResultMarkers()` resets sort and filter controls on clear
+
+Commit: `a19bc16`
+
+## Previous Pass
+Step 3 — Results Side Panel
 
 Commit: `c0caa17`
 
-## Previous Pass
-Step 2 — Marker Clustering on Discovery Map
-
-Commit: `38da7c3`
-
 ## Next Pass
-Step 4 — Search Visible Area button
+Step 5 — Search Visible Area (scope to be defined before implementation)
 
 ## Upcoming Passes
 - Search Visible Area button

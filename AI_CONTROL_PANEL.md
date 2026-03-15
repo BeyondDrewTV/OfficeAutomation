@@ -12,15 +12,15 @@ Lead Acquisition Engine
 Discovery Map System
 
 ## Current Build Pass
-Step 4 — Search Visible Area (not yet started)
+Step 5 — Search Visible Area (not yet scoped)
 
 ## Last Completed Pass
-Step 3 — Results Side Panel
+Step 4 — Map Result Usability Polish
 
-Commit: `c0caa17`
+Commit: `a19bc16`
 
 ## Next Pass
-Step 4 — Search Visible Area button (scope to be defined)
+Step 5 — Search Visible Area (scope questions in CURRENT_BUILD.md)
 
 ## Upcoming Passes
 - Search Visible Area button

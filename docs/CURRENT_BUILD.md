@@ -4,7 +4,7 @@
 Discovery Map — Frontend Improvements
 
 ## Status
-Step 3 complete. Step 4 not yet started.
+Step 4 complete. Step 5 not yet scoped.
 
 ---
 
@@ -14,27 +14,36 @@ Commit: `38da7c3`
 ---
 
 ## Completed: Step 3 — Results Side Panel
-
-After discovery, a scrollable panel appears to the right of the map listing
-each discovered business with name, city, and email indicator. Clicking a
-row calls `zoomToShowLayer` + `openPopup` to surface the marker through
-any active cluster.
-
 Commit: `c0caa17`
 
 ---
 
-## Next: Step 4 — Search Visible Area Button
+## Completed: Step 4 — Map Result Usability Polish
 
-Add a button that tiles the current map viewport into a grid of small-radius
+Added sort and filter controls to the results panel. Sort select (default /
+Name A–Z / City A–Z) and email-only checkbox filter. `_mapRenderPanel()`
+applies filter+sort at render time from control state; `_mapResultItems[]`
+is never mutated. Count shows `(N of M)` when filter active. Controls reset
+on clear.
+
+Commit: `a19bc16`
+
+---
+
+## Next: Step 5 — Search Visible Area Button
+
+Scope to be fully defined before implementation begins.
+
+Direction: button that tiles the current viewport into a grid of small-radius
 cells and runs sequential `/api/discover_area` calls across each cell.
 
-### Scope
-- Frontend: button, progress UI, tiling logic
-- Backend: may require a new endpoint or reuse existing `/api/discover_area`
-- To be fully scoped before implementation begins
+### Known scope questions
+- Reuse existing `/api/discover_area` endpoint or require new backend endpoint?
+- How to handle rate limiting / delays between tile calls?
+- What UI feedback during a multi-tile search?
+- How do accumulated markers from multiple tiles interact with clustering?
 
-### Out of Scope
+### Out of Scope for this pass
 - Territory heatmaps
 - Industry saturation metrics
 - Deployment changes
