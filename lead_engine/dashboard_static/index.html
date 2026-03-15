@@ -519,6 +519,11 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
 .mrp-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
 .mrp-dot.has-email{background:var(--green)}
 .mrp-dot.no-email{background:var(--copper)}
+.mrp-controls{display:flex;align-items:center;gap:6px;padding:7px 10px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.mrp-ctrl-select{flex:1;min-width:0;padding:3px 6px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--muted);font-family:var(--sans);font-size:11px;outline:none;cursor:pointer}
+.mrp-ctrl-select option{background:var(--surface2)}
+.mrp-ctrl-chk{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.mrp-ctrl-chk input{cursor:pointer;accent-color:var(--green)}
 .map-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 0 10px}
 .map-status{font-size:12px;color:var(--muted);min-height:18px}
 .map-instructions{font-size:12px;color:var(--muted);line-height:1.6;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px}
@@ -1119,6 +1124,14 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
     <div id="map-container"></div>
         <div id="map-results-panel">
           <div class="mrp-hdr">Results <span id="mrp-count"></span></div>
+          <div class="mrp-controls" id="mrp-controls">
+            <select id="mrp-sort" class="mrp-ctrl-select" onchange="_mapRenderPanel()">
+              <option value="">Order: default</option>
+              <option value="name">Sort: Name A–Z</option>
+              <option value="city">Sort: City A–Z</option>
+            </select>
+            <label class="mrp-ctrl-chk"><input type="checkbox" id="mrp-email-only" onchange="_mapRenderPanel()"> Email only</label>
+          </div>
           <div class="mrp-list" id="mrp-list"></div>
         </div>
       </div>
@@ -3680,21 +3693,42 @@ function _mapClearResultMarkers() {
   if (_mapClusterGroup) _mapClusterGroup.clearLayers();
   _mapResultMarkers = [];
   _mapResultItems   = [];
-  const panel = document.getElementById('map-results-panel');
-  const list  = document.getElementById('mrp-list');
-  const count = document.getElementById('mrp-count');
-  if (panel)  panel.classList.remove('visible');
-  if (list)   list.innerHTML = '';
-  if (count)  count.textContent = '';
+  const panel     = document.getElementById('map-results-panel');
+  const list      = document.getElementById('mrp-list');
+  const count     = document.getElementById('mrp-count');
+  const sortEl    = document.getElementById('mrp-sort');
+  const filterEl  = document.getElementById('mrp-email-only');
+  if (panel)    panel.classList.remove('visible');
+  if (list)     list.innerHTML = '';
+  if (count)    count.textContent = '';
+  if (sortEl)   sortEl.value   = '';
+  if (filterEl) filterEl.checked = false;
 }
 
 function _mapRenderPanel() {
-  const panel = document.getElementById('map-results-panel');
-  const list  = document.getElementById('mrp-list');
-  const count = document.getElementById('mrp-count');
+  const panel     = document.getElementById('map-results-panel');
+  const list      = document.getElementById('mrp-list');
+  const count     = document.getElementById('mrp-count');
+  const sortEl    = document.getElementById('mrp-sort');
+  const filterEl  = document.getElementById('mrp-email-only');
   if (!panel || !list || !count) return;
+
+  // Apply filter then sort — source array _mapResultItems is never mutated
+  const emailOnly = filterEl ? filterEl.checked : false;
+  const sortKey   = sortEl  ? sortEl.value      : '';
+
+  let items = emailOnly
+    ? _mapResultItems.filter(({ biz }) => biz.email && biz.email.length > 0)
+    : _mapResultItems.slice();
+
+  if (sortKey === 'name') {
+    items.sort((a, b) => (a.biz.name || '').localeCompare(b.biz.name || ''));
+  } else if (sortKey === 'city') {
+    items.sort((a, b) => (a.biz.city || '').localeCompare(b.biz.city || ''));
+  }
+
   list.innerHTML = '';
-  _mapResultItems.forEach(({ biz, marker }, idx) => {
+  items.forEach(({ biz, marker }) => {
     const hasEmail = biz.email && biz.email.length > 0;
     const item = document.createElement('div');
     item.className = 'mrp-item';
@@ -3710,7 +3744,9 @@ function _mapRenderPanel() {
     });
     list.appendChild(item);
   });
-  count.textContent = `(${_mapResultItems.length})`;
+  count.textContent = emailOnly
+    ? `(${items.length} of ${_mapResultItems.length})`
+    : `(${_mapResultItems.length})`;
   panel.classList.add('visible');
   setTimeout(() => { if (_mapInstance) _mapInstance.invalidateSize(); }, 50);
 }
