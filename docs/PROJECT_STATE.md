@@ -12,6 +12,16 @@ Lead Acquisition Engine
 Discovery Map System
 
 ## Last Completed Pass
+Emergency Fix — Duplicate `let _currentPage` SyntaxError
+
+- Removed stale duplicate `let _currentPage = 'outreach'` at line 2011
+- Leftover from Step 1 nav restructure; killed entire script block at parse time
+- Browser error: `Uncaught SyntaxError: Identifier '_currentPage' has already been declared`
+- Fix verified: `vm.Script` parse check passes on served JS block
+
+Commit: `761faaf`
+
+## Previous Completed Pass
 Step 7 — Human-Readable Discovery Labels
 
 - Added `_mapAreaLabel(markers)`: frequency-counts `biz.city` from result set, returns most common city name, null if no city data

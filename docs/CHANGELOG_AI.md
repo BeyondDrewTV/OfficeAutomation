@@ -7,6 +7,30 @@ Update this file at the end of every pass.
 
 ## 2026-03-15
 
+### Emergency Fix — Duplicate `let _currentPage` SyntaxError
+
+**Root cause:** Stale duplicate `let _currentPage = 'outreach'` declaration
+left over from the Step 1 nav restructure (commit `1dc811a`). The duplicate
+sat at line 2011, above the real declaration at line 2018. Browsers enforce
+strict `let` uniqueness in script scope and threw a fatal parse error:
+
+`Uncaught SyntaxError: Identifier '_currentPage' has already been declared`
+
+This killed the entire script block at parse time — nothing functioned.
+
+**Diagnosis path:** Browser DevTools console showed the exact error at line
+2018. Node `vm.Script` parse check on the served JS confirmed the issue and
+confirmed the fix.
+
+**Fix:** Removed the 5-line stale block (orphaned comment + duplicate `let`).
+Single declaration at line 2013 remains.
+
+**File changed:** `lead_engine/dashboard_static/index.html`
+
+**Commit:** `761faaf`
+
+---
+
 ### Step 7 — Human-Readable Discovery Labels
 
 **Goal:** Replace raw coordinates as primary history label with a city name
