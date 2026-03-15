@@ -3206,6 +3206,10 @@ async function mcApi(path, body) {
     : {};
   if (body === null) opts.method = 'DELETE';
   const r = await fetch(path, opts);
+  if (!r.ok) {
+    const text = await r.text().catch(() => '');
+    throw new Error(`mcApi ${path} returned ${r.status}: ${text.slice(0, 120)}`);
+  }
   return r.json();
 }
 
@@ -3237,7 +3241,7 @@ async function mcLoadClients() {
   const container = document.getElementById('mc-clients-container');
   container.innerHTML = '<div class="mc-muted">Loading…</div>';
   try {
-    _mcClients = await mcApi('/api/mc/clients');
+    _mcClients = await mcApi('/api/clients');
     mcRenderClients();
   } catch(e) {
     container.innerHTML = `<div class="mc-muted">Error loading clients: ${e}</div>`;
@@ -3306,7 +3310,7 @@ async function mcTestSms(cid) {
 
 async function mcRunDemo(cid, name) {
   toast(`Running demo for ${name}…`, 'info');
-  const res = await mcApi('/api/mc/run_demo', {client_id: cid});
+  const res = await mcApi('/api/demo_run', {client_id: cid});
 
   // Always show the result modal regardless of partial success
   const bizEl   = document.getElementById('demo-modal-biz');
@@ -3432,7 +3436,7 @@ async function mcSubmitNewClient() {
     ack_sms_message: document.getElementById('f-ack_sms_message').value.trim(),
   };
   try {
-    const res = await mcApi('/api/mc/clients/new', data);
+    const res = await mcApi('/api/clients/add', data);
     if (res.ok) {
       okBox.className = 'form-success';
       okBox.textContent = `✓ Client "${data.client_id}" saved. Click Clients to verify, then set Twilio webhooks and reload the service.`;
@@ -3456,7 +3460,7 @@ async function mcLoadReports() {
   if (!grid) return;
   // Show per-client lead counts from the clients list
   try {
-    const clients = await mcApi('/api/mc/clients');
+    const clients = await mcApi('/api/clients');
     if (!clients.length) return;
     grid.innerHTML = clients.map(c => `
       <div class="mc-card" style="cursor:pointer" onclick="mcViewLeads('${escHtml(c.client_id)}','${escHtml(c.business_name)}')">
