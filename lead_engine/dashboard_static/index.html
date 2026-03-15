@@ -8,6 +8,10 @@
 <!-- Leaflet CSS — loaded only once; used by Map Search tab -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- Leaflet.markercluster — automatic marker clustering for Discovery map -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 :root{
@@ -3650,9 +3654,10 @@ async function exDeleteRow(queueIndex, tableRowIndex) {
 // ══════════════════════════════════════════════════════════════════
 let _mapResultMarkers = [];
 let _mapInstance    = null;   // Leaflet map object
+let _mapClusterGroup = null;  // MarkerClusterGroup for result markers
 
 function _mapClearResultMarkers() {
-  _mapResultMarkers.forEach(m => m.remove());
+  if (_mapClusterGroup) _mapClusterGroup.clearLayers();
   _mapResultMarkers = [];
 }
 
@@ -3682,7 +3687,7 @@ function _mapPlaceResultMarkers(markers) {
       iconAnchor: [5, 5],
     });
     const marker = L.marker(pos, { icon })
-      .addTo(_mapInstance)
+      .addTo(_mapClusterGroup)
       .bindPopup(`<strong>${biz.name}</strong><br>${biz.city}<br><em>${biz.channel}${hasEmail ? ' \u2014 ' + biz.email : ''}</em>`);
     _mapResultMarkers.push(marker);
   });
@@ -3772,6 +3777,9 @@ function _mapInit() {
     maxZoom: 18,
   }).addTo(_mapInstance);
   console.log('[_mapInit] tile layer added');
+  _mapClusterGroup = L.markerClusterGroup();
+  _mapInstance.addLayer(_mapClusterGroup);
+  console.log('[_mapInit] cluster group initialized');
   _mapInstance.on('click', (e) => { _mapDrawCircle(e.latlng.lat, e.latlng.lng); });
   setTimeout(() => { _mapInstance.invalidateSize(); console.log('[_mapInit] invalidateSize @50ms, size:', _mapInstance.getSize()); }, 50);
   setTimeout(() => _mapInstance.invalidateSize(), 300);
