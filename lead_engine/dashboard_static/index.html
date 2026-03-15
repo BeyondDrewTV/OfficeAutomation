@@ -7,7 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="/static/copperline-favicon.svg">
 <!-- Leaflet CSS — loaded only once; used by Map Search tab -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 :root{
@@ -1836,12 +1836,13 @@ async function loadIndustries() {
 
 function _mapPopulateIndustries() {
   const dest = document.getElementById('map-industry');
+  console.log('[_mapPopulateIndustries] dest:', !!dest);
   if (!dest) return;
-  // Always fetch from API — the d-industry select may not be loaded yet
   api('/api/industries').then(list => {
+    console.log('[_mapPopulateIndustries] got', list?.length, 'industries:', list);
     dest.innerHTML = list.map(i => `<option value="${i}">${i.replace('_',' ')}</option>`).join('');
     dest.value = 'plumbing';
-  }).catch(() => {});
+  }).catch(err => { console.error('[_mapPopulateIndustries] fetch error:', err); });
 }
 
 async function testApiKey() {
@@ -1939,9 +1940,8 @@ function switchPage(name, el) {
   if (name === 'health')        healthLoad();
   if (name === 'exceptions')    exceptionsLoad();
   if (name === 'map') {
-    // Use rAF so the active class + display paint completes before
-    // Leaflet measures the container — otherwise it gets 0px height.
     requestAnimationFrame(() => {
+      console.log('[map] rAF fired. L defined:', typeof L !== 'undefined', '| container:', !!document.getElementById('map-container'));
       _mapInit();
       _mapPopulateIndustries();
     });
@@ -3564,25 +3564,28 @@ function mapClearCircle() {
 }
 
 function _mapInit() {
+  console.log('[_mapInit] called. _mapInstance:', !!_mapInstance, '| L defined:', typeof L !== 'undefined');
   if (_mapInstance) {
-    // Tab re-entered — force tile repaint
     setTimeout(() => _mapInstance.invalidateSize(), 50);
     return;
   }
   if (typeof L === 'undefined') {
+    console.warn('[_mapInit] L not yet defined — retrying in 100ms');
     setTimeout(_mapInit, 100);
     return;
   }
   const container = document.getElementById('map-container');
+  console.log('[_mapInit] container:', container, '| offsetHeight:', container?.offsetHeight);
   if (!container) return;
   _mapInstance = L.map('map-container', { zoomControl: true }).setView([MAP_DEFAULT_LAT, MAP_DEFAULT_LNG], 12);
+  console.log('[_mapInit] map created:', !!_mapInstance);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '\u00a9 <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     maxZoom: 18,
   }).addTo(_mapInstance);
+  console.log('[_mapInit] tile layer added');
   _mapInstance.on('click', (e) => { _mapDrawCircle(e.latlng.lat, e.latlng.lng); });
-  // Two invalidateSize calls: first after CSS settles, second after tiles start loading
-  setTimeout(() => _mapInstance.invalidateSize(), 50);
+  setTimeout(() => { _mapInstance.invalidateSize(); console.log('[_mapInit] invalidateSize @50ms, size:', _mapInstance.getSize()); }, 50);
   setTimeout(() => _mapInstance.invalidateSize(), 300);
 }
 
