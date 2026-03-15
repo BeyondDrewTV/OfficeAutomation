@@ -523,8 +523,8 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
   <div class="nav-tab" data-page="sprint" onclick="switchPage('sprint',this)" id="nav-sprint">⚡ Sprint</div>
   <div class="nav-tab" data-page="conversations" onclick="switchPage('conversations',this)" id="nav-conversations">💬 Conversations</div>
   <div class="nav-tab" data-page="cities" onclick="switchPage('cities',this)">🗺 Territory</div>
-  <div class="nav-tab" data-page="health" onclick="switchPage('health',this)" id="nav-health">🩺 Health</div>
-  <div class="nav-tab" data-page="exceptions" onclick="switchPage('exceptions',this)" id="nav-exceptions">⚠ Exceptions</div>
+  <div class="nav-tab" data-page="health" onclick="switchPage('health',this)" id="nav-health">🩺 Health<span id="nav-health-badge" style="display:none;margin-left:4px;background:var(--red);color:#fff;border-radius:10px;font-size:9px;font-weight:700;padding:1px 5px;vertical-align:middle"></span></div>
+  <div class="nav-tab" data-page="exceptions" onclick="switchPage('exceptions',this)" id="nav-exceptions">⚠ Exceptions<span id="nav-exceptions-badge" style="display:none;margin-left:4px;background:var(--red);color:#fff;border-radius:10px;font-size:9px;font-weight:700;padding:1px 5px;vertical-align:middle"></span></div>
   <div class="nav-tab" data-page="mc-clients" onclick="switchPage('mc-clients',this)">📞 Clients</div>
   <div class="nav-tab" data-page="mc-new" onclick="switchPage('mc-new',this)">＋ New Client</div>
   <div class="nav-tab" data-page="mc-reports" onclick="switchPage('mc-reports',this)">📊 Reports</div>
@@ -540,6 +540,7 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
   <div class="stat"><div class="stat-n amber" id="s-pending">—</div><div class="stat-lbl">Pending</div></div>
   <div class="stat"><div class="stat-n green" id="s-approved">—</div><div class="stat-lbl">Approved</div></div>
   <div class="stat"><div class="stat-n grey" id="s-sent">—</div><div class="stat-lbl">Sent</div></div>
+  <div class="stat" title="Sent via log_contact (no SMTP message-id — not a confirmed send)"><div class="stat-n" id="s-logged" style="color:var(--muted)">—</div><div class="stat-lbl" style="color:var(--muted)">Logged Only</div></div>
   <div class="stat" style="cursor:pointer" onclick="setFilter('replied',document.querySelector('[data-filter=replied]'))" title="Click to view replies">
     <div class="stat-n" id="s-replied" style="color:var(--copper)">—</div>
     <div class="stat-lbl" style="display:flex;align-items:center;gap:5px">
@@ -576,7 +577,7 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
     <input id="d-limit" class="d-input d-num" type="number" value="20" min="1" max="60">
     <button id="btnDiscover" class="btn btn-primary" onclick="discoverLeads()"><span class="spin"></span>⚡ Discover + Draft</button>
     <button id="btnTestKey" class="btn btn-ghost" onclick="testApiKey()">🔑 Test Key</button>
-    <button id="btnFollowup" class="btn btn-ghost" onclick="runFollowups()"><span class="spin"></span>🔁 Follow-Ups</button>
+    <button id="btnFollowup" class="btn btn-ghost" onclick="switchPage('followup',document.getElementById('nav-followup'))" title="Go to Follow-Up tab to generate and review follow-up drafts"><span class="spin"></span>🔁 Follow-Ups →</button>
   </div>
   <div id="api-key-notice" class="api-notice" style="display:none">
     ⚠️ <strong>GOOGLE_PLACES_API_KEY not set.</strong> Add it to Launch Dashboard.bat
@@ -900,6 +901,7 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
           <div class="panel-reason" id="panel-reason"></div>
           <span id="panel-opp-badge" style="margin-left:auto"></span>
         </div>
+        <div id="panel-approval-reason" style="display:none;font-size:10px;color:var(--green);margin-top:4px;font-weight:600;letter-spacing:.03em"></div>
       </div>
       <!-- AI Insight section — shown when lead_insight_sentence exists -->
       <div class="panel-section" id="panel-insight-section" style="display:none">
@@ -934,6 +936,8 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
     </div>
     <div style="display:flex;gap:7px;flex-wrap:wrap">
       <button class="btn btn-ghost" onclick="fqLoad()">↻ Refresh</button>
+      <button class="btn btn-ghost" onclick="runFollowupsDryRun()" title="Preview which rows would get follow-up drafts — nothing is written">🔍 Preview Auto-Drafts</button>
+      <button class="btn btn-primary" onclick="runFollowups()" title="Generate follow-up draft emails for eligible sent rows"><span class="spin"></span>🔁 Generate Follow-Up Drafts</button>
     </div>
   </div>
   <div id="fq-container">
@@ -1123,9 +1127,12 @@ async function loadAll() {
     document.getElementById('s-pending').textContent   = status.pending_approval ?? '—';
     document.getElementById('s-approved').textContent  = status.approved_unsent ?? '—';
     document.getElementById('s-sent').textContent      = status.sent ?? '—';
+    document.getElementById('s-logged').textContent    = status.sent_logged_only ?? '—';
     _updateRepliedStat(status.replied ?? 0);
     document.getElementById('s-stale').textContent = status.stale_drafts ?? '—';
     status_draft_version = status.current_draft_version ?? '';
+    // Background badge fetch — doesn't block queue load
+    _refreshNavBadges();
     allRows = Array.isArray(queue) ? queue : [];
     if (!Array.isArray(queue)) console.error('Queue API returned non-array:', queue);
     renderTable();
@@ -1146,6 +1153,7 @@ async function loadStats() {
   document.getElementById('s-pending').textContent   = s.pending_approval ?? '—';
   document.getElementById('s-approved').textContent  = s.approved_unsent ?? '—';
   document.getElementById('s-sent').textContent      = s.sent ?? '—';
+  document.getElementById('s-logged').textContent    = s.sent_logged_only ?? '—';
   _updateRepliedStat(s.replied ?? 0);
   document.getElementById('s-stale').textContent = s.stale_drafts ?? '—';
 }
@@ -1320,6 +1328,14 @@ async function fillPanel(row, fi) {
   chip.className = `score-chip ${scoreClass(row.final_priority_score)}`;
   chip.dataset.tip = scoreTip(row.final_priority_score);
   document.getElementById('panel-reason').textContent = row.scoring_reason || '';
+  // approval_reason — show "✓ Auto-approved" badge when set
+  const arEl = document.getElementById('panel-approval-reason');
+  if (arEl) {
+    const ar = (row.approval_reason || '').trim();
+    if (ar === 'safe_autopilot') { arEl.textContent = '✓ Auto-approved (safe autopilot)'; arEl.style.display = ''; }
+    else if (ar) { arEl.textContent = '✓ Approved: ' + ar; arEl.style.display = ''; }
+    else { arEl.style.display = 'none'; }
+  }
 
   // ── Opportunity score badge ───────────────────────────────────────────────
   const oppEl = document.getElementById('panel-opp-badge');
@@ -1793,15 +1809,59 @@ async function testApiKey() {
 }
 
 async function runFollowups() {
-  const btn=document.getElementById('btnFollowup');
-  btn.classList.add('loading'); btn.disabled=true;
-  toast('Checking for follow-ups due…','info');
+  const btn = document.querySelector('#page-followup .btn-primary');
+  if (btn) { btn.classList.add('loading'); btn.disabled = true; }
+  toast('Generating follow-up drafts…','info');
   try {
     const res = await api('/api/run_followups',{});
-    if (res.ok) { await loadAll(); toast(res.stats.queued>0?`Queued ${res.stats.queued} follow-up(s)`:'No follow-ups due yet',res.stats.queued>0?'ok':'info'); }
-    else toast('Error: '+res.error,'err');
+    if (res.ok) {
+      await loadAll();
+      const n = res.stats.queued || 0;
+      toast(n > 0 ? `Queued ${n} follow-up draft(s) — review below` : 'No follow-ups due yet', n > 0 ? 'ok' : 'info');
+      fqLoad();
+    } else { toast('Error: '+res.error,'err'); }
   } catch(e) { toast('Connection error','err'); }
-  btn.classList.remove('loading'); btn.disabled=false;
+  if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
+}
+
+async function runFollowupsDryRun() {
+  toast('Dry-run preview — nothing written…','info');
+  try {
+    const res = await api('/api/run_followups_dry_run',{});
+    if (res.ok) {
+      const n = (res.preview || []).length;
+      if (n === 0) { toast('Dry run: no rows eligible for follow-up right now','info'); return; }
+      toast(`Dry run: ${n} row(s) would receive follow-up drafts — details in browser console`,'ok');
+      console.table((res.preview||[]).map(r=>({ business: r.business_name, email: r.to_email, step: r.followup_step, sent_at: r.sent_at })));
+    } else { toast('Error: '+res.error,'err'); }
+  } catch(e) { toast('Connection error','err'); }
+}
+
+// ── Nav badge refresh — runs in background on every loadAll() ─────────────────
+async function _refreshNavBadges() {
+  try {
+    const [hRes, eRes] = await Promise.allSettled([
+      api('/api/queue_health'),
+      api('/api/exceptions'),
+    ]);
+
+    // Health badge: show count of issues (non-zero problem fields)
+    const hBadge = document.getElementById('nav-health-badge');
+    if (hBadge && hRes.status === 'fulfilled' && hRes.value.ok) {
+      const h = hRes.value.health || {};
+      const issues = (h.duplicate_rows||0) + (h.invalid_emails||0) + (h.approved_no_email||0) + (h.missing_required||0);
+      if (issues > 0) { hBadge.textContent = issues; hBadge.style.display = 'inline'; }
+      else { hBadge.style.display = 'none'; }
+    }
+
+    // Exceptions badge: count flagged rows
+    const eBadge = document.getElementById('nav-exceptions-badge');
+    if (eBadge && eRes.status === 'fulfilled' && eRes.value.ok) {
+      const n = eRes.value.exception_rows || 0;
+      if (n > 0) { eBadge.textContent = n; eBadge.style.display = 'inline'; }
+      else { eBadge.style.display = 'none'; }
+    }
+  } catch(_) { /* badge refresh is best-effort — never block main UI */ }
 }
 
 function toast(msg, type='info') {
@@ -3291,14 +3351,20 @@ async function exceptionsLoad() {
       ${d.exception_rows > 0 ? `
       <div class="ops-section-hdr" style="margin-top:20px">Exception Rows</div>
       <table class="ops-table">
-        <thead><tr><th>Business</th><th>City</th><th>Email</th><th>Flags</th></tr></thead>
+        <thead><tr><th>Business</th><th>City</th><th>Email</th><th>Flags</th><th>Actions</th></tr></thead>
         <tbody>
-          ${(d.rows||[]).map(r=>`
-            <tr>
+          ${(d.rows||[]).map((r,ri)=>`
+            <tr id="ex-row-${ri}">
               <td style="font-weight:500">${r.business_name||'—'}</td>
               <td style="color:var(--muted);font-size:12px">${r.city||''}</td>
               <td style="font-family:var(--mono);font-size:11px;color:${r.to_email?'var(--text)':'var(--amber)'}">${r.to_email||'<em>none</em>'}</td>
               <td>${(r.exception_flags||[]).map(flagBadge).join(' ')}</td>
+              <td style="white-space:nowrap">
+                ${r.to_email && (r.exception_flags||[]).some(f=>['INVALID_EMAIL','ASSET_EMAIL'].includes(f))
+                  ? `<button class="btn btn-ghost" style="font-size:10px;padding:2px 7px" onclick="exClearEmail(${r.index ?? -1},${ri})">✕ Clear Email</button> ` : ''}
+                ${r.index !== undefined && r.index >= 0
+                  ? `<button class="btn btn-ghost" style="font-size:10px;padding:2px 7px;color:var(--red)" onclick="exDeleteRow(${r.index ?? -1},${ri})">🗑 Delete</button>` : ''}
+              </td>
             </tr>`).join('')}
         </tbody>
       </table>` : ''}
@@ -3311,6 +3377,30 @@ async function exceptionsLoad() {
     wrap.innerHTML = `<div class="ops-error">Failed to load exceptions: ${e.message}</div>`;
   }
 }
-</script>
-</body>
-</html>
+// ── Exception row actions ─────────────────────────────────────────────────────
+async function exClearEmail(queueIndex, tableRowIndex) {
+  if (queueIndex < 0) { toast('Cannot action — row index unknown','err'); return; }
+  if (!confirm('Clear the invalid email address on this row? The row will stay in queue as a non-email lead.')) return;
+  try {
+    const res = await api('/api/update_row', { index: queueIndex, updates: { to_email: '', approved: 'false' } });
+    if (res.ok) {
+      toast('Email cleared — row unapproved and kept in queue','ok');
+      document.getElementById('ex-row-'+tableRowIndex)?.remove();
+      await loadAll();
+    } else { toast('Error: '+res.error,'err'); }
+  } catch(e) { toast('Connection error','err'); }
+}
+
+async function exDeleteRow(queueIndex, tableRowIndex) {
+  if (queueIndex < 0) { toast('Cannot action — row index unknown','err'); return; }
+  if (!confirm('Permanently delete this row from the queue?')) return;
+  try {
+    const res = await api('/api/delete_row', { index: queueIndex });
+    if (res.ok) {
+      toast('Row deleted','ok');
+      document.getElementById('ex-row-'+tableRowIndex)?.remove();
+      await loadAll();
+    } else { toast('Error: '+res.error,'err'); }
+  } catch(e) { toast('Connection error','err'); }
+}
+

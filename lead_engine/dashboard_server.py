@@ -279,6 +279,50 @@ def api_run_followups():
     except Exception as exc:
         return jsonify({"ok": False, "error": str(exc)}), 500
 
+@app.route("/api/run_followups_dry_run", methods=["POST"])
+def api_run_followups_dry_run():
+    """
+    Dry-run preview: returns the list of rows that WOULD get follow-up drafts
+    without writing anything to the queue CSV.
+    """
+    try:
+        from datetime import datetime as _dt, timezone as _tz
+        import csv as _csv
+        from send.email_sender_agent import is_real_send as _is_real_send
+        from outreach.followup_scheduler import (
+            followup_eligible, _followup_step, _read_pending, FOLLOWUP_DAYS_DEFAULT,
+        )
+        from discovery.prospect_discovery_agent import dedupe_key_for_prospect
+
+        now  = _dt.now(_tz.utc)
+        rows = _read_pending()
+
+        unsent_keys = {
+            dedupe_key_for_prospect(r)
+            for r in rows
+            if not (r.get("sent_at") or "").strip()
+        }
+
+        preview = []
+        for row in rows:
+            if not _is_real_send(row):
+                continue
+            eligible, _ = followup_eligible(row, now, unsent_keys)
+            if eligible:
+                step = _followup_step(row, now)
+                preview.append({
+                    "business_name": row.get("business_name", ""),
+                    "to_email":      row.get("to_email", ""),
+                    "sent_at":       row.get("sent_at", ""),
+                    "followup_step": step,
+                    "contact_attempt_count": row.get("contact_attempt_count", "0"),
+                })
+
+        return jsonify({"ok": True, "preview": preview, "count": len(preview)})
+    except Exception as exc:
+        log.error("followup dry_run error: %s", exc, exc_info=True)
+        return jsonify({"ok": False, "error": str(exc)}), 500
+
 @app.route("/api/replies")
 def api_replies():
     rows = _read_pending()
