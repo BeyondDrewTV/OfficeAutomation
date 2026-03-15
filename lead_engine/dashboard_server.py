@@ -506,6 +506,8 @@ def api_discover_area():
                 "city":    r.get("city", ""),
                 "email":   r.get("to_email", ""),
                 "channel": r.get("contact_method", ""),
+                "lat":     r.get("lat", ""),
+                "lng":     r.get("lng", ""),
             }
             for r in new_prospect_rows
         ]

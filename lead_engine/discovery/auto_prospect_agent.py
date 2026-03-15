@@ -39,6 +39,8 @@ PROSPECTS_COLUMNS = [
     "contact_form_url",
     "social_channels",
     "social_dm_text",
+    "lat",   # decimal degrees — populated by area search, empty for city search
+    "lng",   # decimal degrees — populated by area search, empty for city search
 ]
 
 TIMEOUT = 8
@@ -671,7 +673,7 @@ def search_places_area(
         "X-Goog-Api-Key": api_key,
         "X-Goog-FieldMask": (
             "places.id,places.displayName,places.formattedAddress,"
-            "places.nationalPhoneNumber,places.websiteUri"
+            "places.nationalPhoneNumber,places.websiteUri,places.location"
         ),
     }
     payload = json.dumps({
@@ -816,6 +818,11 @@ def discover_prospects_area(
 
         print(f"contactability={contactability}")
 
+        # Extract exact coordinates from Places location field
+        _loc     = place.get("location") or {}
+        place_lat = str(_loc.get("latitude",  ""))
+        place_lng = str(_loc.get("longitude", ""))
+
         row = {
             "business_name":      name,
             "city":               city,
@@ -838,6 +845,8 @@ def discover_prospects_area(
             "contact_form_url":   social.get("contact_form_url",""),
             "social_channels":    social_channels,
             "social_dm_text":     social_dm_text,
+            "lat":                place_lat,
+            "lng":                place_lng,
         }
         new_rows.append(row)
         existing.add(name.lower())

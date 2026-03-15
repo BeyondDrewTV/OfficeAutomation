@@ -3473,18 +3473,21 @@ function _mapClearResultMarkers() {
 function _mapPlaceResultMarkers(markers) {
   if (!_mapInstance || !_mapCenter) return;
   _mapClearResultMarkers();
-  // Distribute markers in a spiral around the circle center.
-  // Exact coordinates are not available from the prospect rows (Places API
-  // lat/lng is not stored in prospects.csv). This gives visual confirmation
-  // that results were found; real geocoded pins come in the next phase.
-  const count = markers.length;
-  const baseR = Math.min(_mapRadiusM * 0.6, 3000);
+  const count  = markers.length;
+  const baseR  = Math.min(_mapRadiusM * 0.6, 3000);
   markers.forEach((biz, idx) => {
-    const angle  = (2 * Math.PI * idx) / count;
-    const spread = baseR * (0.4 + 0.6 * (idx % 3) / 2);
-    const dlat   = (spread * Math.cos(angle)) / 111320;
-    const dlng   = (spread * Math.sin(angle)) / (111320 * Math.cos(_mapCenter.lat * Math.PI / 180));
-    const pos    = L.latLng(_mapCenter.lat + dlat, _mapCenter.lng + dlng);
+    let pos;
+    const hasCoords = biz.lat && biz.lng && parseFloat(biz.lat) !== 0;
+    if (hasCoords) {
+      pos = L.latLng(parseFloat(biz.lat), parseFloat(biz.lng));
+    } else {
+      // Fallback: spiral around center when exact coords are unavailable
+      const angle  = (2 * Math.PI * idx) / count;
+      const spread = baseR * (0.4 + 0.6 * (idx % 3) / 2);
+      const dlat   = (spread * Math.cos(angle)) / 111320;
+      const dlng   = (spread * Math.sin(angle)) / (111320 * Math.cos(_mapCenter.lat * Math.PI / 180));
+      pos = L.latLng(_mapCenter.lat + dlat, _mapCenter.lng + dlng);
+    }
     const hasEmail = biz.email && biz.email.length > 0;
     const color  = hasEmail ? '#3ecf72' : '#b87333';
     const icon   = L.divIcon({
@@ -3494,7 +3497,7 @@ function _mapPlaceResultMarkers(markers) {
     });
     const marker = L.marker(pos, { icon })
       .addTo(_mapInstance)
-      .bindPopup(`<strong>${biz.name}</strong><br>${biz.city}<br><em>${biz.channel}${hasEmail ? ' — ' + biz.email : ''}</em>`);
+      .bindPopup(`<strong>${biz.name}</strong><br>${biz.city}<br><em>${biz.channel}${hasEmail ? ' \u2014 ' + biz.email : ''}</em>`);
     _mapResultMarkers.push(marker);
   });
 }
