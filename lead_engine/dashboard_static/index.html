@@ -3727,6 +3727,7 @@ function _mapRenderPanel() {
   const sortEl    = document.getElementById('mrp-sort');
   const filterEl  = document.getElementById('mrp-email-only');
   if (!panel || !list || !count) return;
+  if (_mapResultItems.length === 0) return;  // no results loaded yet
 
   // Apply filter then sort — source array _mapResultItems is never mutated
   const emailOnly = filterEl ? filterEl.checked : false;
@@ -3747,12 +3748,18 @@ function _mapRenderPanel() {
     const hasEmail = biz.email && biz.email.length > 0;
     const item = document.createElement('div');
     item.className = 'mrp-item';
-    item.innerHTML =
-      `<div class="mrp-name" title="${biz.name}">${biz.name}</div>` +
-      `<div class="mrp-meta">` +
-        `<span class="mrp-dot ${hasEmail ? 'has-email' : 'no-email'}"></span>` +
-        `<span>${biz.city || ''}${hasEmail ? ' — email' : ' — no email'}</span>` +
-      `</div>`;
+    // Use textContent for name to avoid breakage on names with quotes or angle brackets
+    const nameDiv = document.createElement('div');
+    nameDiv.className = 'mrp-name';
+    nameDiv.title = biz.name || '';
+    nameDiv.textContent = biz.name || '';
+    const metaDiv = document.createElement('div');
+    metaDiv.className = 'mrp-meta';
+    metaDiv.innerHTML =
+      `<span class="mrp-dot ${hasEmail ? 'has-email' : 'no-email'}"></span>` +
+      `<span>${biz.city || ''}${hasEmail ? ' — email' : ' — no email'}</span>`;
+    item.appendChild(nameDiv);
+    item.appendChild(metaDiv);
     item.addEventListener('click', () => {
       if (_mapClusterGroup) _mapClusterGroup.zoomToShowLayer(marker, () => marker.openPopup());
       else marker.openPopup();
@@ -3821,8 +3828,8 @@ function _mapAreaLabel(markers) {
   // No API calls — heuristic only. Returns null if data is too sparse.
   if (!markers || markers.length === 0) return null;
   const freq = {};
-  markers.forEach(({ city }) => {
-    const c = (city || '').trim();
+  markers.forEach((m) => {
+    const c = ((m && m.city) || '').trim();
     if (c) freq[c] = (freq[c] || 0) + 1;
   });
   const cities = Object.keys(freq);
@@ -3983,7 +3990,7 @@ async function mapSearch() {
       // Place name-only markers for discovered businesses
       if (res.markers && res.markers.length) _mapPlaceResultMarkers(res.markers);
       // Snapshot this search area as a coverage overlay (session memory only)
-      if (_mapInstance && _mapCenter) {
+      if (_mapInstance && _mapCenter && res.places_found > 0) {
         const cov = L.circle([_mapCenter.lat, _mapCenter.lng], {
           radius: _mapRadiusM,
           color: '#4f8ef7', fillColor: '#4f8ef7', fillOpacity: 0.04,
