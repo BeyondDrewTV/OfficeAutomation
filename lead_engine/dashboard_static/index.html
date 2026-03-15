@@ -526,8 +526,8 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
 .mrp-ctrl-chk input{cursor:pointer;accent-color:var(--green)}
 .map-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 0 10px}
 .map-status{font-size:12px;color:var(--muted);min-height:18px}
-.btn-coverage{background:transparent;color:var(--dim);border:1px solid var(--border);font-size:11px;padding:4px 9px}
-.btn-coverage:hover{color:var(--muted);border-color:var(--border-hi)}
+.btn-coverage{background:transparent;color:var(--muted);border:1px solid var(--border-hi);font-size:11px;padding:4px 9px}
+.btn-coverage:hover{color:var(--text);border-color:var(--blue)}
 #map-history{margin-top:10px;display:none}
 .mh-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
 .mh-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
@@ -1241,6 +1241,10 @@ async function api(path, body) {
     ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
     : {};
   const r = await fetch(path, opts);
+  if (!r.ok) {
+    const text = await r.text().catch(() => '');
+    throw new Error(`API ${path} returned ${r.status}: ${text.slice(0, 120)}`);
+  }
   return r.json();
 }
 
@@ -3956,7 +3960,12 @@ function _mapInit() {
   _mapClusterGroup = L.markerClusterGroup();
   _mapInstance.addLayer(_mapClusterGroup);
   console.log('[_mapInit] cluster group initialized');
-  _mapInstance.on('click', (e) => { _mapDrawCircle(e.latlng.lat, e.latlng.lng); });
+  _mapInstance.on('click', (e) => {
+    // Only reposition circle when no results are loaded.
+    // Prevents accidental wipe of results from a stray map click.
+    // Operator must press ✕ Clear explicitly to start a new area.
+    if (_mapResultItems.length === 0) _mapDrawCircle(e.latlng.lat, e.latlng.lng);
+  });
   setTimeout(() => { _mapInstance.invalidateSize(); console.log('[_mapInit] invalidateSize @50ms, size:', _mapInstance.getSize()); }, 50);
   setTimeout(() => _mapInstance.invalidateSize(), 300);
 }
