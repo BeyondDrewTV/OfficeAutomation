@@ -505,7 +505,20 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
 .cv-empty-icon{font-size:40px;margin-bottom:10px;opacity:.35}
 .cv-fire{color:var(--copper);font-size:12px;font-weight:700}
 /* Map Search tab */
-#map-container{height:480px;border-radius:var(--rs);border:1px solid var(--border);overflow:hidden}
+#map-layout{display:flex;gap:0;align-items:stretch;border:1px solid var(--border);border-radius:var(--rs);overflow:hidden}
+#map-container{flex:1;height:480px;min-width:0;overflow:hidden}
+#map-results-panel{width:260px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--border);display:none;flex-direction:column;height:480px}
+#map-results-panel.visible{display:flex}
+.mrp-hdr{padding:10px 12px;border-bottom:1px solid var(--border);font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;flex-shrink:0}
+.mrp-list{flex:1;overflow-y:auto;}
+.mrp-item{padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.mrp-item:last-child{border-bottom:none}
+.mrp-item:hover{background:var(--surface2)}
+.mrp-name{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mrp-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px}
+.mrp-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.mrp-dot.has-email{background:var(--green)}
+.mrp-dot.no-email{background:var(--copper)}
 .map-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 0 10px}
 .map-status{font-size:12px;color:var(--muted);min-height:18px}
 .map-instructions{font-size:12px;color:var(--muted);line-height:1.6;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px}
@@ -1102,8 +1115,14 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
     <button class="btn btn-ghost" onclick="mapClearCircle()" title="Remove current circle">✕ Clear</button>
     <span id="map-radius-label" style="font-size:11px;color:var(--muted)"></span>
   </div>
-  <div id="map-container"></div>
-  <div id="map-status" class="map-status" style="margin-top:8px"></div>
+  <div id="map-layout">
+    <div id="map-container"></div>
+        <div id="map-results-panel">
+          <div class="mrp-hdr">Results <span id="mrp-count"></span></div>
+          <div class="mrp-list" id="mrp-list"></div>
+        </div>
+      </div>
+      <div id="map-status" class="map-status" style="margin-top:8px"></div>
 </div>
 </div>
 
@@ -3653,12 +3672,47 @@ async function exDeleteRow(queueIndex, tableRowIndex) {
 // PAGE: MAP SEARCH  (Leaflet + /api/discover_area)
 // ══════════════════════════════════════════════════════════════════
 let _mapResultMarkers = [];
+let _mapResultItems  = [];    // [{biz, marker}] — ties list panel to map markers
 let _mapInstance    = null;   // Leaflet map object
 let _mapClusterGroup = null;  // MarkerClusterGroup for result markers
 
 function _mapClearResultMarkers() {
   if (_mapClusterGroup) _mapClusterGroup.clearLayers();
   _mapResultMarkers = [];
+  _mapResultItems   = [];
+  const panel = document.getElementById('map-results-panel');
+  const list  = document.getElementById('mrp-list');
+  const count = document.getElementById('mrp-count');
+  if (panel)  panel.classList.remove('visible');
+  if (list)   list.innerHTML = '';
+  if (count)  count.textContent = '';
+}
+
+function _mapRenderPanel() {
+  const panel = document.getElementById('map-results-panel');
+  const list  = document.getElementById('mrp-list');
+  const count = document.getElementById('mrp-count');
+  if (!panel || !list || !count) return;
+  list.innerHTML = '';
+  _mapResultItems.forEach(({ biz, marker }, idx) => {
+    const hasEmail = biz.email && biz.email.length > 0;
+    const item = document.createElement('div');
+    item.className = 'mrp-item';
+    item.innerHTML =
+      `<div class="mrp-name" title="${biz.name}">${biz.name}</div>` +
+      `<div class="mrp-meta">` +
+        `<span class="mrp-dot ${hasEmail ? 'has-email' : 'no-email'}"></span>` +
+        `<span>${biz.city || ''}${hasEmail ? ' — email' : ' — no email'}</span>` +
+      `</div>`;
+    item.addEventListener('click', () => {
+      if (_mapClusterGroup) _mapClusterGroup.zoomToShowLayer(marker, () => marker.openPopup());
+      else marker.openPopup();
+    });
+    list.appendChild(item);
+  });
+  count.textContent = `(${_mapResultItems.length})`;
+  panel.classList.add('visible');
+  setTimeout(() => { if (_mapInstance) _mapInstance.invalidateSize(); }, 50);
 }
 
 function _mapPlaceResultMarkers(markers) {
@@ -3690,7 +3744,9 @@ function _mapPlaceResultMarkers(markers) {
       .addTo(_mapClusterGroup)
       .bindPopup(`<strong>${biz.name}</strong><br>${biz.city}<br><em>${biz.channel}${hasEmail ? ' \u2014 ' + biz.email : ''}</em>`);
     _mapResultMarkers.push(marker);
+    _mapResultItems.push({ biz, marker });
   });
+  _mapRenderPanel();
 }
 let _mapCircle      = null;   // current L.circle
 let _mapDragMarker  = null;   // edge drag handle marker
