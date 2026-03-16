@@ -393,3 +393,63 @@ silently stripped on next engine run. Pass 9b requires adding `send_after` to
 **Files changed:** `lead_engine/dashboard_static/index.html`
 
 **Commit:** `f712909`
+
+---
+
+### Pass 9b — Scheduled Send Intent
+
+**Date:** 2026-03-16
+
+**Goal:** Add `send_after` field to all queue schemas and wire a "Schedule
+for Tomorrow" button that writes send intent without triggering any send.
+
+**Protected systems modified deliberately:**
+- `run_lead_engine.py` — `PENDING_COLUMNS` extended
+- `dashboard_server.py` — `PENDING_COLUMNS` extended + new route
+- `send/email_sender_agent.py` — `PENDING_EMAIL_COLUMNS` extended
+- `outreach/followup_scheduler.py` — `PENDING_COLUMNS` extended
+- `outreach/reply_checker.py` — schema corrected (was truncated to 20 cols)
+
+**Pre-flight audit finding resolved:**
+`reply_checker.py` had a pre-existing data-loss bug: its `PENDING_COLUMNS`
+was truncated to 20 fields. All reply-matched row writes silently stripped
+21 fields. Fixed in Commit A alongside the schema extension.
+
+---
+
+**Commit A — `24dc5b2`**
+`fix+feat: add send_after to all queue schemas; fix reply_checker column truncation`
+
+Files: `run_lead_engine.py`, `dashboard_server.py`, `email_sender_agent.py`,
+`followup_scheduler.py`, `reply_checker.py`
+
+Appended `"send_after"` to end of all five `PENDING_COLUMNS` lists.
+Replaced `reply_checker.py` truncated 20-col list with full 42-col schema.
+
+Verification: all 5 modules 42 cols, `send_after` last, first-41 order
+preserved. CSV loads 174 rows cleanly, `send_after` defaults to `""`.
+
+---
+
+**Commit B — `52dd64a`**
+`feat: Pass 9b — /api/schedule_email route (intent-only, no send trigger)`
+
+File: `dashboard_server.py`
+
+Added `POST /api/schedule_email`. Validates index, business_name, send_after,
+index/name match. Writes `send_after` only. No send triggered.
+
+Verification: all 10 static checks passed.
+
+---
+
+**Commit C — `a5f09c5`**
+`feat: Pass 9b — Schedule for Tomorrow button in review panel`
+
+File: `lead_engine/dashboard_static/index.html`
+
+Added `SEND_WINDOWS` const, `panelScheduleTomorrow()` function,
+`#panel-schedule-btn` in panel footer, `fillPanel` show/hide wiring.
+Button hidden on sent rows. Intent-only — no auto-send.
+
+Verification: all 19 static checks passed.

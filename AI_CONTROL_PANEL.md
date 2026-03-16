@@ -12,15 +12,15 @@ Lead Acquisition Engine
 Discovery Map System + Operator Safety
 
 ## Current Build Pass
-Pass 9a — Queue Visual Safety (complete)
+Pass 9b — Scheduled Send Intent (complete)
 
 ## Last Completed Pass
-Pass 9a — Queue Visual Safety
+Pass 9b — Scheduled Send Intent
 
-Commit: `f712909`
+Commits: A `24dc5b2` / B `52dd64a` / C `a5f09c5`
 
 ## Next Pass
-Pass 9b — Schedule Action (blocked — needs operator approval to add `send_after` to `PENDING_COLUMNS` in `run_lead_engine.py`)
+Pass 10 — TBD (territory heatmap, saturation view, or tiled backend improvements)
 
 ## Upcoming Passes
 - Search Visible Area button
