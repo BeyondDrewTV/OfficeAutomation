@@ -68,20 +68,19 @@ def detect_industry(business_name: str, provided_industry: str = "") -> str:
 # Opening question variants — only line 1 rotates
 _OPENING_QUESTIONS = [
     # Variant A
-    "Do you guys ever miss calls when the crew is out on jobs?",
+    "quick question — do you guys have any automations in place for following up w leads or handling calls when the crew is out?",
     # Variant B
-    "Do you ever miss calls when everyone's out working jobs?",
+    "random one — i was looking at local service businesses in your area and felt like there might be a few easy workflow wins worth showing you, open to a quick look?",
     # Variant C
-    "Quick question — what happens when someone calls after hours and nobody answers?",
+    "hey — do you guys have anything set up to follow up w missed calls or new leads automatically, or is that still pretty manual?",
 ]
 
 # Fixed body, shared by all variants
 _BODY_FIXED = (
-    "A lot of service companies lose those leads because the customer "
-    "just calls the next number if nobody answers.\n\n"
-    "I set up a simple text-back line that replies to missed callers automatically "
-    "so you can follow up instead of losing the job.\n\n"
-    "Happy to send a quick example if you're curious."
+    "we help service businesses clean up the gaps — missed calls, lead follow-up, "
+    "scheduling stuff that still runs manually.\n\n"
+    "usually takes about 20 min to map out where the quick wins are.\n\n"
+    "happy to send over a quick summary if you're curious."
 )
 
 # Subject line pool — short, natural, no marketing language
@@ -94,7 +93,7 @@ _SUBJECTS = [
 
 # Increment this string whenever the template copy changes.
 # Stored in pending_emails.csv so stale rows can be identified.
-DRAFT_VERSION = "v4"
+DRAFT_VERSION = "v5"
 
 _TEMPLATES: Dict[str, List[Tuple[str, str]]] = {
     # Kept for routing compatibility — all keys now produce the same structure.
@@ -112,7 +111,7 @@ _BANNED = [
     "optimize", "revolutionize", "leverage", "synergy", "streamline",
     "game-changer", "game changer", "cutting-edge", "cutting edge",
     "robust", "scalable", "seamlessly", "seamless",
-    "automation", "automate", "workflow", "ai-powered", "ai powered",
+    "ai-powered", "ai powered",
     "system integration", "platform", "solution", "lead capture",
 ]
 
