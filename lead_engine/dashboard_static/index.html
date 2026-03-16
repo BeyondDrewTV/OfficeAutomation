@@ -1127,7 +1127,7 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
     Results are added to the queue and visible on the Outreach tab.
   </div>
   <div class="map-toolbar">
-    <select id="map-industry" class="d-input" style="min-width:160px" onchange="(function(v){var b=document.getElementById('btnSearchVisible');if(b)b.disabled=!v||!window._mapCenter;})(this.value)"><option value="">Loading…</option></select>
+    <select id="map-industry" class="d-input" style="min-width:160px" onchange="(function(v){var b=document.getElementById('btnSearchVisible');if(b)b.disabled=!v;})(this.value)"><option value="">Loading…</option></select>
     <input id="map-limit" class="d-input d-num" type="number" value="20" min="1" max="20" title="Max results (1–20)">
     <button id="btnMapSearch" class="btn btn-primary" onclick="mapSearch()" disabled>
       <span class="spin"></span>⚡ Search This Area
@@ -4096,8 +4096,6 @@ function _mapDrawCircle(lat, lng) {
   _mapPlaceDragHandle();
   _mapUpdateRadiusLabel();
   document.getElementById('btnMapSearch').disabled = false;
-  const _industryVal = document.getElementById('map-industry').value;
-  document.getElementById('btnSearchVisible').disabled = !_industryVal;
   document.getElementById('map-status').textContent = `Center: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
 }
 
@@ -4107,7 +4105,6 @@ function mapClearCircle() {
   _mapClearResultMarkers();
   _mapCenter = null;
   document.getElementById('btnMapSearch').disabled = true;
-  document.getElementById('btnSearchVisible').disabled = true;
   document.getElementById('map-status').textContent = 'Circle cleared.';
   document.getElementById('map-radius-label').textContent = '';
 }
