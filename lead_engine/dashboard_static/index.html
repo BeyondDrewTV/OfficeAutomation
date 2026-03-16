@@ -3349,9 +3349,9 @@ function cvSendQuick(idx, type) {
   const bookingUrl   = _clinkOr(COPPERLINE_LINKS.booking,   '⚠ Booking link not configured — update COPPERLINE_LINKS.booking in the dashboard before sending');
   const caseStudyUrl = _clinkOr(COPPERLINE_LINKS.caseStudy, '⚠ Case study link not configured — update COPPERLINE_LINKS.caseStudy in the dashboard before sending');
   const templates = {
-    demo:       `hey — wanted to send over this quick overview of what we put together for service businesses like yours: ${demoUrl}. lmk if anything looks relevant`,
-    call:       `hey — happy to jump on a quick 10 min call and map out where the easy workflow wins might be for ${row.business_name || 'your business'}. book here if that works: ${bookingUrl}`,
-    case_study: `hey — here's a quick example of what we set up for a similar business: ${caseStudyUrl}. pretty straightforward stuff, lmk if it raises any questions`,
+    demo:       `hey — here's a quick look at how this works in practice for a service business: ${demoUrl}. lmk if any of it looks familiar`,
+    call:       `hey — happy to jump on a quick call and take a look at where work might be slipping through for ${row.business_name || 'your business'}. grab a time here: ${bookingUrl}`,
+    case_study: `hey — here's a quick example of what we fixed for a similar business: ${caseStudyUrl}. lmk if it raises any questions`,
   };
   const text = templates[type] || '';
   // Warn operator if any unconfigured placeholder made it into the text

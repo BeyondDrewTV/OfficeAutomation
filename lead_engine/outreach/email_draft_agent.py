@@ -67,20 +67,20 @@ def detect_industry(business_name: str, provided_industry: str = "") -> str:
 
 # Opening question variants — only line 1 rotates
 _OPENING_QUESTIONS = [
-    # Variant A
-    "quick question — do you guys have any automations in place for following up w leads or handling calls when the crew is out?",
-    # Variant B
-    "random one — i was looking at local service businesses in your area and felt like there might be a few easy workflow wins worth showing you, open to a quick look?",
-    # Variant C
-    "hey — do you guys have anything set up to follow up w missed calls or new leads automatically, or is that still pretty manual?",
+    # Variant A — missed call / lead loss angle
+    "quick one — when someone calls and no one picks up, does that lead just go cold, or do you guys have a way to follow up?",
+    # Variant B — after-hours / gap angle
+    "random question — do leads ever fall through after hours or when everyone's tied up on a job?",
+    # Variant C — general operational gap angle
+    "hey — do you find you lose work from calls or follow-ups that just don't happen fast enough?",
 ]
 
 # Fixed body, shared by all variants
 _BODY_FIXED = (
-    "we help service businesses clean up the gaps — missed calls, lead follow-up, "
-    "scheduling stuff that still runs manually.\n\n"
-    "usually takes about 20 min to map out where the quick wins are.\n\n"
-    "happy to send over a quick summary if you're curious."
+    "I help service businesses capture the work that slips through — "
+    "calls that don't get answered, estimates that go cold, follow-ups that never happen.\n\n"
+    "happy to take a quick look at how things run and point out where the easy fixes are.\n\n"
+    "worth a few minutes if any of that's a real problem for you."
 )
 
 # Subject line pool — short, natural, no marketing language
@@ -93,7 +93,7 @@ _SUBJECTS = [
 
 # Increment this string whenever the template copy changes.
 # Stored in pending_emails.csv so stale rows can be identified.
-DRAFT_VERSION = "v5"
+DRAFT_VERSION = "v6"
 
 _TEMPLATES: Dict[str, List[Tuple[str, str]]] = {
     # Kept for routing compatibility — all keys now produce the same structure.

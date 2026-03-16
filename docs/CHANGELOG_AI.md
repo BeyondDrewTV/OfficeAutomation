@@ -134,6 +134,57 @@ Update this file at the end of every pass.
 
 ## 2026-03-16
 
+### Pass 15b — Outreach Tone Correction: Operational Problem-First Messaging
+
+**Goal:** Correct Pass 15a copy that drifted into generic automation-agency framing. Lead with operational problems the business owner recognizes, not automation as the hook.
+
+**Root cause of correction:** Pass 15a opened with "do you have automations in place" and "workflow wins" — language that sounds like a tech vendor, not a peer who understands service business operations. The fix is to anchor every opening in a concrete loss scenario the owner already feels.
+
+**Files changed:**
+- `lead_engine/outreach/email_draft_agent.py`
+- `lead_engine/dashboard_static/index.html`
+
+**What changed:**
+
+`_OPENING_QUESTIONS` — All three variants rewritten. Old: led with automation/workflows as the frame. New: opens on a specific operational gap (leads going cold, after-hours drop-off, follow-ups that don't happen).
+
+`_BODY_FIXED` — Rewritten. Old: "clean up the gaps / map out the quick wins" (service-agency pitch). New: "capture the work that slips through — calls that don't get answered, estimates that go cold, follow-ups that never happen." CTA is soft and conditional: "worth a few minutes if any of that's a real problem for you."
+
+`cvSendQuick` templates in `index.html` — Reworded to match: demo template now says "how this works in practice… lmk if any of it looks familiar"; call template says "where work might be slipping through"; case study says "what we fixed for a similar business."
+
+`DRAFT_VERSION` bumped `v5` → `v6` to flag stale drafts generated under 15a copy.
+
+**No logic changes. No routing changes. No schema changes. No protected systems touched.**
+
+**Commit:** `fix: Pass 15b — correct outreach tone, lead with operational problems not automation framing`
+
+---
+
+### Pass 15a — Outreach Positioning: Remove Missed-Call-First Framing
+
+**Goal:** Replace missed-call-product-first email templates with automation-audit framing to reflect Copperline's repositioning as a service business operations provider.
+
+**Files changed:**
+- `lead_engine/outreach/email_draft_agent.py`
+- `lead_engine/dashboard_static/index.html`
+
+**What changed:**
+- `_OPENING_QUESTIONS` — Replaced missed-call-centric questions with automation/workflow-oriented variants.
+- `_BODY_FIXED` — Replaced "text-back line" pitch with audit/gap framing.
+- `_BANNED` — Removed `"automation"`, `"automate"`, `"workflow"` from banned list. These are now core positioning words; banning them was incompatible with the new direction.
+- `DRAFT_VERSION` bumped `v4` → `v5`.
+- `cvSendQuick` templates in `index.html` — Removed explicit "Missed Call Text-Back system" references; reworded toward automation overview language.
+
+**Note:** This pass introduced automation-agency tone that was corrected in Pass 15b.
+
+**No logic changes. No protected systems touched.**
+
+**Commit:** `feat: Pass 15a — reposition outreach templates to automation audit framing`
+
+---
+
+## 2026-03-16
+
 ### Pass 11 — Sent Mail Reconciliation Recovery
 
 **Goal:** Prevent duplicate resends when Gmail sends succeeded but the dashboard closed before queue state updated.

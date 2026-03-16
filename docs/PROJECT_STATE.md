@@ -9,27 +9,34 @@ v0.2
 Lead Acquisition Engine
 
 ## Current Focus
-Dashboard UX Safety Cleanup
+Outreach Positioning Correction
+
+## Copperline Positioning
+Copperline = Service Business Operations
+
+We identify where service businesses are losing work — missed calls, cold estimates, follow-ups that never happen — and install simple systems to fix it.
+
+Automation is the implementation layer, not the headline.
+Missed-call texting is one downstream solution, not the primary pitch.
+Outreach goal: start a conversation about operational problems, not sell a product.
 
 ## Last Completed Pass
-Pass 14 — Dashboard UX Safety Cleanup
+Pass 15b — Outreach Tone Correction: Operational Problem-First Messaging
 
-- Disabled active navigation path into broken client leads detail (`mcViewLeads` now informational only)
-- Added explicit disabled tooltips for non-enabled client actions: Leads and Delete
-- Relabeled conversation quick actions to clarify clipboard-only behavior (Copy Demo Reply / Copy Call Invite / Copy Case Study Reply)
-- Added Approve All confirmation with explicit write-action wording and row count
-- Added map disclosure note clarifying queue/draft authority vs partial marker availability
-- Added visible `Stub` badge to Tools top tab
+- Corrected Pass 15a automation-agency drift
+- `_OPENING_QUESTIONS` rewritten to lead with concrete loss scenarios
+- `_BODY_FIXED` rewritten to lead with what the business is currently losing
+- `cvSendQuick` templates updated to match operational framing
+- `DRAFT_VERSION` bumped to `v6`
+- No logic, routing, schema, or protected system changes
 
-Commit: `014e68c`
+Commit: `fix: Pass 15b — correct outreach tone, lead with operational problems not automation framing`
 
 ## Previous Completed Pass
-Pass 9b — Scheduled Send Intent
-
-Commits: A `24dc5b2` / B `52dd64a` / C `a5f09c5`
+Pass 15a — Outreach Positioning: Remove Missed-Call-First Framing
 
 ## Next Pass
-Pass 15 — TBD (territory heatmap, saturation view, or tiled backend improvements)
+Pass 16 — TBD (territory heatmap, saturation view, tiled backend improvements, or outreach doc updates)
 
 ## Protected Systems
 - `run_lead_engine.py`

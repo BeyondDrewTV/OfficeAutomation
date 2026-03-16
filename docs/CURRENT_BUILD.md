@@ -150,11 +150,37 @@ Verification:
 - Map disclosure note visible on Map page
 - No backend files modified
 
-## Next: Pass 15 — TBD
+## Completed: Pass 15a — Outreach Positioning: Remove Missed-Call-First Framing
+
+Files changed:
+- `lead_engine/outreach/email_draft_agent.py`
+- `lead_engine/dashboard_static/index.html`
+
+Outreach system reframed away from missed-call-product pitch. `_OPENING_QUESTIONS`, `_BODY_FIXED`, and `cvSendQuick` templates updated. `_BANNED` list updated to allow `automation`/`workflow`. `DRAFT_VERSION` bumped to `v5`.
+
+Note: Pass 15a introduced automation-agency tone that was corrected in Pass 15b.
+
+## Completed: Pass 15b — Outreach Tone Correction: Operational Problem-First Messaging
+
+Files changed:
+- `lead_engine/outreach/email_draft_agent.py`
+- `lead_engine/dashboard_static/index.html`
+
+Corrected automation-agency drift from Pass 15a. Outreach system now uses operational problem → conversation framing:
+- Opening questions anchor on concrete loss scenarios: calls that go cold, leads that fall through after hours, follow-ups that don't happen.
+- Body leads with what the business is currently losing, not what Copperline offers.
+- CTA is soft and conditional.
+- Automation is referenced as the implementation layer, not the headline.
+- Missed-call texting remains in the system as a downstream solution — it is not the primary pitch in outreach copy.
+
+`DRAFT_VERSION` bumped to `v6`. No logic, routing, or schema changes. No protected systems touched.
+
+## Next: Pass 16 — TBD
 
 Candidates:
 - Territory heatmap overlay
 - Industry saturation view
 - Tiled backend improvements (rate-limit handling)
+- Update `Copperline-Outreach-Sequence.md` and `Copperline-Proposal-Template.md` to match new positioning
 
 Define scope before starting.
