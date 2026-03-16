@@ -55,11 +55,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .stat-n.blue{color:var(--blue)}.stat-n.amber{color:var(--amber)}.stat-n.green{color:var(--green)}.stat-n.grey{color:var(--muted)}
 .stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
 
-.discover-bar{border-bottom:1px solid var(--border);padding:11px 24px;background:linear-gradient(180deg,rgba(79,142,247,.06),rgba(79,142,247,.015))}
+.discover-bar{border-bottom:1px solid var(--border);padding:8px 24px;background:linear-gradient(180deg,rgba(79,142,247,.05),rgba(79,142,247,.01))}
 .discover-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
 .section-kicker{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);font-weight:700}
 .section-sub{font-size:11px;color:var(--muted)}
-.discover-inner{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.discover-inner{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .discover-label{font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;margin-right:2px}
 .d-input{padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:12px;outline:none;transition:.12s}
 .d-input:focus{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-glow)}
@@ -660,33 +660,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 <!-- ══════════════ PAGE: OUTREACH ══════════════ -->
 <div class="page active" id="page-outreach">
 
-<div class="stats">
-  <div class="stat"><div class="stat-n blue" id="s-prospects">—</div><div class="stat-lbl">Prospects</div></div>
-  <div class="stat"><div class="stat-n blue" id="s-drafted">—</div><div class="stat-lbl">Drafted</div></div>
-  <div class="stat"><div class="stat-n amber" id="s-pending">—</div><div class="stat-lbl">Review</div></div>
-  <div class="stat"><div class="stat-n green" id="s-approved">—</div><div class="stat-lbl">Approved (Unscheduled)</div></div>
-  <div class="stat"><div class="stat-n grey" id="s-sent">—</div><div class="stat-lbl">Sent</div></div>
-  <div class="stat" title="Sent via log_contact (no SMTP message-id — not a confirmed send)"><div class="stat-n" id="s-logged" style="color:var(--muted)">—</div><div class="stat-lbl" style="color:var(--muted)">Logged Only</div></div>
-  <div class="stat" style="cursor:pointer" onclick="setFilter('replied',document.querySelector('[data-filter=replied]'))" title="Click to view replies">
-    <div class="stat-n" id="s-replied" style="color:var(--copper)">—</div>
-    <div class="stat-lbl" style="display:flex;align-items:center;gap:5px">
-      Replied
-      <span id="reply-pulse" style="display:none;width:7px;height:7px;border-radius:50%;background:var(--copper);box-shadow:0 0 8px var(--copper-glow);animation:pulse 1.4s ease-in-out infinite"></span>
-    </div>
-  </div>
-  <div class="stat" style="cursor:pointer" onclick="setFilter('stale',document.querySelector('[data-filter=stale]'))" title="Drafts with outdated copy — regenerate before sending">
-    <div class="stat-n" id="s-stale" style="color:var(--amber)">—</div>
-    <div class="stat-lbl">Stale Copy</div>
-  </div>
-</div>
-
 <div class="discover-bar">
-  <div class="discover-head">
-    <span class="section-kicker">Discovery controls</span>
-    <span class="section-sub">Find and draft new leads before they enter the work queue.</span>
-  </div>
   <div class="discover-inner">
-    <span class="discover-label">🔍 New Leads</span>
+    <span class="discover-label">🔍 Discover</span>
     <select id="d-industry" class="d-input"><option value="">Loading…</option></select>
     <div class="city-ac-wrap" style="display:inline-block">
       <input id="d-city" class="d-input" type="text" placeholder="City" value="Rockford"
@@ -717,15 +693,14 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 <div class="toolbar">
   <div class="queue-head">
     <span class="section-kicker">Queue workflow</span>
-    <span class="section-sub">Filter work items, then run review and send actions.</span>
+    <span class="section-sub">Queue tabs are the primary workflow control.</span>
   </div>
   <div class="queue-layout">
     <div class="queue-filters">
       <div class="toolbar-l">
         <div class="filter-tabs">
-      <div class="ftab active" data-filter="active" onclick="setFilter('active',this)" title="Drafted rows waiting for operator review">📝 Review</div>
-      <div class="ftab" data-filter="pending" onclick="setFilter('pending',this)">Drafted</div>
-      <div class="ftab" data-filter="approved" onclick="setFilter('approved',this)">Approved (Unscheduled)</div>
+      <div class="ftab active" data-filter="active" onclick="setFilter('active',this)" title="Drafted rows waiting for operator approval">📝 Drafted</div>
+            <div class="ftab" data-filter="approved" onclick="setFilter('approved',this)">Approved (Unscheduled)</div>
       <div class="ftab" data-filter="scheduled" onclick="setFilter('scheduled',this)" style="color:var(--amber)" title="Emails approved and queued for a send window">🕐 Scheduled</div>
       <div class="ftab" data-filter="sent" onclick="setFilter('sent',this)">✓ Done</div>
       <div class="ftab-more" onclick="toggleExtraFilters(this)">⋯ More</div>
@@ -752,7 +727,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     </div>
     <div class="queue-actions">
       <div class="action-group">
-        <span class="group-label">Review</span>
+        <span class="group-label">Queue</span>
         <button class="btn btn-ghost" onclick="approveAll()">✓ Approve All</button>
         <button id="btnCheckReplies" class="btn btn-ghost" onclick="checkReplies()" title="Poll Gmail inbox for replies to sent emails"><span class="spin"></span>★ Check Replies</button>
         <button id="btnCheckSent" class="btn btn-ghost" onclick="checkSent()" title="Reconcile queue with recent Gmail Sent mail after interrupted send runs"><span class="spin"></span>↺ Check Sent</button>
@@ -764,15 +739,6 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       </div>
     </div>
   </div>
-</div>
-
-<div class="workflow-rail" id="workflow-rail">
-  <button class="stage-chip active" id="stage-discover" onclick="setWorkflowStage('discover', this)"><span class="dot"></span>Discover <strong id="stage-discover-n">—</strong></button>
-  <button class="stage-chip" id="stage-review" onclick="setWorkflowStage('review', this)"><span class="dot"></span>Review <strong id="stage-review-n">—</strong></button>
-  <button class="stage-chip" id="stage-approved" onclick="setWorkflowStage('approved', this)"><span class="dot"></span>Approved <strong id="stage-approved-n">—</strong></button>
-  <button class="stage-chip" id="stage-scheduled" onclick="setWorkflowStage('scheduled', this)"><span class="dot"></span>Scheduled <strong id="stage-scheduled-n">—</strong></button>
-  <button class="stage-chip" id="stage-sent" onclick="setWorkflowStage('sent', this)"><span class="dot"></span>Sent <strong id="stage-sent-n">—</strong></button>
-  <button class="stage-chip" id="stage-replies" onclick="setWorkflowStage('replies', this)"><span class="dot"></span>Replies <strong id="stage-replies-n">—</strong></button>
 </div>
 
 <div class="bulk-bar" id="bulk-bar">
@@ -1377,6 +1343,11 @@ let status_draft_version = '';
 let _lastDiscoveryHandoff = null;
 let _lastDiscoveryMapContext = null;
 
+function _setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
 async function api(path, body) {
   const opts = body !== undefined
     ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
@@ -1395,14 +1366,14 @@ async function loadAll() {
 
     if (statusRes.status === 'fulfilled') {
       const status = statusRes.value || {};
-      document.getElementById('s-prospects').textContent = status.prospects_loaded ?? '—';
-      document.getElementById('s-drafted').textContent   = status.total_drafted ?? '—';
-      document.getElementById('s-pending').textContent   = status.pending_approval ?? '—';
-      document.getElementById('s-approved').textContent  = status.approved_unsent ?? '—';
-      document.getElementById('s-sent').textContent      = status.sent ?? '—';
-      document.getElementById('s-logged').textContent    = status.sent_logged_only ?? '—';
+      _setText('s-prospects', status.prospects_loaded ?? '—');
+      _setText('s-drafted', status.total_drafted ?? '—');
+      _setText('s-pending', status.pending_approval ?? '—');
+      _setText('s-approved', status.approved_unsent ?? '—');
+      _setText('s-sent', status.sent ?? '—');
+      _setText('s-logged', status.sent_logged_only ?? '—');
       _updateRepliedStat(status.replied ?? 0);
-      document.getElementById('s-stale').textContent = status.stale_drafts ?? '—';
+      _setText('s-stale', status.stale_drafts ?? '—');
       status_draft_version = status.current_draft_version ?? '';
     } else {
       console.error('Status API failed:', statusRes.reason);
@@ -1441,19 +1412,19 @@ async function loadAll() {
 
 async function loadStats() {
   const s = await api('/api/status');
-  document.getElementById('s-prospects').textContent = s.prospects_loaded ?? '—';
-  document.getElementById('s-drafted').textContent   = s.total_drafted ?? '—';
-  document.getElementById('s-pending').textContent   = s.pending_approval ?? '—';
-  document.getElementById('s-approved').textContent  = s.approved_unsent ?? '—';
-  document.getElementById('s-sent').textContent      = s.sent ?? '—';
-  document.getElementById('s-logged').textContent    = s.sent_logged_only ?? '—';
+  _setText('s-prospects', s.prospects_loaded ?? '—');
+  _setText('s-drafted', s.total_drafted ?? '—');
+  _setText('s-pending', s.pending_approval ?? '—');
+  _setText('s-approved', s.approved_unsent ?? '—');
+  _setText('s-sent', s.sent ?? '—');
+  _setText('s-logged', s.sent_logged_only ?? '—');
   _updateRepliedStat(s.replied ?? 0);
-  document.getElementById('s-stale').textContent = s.stale_drafts ?? '—';
+  _setText('s-stale', s.stale_drafts ?? '—');
   if (allRows.length) _refreshQueueWorkflowStats();
 }
 
 function _updateRepliedStat(count) {
-  document.getElementById('s-replied').textContent = count;
+  _setText('s-replied', count);
   const pulse = document.getElementById('reply-pulse');
   if (pulse) pulse.style.display = count > 0 ? 'inline-block' : 'none';
 }
@@ -1674,10 +1645,10 @@ function renderTable() {
     const titleEl = document.getElementById('empty-title');
     const subEl = document.getElementById('empty-sub');
     if ((currentFilter === 'active' || currentFilter === 'pending') && c.approved > 0) {
-      if (titleEl) titleEl.textContent = 'No drafted rows need review';
+      if (titleEl) titleEl.textContent = 'No drafted rows in queue';
       if (subEl) subEl.innerHTML = `You have <strong>${c.approved}</strong> approved-but-unscheduled row(s). Open <strong>Approved</strong> to set a send window.`;
     } else if ((currentFilter === 'active' || currentFilter === 'pending') && c.scheduled > 0) {
-      if (titleEl) titleEl.textContent = 'No drafted rows need review';
+      if (titleEl) titleEl.textContent = 'No drafted rows in queue';
       if (subEl) subEl.innerHTML = `You have <strong>${c.scheduled}</strong> scheduled row(s). Review <strong>Scheduled</strong> or discover a fresh batch.`;
     } else if (currentFilter === 'approved' && c.approved === 0 && c.scheduled > 0) {
       if (titleEl) titleEl.textContent = 'No approved-unscheduled rows';
