@@ -1,39 +1,44 @@
-# One-Page Proposal Template
+# Proposal Template
+# Product: After-Hours Lead Capture (Missed Call Text-Back)
 
 ## Problem
-Summarize the client's current workflow friction in plain language.
-- What repetitive admin task is consuming time?
-- Where are delays, missed messages, or inconsistencies occurring?
+State the specific missed-call pain in plain language.
+- What happens when they don't answer after hours?
+- Have they mentioned losing jobs or not knowing what calls they miss?
+- Tie it to a dollar figure if possible (avg job value × estimated misses/week)
 
 ## Solution
-Describe the proposed automation scope for v1.
-- What process will be automated?
-- What remains manual by design?
-- What edge cases route to a human?
+Describe what we set up — not what it "is."
+- A phone line that texts callers back automatically when no one answers
+- Owner gets notified on every reply
+- Leads logged to a Google Sheet automatically
+- We run the infrastructure — they do nothing technical
 
-## Deliverables
-List concrete outputs.
-- Workflow map
-- Configured automation(s)
-- Integrations and routing rules
-- Testing and launch checklist
-- Handoff documentation
+## What They Get
+- Dedicated Twilio phone number (provisioned by us)
+- Voice message on every missed call
+- Auto-SMS to caller within seconds
+- Lead logging to Google Sheets
+- Owner notification via SMS and/or email
+- Setup, testing, and go-live
+- 30-day post-launch monitoring
+
+## What They Provide
+- Notification preference (text, email, or both)
+- Voice message preference (we can write it)
+- Nothing technical — no accounts, no software
 
 ## Timeline
-Provide realistic implementation phases.
-- Discovery + requirements: X days
-- Build + integration: X days
-- Testing + revisions: X days
-- Go-live + handoff: X days
+- Day 1: Kickoff
+- Day 2–4: Build and configure
+- Day 5–6: Test with real calls
+- Day 7: Go live
 
 ## Price
-State a fixed fee within approved range.
-- Project fee: $X
-- Optional add-ons (if any): $Y
-- Total: $Z
+- Setup: $750 (one-time)
+- Monthly: $150/month
+- Terms: 50% ($375) before start, 50% at go-live
+- Monthly billing starts at go-live
 
-## Payment Terms
-- 50% due at kickoff
-- 50% due at launch/handoff
-- Scope changes require written approval and updated quote
-- Ongoing maintenance (if requested) billed separately
+## Guarantee
+If it isn't working correctly within 30 days of go-live, we fix it free.

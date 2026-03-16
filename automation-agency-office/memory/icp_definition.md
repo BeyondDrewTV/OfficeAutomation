@@ -1,31 +1,53 @@
 # Ideal Customer Profile (ICP)
+# Product: After-Hours Lead Capture (Missed Call Text-Back)
 
-## Primary ICP Segments
-1. HVAC businesses
-2. Restaurants
-3. Real estate agents / small broker teams
-4. Dentists and med spas
+## Primary ICP — Service Trades (Phone-First, Emergency-Capable)
+
+1. Plumbers
+2. HVAC technicians
+3. Electricians
+4. Locksmiths
+5. Garage door repair
+6. Towing / roadside assistance
+
+## Why These Businesses
+
+These businesses share a specific, common problem:
+- Customers call when something is broken or urgent
+- Calls come in evenings, weekends, and holidays
+- Owner or tech is often on a job and cannot answer
+- Customer does not leave a voicemail — they call the next number
+- The business never knew the lead existed
+
+This is not a workflow problem. It is a lost-revenue problem with a simple fix.
+
+## High-Priority Fit Signals (Score Up)
+
+- Business is in a trade industry (plumbing, HVAC, electrical, locksmith, garage door, towing)
+- Business advertises emergency service, same-day service, or 24/7 availability
+- Business is owner-operated or small crew (1–5 techs)
+- Phone is the primary or only contact method
+- Business has no online booking or after-hours coverage
+- Business is phone-first (no chat, no web form, just a phone number)
+
+## Lower-Priority / Deprioritize for Now
+
+- Salons and barbers — appointment-based, not urgent, not a fit
+- Restaurants — not a fit
+- Gyms and fitness — not a fit
+- General retail — not a fit
+- Dentists and medical — appointment-based, front-desk coverage, lower urgency
+- Real estate — not a fit for this product
+
+## Non-Ideal Fit (Do Not Target)
+
+- Businesses with dedicated after-hours answering services already in place
+- Large chains or franchises — operator-managed model does not fit
+- Businesses that primarily take online bookings (urgency mismatch)
 
 ## Core Characteristics
-- Small teams (typically owner-led with limited admin capacity)
-- High volume of repetitive customer inquiries
-- Reliance on manual follow-up or inbox monitoring
-- Existing tools in place but under-optimized workflows
-- Need for fast implementation without enterprise complexity
 
-## Typical Pain Signals
-- Repeated FAQs consuming front-desk/staff time
-- Slow response to inbound leads or appointment requests
-- Missed messages from web forms, social, or email
-- Inconsistent lead follow-up and manual pipeline updates
-
-## Fit Criteria (Good Fit)
-- Clear, recurring workflow problems
-- Willingness to standardize a baseline process
-- Single point of contact for feedback/approvals
-- Able to provide required access and examples quickly
-
-## Non-Ideal Fit (for v1)
-- Highly customized enterprise systems with long procurement cycles
-- Teams expecting full business process replacement in one phase
-- Clients requesting unsupported guarantees (e.g., guaranteed revenue)
+- Owner is the decision-maker (no procurement, no committee)
+- They lose leads they never see — they may not even know it is happening
+- They are not technical and do not want to be
+- A specific dollar-figure story closes them faster than any feature list

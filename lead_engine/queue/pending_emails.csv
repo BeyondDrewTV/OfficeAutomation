@@ -1,4 +1,4 @@
-business_name,city,state,website,phone,contact_method,industry,to_email,subject,body,approved,sent_at,approval_reason,scoring_reason,final_priority_score,automation_opportunity,do_not_contact,draft_version,facebook_url,instagram_url,contact_form_url,social_channels,social_dm_text,facebook_dm_draft,instagram_dm_draft,contact_form_message,lead_insight_sentence,lead_insight_signals,opportunity_score,last_contact_channel,last_contacted_at,contact_attempt_count,contact_result,next_followup_at,campaign_key,message_id,replied,replied_at,reply_snippet,conversation_notes,conversation_next_step
+business_name,city,state,website,phone,contact_method,industry,to_email,subject,body,approved,sent_at,approval_reason,scoring_reason,final_priority_score,automation_opportunity,do_not_contact,draft_version,facebook_url,instagram_url,contact_form_url,social_channels,social_dm_text,facebook_dm_draft,instagram_dm_draft,contact_form_message,lead_insight_sentence,lead_insight_signals,opportunity_score,last_contact_channel,last_contacted_at,contact_attempt_count,contact_result,next_followup_at,campaign_key,message_id,replied,replied_at,reply_snippet,conversation_notes,conversation_next_step,send_after
 "Dee's Plumbing & Construction,Inc.",Rockford,IL,,8156364626,phone,,,"Saving Dee's Plumbing & Construction,Inc. time on after-hours call capture","Hi Dee's Plumbing & Construction,Inc. team,
 
 I work with service businesses in Rockford on one specific problem: dispatching jobs manually and missing after-hours calls.
@@ -8,7 +8,7 @@ I built a after-hours call capture and job dispatching automation system that ca
 Happy to show you a quick demo — no pitch, just a look at what it does. Interested?
 
 Best,
-Drew",true,2026-03-14T20:17:10.854799+00:00,,No website found; high automation opportunity.,5,,,,,,,,,,,,,,0,,,1,replied,,,,true,2026-03-14T22:51:59.271740+00:00,"Hi Dee's Plumbing & Construction,Inc. team...",,
+Drew",true,2026-03-14T20:17:10.854799+00:00,,No website found; high automation opportunity.,5,,,,,,,,,,,,,,,,,,,,,,true,2026-03-14T22:51:59.271740+00:00,"Hi Dee's Plumbing & Construction,Inc. team...",,,
 Lars Plumbing,Rockford,IL,https://www.larsplumbing.com/contact-us,8153788686,email,,john@larsplumbing.com,Quick question about calls,"Hi Lars Plumbing,
 
 Do you guys ever miss calls when the crew is out on jobs?
@@ -17,7 +17,7 @@ I built a simple setup that automatically texts the caller back so you can follo
 
 Happy to send a quick example if you're curious.
 
-– Drew",true,2026-03-14T20:40:05.989155+00:00,,Good Fit — high-fit industry (plumbing) (+2); has website (+1); has email (+1),4,unknown,,,,,,,,,,,,,0,,,0,,,,,,,,,
+– Drew",true,2026-03-14T20:40:05.989155+00:00,,Good Fit — high-fit industry (plumbing) (+2); has website (+1); has email (+1),4,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
 Tactical Plumbing,Rockford,IL,,7795377095,phone,,,after-hours calls,"Hi Tactical Plumbing,
 
 Quick question — what happens when someone calls after hours and nobody answers?
@@ -28,15 +28,7 @@ I set up a simple text-back line that replies to missed callers automatically so
 
 Happy to send a quick example if you're curious.
 
-– Drew",false,,,Skip — no signals,1,unknown,,v4,,,,,,"Hey Tactical — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Tactical — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
-
-I came across Tactical Plumbing and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
-
-I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
-
-Happy to share a quick example if that's something worth a look.
-
-— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,0,,,0,,,,,,,,,
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
 "Roto-Rooter Plumbing, Drain, & Water Damage Cleanup Service",Rockford,IL,,8153395444,phone,,,quick question,"Hi Roto-Rooter Plumbing, Drain, & Water Damage Cleanup Service,
 
 Do you ever miss calls when everyone's out working jobs?
@@ -47,15 +39,7 @@ I set up a simple text-back line that replies to missed callers automatically so
 
 Happy to send a quick example if you're curious.
 
-– Drew",false,,,Skip — no signals,1,unknown,,v4,,,,,,"Hey Roto-Rooter — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Roto-Rooter — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
-
-I came across Roto-Rooter Plumbing, Drain, & Water Damage Cleanup Service and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
-
-I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
-
-Happy to share a quick example if that's something worth a look.
-
-— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,0,,,0,,,,,,,,,
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
 "Pearson Plumbing, Heating/AC & Pest Control",Rockford,IL,,8153988312,phone,,,quick question,"Hi Pearson Plumbing, Heating/AC & Pest Control,
 
 Do you guys ever miss calls when the crew is out on jobs. 
@@ -64,15 +48,7 @@ A lot of service companies lose those leads because the customer just calls the 
 
 I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
 
-– Drew",false,,,Skip — no signals,1,unknown,,v4,,,,,,"Hey Pearson — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Pearson — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
-
-I came across Pearson Plumbing, Heating/AC & Pest Control and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
-
-I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
-
-Happy to share a quick example if that's something worth a look.
-
-— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,0,,,0,,,,,,,,,
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
 #1 Plumbing Co.,Rockford,IL,,8159977301,phone,,,after-hours calls,"Hi #1 Plumbing Co.,
 
 Quick question — what happens when someone calls after hours and nobody answers?
@@ -83,12 +59,1757 @@ I set up a simple text-back line that replies to missed callers automatically so
 
 Happy to send a quick example if you're curious.
 
-– Drew",false,,,Skip — no signals,1,unknown,,v4,,,,,,"Hey #1 — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey #1 — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Hal's Plumbing,Rockford,IL,,8156391155,phone,,,after-hours calls,"Hi Hal's Plumbing,
 
-I came across #1 Plumbing Co. and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Five Star Plumbing Company,Rockford,IL,,8156391016,phone,,,missed calls?,"Hi Five Star Plumbing Company,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Lungo's Plumbing Services,Rockford,IL,,8157030827,phone,,,quick question for Lungo's Plumbing Services,"Hi Lungo's Plumbing Services,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Total Plumbing & Heating LTD,Rockford,IL,,8154433536,phone,,,quick question for Total Plumbing & Heating LTD,"Hi Total Plumbing & Heating LTD,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Frink's Sewer & Drain Inc,Rockford,IL,,8159624525,phone,,,quick question for Frink's Sewer & Drain Inc,"Hi Frink's Sewer & Drain Inc,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+A-1 Affordable Electric & Plumbing,Rockford,IL,,8152224339,phone,,,quick question for A-1 Affordable Electric & Plumbing,"Hi A-1 Affordable Electric & Plumbing,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Calyx Contracting,Rockford,IL,,8156685551,phone,,,missed calls?,"Hi Calyx Contracting,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Big Joe the Plumber,Rockford,IL,,8153998335,phone,,,quick question,"Hi Big Joe the Plumber,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of servi",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+ce companies lose those leads because the customer just calls the next number if nobody answers.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Happy to send a quick example if you're curious.,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+"– Drew""",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Black Diamond Plumbing & Mechanical Inc.,Rockford,IL,,7792073003,phone,,,quick question for Black Diamond Plumbing & Mechanical Inc.,"Hi Black Diamond Plumbing & Mechanical Inc. ,
+
+Quick question — what happens when someone calls after hours and nobody answers. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+"Trinity Plumbing, HVAC, & Remodeling",Rockford,IL,,8158211185,phone,,,missed calls?,"Hi Trinity Plumbing, HVAC, & Remodeling,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Pease Plumbing,Rockford,IL,,8155432391,phone,,,missed calls?,"Hi Pease Plumbing,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Northern Illinois Sewer Service,Rockford,IL,,8152291174,phone,,,after-hours calls,"Hi Northern Illinois Sewer Service,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Owen Plumbing & Heating Co,Rockford,IL,,8153983100,phone,,,quick question for Owen Plumbing & Heating Co,"Hi Owen Plumbing & Heating Co,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Nelson Drain Services Inc,Rockford,IL,,8159691550,phone,,,missed calls?,"Hi Nelson Drain Services Inc,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+TNT Sewer N Drain Services,Rockford,IL,,8153163040,phone,,,after-hours calls,"Hi TNT Sewer N Drain Services,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+T E Shouler Plumbing,Rockford,IL,,8158779129,phone,,,quick question,"Hi T E Shouler Plumbing,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — no signals,1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+EDWARDS SEWER & DRAIN,Rockford,IL,http://www.edwardsseweranddrain.com/,8778936251,website,plumbing,,missed calls?,"Hi EDWARDS SEWER & DRAIN,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Roto-Rooter Plumbing & Water Cleanup,chicago,IL,https://www.rotorooter.com/chicago/?utm_source=Google&utm_medium=organic&utm_campaign=gmb&utm_content=website,3123792926,website,plumbing,,missed calls?,"Hi Roto-Rooter Plumbing & Water Cleanup,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+"J. Blanton Plumbing, Sewer & Drain",chicago,IL,http://www.jblantonplumbing.com/,7736574820,website,plumbing,,"quick question for J. Blanton Plumbing, Sewer & Drain","Hi J.  Blanton Plumbing, Sewer & Drain,
+
+Do you guys ever miss calls when the crew is out on jobs. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+"ABC Plumbing, Sewer, Heating, Cooling & Electric",chicago,IL,https://www.4abc.com/il,8889913942,website,plumbing,,after-hours calls,"Hi ABC Plumbing, Sewer, Heating, Cooling & Electric,
+
+Quick question — what happens when someone calls after hours and nobody answers. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Rocket Plumbing,chicago,IL,https://rocketplumbingnow.com/jefferson-park-plumbing/,7732991600,website,plumbing,,quick question,"Hi Rocket Plumbing,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+S and J Plumbing & Sewer,chicago,IL,https://www.sandjplumbing.com/?utm_source=google&utm_medium=organic_search&utm_campaign=1seo_gmb,8472331748,website,plumbing,,quick question for S and J Plumbing & Sewer,"Hi S and J Plumbing & Sewer,
+
+Do you guys ever miss calls when the crew is out on jobs. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Baethke Plumbing,chicago,IL,https://www.baethkeplumbing.com/?utm_source=GMBlisting&utm_medium=organic,3126971550,website,plumbing,,missed calls?,"Hi Baethke Plumbing,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Sandoval Plumbing,chicago,IL,https://www.facebook.com/share/bmtB1wpbadb8njf2/?mibextid=LQQJ4d,7736103344,website,plumbing,,quick question for Sandoval Plumbing,"Hi Sandoval Plumbing,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Madden Sewer & Drain,chicago,IL,http://www.maddensewer.net/,7735887534,website,plumbing,,quick question for Madden Sewer & Drain,"Hi Madden Sewer & Drain,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Captain Rooter Emergency Plumbers,chicago,IL,,7738230199,phone,plumbing,,missed calls?,"Hi Captain Rooter Emergency Plumbers,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); emergency/urgency language (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+"Handyman Services: Plumbing, Electrician, Heating",Rockford,IL,,8335061780,phone,plumbing,,"quick question for Handyman Services: Plumbing, Electrician, Heating","Hi Handyman Services: Plumbing, Electrician, Heating,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Weak — high-fit industry (plumbing) (+2),2,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Plumbers in Rockford,Rockford,IL,http://plumbersinrockford.com/,08777503414,website,plumbing,,missed calls?,"Hi Plumbers in Rockford,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Master Mart Plumbing,Rockford,IL,http://www.mastermartplumbing.com/,8159796300,website,plumbing,,quick question,"Hi Master Mart Plumbing,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Rockford Door Company,Rockford,IL,https://www.rockfordgaragedoor.com,8153975903,email,garage_door,rockforddoorcompany@gmail.com,quick question for Rockford Door Company,"Hi Rockford Door Company,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,2026-03-16T01:16:21.077040+00:00,,Good Fit — high-fit industry (garage_door) (+2); has website (+1); has email (+1),4,unknown,,,,,,,,,,,,,,,,,,,,<a90680a5cae94603a5b5efd9b5dd968f@copperline.mail>,,,,,,
+Cropp's Door Service Inc.,Loves Park,IL,https://www.croppsdoorservice.com,8152822702,email,garage_door,croppsdoor@sbcglobal.net,missed calls?,"Hi Cropp's Door Service Inc.,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,2026-03-16T01:17:07.904096+00:00,,Good Fit — high-fit industry (garage_door) (+2); has website (+1); has email (+1),4,unknown,,,,,,,,,,,,,,,,,,,,<e0b9c65eb9dd44d1840b43e9a746399f@copperline.mail>,,,,,,
+Stateline Garage Door Repair,Roscoe,IL,https://www.statelinegaragedoor.com,8159058261,website,garage_door,,quick question for Stateline Garage Door Repair,"Hi Stateline Garage Door Repair,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Ceramix Pro Overhead,Rockford,IL,,7737419057,phone,garage_door,,quick question for Ceramix Pro Overhead,"Hi Ceramix Pro Overhead,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Weak — high-fit industry (garage_door) (+2),2,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Rockford Garage Doors Dynamics,Rockford,IL,,8156654532,phone,garage_door,,after-hours calls,"Hi Rockford Garage Doors Dynamics,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Weak — high-fit industry (garage_door) (+2),2,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Raynor Door Authority of Rockford,Loves Park,IL,https://raynordoorauthority.com/locations/rockford,8157062896,email,garage_door,rockfordservice@raynordoorauthority.com,quick question,"Hi Raynor Door Authority of Rockford,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,2026-03-16T01:17:54.480725+00:00,,Good Fit — high-fit industry (garage_door) (+2); has website (+1); has email (+1),4,unknown,,,,,,,,,,,,,,,,,,,,<a6246c75672445a59d3a95afff56341e@copperline.mail>,,,,,,
+Rock River Door Company,Rockton,IL,http://rockriverdoor.com,8156243667,email,garage_door,rockriverdoor@gmail.com,quick question,"Hi Rock River Door Company,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,2026-03-16T01:18:41.614212+00:00,,Good Fit — high-fit industry (garage_door) (+2); has website (+1); has email (+1),4,unknown,,,,,,,,,,,,,,,,,,,,<c68fc4d4f9304324a234094723719905@copperline.mail>,,,,,,
+Barcol Door Company Inc.,Loves Park,IL,https://barcoldoor.com,8156330545,email,garage_door,bea0545@gmail.com,quick question,"Hi Barcol Door Company Inc.,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,2026-03-16T01:19:28.323381+00:00,,Good Fit — high-fit industry (garage_door) (+2); has website (+1); has email (+1),4,unknown,,,,,,,,,,,,,,,,,,,,<18c354f9cf234ea1a87f1236c967ab81@copperline.mail>,,,,,,
+Overhead Door Company of Rockford,Rockford,IL,http://www.overheaddoorrockford.com,8152293667,website,garage_door,,missed calls?,"Hi Overhead Door Company of Rockford,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+The Concrete Gargae Door's Pros,Loves Park,IL,https://form.jotform.com/elenamatievckaya/the-concrete-garage-doors-pros,8157832740,website,garage_door,,quick question,"Hi The Concrete Gargae Door's Pros,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+FastTrack Garage Door's Services,Rockford,IL,,3215242970,phone,garage_door,,quick question,"Hi FastTrack Garage Door's Services,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Weak — high-fit industry (garage_door) (+2),2,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Ackerson Door Sales,Caledonia,IL,http://www.ackersondoors.com,8157651551,email,garage_door,sales@ackersondoors.com,quick question for Ackerson Door Sales,"Hi Ackerson Door Sales,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,2026-03-16T01:20:15.002982+00:00,,Good Fit — high-fit industry (garage_door) (+2); has website (+1); has email (+1),4,unknown,,,,,,,,,,,,,,,,,,,,<68f61b63ba5848aba9254a0c11254f07@copperline.mail>,true,2026-03-16T01:25:22.123998+00:00,"The message you sent requires that you verify that you are a real live human being and not a spam source.  To complete this verification, simply reply to this message and leave the subject line intact.   Or, you can click the following link:  http://www.ackersondoors.com/cgi-sys/bxd.cgi?a=s",,,
+Roscoe Garage Doors,Roscoe,IL,https://www.roscoegaragedoor.com,8156238283,email,garage_door,roscoegaragedoor@gmail.com,after-hours calls,"Hi Roscoe Garage Doors,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,2026-03-16T01:21:01.345505+00:00,,Good Fit — high-fit industry (garage_door) (+2); has website (+1); has email (+1),4,unknown,,,,,,,,,,,,,,,,,,,,<bb6468a9ba844978aae9adca41e83087@copperline.mail>,,,,,,
+Allen Heating & Cooling,Rockford,IL,http://www.allenheatcool.com,8152988020,email,plumbing,allenheatcool@yahoo.com,missed calls?,"Hi Allen Heating & Cooling,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,2026-03-16T01:21:47.720115+00:00,,High Opportunity — high-fit industry (plumbing) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,,,,,,,,,,,,,,,,,,,<187dfbefd747438089e6a2e0aeeb2c92@copperline.mail>,,,,,,
+Rockford Heating & Air Conditioning,Rockford,IL,https://www.rockfordheating.com,8159659494,email,plumbing,rockfordheating@gmail.com,quick question,"Hi Rockford Heating & Air Conditioning,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,2026-03-16T01:22:34.267848+00:00,,High Opportunity — high-fit industry (plumbing) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,,,,,,,,,,,,,,,,,,,<8ce503b8e4ea41e09ff56fdfe0525486@copperline.mail>,,,,,,
+Victors Roto Tilling,Rockford,IL,,8155660723,phone,plumbing,,quick question for Victors Roto Tilling,"Hi Victors Roto Tilling,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — high-fit industry (plumbing) (+2); no_website contactability (-1),1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Barker Kathleen E,Rockford,IL,,8159684400,phone,plumbing,,after-hours calls,"Hi Barker Kathleen E,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — high-fit industry (plumbing) (+2); no_website contactability (-1),1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Wayne Seymour Plumbing,Rockford,IL,,8152629462,phone,plumbing,,after-hours calls,"Hi Wayne Seymour Plumbing,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — high-fit industry (plumbing) (+2); no_website contactability (-1),1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Swanson Plumbing,Rockford,IL,,,phone,plumbing,,quick question,"Hi Swanson Plumbing,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — high-fit industry (plumbing) (+2); no_website contactability (-1),1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Leo Maintenance and Repair,Rockford,IL,,8159789733,phone,plumbing,,quick question for Leo Maintenance and Repair,"Hi Leo Maintenance and Repair,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — high-fit industry (plumbing) (+2); no_website contactability (-1),1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Turner Plumbing,Genoa,IL,https://www.turnerplumbingil.com,6302464832,website,plumbing,,after-hours calls,"Hi Turner Plumbing,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (plumbing) (+2); has website (+1),3,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Superior Overhead Door,Crystal Lake,IL,https://callsuperiordoor.com,8157881100,email,garage_door,info@callsuperiordoor.com,quick question for Superior Overhead Door,"Hi Superior Overhead Door,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,2026-03-16T01:23:20.679497+00:00,,High Opportunity — high-fit industry (garage_door) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,,,,,,,,,,,,,,,,,,,<042da337775e442fab2351c00f8502a1@copperline.mail>,,,,,,
+Rockton Garage Doors,Rockton,IL,,8154755972,phone,garage_door,,quick question,"Hi Rockton Garage Doors,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — high-fit industry (garage_door) (+2); no_website contactability (-1),1,unknown,,,,,,,,,,,,,,,,,,,,,,,,,,
+Perfect Temp Heating & Cooling,Loves Park,IL,https://perfecttemprockford.com/lovespark-il-hvac,8152965759,email,hvac,perfecttempheatingcooling@gmail.com,after-hours calls,"Hi Perfect Temp Heating & Cooling,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/perfect.temp.rkfd,,https://perfecttemprockford.com/contact-us/,"email_found,facebook_found",Hey Perfect Temp Heating & Cooling — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Loves Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Perfect — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Perfect — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Perfect Temp Heating & Cooling and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
 
 I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
 
 Happy to share a quick example if that's something worth a look.
 
-— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,0,,,0,,,,,,,,,
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Absolute Value Heating & Cooling - Rockford,Rockford,IL,http://goabsolutevalue.com,8472509625,email,hvac,absolutevalue06@gmail.com,quick question for Absolute Value Heating & Cooling - Rockford,"Hi Absolute Value Heating & Cooling - Rockford,
+
+Do you guys ever miss calls when the crew is out on jobs. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",true,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/goabsolutevalue,,,"email_found,facebook_found",Hey Absolute Value Heating & Cooling - Rockford — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Rockford that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Absolute — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Absolute — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Absolute Value Heating & Cooling - Rockford and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,60,,,0,,,,,,,,,,
+"Improved Comfort Rockford HVAC & Furnace Repair Pros, Inc.",Rockford,IL,https://hvacrockfordil.com,7799707066,email,hvac,info@yourcompany.com,missed calls?,"Hi Improved Comfort Rockford HVAC & Furnace Repair Pros, Inc. ,
+
+Do you ever miss calls when everyone's out working jobs. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",true,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,,,https://hvacrockfordil.com/schedule-page-6932,email_found,"Hey Improved Comfort Rockford HVAC & Furnace Repair Pros, Inc. — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Rockford that replies to missed callers automatically. Happy to send a quick example — just let me know!","Hey Improved — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Improved — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Improved Comfort Rockford HVAC & Furnace Repair Pros, Inc. and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,70,,,0,,,,,,,,,,
+MP Heating & Air Conditioning,Machesney Park,IL,http://www.mphvac.com,8156399190,email,hvac,info@mphvac.com,missed calls?,"Hi MP Heating & Air Conditioning,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/MPHVAC,,,"email_found,facebook_found",Hey MP Heating & Air Conditioning — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Machesney Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey MP — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey MP — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across MP Heating & Air Conditioning and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,60,,,0,,,,,,,,,,
+"Woodstock Heating, Cooling & Electrical",Woodstock,IL,https://woodstockheating.com,8153380282,website,hvac,,missed calls?,"Hi Woodstock Heating, Cooling & Electrical,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/woodstockheating123,,https://woodstockheating.com/contact-us/,"facebook_found,contact_form_only","Hey Woodstock Heating, Cooling & Electrical — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Woodstock that replies to missed callers automatically. Happy to send a quick example — just let me know!","Hey Woodstock — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Woodstock — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Woodstock Heating, Cooling & Electrical and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+Temperature Doctors Heating & Cooling Inc,Rockford,IL,https://www.temperaturedoctors.com,8159146197,website,hvac,,missed calls?,"Hi Temperature Doctors Heating & Cooling Inc,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/Temperaturedoctor,,https://www.temperaturedoctors.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=6.1.5,"facebook_found,contact_form_only",Hey Temperature Doctors Heating & Cooling Inc — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Rockford that replies to missed callers automatically. Happy to send a quick example — just let me know!,Hey Tempera,,,,,,,,,,,,,,,,,,
+ture — quick question," do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.""","Hey Temperature — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Temperature Doctors Heating & Cooling Inc and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+Gilley's Heating & Air Conditioning,Rockford,IL,http://www.gilleysheatingandair.com,8159621927,email,hvac,service@gilleysheatingandair.com,missed calls?,"Hi Gilley's Heating & Air Conditioning,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/GilleysHeatingAndAirConditioning,https://www.instagram.com/GilleysHVAC/,http://www.gilleysheatingandair.com/contact,"email_found,facebook_found,instagram_found",Hey Gilley's Heating & Air Conditioning — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Rockford that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Gilley's — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Gilley's — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Gilley's Heating & Air Conditioning and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Magin Heating & Cooling,Rockford,IL,,8159684977,phone,hvac,,after-hours calls,"Hi Magin Heating & Cooling,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — high-fit industry (hvac) (+2); no_website contactability (-1),1,unknown,,v4,,,,no_contact_channel,Hey Magin Heating & Cooling — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Rockford that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Magin — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Magin — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Magin Heating & Cooling and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,10,,,0,,,,,,,,,,
+Massie Heating and Air Conditioning,Loves Park,IL,https://www.massiehvac.com,8159887284,website,hvac,,quick question,"Hi Massie Heating and Air Conditioning,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,,,https://www.massiehvac.com/request-form,contact_form_only,Hey Massie Heating and Air Conditioning — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Loves Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Massie — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Massie — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Massie Heating and Air Conditioning and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,40,,,0,,,,,,,,,,
+"O'Connor Heating, Cooling & Electrical",Machesney Park,IL,http://oconnorhce.com,8159782263,website,hvac,,after-hours calls,"Hi O'Connor Heating, Cooling & Electrical,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/2008,,http://oconnorhce.com/contact,"facebook_found,contact_form_only","Hey O'Connor Heating, Cooling & Electrical — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Machesney Park that replies to missed callers automatically. Happy to send a quick example — just let me know!","Hey O'Connor — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey O'Connor — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across O'Connor Heating, Cooling & Electrical and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+Kennedy Heating & Cooling,Loves Park,IL,,8156216996,phone,hvac,,missed calls?,"Hi Kennedy Heating & Cooling,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — high-fit industry (hvac) (+2); no_website contactability (-1),1,unknown,,v4,,,,no_contact_channel,Hey Kennedy Heating & Cooling — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Loves Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Kennedy — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Kennedy — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Kennedy Heating & Cooling and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,10,,,0,,,,,,,,,,
+Gough Heating & Air Conditioning Ltd,Loves Park,IL,http://goughheating.com,8156337130,email,hvac,stephanie@goughheating.com,quick question for Gough Heating & Air Conditioning Ltd,"Hi Gough Heating & Air Conditioning Ltd,
+
+Do you guys ever miss calls when the crew is out on jobs. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/goughheating,,,"email_found,facebook_found",Hey Gough Heating & Air Conditioning Ltd — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Loves Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Gough — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Gough — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Gough Heating & Air Conditioning Ltd and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,60,,,0,,,,,,,,,,
+Latino Heating & Cooling Inc,Machesney Park,IL,https://latinoheatingcoolinginc.com,8155191542,email,hvac,v.manzanarez@yahoo.com,quick question for Latino Heating & Cooling Inc,"Hi Latino Heating & Cooling Inc,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/latinoheatingcoolinginc,,https://latinoheatingcoolinginc.com/contact,"email_found,facebook_found",Hey Latino Heating & Cooling Inc — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Machesney Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Latino — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Latino — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Latino Heating & Cooling Inc and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Comfort Right Heating & Cooling,Winnebago,IL,http://www.comfortrightheating.com,8156778943,website,hvac,,after-hours calls,"Hi Comfort Right Heating & Cooling,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,,,,no_contact_channel,Hey Comfort Right Heating & Cooling — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Winnebago that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Comfort — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Comfort — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Comfort Right Heating & Cooling and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,20,,,0,,,,,,,,,,
+North Park Heating & Air Conditioning,Loves Park,IL,,8156543389,phone,hvac,,quick question,"Hi North Park Heating & Air Conditioning,
+
+Quick question — what happens when someone calls after hours and nobody answers. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,,Skip — high-fit industry (hvac) (+2); no_website contactability (-1),1,unknown,,v4,,,,no_contact_channel,Hey North Park Heating & Air Conditioning — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Loves Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey North — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey North — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across North Park Heating & Air Conditioning and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,10,,,0,,,,,,,,,,
+"Four Seasons Heating, Air Conditioning, Plumbing, & Electric",Chicago,IL,https://www.fourseasonsheatingcooling.com,7732192190,website,hvac,,quick question,"Hi Four Seasons Heating, Air Conditioning, Plumbing, & Electric,
+
+Do you guys ever miss calls when the crew is out on jobs. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/FourSeasonsHVAC,https://www.instagram.com/fourseasonshvac/,https://www.fourseasonsheatingcooling.com/furnace-free-estimate/,"facebook_found,instagram_found,contact_form_only","Hey Four Seasons Heating, Air Conditioning, Plumbing, & Electric — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Chicago that replies to missed callers automatically. Happy to send a quick example — just let me know!","Hey Four — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Four — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Four Seasons Heating, Air Conditioning, Plumbing, & Electric and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+"Affordable American Air Heating, Cooling & Energy services",Lombard,IL,http://www.affordableamericanair.net,6304822995,email,hvac,affordableaahvac@yahoo.com,quick question,"Hi Affordable American Air Heating, Cooling & Energy services,
+
+Quick question — what happens when someone calls after hours and nobody answers. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",true,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/AffordableAmer1,,http://www.affordableamericanair.net/#Contact,"email_found,facebook_found","Hey Affordable American Air Heating, Cooling & Energy services — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Lombard that replies to missed callers automatically. Happy to send a quick example — just let me know!","Hey Affordable — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Affordable — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Affordable American Air Heating, Cooling & Energy services and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Any Temp Heating & Cooling,Addison,IL,https://any-temp.com,6303267814,email,hvac,workorder@any-temp.com,quick question for Any Temp Heating & Cooling,"Hi Any Temp Heating & Cooling,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/anytemp,,https://any-temp.com/contact-us/,"email_found,facebook_found",Hey Any Temp Heating & Cooling — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Addison that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Any — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Any — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Any Temp Heating & Cooling and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Residential Heating & Cooling,Schaumburg,IL,https://www.residentialheatingcooling.com,8476375331,website,hvac,,after-hours calls,"Hi Residential Heating & Cooling,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/ResidentialHeatingCooling,,,facebook_found,Hey Residential Heating & Cooling — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Schaumburg that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Residential — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Residential — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Residential Heating & Cooling and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,30,,,0,,,,,,,,,,
+Global Heating and Cooling | HVAC,Chicago,IL,https://www.globalheatingcooling.us,7738013734,email,hvac,info@globalheatingcooling.us,quick question,"Hi Global Heating and Cooling | HVAC,
+
+Do you guys ever miss calls when the crew is out on jobs. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/ghcus,,https://www.globalheatingcooling.us/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.9.8,"email_found,facebook_found",Hey Global Heating and Cooling | HVAC — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Chicago that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Global — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Global — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Global Heating and Cooling | HVAC and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Service Express Heating and Air Conditioning,Villa Park,IL,http://www.serviceexpressheatingandair.com,6308334400,website,hvac,,quick question for Service Express Heating and Air Conditioning,"Hi Service Express Heating and Air Conditioning,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/ServiceExpressHVAC,,http://www.serviceexpressheatingandair.com/contact-us/,"facebook_found,contact_form_only",Hey Service Express Heating and Air Conditioning — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Villa Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Service — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Service — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Service Express Heating and Air Conditioning and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+A-Perfect Climate Heating & Cooling,Addison,IL,https://aperfectclimateinc.com,6303458215,website,hvac,,missed calls?,"Hi A-Perfect Climate Heating & Cooling,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/aperfectclimateheatingcooling,https://www.instagram.com/aperfectclimatehc/,https://aperfectclimateinc.com/contact/,"facebook_found,instagram_found,contact_form_only",Hey A-Perfect Climate Heating & Cooling — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Addison that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey A-Perfect — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey A-Perfect — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across A-Perfect Climate Heating & Cooling and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+"Freedom Heating, Cooling & Electrical",Franklin Park,IL,https://freedomheatcool.com,8472509265,email,hvac,info@freedomheatcool.com,"quick question for Freedom Heating, Cooling & Electrical","Hi Freedom Heating, Cooling & Electrical,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/freedomheatingandair,https://www.instagram.com/freedom.hvac/,https://freedomheatcool.com/contact/,"email_found,facebook_found,instagram_found","Hey Freedom Heating, Cooling & Electrical — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Franklin Park that replies to missed callers automatically. Happy to send a quick example — just let me know!","Hey Freedom — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Freedom — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Freedom Heating, Cooling & Electrical and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+ARIA Heating and Cooling LLC,Bloomingdale,IL,https://ariaclimate.com,6304330339,website,hvac,,after-hours calls,"Hi ARIA Heating and Cooling LLC,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/ariaheatingandcooling,,https://ariaclimate.com/site/wp-content/plugins/elementor-pro/assets/css/widget-blockquote.min.css?ver=3.25.0,"facebook_found,contact_form_only",Hey ARIA Heating and Cooling LLC — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Bloomingdale that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey ARIA — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey ARIA — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across ARIA Heating and Cooling LLC and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+Precision Heating and Cooling,Alsip,IL,http://4precision.com,7083776469,website,hvac,,quick question for Precision Heating and Cooling,"Hi Precision Heating and Cooling,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/Precision12004,,http://4precision.com/hvac-specialists/contact/,"facebook_found,contact_form_only",Hey Precision Heating and Cooling — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Alsip that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Precision — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Precision — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Precision Heating and Cooling and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+Planz Heating & Air Conditioning,Villa Park,IL,http://www.planzheating.com,6302792995,email,hvac,605a7baede844d278b89dc95ae0a9123@sentry-next.wixpress.com,missed calls?,"Hi Planz Heating & Air Conditioning,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/PlanzHeating,,,"email_found,facebook_found",Hey Planz Heating & Air Conditioning — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Villa Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Planz — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Planz — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Planz Heating & Air Conditioning and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,60,,,0,,,,,,,,,,
+"King Heating, Cooling & Plumbing",Oak Lawn,IL,https://www.kingheating.com/oak-lawn-il,7088086320,website,hvac,,after-hours calls,"Hi King Heating, Cooling & Plumbing,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/KingHeating,,https://www.kingheating.com/request-service,"facebook_found,contact_form_only","Hey King Heating, Cooling & Plumbing — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Oak Lawn that replies to missed callers automatically. Happy to send a quick example — just let me know!","Hey King — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey King — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across King Heating, Cooling & Plumbing and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+"Paragon Heating, Cooling, and Tankless",Villa Park,IL,https://www.pmcomfort.com,8475824570,email,hvac,customerservice@pmcomfort.com,quick question,"Hi Paragon Heating, Cooling, and Tankless,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/ParagonMechanical,https://www.instagram.com/paragonmechanical/,https://www.pmcomfort.com/shop/#/journey/instant_quote,"email_found,facebook_found,instagram_found","Hey Paragon Heating, Cooling, and Tankless — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Villa Park that replies to missed callers automatically. Happy to send a quick example — just let me know!","Hey Paragon — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Paragon — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Paragon Heating, Cooling, and Tankless and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+"Pro Air Heating Cooling and Electrical, HVAC Downers Grove, Naperville, Hinsdale, and Electrician",Downers Grove,IL,https://www.proairhce.com,6306415489,email,hvac,proservice@proairhce.com,quick question,"Hi Pro Air Heating Cooling and Electrical, HVAC Downers Grove, Naperville, Hinsdale, and Electrician,
+
+Do you guys ever miss calls when the crew is out on jobs. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/ProHCE,https://www.instagram.com/proairheatingcoolingelectrical/,,"email_found,facebook_found,instagram_found","Hey Pro Air Heating Cooling and Electrical, HVAC Downers Grove, Naperville, Hinsdale, and Electrician — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Downers Grove that replies to missed callers automatically. Happy to send a quick example — just let me know!","Hey Pro — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Pro — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Pro Air Heating Cooling and Electrical, HVAC Downers Grove, Naperville, Hinsdale, and Electrician and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,60,,,0,,,,,,,,,,
+Chicago Heating & Cooling,Chicago,IL,http://www.chicagoheatingandcooling.com,3128525152,email,hvac,info@chicagoheatingandcooling.com,quick question,"Hi Chicago Heating & Cooling,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/AlwaysThereApplianceRepair,https://www.instagram.com/alwaystherehomesolutions/,http://www.chicagoheatingandcooling.com/schedule-furnance-tune-up,"email_found,facebook_found,instagram_found",Hey Chicago Heating & Cooling — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Chicago that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Chicago — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Chicago — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Chicago Heating & Cooling and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+House of Heat,Oak Park,IL,https://www.houseofheat.com,7088483291,website,hvac,,missed calls?,"Hi House of Heat,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/profile.php,https://www.instagram.com/houseofheat_oakpark/,https://www.houseofheat.com/instant-quote,"facebook_found,instagram_found,contact_form_only",Hey House of Heat — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Oak Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey House — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey House — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across House of Heat and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+All Temp Heating and Air Conditioning,Chicago,IL,https://alltemp.com,7083203606,website,hvac,,quick question,"Hi All Temp Heating and Air Conditioning,
+
+Quick question — what happens when someone calls after hours and nobody answers. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/AllTemp1,,https://alltemp.com/contact-us/,"facebook_found,contact_form_only",Hey All Temp Heating and Air Conditioning — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Chicago that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey All — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey All — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across All Temp Heating and Air Conditioning and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+"Oasis Plumbing, Heating & Cooling",Chicago,IL,https://oasisheating.com,7733205395,website,hvac,,after-hours calls,"Hi Oasis Plumbing, Heating & Cooling,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/OasisHVAC,https://www.instagram.com/oasis_heatingcooling/,https://oasisheating.com/contact/,"facebook_found,instagram_found,contact_form_only","Hey Oasis Plumbing, Heating & Cooling — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Chicago that replies to missed callers automatically. Happy to send a quick example — just let me know!","Hey Oasis — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Oasis — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Oasis Plumbing, Heating & Cooling and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+Brothers Heating & Cooling Inc. & Brothers Perfect Construction LLC,Chicago,IL,,7733877394,phone,hvac,,quick question for Brothers Heating & Cooling Inc. & Brothers Perfect Construction LLC,"Hi Brothers Heating & Cooling Inc.  & Brothers Perfect Construction LLC,
+
+Do you guys ever miss calls when the crew is out on jobs. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,,Skip — high-fit industry (hvac) (+2); no_website contactability (-1),1,unknown,,v4,,,,no_contact_channel,Hey Brothers Heating & Cooling Inc. & Brothers Perfect Construction LLC — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Chicago that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Brothers — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Brothers — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Brothers Heating & Cooling Inc. & Brothers Perfect Construction LLC and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,10,,,0,,,,,,,,,,
+HvacTech Heating And Cooling,Franklin Park,IL,http://www.hvactechusa.com,8473432840,email,hvac,hvactechchicago@gmail.com,quick question,"Hi HvacTech Heating And Cooling,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/2008,https://www.instagram.com/hvactechh/,http://www.hvactechusa.com/contact-us,"email_found,facebook_found,instagram_found",Hey HvacTech Heating And Cooling — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Franklin Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey HvacTech — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey HvacTech — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across HvacTech Heating And Cooling and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Hearthstone Heating & Air Conditioning,Westmont,IL,https://hearthstoneheating.com,6304359800,website,hvac,,quick question,"Hi Hearthstone Heating & Air Conditioning,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,,,https://hearthstoneheating.com/contact-us/,contact_form_only,Hey Hearthstone Heating & Air Conditioning — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Westmont that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Hearthstone — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Hearthstone — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Hearthstone Heating & Air Conditioning and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,40,,,0,,,,,,,,,,
+Divine Hvac,Glendale Heights,IL,https://divinehvac.us,7739169474,website,hvac,,after-hours calls,"Hi Divine Hvac,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,,,,no_contact_channel,Hey Divine Hvac — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Glendale Heights that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Divine — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Divine — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Divine Hvac and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,20,,,0,,,,,,,,,,
+Comfort Services Heating & Air Conditioning,Downers Grove,IL,https://www.comfortserv.com,6305196980,email,hvac,cs@comfortserv.com,missed calls?,"Hi Comfort Services Heating & Air Conditioning,
+
+Do you guys ever miss calls when the crew is out on jobs. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (hvac) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/ComfortServicesHeatingAirConditioning,https://www.instagram.com/comfort.services/,https://www.comfortserv.com/contact-us/,"email_found,facebook_found,instagram_found",Hey Comfort Services Heating & Air Conditioning — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Downers Grove that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Comfort — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Comfort — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Comfort Services Heating & Air Conditioning and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Pro HVAC Heating and Cooling,Chicago,IL,http://prohvac.info,3129997977,website,hvac,,quick question for Pro HVAC Heating and Cooling,"Hi Pro HVAC Heating and Cooling,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (hvac) (+2); has website (+1),3,unknown,,v4,,,,no_contact_channel,Hey Pro HVAC Heating and Cooling — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Chicago that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Pro — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Pro — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Pro HVAC Heating and Cooling and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,20,,,0,,,,,,,,,,
+Four Seasons Garage Doors,Roselle,IL,https://fourseasonsgd.com,6303942144,email,garage_door,info@fourseasonsgd.com,quick question,"Hi Four Seasons Garage Doors,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,,safe_autopilot,High Opportunity — high-fit industry (garage_door) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/FourSeasonsGD,,https://fourseasonsgd.com/contact/,"email_found,facebook_found",Hey Four Seasons Garage Doors — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Roselle that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Four — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Four — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Four Seasons Garage Doors and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Affordable Garage Doors of Illinois,Carol Stream,IL,http://affordablegaragedoorsservices.com,6306906457,website,garage_door,,missed calls?,"Hi Affordable Garage Doors of Illinois,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/pages,,http://affordablegaragedoorsservices.com/contact-us.php,"facebook_found,contact_form_only",Hey Affordable Garage Doors of Illinois — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Carol Stream that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Affordable — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Affordable — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Affordable Garage Doors of Illinois and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+IIllinois Garage Door Repair,Northbrook,IL,http://illinoisgaragedoorrepair.com,8476826188,website,garage_door,,quick question for Illinois Garage Door Repair,"Hi Illinois Garage Door Repair,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/Illinoisgaragedoorrepair,https://www.instagram.com/illinoisgaragedoorrepair/,,"facebook_found,instagram_found",Hey Illinois Garage Door Repair — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Northbrook that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Illinois — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Illinois — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Illinois Garage Door Repair and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,30,,,0,,,,,,,,,,
+Same Day Garage Door Chicagoland,Lombard,IL,https://www.samedaygaragedoorchicagoland.com,3313166575,website,garage_door,,missed calls?,"Hi Same Day Garage Door Chicagoland,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Good Fit — high-fit industry (garage_door) (+2); emergency/urgency language (+1); has website (+1),4,unknown,,v4,,,,no_contact_channel,Hey Same Day Garage Door Chicagoland — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Lombard that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Same — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Same — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Same Day Garage Door Chicagoland and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,30,,,0,,,,,,,,,,
+BDK Door inc,Villa Park,IL,https://bdkdoor.com,6308339000,website,garage_door,,missed calls?,"Hi BDK Door inc,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/BDK-Door-1430448650585349,,https://bdkdoor.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=6.1.5,"facebook_found,contact_form_only",Hey BDK Door inc — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Villa Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey BDK — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey BDK — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across BDK Door inc and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+BBB.A Garage Doors Repair Glendale Heights,Glendale Heights,IL,http://www.glendaleheightsgaragedoorrepair247.com/contact.html,6302974654,website,garage_door,,quick question for B.A Garage Doors Repair Glendale Heights,"Hi B. A Garage Doors Repair Glendale Heights,
+
+Do you guys ever miss calls when the crew is out on jobs. 
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers. 
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,v4,,,http://www.glendaleheightsgaragedoorrepair247.com/contact.html,contact_form_only,Hey B.A Garage Doors Repair Glendale Heights — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Glendale Heights that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey B.A — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey B.A — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across B.A Garage Doors Repair Glendale Heights and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,40,,,0,,,,,,,,,,
+Active Garage Doors,Schaumburg,IL,https://www.activegaragedoor.com,8888338704,website,garage_door,,after-hours calls,"Hi Active Garage Doors,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,v4,,,https://www.activegaragedoor.com/contact.html,contact_form_only,Hey Active Garage Doors — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Schaumburg that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Active — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Active — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Active Garage Doors and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,40,,,0,,,,,,,,,,
+AAA Garage Door Repair,Park Ridge,IL,https://aaagaragedoorrepair.net,7083825446,email,garage_door,info@aaagaragedoorrepair.net,quick question for AAA Garage Door Repair,"Hi AAA Garage Door Repair,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,,safe_autopilot,High Opportunity — high-fit industry (garage_door) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,,,https://aaagaragedoorrepair.net/wp-content/plugins/elementor-pro/assets/css/widget-blockquote.min.css?ver=3.25.0,email_found,Hey AAA Garage Door Repair — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Park Ridge that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey AAA — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey AAA — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across AAA Garage Door Repair and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,70,,,0,,,,,,,,,,
+Affordable Garage Door Repair,Chicago,IL,https://affordablegdrepairs.com,7088712974,website,garage_door,,quick question,"Hi Affordable Garage Door Repair,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,v4,,,,no_contact_channel,Hey Affordable Garage Door Repair — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Chicago that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Affordable — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Affordable — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Affordable Garage Door Repair and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,20,,,0,,,,,,,,,,
+Precision Door Service,Naperville,IL,https://precisiongarage-door.com,8887909360,website,garage_door,,after-hours calls,"Hi Precision Door Service,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/Precision-Door-Service-of-Chicago-247962425242708,,https://precisiongarage-door.com/contact-us/,"facebook_found,contact_form_only",Hey Precision Door Service — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Naperville that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Precision — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Precision — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Precision Door Service and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+O’Connor Garage Door,Villa Park,IL,https://www.oconnorgaragedoor.com,6308340300,email,garage_door,jim@oconnorgaragedoor.com,missed calls?,"Hi O’Connor Garage Door,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,,safe_autopilot,High Opportunity — high-fit industry (garage_door) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/oconnorgaragedoor,,https://www.oconnorgaragedoor.com/contact,"email_found,facebook_found",Hey O’Connor Garage Door — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Villa Park that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey O’Connor — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey O’Connor — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across O’Connor Garage Door and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Buckeridge Door,Lombard,IL,https://buckeridgedoor.com,8472531383,website,garage_door,,after-hours calls,"Hi Buckeridge Door,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,v4,,,https://buckeridgedoor.com/contact-us/,contact_form_only,Hey Buckeridge Door — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Lombard that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Buckeridge — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Buckeridge — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Buckeridge Door and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,40,,,0,,,,,,,,,,
+Crystal Overhead Door,Chicago,IL,https://garagedoorchicago.com,7732836677,website,garage_door,,after-hours calls,"Hi Crystal Overhead Door,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/28Doors,,https://garagedoorchicago.com/wp-content/cache/w3-cache/css/171/wp-content/plugins/contact-form-7/includes/css/styles.css,"facebook_found,contact_form_only",Hey Crystal Overhead Door — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Chicago that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Crystal — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Crystal — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Crystal Overhead Door and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+Excalibur Garage Door Repair Inc,Bensenville,IL,https://excaliburgaragedoorrepairs.com,8475569812,email,garage_door,xcaliburgarage1973@gmail.com%20,quick question for Excalibur Garage Door Repair Inc,"Hi Excalibur Garage Door Repair Inc,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,High Opportunity — high-fit industry (garage_door) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,,,https://excaliburgaragedoorrepairs.com/contact-us/,email_found,Hey Excalibur Garage Door Repair Inc — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Bensenville that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Excalibur — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Excalibur — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Excalibur Garage Door Repair Inc and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,70,,,0,,,,,,,,,,
+Alpha Garage Door Service,Lombard,IL,https://alphaonegarage.com,6308350008,email,garage_door,info@alphaonegarage.com,quick question,"Hi Alpha Garage Door Service,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (garage_door) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/alphaonegrp,https://www.instagram.com/alphaonegrp/,https://alphaonegarage.com/contact,"email_found,facebook_found,instagram_found",Hey Alpha Garage Door Service — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Lombard that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Alpha — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Alpha — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Alpha Garage Door Service and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Gold garage door repair,Bensenville,IL,https://goldgaragedoorservices.com,6304462224,website,garage_door,,after-hours calls,"Hi Gold garage door repair,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (garage_door) (+2); has website (+1),3,unknown,,v4,,,https://goldgaragedoorservices.com/contact-us/,contact_form_only,Hey Gold garage door repair — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Bensenville that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Gold — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Gold — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Gold garage door repair and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,40,,,0,,,,,,,,,,
+Franks Garage Door's Repair Naperville,Naperville,IL,https://franksgaragedoor.site,6303312001,email,garage_door,franksgaragedoor@yahoo.com,missed calls?,"Hi Franks Garage Door's Repair Naperville,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (garage_door) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,,,https://franksgaragedoor.site/contact/,email_found,Hey Franks Garage Door's Repair Naperville — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Naperville that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Franks — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Franks — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Franks Garage Door's Repair Naperville and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,70,,,0,,,,,,,,,,
+A1 Garage Door Repair Inc,Des Plaines,IL,https://a1garagedoor.repair,7083989948,email,garage_door,info@a1garagedoor.repair,after-hours calls,"Hi A1 Garage Door Repair Inc,
+
+Quick question — what happens when someone calls after hours and nobody answers?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (garage_door) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,,,https://a1garagedoor.repair/wp-content/plugins/elementor-pro/assets/css/widget-blockquote.min.css?ver=3.25.0,email_found,Hey A1 Garage Door Repair Inc — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Des Plaines that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey A1 — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey A1 — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across A1 Garage Door Repair Inc and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,70,,,0,,,,,,,,,,
+"A Accurate Electric, Inc.",Addison,IL,http://alsacelectric.com,6303612021,email,electrical,aaccurate@comcast.net,after-hours calls,"Hi A Accurate Electric, Inc.,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (electrical) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/aaccurateelectric,,http://alsacelectric.com/contact-us,"email_found,facebook_found","Hey A Accurate Electric, Inc. — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Addison that replies to missed callers automatically. Happy to send a quick example — just let me know!","Hey A — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey A — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across A Accurate Electric, Inc. and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Luxury Electric LLC,Addison,IL,https://luxury-el.com,3125051437,website,electrical,,quick question,"Hi Luxury Electric LLC,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (electrical) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/profile.php,,https://luxury-el.com/contact-us/,"facebook_found,contact_form_only",Hey Luxury Electric LLC — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Addison that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Luxury — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Luxury — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Luxury Electric LLC and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+Mr. Electric of Lombard,Lombard,IL,https://mrelectric.com/lombard,6302832254,website,electrical,,quick question for Mr. Electric of Lombard,"Hi Mr. Electric of Lombard,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Possible — high-fit industry (electrical) (+2); has website (+1),3,unknown,,v4,https://www.facebook.com/MrElectric,https://www.instagram.com/mrelectriccor/,https://mrelectric.com/schedule-appointment,"facebook_found,instagram_found,contact_form_only",Hey Mr. Electric of Lombard — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Lombard that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Mr. — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Mr. — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Mr. Electric of Lombard and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,50,,,0,,,,,,,,,,
+Marco's Electricians LLC,Schaumburg,IL,,2245294436,phone,electrical,,after-hours calls,"Hi Marco's Electricians LLC,
+
+Do you guys ever miss calls when the crew is out on jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,,Skip — high-fit industry (electrical) (+2); no_website contactability (-1),1,unknown,,v4,,,,no_contact_channel,Hey Marco's Electricians LLC — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Schaumburg that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Marco's — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Marco's — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Marco's Electricians LLC and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,10,,,0,,,,,,,,,,
+Sims & Sons Electric and Plumbing,Chicago,IL,https://simsandsonselectric.com,3122821170,email,electrical,estimates@simsandsonselectric.com,missed calls?,"Hi Sims & Sons Electric and Plumbing,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,,safe_autopilot,High Opportunity — high-fit industry (electrical) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/electricianschicago,https://www.instagram.com/simsandsonschicago/,https://simsandsonselectric.com/contact-us,"email_found,facebook_found,instagram_found",Hey Sims & Sons Electric and Plumbing — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Chicago that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Sims — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Sims — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Sims & Sons Electric and Plumbing and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,80,,,0,,,,,,,,,,
+Electric Work Force Inc,Berkeley,IL,https://www.electricworkforceil.com,7089681904,email,electrical,electricworkforce@gmail.com,missed calls?,"Hi Electric Work Force Inc,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",false,,safe_autopilot,High Opportunity — high-fit industry (electrical) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,https://www.facebook.com/people,https://www.instagram.com/electricworkforce/,,"email_found,facebook_found,instagram_found",Hey Electric Work Force Inc — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Berkeley that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Electric — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Electric — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Electric Work Force Inc and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a quick example if that's something worth a look.
+
+— Drew",Your site only shows one way to get in touch — adding a backup contact method could help capture more leads.,limited_contact_methods,60,,,0,,,,,,,,,,
+Ace One Electrical,Berwyn,IL,https://aceoneelectricians.com/berwyn-il,7087260272,email,electrical,info@aceoneelectricians.com,missed calls?,"Hi Ace One Electrical,
+
+Do you ever miss calls when everyone's out working jobs?
+
+A lot of service companies lose those leads because the customer just calls the next number if nobody answers.
+
+I set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.
+
+Happy to send a quick example if you're curious.
+
+– Drew",true,,safe_autopilot,High Opportunity — high-fit industry (electrical) (+2); has website (+1); has email (+1); email_found contactability (+1),5,unknown,,v4,,,https://aceoneelectricians.com/contact/,email_found,Hey Ace One Electrical — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for service companies in Berwyn that replies to missed callers automatically. Happy to send a quick example — just let me know!,"Hey Ace — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hey Ace — quick question, do you ever miss calls when everyone's out on jobs? I set up a simple text-back line for service companies so those after-hours callers get a reply automatically instead of calling the next guy. Happy to send an example.","Hi,
+
+I came across Ace One Electrical and had a quick question — do you currently have a way to follow up with callers who reach your voicemail after hours?
+
+I help local service businesses set up a simple text-back system so missed callers get an automatic reply, keeping the lead warm until someone can call back.
+
+Happy to share a qu",,,,,,,,,,,,,,,,

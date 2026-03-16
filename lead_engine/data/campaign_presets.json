@@ -1,0 +1,52 @@
+[
+  {
+    "key": "missed_call",
+    "name": "Missed Call Text-Back",
+    "description": "Core pitch — automated text reply to missed callers after hours",
+    "email_subject": "missed calls?",
+    "email_body": "Hi {business_name},\n\nDo you ever miss calls when your team is out on jobs? A lot of {industry} businesses lose those leads because the customer just calls the next number.\n\nI set up a simple text-back line that replies to missed callers automatically so you can follow up instead of losing the job.\n\nHappy to send a quick example if you're curious.\n\n– Drew",
+    "social_dm_text": "Hey {business_name} — quick question. Do you ever miss calls when your team is out on jobs? I set up a simple text-back line for {industry} businesses in {city} that replies to missed callers automatically. Happy to send a quick example — just let me know!",
+    "contact_form_text": "Hi, I help {industry} businesses in {city} stop losing missed call leads after hours with a simple automated text-back system. Would love to send you a quick example. Thanks, Drew",
+    "followup_days": 7
+  },
+  {
+    "key": "lead_capture",
+    "name": "Lead Capture Automation",
+    "description": "Broader pitch — capture and respond to all new leads faster",
+    "email_subject": "quick question for {business_name}",
+    "email_body": "Hi {business_name},\n\nQuick question — what happens when someone fills out your contact form or calls after hours and nobody responds for a few hours?\n\nA lot of {industry} businesses in {city} lose jobs that way. I set up a simple lead capture system that responds immediately and notifies you so you can follow up fast.\n\nHappy to show you how it works.\n\n– Drew",
+    "social_dm_text": "Hey {business_name} — do new leads ever fall through the cracks before you can call them back? I help {industry} businesses in {city} respond to new contacts automatically so no job gets lost. Happy to show you a quick example!",
+    "contact_form_text": "Hi, I help {industry} businesses in {city} capture and respond to new leads faster using simple automation. Happy to show you how it works. Thanks, Drew",
+    "followup_days": 7
+  },
+  {
+    "key": "after_hours",
+    "name": "After-Hours Coverage",
+    "description": "Target businesses that lose jobs outside business hours",
+    "email_subject": "after-hours calls",
+    "email_body": "Hi {business_name},\n\nDo you get calls after hours that go to voicemail? Most {industry} customers in {city} just call the next business if nobody answers.\n\nI set up a lightweight after-hours coverage system — it texts back missed callers automatically and pings you so you can follow up first thing in the morning.\n\nWorth a quick look?\n\n– Drew",
+    "social_dm_text": "Hey {business_name}! Do you lose jobs to voicemail after hours? I help {industry} businesses in {city} automatically text back missed callers so customers don't move on. Quick demo available — just ask!",
+    "contact_form_text": "Hi, I help {industry} businesses in {city} cover after-hours missed calls with an automated text-back system. Happy to show you how it works. Thanks, Drew",
+    "followup_days": 5
+  },
+  {
+    "key": "appointment_no_show",
+    "name": "Appointment No-Show Recovery",
+    "description": "For businesses with appointments — reduce no-shows and recover cancellations",
+    "email_subject": "no-shows costing you?",
+    "email_body": "Hi {business_name},\n\nDo no-shows ever hit your schedule? Most {industry} businesses in {city} lose 10–20% of booked appointments to last-minute cancellations or no-shows with no follow-up.\n\nI set up a simple automated reminder and reschedule flow that cuts that significantly. Happy to walk you through it.\n\n– Drew",
+    "social_dm_text": "Hey {business_name} — do no-shows or last-minute cancellations hurt your schedule? I help {industry} businesses in {city} reduce that with simple automated reminders and reschedule flows. Happy to show you a quick example!",
+    "contact_form_text": "Hi, I help {industry} businesses in {city} reduce appointment no-shows and recover cancellations with simple automated reminders. Happy to show you how it works. Thanks, Drew",
+    "followup_days": 7
+  },
+  {
+    "key": "custom",
+    "name": "Custom",
+    "description": "Write your own outreach copy",
+    "email_subject": "",
+    "email_body": "",
+    "social_dm_text": "",
+    "contact_form_text": "",
+    "followup_days": 7
+  }
+]

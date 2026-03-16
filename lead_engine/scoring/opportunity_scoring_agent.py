@@ -5,6 +5,29 @@ from urllib.request import urlopen, Request
 from urllib.error import URLError
 
 # ---------------------------------------------------------------------------
+# Target industries for After-Hours Lead Capture
+# High-fit: phone-first, emergency-capable trades
+# ---------------------------------------------------------------------------
+_HIGH_FIT_INDUSTRIES = {
+    "plumbing", "hvac", "electrical", "locksmith",
+    "garage_door", "garage door", "towing",
+}
+
+# Signals in business name or industry tag that indicate strong fit
+_EMERGENCY_SIGNALS = [
+    "24/7", "24 hour", "emergency", "same day", "same-day",
+    "urgent", "after hours", "after-hours", "anytime",
+    "night", "weekend", "on-call", "on call",
+]
+
+# Industries to deprioritize — not a fit for missed call text-back
+_LOW_FIT_INDUSTRIES = {
+    "restaurant", "salon", "gym", "dental", "medical",
+    "real_estate", "legal", "accounting", "insurance",
+    "retail", "moving", "landscaping",
+}
+
+# ---------------------------------------------------------------------------
 # Known large chains — scored down as low-opportunity targets
 # ---------------------------------------------------------------------------
 _KNOWN_CHAINS = {
@@ -17,6 +40,7 @@ _KNOWN_CHAINS = {
     "great clips", "sport clips", "supercuts",
     "servpro", "servicemaster", "molly maid",
 }
+
 
 # ---------------------------------------------------------------------------
 # Score → human label
@@ -48,74 +72,109 @@ def _website_reachable(url: str, timeout: int = 5) -> bool:
         return False
 
 
+def _has_emergency_signal(prospect: Dict[str, str]) -> bool:
+    """Return True if the business name or scan notes mention emergency/urgency signals."""
+    haystack = " ".join([
+        (prospect.get("business_name") or ""),
+        (prospect.get("scan_notes") or ""),
+        (prospect.get("likely_opportunity") or ""),
+    ]).lower()
+    return any(sig in haystack for sig in _EMERGENCY_SIGNALS)
+
+
+def _industry_fit(industry: str) -> str:
+    """Return 'high', 'low', or 'neutral' for the given industry tag."""
+    ind = (industry or "").strip().lower().replace(" ", "_")
+    if ind in _HIGH_FIT_INDUSTRIES:
+        return "high"
+    if ind in _LOW_FIT_INDUSTRIES:
+        return "low"
+    return "neutral"
+
+
 def score_opportunity(
     prospect: Dict[str, str],
     website_scan: Dict[str, object],
 ) -> Tuple[int, str]:
     """
-    Deterministic 1-5 lead score.
+    Deterministic 1-5 lead score for After-Hours Lead Capture targeting.
 
     Scoring model
     -------------
-    Start at 0, then:
-      +2  website exists
-      +2  business email exists
-      +1  review_count < 200  (sparse reviews → less competition-aware)
-      +1  rating < 4.6        (room for improvement → pain point exists)
-      +1  not a known chain
-      -1  business name matches a known chain
-      -1  website unreachable
-      -1  no email found
-    Clamped to [1, 5].
+    Start at 0, then apply positive signals:
+      +3  automation_opportunity == "missed_after_hours"  ← strongest signal
+      +2  high-fit industry (plumbing, HVAC, electrical, locksmith, garage door, towing)
+      +1  emergency/urgency language in name or notes (24/7, same-day, emergency, etc.)
+      +1  website present
+      +1  email present
+
+    Contactability signals:
+      +1  contactability == "email_found"           (confirms direct outreach path)
+       0  contactability == "website_contact_only"  (neutral — contact page likely exists)
+      -1  contactability == "no_website"            (phone-only, harder to reach)
+      -1  contactability == "website_unreachable"   (URL present but dead)
+      -2  contactability == "directory_or_ambiguous" (not a real independent business site)
+
+    Other negative signals:
+      -2  low-fit industry (restaurant, salon, dental, gym, retail, etc.)
+      -1  known chain or franchise
+
+    Max raw score: 9  →  clamped to [1, 5].
     """
     reasons: list[str] = []
     score = 0
 
-    website  = (prospect.get("website") or "").strip()
-    email    = (prospect.get("to_email") or "").strip()
-    name_lc  = (prospect.get("business_name") or "").strip().lower()
+    website         = (prospect.get("website") or "").strip()
+    email           = (prospect.get("to_email") or "").strip()
+    industry        = (prospect.get("industry") or "").strip()
+    opportunity     = (prospect.get("automation_opportunity") or "").strip().lower()
+    name_lc         = (prospect.get("business_name") or "").strip().lower()
+    contactability  = (prospect.get("contactability") or "").strip().lower()
 
-    # --- positive signals ---
+    # --- missed_after_hours: strongest single signal (+3) ---
+    if opportunity == "missed_after_hours":
+        score += 3
+        reasons.append("missed_after_hours signal (+3)")
+
+    # --- industry fit ---
+    fit = _industry_fit(industry)
+    if fit == "high":
+        score += 2
+        reasons.append(f"high-fit industry ({industry}) (+2)")
+    elif fit == "low":
+        score -= 2
+        reasons.append(f"low-fit industry ({industry}) (-2)")
+
+    # --- emergency / urgency language ---
+    if _has_emergency_signal(prospect):
+        score += 1
+        reasons.append("emergency/urgency language (+1)")
+
+    # --- contact reachability ---
     if website:
-        score += 2
-        reasons.append("has website")
+        score += 1
+        reasons.append("has website (+1)")
     if email:
-        score += 2
-        reasons.append("has email")
-
-    try:
-        review_count = int(prospect.get("review_count") or 0)
-    except (ValueError, TypeError):
-        review_count = 0
-    if 0 < review_count < 200:
         score += 1
-        reasons.append(f"low review count ({review_count})")
+        reasons.append("has email (+1)")
 
-    try:
-        rating = float(prospect.get("rating") or 0)
-    except (ValueError, TypeError):
-        rating = 0.0
-    if 0 < rating < 4.6:
+    # --- contactability classification ---
+    if contactability == "email_found":
         score += 1
-        reasons.append(f"rating {rating} < 4.6")
+        reasons.append("email_found contactability (+1)")
+    elif contactability == "directory_or_ambiguous":
+        score -= 2
+        reasons.append("directory_or_ambiguous contactability (-2)")
+    elif contactability in ("no_website", "website_unreachable"):
+        score -= 1
+        reasons.append(f"{contactability} contactability (-1)")
+    # website_contact_only → no adjustment (neutral)
 
+    # --- chain penalty ---
     is_chain = any(chain in name_lc for chain in _KNOWN_CHAINS)
-    if not is_chain:
-        score += 1
-        reasons.append("independent business")
-
-    # --- negative signals ---
     if is_chain:
         score -= 1
-        reasons.append("known chain")
-
-    if website and not _website_reachable(website):
-        score -= 1
-        reasons.append("website unreachable")
-
-    if not email:
-        score -= 1
-        reasons.append("no email")
+        reasons.append("known chain (-1)")
 
     final_score = max(1, min(5, score))
     label = _LABELS[final_score]
@@ -127,3 +186,58 @@ def score_opportunity(
 def score_label(score: int) -> str:
     """Return the human-readable label for a numeric score."""
     return _LABELS.get(max(1, min(5, score)), "Unknown")
+
+
+# ---------------------------------------------------------------------------
+# Numeric opportunity score (0-100) for Part 3
+# ---------------------------------------------------------------------------
+
+def compute_numeric_score(prospect: Dict[str, str]) -> int:
+    """
+    Returns an integer 0-100 opportunity score based on available signals.
+    Used for queue sorting and display badges.
+
+    Scoring:
+      +30  email available
+      +20  contact form available (has_contact_form in scan or contact_form_url)
+      +10  facebook or instagram present
+      +10  poor website indicators (no_booking, no_chat automation_opportunity)
+      +10  emergency-service keywords in name
+      +10  high-fit industry
+      +10  website reachable
+    """
+    score = 0
+    email = (prospect.get("to_email") or "").strip()
+    contact_form = (prospect.get("contact_form_url") or "").strip()
+    fb = (prospect.get("facebook_url") or "").strip()
+    ig = (prospect.get("instagram_url") or "").strip()
+    opportunity = (prospect.get("automation_opportunity") or "").strip().lower()
+    industry = (prospect.get("industry") or "").strip().lower().replace(" ", "_")
+    website = (prospect.get("website") or "").strip()
+    name = (prospect.get("business_name") or "").lower()
+
+    if email:
+        score += 30
+    if contact_form:
+        score += 20
+    if fb or ig:
+        score += 10
+    if opportunity in ("no_booking", "no_chat", "missed_after_hours"):
+        score += 10
+    if any(sig in name for sig in ["emergency", "24/7", "24 hour", "same day", "urgent"]):
+        score += 10
+    if industry in _HIGH_FIT_INDUSTRIES:
+        score += 10
+    if website:
+        score += 10
+
+    return min(100, score)
+
+
+def score_priority_label(numeric_score: int) -> str:
+    """Return High / Medium / Low based on numeric score."""
+    if numeric_score >= 60:
+        return "High"
+    if numeric_score >= 30:
+        return "Medium"
+    return "Low"

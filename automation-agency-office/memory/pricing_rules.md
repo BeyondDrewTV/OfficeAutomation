@@ -1,35 +1,38 @@
 # Pricing Rules
+# Product: After-Hours Lead Capture (Missed Call Text-Back)
 
-## Purpose
-Keep pricing consistent, realistic, and aligned with delivery scope.
+## Active Product Pricing
 
-## Allowed v1 Price Ranges
-- FAQ Chatbot: **$500-$1,500**
-- Appointment / Booking Automation: **$800-$2,000**
-- Inbox / Form Triage Automation: **$700-$1,800**
-- Lead Capture + Follow-up Automation: **$900-$2,500**
+| Item | Price |
+|---|---|
+| Setup (one-time) | **$750** |
+| Monthly (ongoing) | **$150/month** |
+| Payment terms | 50% ($375) before work begins; balance at go-live |
 
-## Default Estimation Method
-1. Select base service price midpoint.
-2. Adjust for complexity factors:
-   - Number of channels/systems integrated
-   - Number of routing rules / decision branches
-   - Data cleanup/migration needs
-   - Compliance or approval constraints
-3. Confirm final quote stays within allowed range unless exception is approved.
+## Approved Range
+
+- Setup: $600–$900 (adjust only for unusual complexity — multiple locations, custom voice scripts, etc.)
+- Monthly: $100–$200 (do not go below $100; infrastructure costs are real)
+- Do not discount the monthly without founder approval
+
+## What Monthly Covers
+
+- Twilio phone number rental (~$1–2/month)
+- SMS/call usage (~$10–30/month depending on volume)
+- Hosting and monitoring
+- Our management and support
 
 ## Exception Rules
-Exceptions are allowed only when one or more conditions are true:
-- Client requests scope beyond v1 deliverables.
-- Integration requires custom API work not in standard setup.
-- Security/compliance requirements add substantial implementation effort.
 
-## Approval Requirements for Exceptions
-- Any quote below minimum or above maximum range requires founder approval.
-- Exception quote must include written rationale and revised deliverables.
-- Proposal must clearly separate base scope from add-ons.
+Exceptions to the above ranges require founder sign-off:
+- Client requests custom integrations beyond Google Sheets
+- Client has multiple locations needing separate numbers
+- Client requests dedicated on-call support SLA
 
 ## Prohibited Pricing Practices
-- No bait-and-switch pricing.
-- No claims of ROI guarantees or revenue guarantees to justify pricing.
-- No discount promises without defined expiration and approval.
+
+- No hourly billing
+- No bait-and-switch (quote one price, charge another)
+- No deferred payment or revenue-share deals
+- No ROI guarantees used to justify pricing
+- No discounts promised without defined expiration and approval

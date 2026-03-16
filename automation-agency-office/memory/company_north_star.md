@@ -1,20 +1,33 @@
 # Company North Star
+# Product: After-Hours Lead Capture (Missed Call Text-Back)
 
 ## Mission
-Install small, practical automations for local businesses that remove repetitive administrative work quickly and reliably.
+
+Help service businesses stop losing jobs to missed after-hours calls.
 
 ## Why We Exist
-Local business teams are often stretched thin by repeat tasks (answering common questions, routing inquiries, booking appointments, and following up with leads). We exist to reduce this load so owners and staff can focus on customer service and core operations.
+
+When a plumber, HVAC tech, electrician, or locksmith misses a call at 9pm,
+that customer almost never calls back. They call the next number they find.
+The business lost a job they never knew came in.
+
+We set up a simple text-back line that captures those leads automatically.
+The customer gets a text. The owner gets a notification. The lead is logged.
+Nobody has to do anything technical.
 
 ## What Success Looks Like
-- Automations are implemented fast, with clear scope and low complexity.
-- Solutions are stable, understandable, and maintainable by a small team.
-- Clients save time on repetitive admin tasks each week.
-- Clients have documented workflows and handoff instructions.
+
+- First paying client is live and capturing leads
+- Setup takes 3–5 hours of our time per client
+- Client goes live within 7 days of kickoff
+- Leads are captured, logged, and owner is notified reliably
+- Monthly revenue per client: $150
+- Client has zero technical involvement after go-live
 
 ## Operating Principles
-1. **Practical over flashy**: We prioritize useful systems over novelty.
-2. **Reliable delivery**: We only promise what we can implement and support.
-3. **Small wins first**: We start with narrow, high-friction workflow improvements.
-4. **Clear communication**: We use plain language and transparent project updates.
-5. **Ethical claims only**: No inflated promises, no guaranteed revenue claims.
+
+1. **One product, sold well** — do not dilute focus until first client is converted
+2. **Operator-managed** — we own and run the infrastructure; clients never touch it
+3. **Outcome over features** — the pitch is a lost job recovered, not a system built
+4. **Fast delivery** — setup to go-live in under a week, always
+5. **Honest claims only** — we capture leads; we do not guarantee jobs or revenue

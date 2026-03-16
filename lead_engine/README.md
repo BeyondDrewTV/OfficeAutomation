@@ -1,157 +1,83 @@
-# Copperline — Lead Engine (V1)
+# Copperline — Operations Hub
 
-A lightweight Python pipeline to:
-1. Load local service business prospects from CSV
-2. Scan each website with bounded deterministic multi-page heuristics
-3. Score opportunity priority (1-5)
-4. Draft deterministic outreach emails
-5. Queue emails for human approval
-6. Send only approved emails when live-send is explicitly enabled
+## Start the dashboard
 
-## How it works
+Double-click **`Launch Dashboard.bat`** in the root folder.  
+Opens automatically at http://localhost:5000
 
-The pipeline discovers local businesses via Google Places API, scrapes contact info,
-scores each lead, drafts outreach emails, and queues them for human approval.
-No email sends without explicit approval.
+That's the only launcher you need. Everything runs from the dashboard.
+
+---
+
+## Daily workflow
+
+1. **Discover leads** — pick industry + city, click ⚡ Discover + Draft  
+   Finds businesses via Google Places, scrapes emails & social links, drafts outreach. One click.
+
+2. **Review & approve** — click any row to open the review panel  
+   Edit subject/body if needed, click ✓ Approve on the ones you're happy with.
+
+3. **Send** — click ▶ Send Approved  
+   Only approved rows with a real email get sent.
+
+4. **Follow up** — check the 🔁 Follow-Up tab for overdue leads  
+   Reply tracking runs automatically every 5 minutes.
+
+---
+
+## Tabs
+
+| Tab | What it does |
+|---|---|
+| ⚡ Outreach | Main queue — default shows Active (unsent, non-terminal) leads sorted by Opp Score |
+| 🔁 Follow-Up | Leads due for follow-up, grouped by urgency |
+| 📲 Social | Leads without email — reach via Facebook, Instagram, or contact form |
+| ⚡ Sprint | One lead at a time — fast outreach mode |
+| 💬 Conversations | Leads that have replied — manage the conversation |
+| 🗺 Territory | City × Industry coverage map |
+| 📞 Clients | Missed Call Text-Back clients |
+| 🔍 Searches | History of every Discover run |
+
+---
 
 ## Folder layout
 
-- `discovery/` prospect ingestion
-- `intelligence/` website signal scanning
-- `scoring/` lead prioritization
-- `outreach/` outreach drafting
-- `send/` approved email sending
-- `queue/` email approval queue CSV
-- `data/` source prospects CSV
+```
+lead_engine/
+  dashboard_server.py      ← Flask backend, all API routes
+  dashboard_static/        ← Frontend (single index.html)
+  run_lead_engine.py       ← Pipeline: discover → scan → score → draft
+  city_planner.py          ← Territory tracking
+  discovery/               ← Google Places discovery agent
+  intelligence/            ← Website scanner, lead insight generator
+  scoring/                 ← Opportunity scoring (0-100)
+  outreach/                ← Email + social DM draft generation
+  send/                    ← Approved email sender
+  queue/pending_emails.csv ← Main data store (109 leads)
+  data/prospects.csv       ← Source prospects
+  logs/                    ← Server + reply logs
+  _archive/                ← Old scripts no longer needed
+```
 
-## Setup
+---
 
-From the project root:
+## Environment variables (`.env` in root)
+
+```
+GOOGLE_PLACES_API_KEY=...   # Google Places API — required for Discover
+GMAIL_SENDER=...            # Gmail address to send from
+GMAIL_APP_PASSWORD=...      # Gmail App Password (not your account password)
+ANTHROPIC_API_KEY=...       # Claude AI — used for email drafts
+```
+
+---
+
+## Useful one-off scripts
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
+# Preview which drafts are stale (before regenerating)
+python lead_engine/reset_stale_queue.py --dry-run
+
+# Apply stale reset (removes old drafts so they re-draft on next run)
+python lead_engine/reset_stale_queue.py
 ```
-
-## Input data
-
-Populate `data/prospects.csv` with rows using this header:
-
-```csv
-business_name,city,state,website,phone,contact_method,likely_opportunity,priority_score
-```
-
-## Run lead processing
-
-This builds/updates `queue/pending_emails.csv`.
-
-```bash
-python lead_engine/run_lead_engine.py --input lead_engine/data/prospects.csv --limit 50
-```
-
-Useful flags:
-- `--input <path>` custom prospects CSV
-- `--limit <n>` process only first n rows
-- `--skip-scan` skip website fetch/scanning
-
-Behavior:
-- Scans real HTTP/HTTPS URLs with a small bounded crawl (homepage + common contact/service paths + discovered internal contact/service links)
-- Detects deterministic signals (reachability, forms, phone/email visibility, booking/quote/schedule CTAs, chat vendors, mobile viewport hint, weak-site clues)
-- Scores each lead
-- Drafts email subject + body
-- Adds to queue with `approved=false`
-- Skips duplicates by `business_name + website`
-- Prints startup summary with rows loaded, websites scanned, drafts created, skipped, and send-eligible count
-
-Scanner notes:
-- Deterministic heuristic analysis only (not ML/LLM).
-- Fetch is bounded by timeout and max pages to keep runs safe.
-- Failures (timeouts/403/SSL/etc.) are handled as warnings and do not crash pipeline runs.
-
-## Approval workflow (required before sending)
-
-1. Open `queue/pending_emails.csv`
-2. Fill `to_email`
-3. Set `approved=true` for rows ready to send
-4. Leave unapproved rows as `approved=false`
-
-The sender only processes rows where:
-- `approved=true`
-- `sent_at` is blank
-- `to_email` is present
-- `send_live=True` is passed explicitly
-
-## Gmail app password usage
-
-Credentials are loaded from a `.env` file in the project root. Copy `.env.example` to `.env` and fill in your values:
-
-```
-GMAIL_ADDRESS=you@gmail.com
-GMAIL_APP_PASSWORD=xxxx xxxx xxxx xxxx
-GOOGLE_PLACES_API_KEY=your_key_here
-SENDER_DISPLAY_NAME=Your Name @ Copperline
-```
-
-Use a Gmail App Password (Google account security settings), not your regular Gmail password.
-
-## Send script usage
-
-Exact send flow:
-1. Generate drafts:
-
-```bash
-python lead_engine/run_lead_engine.py --input lead_engine/data/prospects.csv
-```
-
-2. Manually review `lead_engine/queue/pending_emails.csv`.
-3. Set `approved=true` for rows you want to send, and fill `to_email`.
-4. Run sender in dry run (default):
-
-```bash
-python lead_engine/send/email_sender_agent.py --queue lead_engine/queue/pending_emails.csv --dry-run
-```
-
-5. Run sender live:
-
-```bash
-python lead_engine/send/email_sender_agent.py --queue lead_engine/queue/pending_emails.csv --send-live
-```
-
-CLI flags:
-- `--queue <path>` queue CSV path
-- `--dry-run` (default behavior; no emails are sent)
-- `--send-live` (sends approved rows with blank `sent_at` and non-empty `to_email`)
-
-Sender prints counts for:
-- drafted
-- skipped
-- approved-ready
-- sent
-- failed
-
-## Paste/import workflow (run immediately)
-
-1. Copy the sample file and paste your own rows:
-
-```bash
-cp lead_engine/data/prospects.sample.csv lead_engine/data/prospects.csv
-```
-
-2. Keep at least these required values per row:
-- `business_name`
-- `city`
-- `state`
-
-3. Optional fields (`website`, `phone`, `contact_method`, etc.) can be blank.
-
-4. Blank-like values are normalized to empty automatically: `""`, `unknown`, `n/a`, `na`, `none`, `null`, `-`, `--`.
-
-5. Run the pipeline:
-
-```bash
-python lead_engine/run_lead_engine.py --input lead_engine/data/prospects.csv
-```
-
-Dedupe logic used by queueing:
-- `business_name + website` (when website exists)
-- otherwise `business_name + city`

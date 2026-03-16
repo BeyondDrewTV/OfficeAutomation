@@ -1,4 +1,5 @@
-# Copperline Lead Follow-Up — Service Proposal
+# Copperline — After-Hours Lead Capture
+# Service Proposal
 
 **Prepared for:** [Business Name]
 **Date:** [Date]
@@ -8,32 +9,47 @@
 
 ## The Problem
 
-Most [industry] businesses in [City] miss leads after hours.
-A customer calls at 9pm, gets voicemail, and calls the next company on the list.
-That job is gone — and you never knew it came in.
+When a customer calls [Business Name] after hours and no one answers,
+they almost never call back. They call the next company on the list.
+
+That lead is gone — and you never knew it came in.
+
+For [industry] businesses that rely on the phone, this happens more than
+most owners realize. A single missed job at $300–$500 covers the cost of
+this service for months.
 
 ---
 
-## What Copperline Lead Follow-Up Does
+## What We Set Up
 
-When a potential customer reaches out after hours — by phone, missed call, or web form —
-Copperline automatically sends them a text response within seconds.
+A dedicated text-back line for your business.
 
-It captures their name, number, and job details.
-It notifies you immediately.
-It logs everything so nothing falls through.
+When a customer calls and no one answers:
+1. They hear a short message (10 seconds)
+2. They immediately receive a text from your number
+3. If they reply, you get a notification
+4. The lead is logged automatically
 
-You wake up with a qualified lead waiting, not a missed call with no name.
+That's it. No app to learn. No account to create. We manage everything.
 
 ---
 
 ## What's Included
 
-- After-hours missed call auto-response (SMS)
-- Web contact form capture and instant owner notification
-- Lead details logged and delivered to your inbox
-- Setup, testing, and go-live within 7 business days
+- Dedicated Twilio phone number provisioned by us
+- Voice message played on every missed call
+- Auto-SMS sent to caller within seconds
+- Inbound replies captured and logged to a private Google Sheet
+- Owner notified by text and/or email on every lead
+- Setup, configuration, and go-live testing
 - 30-day monitoring after launch
+
+## What You Provide
+
+- How you want to be notified (text, email, or both)
+- A short description for the voice message (or we write it)
+
+That's all. No software to install. No technical setup on your end.
 
 ---
 
@@ -41,11 +57,11 @@ You wake up with a qualified lead waiting, not a missed call with no name.
 
 | | |
 |---|---|
-| Setup (one-time) | **$900** |
+| Setup (one-time) | **$750** |
 | Monthly (ongoing) | **$150/month** |
 
-Payment: 50% ($450) due before work begins. Balance due at go-live.
-Monthly billing starts after go-live.
+Payment: 50% ($375) before work begins. Balance due at go-live.
+Monthly billing starts the day you go live.
 
 ---
 
@@ -53,37 +69,26 @@ Monthly billing starts after go-live.
 
 | Day | Milestone |
 |---|---|
-| Day 1 | Kickoff — collect phone number, form details, notification preferences |
-| Day 2–4 | Build and configure the follow-up system |
-| Day 5–6 | Test with real calls and form submissions |
+| Day 1 | Kickoff — collect preferences, confirm notification method |
+| Day 2–4 | Configure phone line, voice message, text-back, and notifications |
+| Day 5–6 | Test with real calls — confirm everything fires correctly |
 | Day 7 | Go live |
 
 ---
 
-## What You Need to Provide
+## Guarantee
 
-- Business phone number
-- Preferred notification method (email and/or text)
-- Access to your website contact form (or we add one)
-
-That's it. No software to install. No technical setup on your end.
-
----
-
-## Simple Guarantee
-
-If the system isn't capturing and responding to leads correctly within 30 days,
-we fix it at no charge.
+If the system isn't capturing and notifying correctly within 30 days of
+go-live, we fix it at no charge.
 
 ---
 
 ## Next Step
 
-Reply to this proposal to confirm.
-We'll send a short intake form and invoice for the setup deposit.
+Reply to confirm and we'll send a short intake form and the setup invoice.
 
 Questions? Reach out directly: [your phone or email]
 
 ---
 
-*Copperline — Follow up faster. Win more work.*
+*Copperline — When they call after hours, they get a text. You get the lead.*

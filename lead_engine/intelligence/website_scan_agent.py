@@ -306,3 +306,67 @@ def _classify_automation_opportunity(result: Dict[str, object]) -> str:
     if (phone or form) and not has_booking:
         return "no_booking"
     return "unknown"
+
+
+# ---------------------------------------------------------------------------
+# Lead Insight Generator (Part 2)
+# Rule-based, no AI calls required.
+# Returns (insight_sentence, detected_signals)
+# ---------------------------------------------------------------------------
+
+_INSIGHT_RULES = [
+    # Rule: no after-hours language
+    (
+        lambda s: s.get("website_reachable") and not s.get("has_chat_widget") and not s.get("has_scheduling_tool"),
+        ["no_chat", "no_booking"],
+        "I noticed your website doesn't mention anything about handling calls after hours."
+    ),
+    # Rule: only phone contact
+    (
+        lambda s: s.get("has_phone_visible") and not s.get("has_contact_form") and not s.get("has_email_visible"),
+        ["phone_only"],
+        "Your site lists a phone number but no contact form or email — customers can only reach you by calling."
+    ),
+    # Rule: no contact form
+    (
+        lambda s: s.get("website_reachable") and not s.get("has_contact_form"),
+        ["no_contact_form"],
+        "I noticed your website doesn't have a contact form, so there's no easy way for visitors to reach out online."
+    ),
+    # Rule: no SMS / texting mention
+    (
+        lambda s: s.get("website_reachable") and not any(
+            tok in " ".join(str(v) for v in s.values()).lower()
+            for tok in ["text us", "text to", "sms", "texting"]
+        ),
+        ["no_sms_mention"],
+        "Your website doesn't mention anything about texting — most customers today prefer to text over calling."
+    ),
+    # Rule: limited contact methods
+    (
+        lambda s: sum([
+            bool(s.get("has_email_visible")),
+            bool(s.get("has_contact_form")),
+            bool(s.get("has_phone_visible")),
+        ]) <= 1,
+        ["limited_contact_methods"],
+        "Your site only shows one way to get in touch — adding a backup contact method could help capture more leads."
+    ),
+]
+
+
+def generate_lead_insight(scan_result: dict) -> tuple:
+    """
+    Returns (insight_sentence: str, signals: list[str]).
+    Picks the first matching rule. Falls back to a generic insight.
+    """
+    for rule_fn, signals, sentence in _INSIGHT_RULES:
+        try:
+            if rule_fn(scan_result):
+                return sentence, signals
+        except Exception:
+            continue
+    return (
+        "Your website may be missing features that help capture after-hours leads.",
+        ["general"]
+    )

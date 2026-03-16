@@ -1,22 +1,40 @@
 # Positioning Guardrails
+# Product: After-Hours Lead Capture (Missed Call Text-Back)
+
+## What We Are
+
+We set up a dedicated text-back line for service businesses.
+When a customer calls after hours and no one answers, they get a text within seconds.
+If they reply, the owner is notified immediately and the lead is logged.
+We handle all the setup. The client does nothing technical.
 
 ## Core Positioning
-We are a small automation agency that helps local businesses reduce repetitive admin work through simple, dependable workflow automations.
+
+One sentence: We set up a text-back line so service businesses stop losing jobs to missed calls.
+
+This is not AI automation. It is not workflow software.
+It is a specific, practical fix for a specific, common problem.
 
 ## Approved Positioning Language
-- "We build practical automations for everyday business workflows."
-- "We help local teams spend less time on repetitive admin tasks."
-- "We install lightweight systems quickly and document how they work."
-- "We focus on reliability, clarity, and measurable process improvements."
+
+- "When someone calls after hours and no one answers, they usually call the next company. We stop that."
+- "We set up a simple text-back line so that lead doesn't disappear."
+- "You don't lose the lead. You get a text. They get a text. Done."
+- "We handle the setup. You don't touch anything technical."
+- "Takes about a week to go live. Flat fee. We manage the infrastructure."
 
 ## Messaging We Avoid
-- Do **not** say or imply "AI replaces employees."
-- Do **not** promise guaranteed revenue, booked meetings, or sales outcomes.
-- Do **not** claim "fully hands-off business" or "set it and forget it forever."
-- Do **not** present prototypes as proven long-term production systems.
-- Do **not** portray us as a full enterprise transformation consultancy.
 
-## Boundaries of Scope
-- v1 services only: FAQ chatbot, booking automation, inbox/form triage, lead capture + follow-up.
-- Start with simple integrations and clear process handoffs.
-- If requirements exceed v1 complexity, propose phased rollout rather than overcommitting.
+- Do **not** say "AI automation," "workflow automation," or "software."
+- Do **not** say "leverage," "streamline," "optimize," or "revolutionize."
+- Do **not** promise guaranteed revenue, guaranteed bookings, or specific ROI.
+- Do **not** position this as a broad agency offering or multi-service platform.
+- Do **not** mention "chatbot," "lead funnel," or "automation stack."
+- Do **not** use startup-speak or agency-speak of any kind.
+
+## Scope Boundaries
+
+- One product only: Missed Call Text-Back (After-Hours Lead Capture)
+- Operator-managed: we own the infrastructure, clients do not configure anything
+- Target industries: plumbing, HVAC, electrical, locksmith, garage door, towing
+- Do not sell to restaurants, salons, retail, or non-urgent appointment businesses

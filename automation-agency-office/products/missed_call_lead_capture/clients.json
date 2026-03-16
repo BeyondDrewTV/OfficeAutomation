@@ -1,0 +1,20 @@
+{
+  "rockford_pro_plumbing": {
+    "business_name": "Rockford Pro Plumbing",
+    "owner_phone": "+18155550100",
+    "owner_email": "owner@rockfordproplumbing.com",
+    "twilio_number": "+18155550200",
+    "spreadsheet_id": "YOUR_GOOGLE_SHEET_ID_HERE",
+    "sheet_name": "Rockford Pro Plumbing",
+    "voice_message": "Thanks for calling Rockford Pro Plumbing. We can't take your call right now, but text us what you need and we'll follow up shortly.",
+    "auto_sms": "Hi! Sorry we missed your call from Rockford Pro Plumbing. Text us what you need and we'll get right back to you."
+  },
+  "elite_hvac": {
+    "business_name": "Elite HVAC Solutions",
+    "owner_phone": "+18155550300",
+    "owner_email": "owner@elitehvac.com",
+    "twilio_number": "+18155550400",
+    "spreadsheet_id": "YOUR_GOOGLE_SHEET_ID_HERE",
+    "sheet_name": "Elite HVAC Solutions"
+  }
+}

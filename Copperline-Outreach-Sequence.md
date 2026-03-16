@@ -1,87 +1,129 @@
-# Copperline Lead Follow-Up — Cold Outreach Sequence
+# Copperline — After-Hours Lead Capture
+# Cold Outreach Sequence
 
-4-email sequence. Send one per week. Goal: 15-minute call.
+Product: Missed Call Text-Back for Service Businesses
+Target: Plumbers, HVAC, Electricians, Locksmiths, Garage Door, Towing
+
+Send one email, then two follow-ups. Stop on any reply.
+Space: 5–7 days between each.
 
 ---
 
-## Email 1 — Observation + curiosity
+## Email 1 — Three angle variants. Pick one per prospect.
 
-**Subject:** after-hours calls?
+### Variant A: Lost Job Angle
+**Subject:** after-hours calls
 
-Hey [Name] -
+Hey [Name] —
 
-Quick question. When someone calls [Business Name] at 9pm and you're not there, what happens?
+Quick question. When someone calls [Business Name] at 9pm and no one answers,
+what happens to that lead?
 
-Most [industry] shops in [City] lose that lead for good. No voicemail, no callback, nothing.
+Most [industry] businesses lose those jobs without ever knowing. The customer
+doesn't leave a voicemail. They just call the next number.
 
-Curious if that's something you've thought about.
+I set up a simple text-back line that captures those leads before they move on.
+Owner gets notified. Lead gets logged. Nothing to manage on your end.
 
-Best,
-Drew
+Worth a 10-minute call?
+
+— Drew
 Copperline
 
 ---
 
-## Email 2 — Social proof
+### Variant B: After-Hours Angle
+**Subject:** after hours coverage
 
-**Subject:** what one shop did about it
+Hey [Name] —
 
-Hey [Name] -
+Do you have anything in place for calls that come in after hours?
 
-I recently set up a simple lead follow-up system for a [industry] company in [nearby city].
+I ask because most [industry] businesses in [City] don't — and it's usually
+their biggest source of lost work. Someone calls at 10pm with a burst pipe or
+a dead AC, gets voicemail, and calls someone else.
 
-They were missing 2-3 jobs a week after hours without realizing it. Now those people get a text back in seconds and the owner gets notified immediately.
+I set up a text-back line that catches those people automatically.
+They get a text. You get a notification.
 
-First week live they booked two jobs that would have gone to a competitor.
+Curious if that's something you'd want to see?
 
-Thought it might be relevant.
-
-Best,
-Drew
+— Drew
 Copperline
 
 ---
 
-## Email 3 — Insight
+### Variant C: Simple Text-Back Angle
+**Subject:** text-back line for [Business Name]
 
-**Subject:** the leads you lose don't complain
+Hey [Name] —
 
-Hey [Name] -
+I set up text-back lines for [industry] businesses in [City]. When a customer
+calls and no one answers, they get a text automatically. If they reply, you
+get notified immediately.
 
-One thing I keep seeing with local service businesses: the leads you miss never tell you.
+No app to manage. No account to set up. We run the whole thing.
 
-They just call the next company on the list.
+Most businesses go live in under a week.
 
-No voicemail, no callback request. They're just gone.
-
-It's usually not volume that's the problem. It's response speed — especially nights and weekends.
-
-Worth knowing if that's happening to you.
-
-Best,
-Drew
+— Drew
 Copperline
 
 ---
 
-## Email 4 — Short bump
+## Follow-Up 1 (6 days after Email 1)
+**Subject:** re: after-hours calls
 
-**Subject:** still relevant?
+Hey [Name] — just bumping this up in case it got buried.
 
-Hey [Name] -
+If you're getting calls you can't always answer, the text-back line is a
+straightforward fix. Happy to walk you through it in 10 minutes.
 
-Just bumping this up. No pressure.
-
-If the timing's off, totally fine. But if missed after-hours calls are still a thing, I can show you what I set up in about 15 minutes.
-
-Best,
-Drew
+— Drew
 Copperline
+
+---
+
+## Follow-Up 2 (7 days after Follow-Up 1 — final touch)
+**Subject:** last note
+
+Hey [Name] —
+
+Last one from me. If missed after-hours calls ever become a real problem,
+I'm easy to reach.
+
+Otherwise, hope business is going well.
+
+— Drew
+Copperline
+
+---
+
+## Reply Handling
+
+**They're interested:**
+Explain: caller gets a text in seconds, owner gets notified, lead is logged.
+We handle setup and management. $750 setup, $150/month. Live in ~1 week.
+Ask for a 10-minute call.
+
+**They ask the price:**
+$750 one-time, $150/month. We handle everything — line, texts, notifications.
+
+**They say they have voicemail:**
+Voicemail doesn't catch people who won't leave a message. The text-back does.
+Not a hard sell — if it's not a pain point, that's fine.
+
+**They say they always answer:**
+Great. This is the safety net for nights, weekends, and when everyone's on a job.
+If they don't need it, no pressure.
+
+**Not interested:**
+"No problem — appreciate you taking the time." Move on.
 
 ---
 
 *Sequence notes:*
-- *Space emails 5-7 days apart*
-- *Personalize [industry] and [City] — the pipeline does this automatically*
-- *Stop sequence on reply — move to call*
-- *Do not follow up after email 4*
+- Personalize [industry] specifically: "plumbing," "HVAC," not "service businesses"
+- Never send all three variants to the same person
+- Stop the sequence the moment anyone replies
+- Do not follow up beyond Follow-Up 2

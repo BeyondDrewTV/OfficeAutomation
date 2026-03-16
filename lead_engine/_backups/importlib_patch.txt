@@ -1,0 +1,19 @@
+# ---------------------------------------------------------------------------
+# Load queue modules via direct file path — avoids collision with Python's
+# built-in 'queue' stdlib module (package-style import would shadow it).
+# ---------------------------------------------------------------------------
+_qi_spec = importlib.util.spec_from_file_location(
+    "queue_integrity",
+    Path(__file__).resolve().parent / "queue" / "queue_integrity.py",
+)
+_qi_mod = importlib.util.module_from_spec(_qi_spec)
+_qi_spec.loader.exec_module(_qi_mod)
+scan_queue_integrity = _qi_mod.scan_queue_integrity
+
+_er_spec = importlib.util.spec_from_file_location(
+    "exception_router",
+    Path(__file__).resolve().parent / "queue" / "exception_router.py",
+)
+_er_mod = importlib.util.module_from_spec(_er_spec)
+_er_spec.loader.exec_module(_er_mod)
+scan_exceptions = _er_mod.scan_exceptions

@@ -1,0 +1,17 @@
+{
+  "_comment": "Add one entry per client. client_id must be unique (no spaces).",
+  "rockford_pro_plumbing": {
+    "business_name": "Rockford Pro Plumbing",
+    "owner_phone": "+18155550100",
+    "owner_email": "owner@rockfordproplumbing.com",
+    "twilio_number": "+18005550101",
+    "sheet_name": "Rockford Pro Plumbing"
+  },
+  "example_hvac": {
+    "business_name": "Example HVAC Co",
+    "owner_phone": "+18155550200",
+    "owner_email": "owner@examplehvac.com",
+    "twilio_number": "+18005550202",
+    "sheet_name": "Example HVAC Co"
+  }
+}

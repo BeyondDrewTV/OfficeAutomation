@@ -1,0 +1,22 @@
+{
+  "client_001": {
+    "business_name": "Rockford Plumbing Co.",
+    "owner_phone": "+18155550101",
+    "owner_email": "owner@rockfordplumbing.com",
+    "twilio_number": "+18155550001",
+    "spreadsheet_id": "YOUR_GOOGLE_SHEET_ID_HERE",
+    "notification_channel": "sms",
+    "auto_sms_message": "Hi! This is Rockford Plumbing. Sorry we missed your call — how can we help you today?",
+    "ack_sms_message": "Thanks for reaching out! We'll have someone contact you shortly."
+  },
+  "client_002": {
+    "business_name": "Comfort Zone HVAC",
+    "owner_phone": "+18155550202",
+    "owner_email": "owner@comfortzonehvac.com",
+    "twilio_number": "+18155550002",
+    "spreadsheet_id": "YOUR_GOOGLE_SHEET_ID_HERE",
+    "notification_channel": "email",
+    "auto_sms_message": "Hi! Comfort Zone HVAC here. Sorry we missed you — what can we help you with?",
+    "ack_sms_message": ""
+  }
+}
