@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-03-15
+Last Updated: 2026-03-16
 
 ## Copperline Version
 v0.2
@@ -12,39 +12,38 @@ Lead Acquisition Engine
 Discovery Map System
 
 ## Last Completed Pass
-Pass A — Operator Safety Fixes
+Step 8 — Search Visible Area
 
-- `COPPERLINE_LINKS` config block added to top of JS for demo/booking/case study URLs
-- `cvSendQuick` templates reference config; emit `⚠` error toast if links not yet configured
-- `mcRenderClients` columns fixed to match actual backend schema (phone/sms_reply/active)
-- Leads and Delete buttons disabled (`title="Feature not available yet"`)
-- Service badge default changed to `● Missed-Call: Not Configured` with accurate tooltip
+- `#btnSearchVisible` and `#btnCancelVisible` added to map toolbar
+- `_mapVisibleSearchActive` and `_mapVisibleSeenKeys` module variables added
+- `_mapRenderHistory()` guards `radiusM: null` — shows "tiled" instead of NaN
+- Click handler in history list no longer overwrites `_mapRadiusM` with null
+- `_mapAppendResultMarkers(markers)` added — additive, never calls `_mapClearResultMarkers`
+- `_mapVisibleTiles()` added — tiles current viewport into 1000m-radius grid cells, rejects > 30 tiles
+- `mapSearchVisible()` added — sequential tiled discovery with 1200ms delay, dedup via `_mapVisibleSeenKeys`, coverage circles per productive tile, single history entry per run
+- `_mapCancelVisible()` added — sets cancel flag, stops loop after current tile
+- `#btnSearchVisible` wired to industry + circle state: enabled only when both are set
+- `mapSearch()` single-circle flow unchanged
+
+Commit: `32ff2bf`
+
+## Previous Completed Pass
+Pass A — Operator Safety Fixes
 
 Commit: `4a169dd`
 
-## Previous Completed Pass
-Clients Route Fix — `4c390fe`
-
-- Added `_mapAreaLabel(markers)`: frequency-counts `biz.city` from result set, returns most common city name, null if no city data
-- History entry now stores `label` field alongside existing fields
-- `_mapRenderHistory()` uses `entry.label` as primary text, falls back to `lat/lng` coords; secondary shows radius + found count; exact coords preserved as `title` tooltip
-- No new API calls, no reverse geocoding
+## Previous Pass
+Step 7 — Human-Readable Discovery Labels
 
 Commit: `3f86767`
 
-## Previous Pass
-Step 6 — Discovery History List
-
-Commit: `6d79c64`
-
 ## Next Pass
-Step 8 — Search Visible Area (scope questions in CURRENT_BUILD.md)
+Step 9 — TBD (territory heatmap or tiled backend improvements)
 
 ## Upcoming Passes
-- Search Visible Area button
-- Tiled discovery backend (neighborhood-level grid search)
 - Territory heatmap overlay
 - Industry saturation view
+- Tiled discovery backend improvements
 
 ## Protected Systems
 - `run_lead_engine.py`

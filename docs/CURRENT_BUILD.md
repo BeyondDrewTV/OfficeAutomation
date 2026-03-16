@@ -4,7 +4,7 @@
 Discovery Map — Frontend Improvements
 
 ## Status
-Step 7 complete. Step 8 not yet scoped.
+Step 8 complete.
 
 ---
 
@@ -13,44 +13,55 @@ Step 7 complete. Step 8 not yet scoped.
 ## Completed: Step 4 — Map Result Usability Polish — `a19bc16`
 ## Completed: Step 5 — Discovery Coverage Memory — `f27a472`
 ## Completed: Step 6 — Discovery History List — `6d79c64`
+## Completed: Step 7 — Human-Readable Discovery Labels — `3f86767`
 
 ---
 
-## Completed: Step 7 — Human-Readable Discovery Labels
+## Completed: Step 8 — Search Visible Area Button — `32ff2bf`
 
-`_mapAreaLabel(markers)` frequency-counts `biz.city` across result set and
-returns the most common city name, or null if no city data exists. Label
-stored in history entry as `label` field. `_mapRenderHistory()` uses it as
-primary text with `lat/lng` fallback; secondary line shows radius + found
-count; exact coords available as `title` tooltip on the label span.
+Tiles the current map viewport into a grid of 1000m-radius cells and runs
+sequential `/api/discover_area` calls across each cell.
 
-Commit: `3f86767`
+**New HTML:**
+- `#btnSearchVisible` — `.btn-secondary`, triggers `mapSearchVisible()`
+- `#btnCancelVisible` — `.btn-ghost`, hidden by default, triggers `_mapCancelVisible()`
+- Both inserted in map toolbar after `#btnMapSearch`, before Clear button
+- `#map-industry` gains `onchange` handler to keep `#btnSearchVisible` in sync
+
+**New JS module variables:**
+- `let _mapVisibleSearchActive = false` — loop guard
+- `let _mapVisibleSeenKeys = new Set()` — cross-tile dedup
+
+**`_mapRenderHistory()` fix:**
+- `radiusM: null` entries render as "tiled" instead of "NaN mi"
+- Click handler now guards: `if (entry.radiusM != null) _mapRadiusM = entry.radiusM`
+
+**New functions:**
+- `_mapAppendResultMarkers(markers)` — appends to cluster group, result arrays, renders panel; never clears
+- `_mapVisibleTiles()` — reads `_mapInstance.getBounds()`, builds lat/lng grid at 2000m step, returns `{ tiles, tooLarge }`, rejects > 30 tiles
+- `mapSearchVisible()` — requires industry, rejects duplicate run, iterates tiles sequentially, 1200ms inter-tile delay, deduplicates via `_mapVisibleSeenKeys`, adds coverage circle per productive tile, writes one history entry with `radiusM: null` on completion
+- `_mapCancelVisible()` — sets `_mapVisibleSearchActive = false`, updates status text
+
+**Industry/circle enable wiring:**
+- `_mapDrawCircle` enables `#btnSearchVisible` only if industry is already selected
+- `mapClearCircle` disables `#btnSearchVisible`
+- `#map-industry` onchange disables `#btnSearchVisible` if no industry or no circle
+
+**Unchanged:**
+- `mapSearch()` single-circle flow
+- All protected systems
+- All prior steps
 
 ---
 
-## Next: Step 8 — Search Visible Area Button
+## Next: Step 9 — TBD
 
-Scope to be fully defined before implementation begins.
+Candidates:
+- Territory heatmap overlay
+- Tiled backend improvements (rate-limit handling, pagination)
+- Zoom-to-fit after tiled search completes
 
-Direction: button tiles the current viewport into a grid of small-radius
-cells and runs sequential `/api/discover_area` calls across each cell.
-
-### Open scope questions
-- Reuse `/api/discover_area` or new backend endpoint?
-- How to handle rate limiting / delays between tile calls?
-- What UI feedback during multi-tile search?
-- How do accumulated markers from multiple tiles interact with clustering?
-- Coverage memory (Step 5) + history (Step 6) would both auto-populate per tile — confirm desired behavior.
+Define scope before starting.
 
 ### Out of Scope
 - Territory heatmaps, saturation metrics, deployment, Stripe
-
----
-
-## Upcoming Passes (not yet active)
-
-| Pass | Description |
-|---|---|
-| Step 4 | Search Visible Area button |
-| Step 5 | Tiled discovery backend |
-| Step 6 | Territory exploration heatmap |

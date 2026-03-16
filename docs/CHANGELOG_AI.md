@@ -284,3 +284,38 @@ zoom-in and regroup on zoom-out.
 - Added rerun buttons to past search entries
 
 **Commit:** `bcac905`
+
+---
+
+### Step 8 — Search Visible Area Button
+
+**Date:** 2026-03-16
+
+**Goal:** Add a "Search Visible Area" button that tiles the current map
+viewport into 1000m-radius grid cells and runs sequential
+`/api/discover_area` calls across each cell, accumulating markers without
+clearing existing results.
+
+**Changes:**
+
+- `#btnSearchVisible` + `#btnCancelVisible` added to map toolbar
+  (after `#btnMapSearch`, before Clear)
+- `#map-industry` gains `onchange` to keep `#btnSearchVisible` synced
+- `let _mapVisibleSearchActive` — loop-control flag
+- `let _mapVisibleSeenKeys` — cross-tile Set for deduplicating markers
+- `_mapRenderHistory()` — guards `radiusM: null`; shows "tiled" label;
+  click handler no longer overwrites `_mapRadiusM` with null
+- `_mapAppendResultMarkers(markers)` — additive marker helper; never
+  calls `_mapClearResultMarkers`
+- `_mapVisibleTiles()` — tiles current viewport into lat/lng grid at
+  2000m step; rejects runs > 30 tiles
+- `mapSearchVisible()` — sequential tiled discovery; 1200ms inter-tile
+  delay; dedup via `_mapVisibleSeenKeys`; coverage circles per productive
+  tile; single history entry with `radiusM: null` on completion
+- `_mapCancelVisible()` — sets cancel flag; status text update
+- `_mapDrawCircle` / `mapClearCircle` extended to mirror `#btnSearchVisible`
+  enable/disable state
+
+**Files changed:** `lead_engine/dashboard_static/index.html`
+
+**Commit:** `32ff2bf`
