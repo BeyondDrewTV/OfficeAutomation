@@ -9,45 +9,44 @@ v0.2
 Lead Acquisition Engine
 
 ## Current Focus
-Discovery Map System
+Outreach Queue Safety + Scheduled Send Foundations
 
 ## Last Completed Pass
-Step 8 — Search Visible Area
+Pass 9a — Queue Visual Safety
 
-- `#btnSearchVisible` and `#btnCancelVisible` added to map toolbar
-- `_mapVisibleSearchActive` and `_mapVisibleSeenKeys` module variables added
-- `_mapRenderHistory()` guards `radiusM: null` — shows "tiled" instead of NaN
-- Click handler in history list no longer overwrites `_mapRadiusM` with null
-- `_mapAppendResultMarkers(markers)` added — additive, never calls `_mapClearResultMarkers`
-- `_mapVisibleTiles()` added — tiles current viewport into 1000m-radius grid cells, rejects > 30 tiles
-- `mapSearchVisible()` added — sequential tiled discovery with 1200ms delay, dedup via `_mapVisibleSeenKeys`, coverage circles per productive tile, single history entry per run
-- `_mapCancelVisible()` added — sets cancel flag, stops loop after current tile
-- `#btnSearchVisible` wired to industry + circle state: enabled only when both are set
-- `mapSearch()` single-circle flow unchanged
+- `statusBadge()` extended: `send_after && !sent_at` → `🕐 Scheduled` badge (amber, between stale and approved)
+- `🕐 Scheduled` filter tab added to outreach toolbar (filters `send_after` set + unsent)
+- `applyFiltersAndSort()` handles `currentFilter === 'scheduled'`
+- `renderTable()` adds `row-scheduled` class to `<tr>` when `send_after` set + unsent
+- `tbody tr.row-scheduled td:first-child` gets amber left border
+- `panelFieldChanged()` extended: body edits show `Saving…` / `Saved ✓` / `Error saving` via `#panel-save-state` span
+- CSS added: `.badge-scheduled`, `.row-scheduled`, `.panel-save-state` + state variants
+- No backend changes. No protected systems touched.
+
+Commit: `f712909`
+
+## Previous Completed Pass
+Step 8a — Decouple Search Visible Area button from manual circle state
+
+Commit: `651df94`
+
+## Previous Pass
+Step 8 — Search Visible Area
 
 Commit: `32ff2bf`
 
-## Previous Completed Pass
-Pass A — Operator Safety Fixes
-
-Commit: `4a169dd`
-
-## Previous Pass
-Step 7 — Human-Readable Discovery Labels
-
-Commit: `3f86767`
-
 ## Next Pass
-Step 9 — TBD (territory heatmap or tiled backend improvements)
+Pass 9b — Schedule Action (requires operator approval to add `send_after` to `PENDING_COLUMNS` in `run_lead_engine.py`)
 
-## Upcoming Passes
-- Territory heatmap overlay
-- Industry saturation view
-- Tiled discovery backend improvements
+## Blocked: Pass 9b
+`_write_pending_rows()` in `run_lead_engine.py` rewrites the CSV using only
+`PENDING_COLUMNS`. Any `send_after` field written by a new route will be
+silently stripped on next engine run. Adding `send_after` to `PENDING_COLUMNS`
+requires a deliberate protected-system change. Needs operator sign-off.
 
 ## Protected Systems
 - `run_lead_engine.py`
-- Queue schema
+- Queue schema (`PENDING_COLUMNS` list)
 - `pending_emails.csv` pipeline
 - Email sender
 - Follow-up scheduler

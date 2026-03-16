@@ -12,15 +12,15 @@ Lead Acquisition Engine
 Discovery Map System + Operator Safety
 
 ## Current Build Pass
-Step 8a — Decouple Search Visible Area button (complete)
+Pass 9a — Queue Visual Safety (complete)
 
 ## Last Completed Pass
-Step 8a — Decouple Search Visible Area button from manual circle state
+Pass 9a — Queue Visual Safety
 
-Commit: `651df94`
+Commit: `f712909`
 
 ## Next Pass
-Step 9 — TBD (territory heatmap or tiled backend improvements)
+Pass 9b — Schedule Action (blocked — needs operator approval to add `send_after` to `PENDING_COLUMNS` in `run_lead_engine.py`)
 
 ## Upcoming Passes
 - Search Visible Area button

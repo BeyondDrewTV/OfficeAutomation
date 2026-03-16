@@ -353,3 +353,43 @@ selection only.
 **Files changed:** `lead_engine/dashboard_static/index.html`
 
 **Commit:** `651df94`
+
+---
+
+### Pass 9a — Queue Visual Safety
+
+**Date:** 2026-03-16
+
+**Goal:** Make scheduled/approved/draft states visually distinct in the
+outreach queue without any backend changes. Add save state feedback to the
+draft panel body editor.
+
+**Changes (frontend-only, `index.html`):**
+
+1. **CSS** — Added `.badge-scheduled`, `tbody tr.row-scheduled td:first-child`
+   (amber left border), `.panel-save-state` with `.saving` / `.saved` /
+   `.save-err` state variants.
+
+2. **`statusBadge(row)`** — New priority slot between stale and approved:
+   `send_after && !sent_at` → `🕐 Scheduled` amber pill with send time tooltip.
+
+3. **Filter tab HTML** — `🕐 Scheduled` tab appended after `High Score`.
+
+4. **`applyFiltersAndSort()`** — `scheduled` branch:
+   `rows.filter(r => r.send_after && !r.sent_at)`.
+
+5. **`renderTable()`** — `scheduledClass` variable added; applied to `<tr>`.
+
+6. **`panelFieldChanged()`** — Body edits drive `#panel-save-state`:
+   `Saving…` on keystroke, `Saved ✓` on resolve, `Error saving` on reject.
+   Subject/email edits use silent save (unchanged).
+
+**Pre-flight audit finding (blocking Pass 9b):**
+`_write_pending_rows()` in `run_lead_engine.py` uses `PENDING_COLUMNS` as the
+exclusive column list. Any `send_after` field written externally will be
+silently stripped on next engine run. Pass 9b requires adding `send_after` to
+`PENDING_COLUMNS` — a protected-system change needing operator approval.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`
+
+**Commit:** `f712909`
