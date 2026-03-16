@@ -1,3 +1,130 @@
+### 2026-03-16 — Pass 11D: Industry Send Window UX Refinement
+
+**Goal:** Make scheduling feel deliberate and industry-tailored while preserving manual Gmail sending and existing `send_after` queue semantics.
+
+**Changes:**
+- Added industry send-window helpers (`_industryWindowTime`, `_industryWindowLabel`, `_buildSendAfterFromWindow`) for coherent, operator-visible scheduling defaults.
+- Updated review panel schedule actions and labels:
+  - `Tomorrow @ Best Time`
+  - `Schedule for Best Time`
+  - `Next Best Window`
+- Enhanced schedule info block with compact guidance:
+  - industry default-time explanation
+  - clear Approved vs Scheduled distinction
+- Kept `panelUnschedule`, scheduled ordering, and all send behavior unchanged.
+
+**Files touched:**
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`
+- `docs/CHANGELOG_AI.md`
+
+**Commit:** `3413dbb`
+
+---
+
+### 2026-03-16 — Pass 11C: Discovery-to-Queue Continuity UX
+
+**Goal:** Reduce context-switch friction between map discovery and queue processing without introducing fake campaign abstractions.
+
+**Changes:**
+- Added a persistent discovery handoff bar under top navigation with truthful post-run summary and direct actions:
+  - Review New Drafts
+  - Continue Discovering
+  - Return to Last Discovery Area
+- Added lightweight session state for continuity:
+  - `_lastDiscoveryHandoff`
+  - `_lastDiscoveryMapContext`
+  - `_captureMapContext(...)`
+  - `_publishDiscoveryHandoff(...)`
+- Wired handoff publishing into successful discovery flows (`discoverLeads`, `mapSearch`, `mapSearchVisible`).
+- Added map-context restore behavior so operators can jump to queue and return to the previous discovery area quickly.
+- No backend changes; discovery remains explicit/operator-triggered.
+
+**Files touched:**
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`
+- `docs/CHANGELOG_AI.md`
+
+**Commit:** `70f1f96`
+
+---
+
+### 2026-03-16 — Pass 11B: Separate Sent Workspace / Completed Outreach View
+
+**Goal:** Keep the live unsent queue clean by moving completed outreach into a separate destination view.
+
+**Changes:**
+- Added a dedicated Sent Workspace page (`page-sentview`) with its own header, stats, and table.
+- Kept live queue default on unsent work and preserved existing queue-state filter semantics.
+- Added Sent Workspace context using existing fields: sent time, business, subject, reply badge, and follow-up hint.
+- Added quick actions from Sent Workspace to Replied filter, Follow-Up queue, and original business row panel.
+- Added top-nav Sent badge and wired Sent stage/primary nav to the separate Sent destination.
+
+**Files touched:**
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`
+- `docs/CHANGELOG_AI.md`
+
+**Commit:** `3a597b1`
+
+---
+
+### 2026-03-16 — Pass 11A: Pipeline UX V2 Flow Cleanup
+
+**Goal:** Make the operator workflow read as one continuous flow: Discover → Review → Approve/Schedule → Sent → Follow-Up.
+
+**Changes:**
+- Simplified top-level navigation to direct destinations (Discovery, Queue, Scheduled, Sent, Follow-Up, Clients, System), reducing parent/sub-tab dependence.
+- Added a workflow stage rail inside Outreach with live counts and quick stage jumps.
+- Preserved queue-state separation and behavior: Actionable (unsent and not scheduled), Scheduled (send_after and not sent), Sent (sent_at), Replied.
+- Improved queue empty-state messaging for mode-switch scenarios (e.g., no actionable rows but scheduled work exists).
+- Kept send behavior, queue schema, and backend routes unchanged.
+
+**Files touched:**
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`
+- `docs/CHANGELOG_AI.md`
+
+**Commit:** `84d4a7b`
+
+---
+
+### 2026-03-16 — Pass 16: Outreach Command-Center Refinement
+
+**Goal:** Improve operator clarity in Outreach by tightening immediate-work semantics and visually separating discovery, queue filtering, and queue actions.
+
+**Changes:**
+- Tightened `Actionable` definition to exclude stale-draft and missing-email rows in addition to scheduled/sent/terminal rows.
+- Reorganized Outreach layout into clear stacked groups: Discovery controls, Queue workflow filters/view controls, and Queue actions.
+- Grouped review/reconciliation tools separately from the primary send action (`▶ Send Approved`).
+- Added secondary row treatment and note labels (`stale draft`, `missing email`, `low fit`) to reduce visual weight of lower-priority rows.
+
+**Files touched:**
+- `lead_engine/dashboard_static/index.html`
+
+**Commit:** `7da49b5`
+
+---
+
+### 2026-03-16 — Pass 15: Outreach Queue Regression Fix
+
+**Goal:** Restore queue/stats/industry/table loading after the command-center cleanup regression while preserving the new filter architecture.
+
+**Root cause:** `loadAll()` used `Promise.all` for `/api/status` + `/api/queue`, so a failure from either endpoint aborted both updates and left Outreach appearing fully broken. `loadIndustries()` silently swallowed API failures, leaving the industry selector stuck on “Loading…”.
+
+**Changes:**
+- Updated `loadAll()` to `Promise.allSettled` with independent status/queue application and endpoint-specific operator toasts.
+- Added diagnostics (`console.error`) for status and queue failures.
+- Added resilient `loadIndustries()` fallback options so the industry selector still initializes when `/api/industries` fails.
+- Preserved existing Actionable/Pending/Approved/Scheduled/Done model and non-actionable bulk disable behavior from prior cleanup.
+
+**Files touched:**
+- `lead_engine/dashboard_static/index.html`
+
+**Commit:** `347a842`
+
+---
+
 # AI Development Log
 
 Chronological record of all AI-assisted implementation passes on the Copperline project.
