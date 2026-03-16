@@ -319,3 +319,37 @@ clearing existing results.
 **Files changed:** `lead_engine/dashboard_static/index.html`
 
 **Commit:** `32ff2bf`
+
+---
+
+### Step 8a — Decouple Search Visible Area Button from Circle State
+
+**Date:** 2026-03-16
+
+**Goal:** Remove erroneous dependency on `_mapCenter` / circle lifecycle from
+`#btnSearchVisible` enable/disable logic. Button should be gated on industry
+selection only.
+
+**Root cause:** Step 8 added `btnSearchVisible` enable/disable calls into
+`_mapDrawCircle()` and `mapClearCircle()`, and the `onchange` handler on
+`#map-industry` included `!window._mapCenter` as a secondary gate.
+
+**Changes (3 lines removed, 1 line modified):**
+
+1. `#map-industry` onchange — removed `||!window._mapCenter` condition.
+   Button now enables on industry selection regardless of circle state.
+
+2. `_mapDrawCircle()` — removed 2 lines that read `map-industry` value and
+   set `btnSearchVisible.disabled`. Circle draw no longer affects button.
+
+3. `mapClearCircle()` — removed 1 line that set `btnSearchVisible.disabled = true`.
+   Clearing the circle no longer affects button.
+
+**Preserved:**
+- `mapSearchVisible()` still disables button during active run and re-enables on completion
+- `#btnSearchVisible` starts `disabled` in HTML (correct — no industry selected yet)
+- All other map behavior unchanged
+
+**Files changed:** `lead_engine/dashboard_static/index.html`
+
+**Commit:** `651df94`

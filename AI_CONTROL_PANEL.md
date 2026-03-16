@@ -12,12 +12,12 @@ Lead Acquisition Engine
 Discovery Map System + Operator Safety
 
 ## Current Build Pass
-Step 8 — Search Visible Area (complete)
+Step 8a — Decouple Search Visible Area button (complete)
 
 ## Last Completed Pass
-Step 8 — Search Visible Area
+Step 8a — Decouple Search Visible Area button from manual circle state
 
-Commit: `32ff2bf`
+Commit: `651df94`
 
 ## Next Pass
 Step 9 — TBD (territory heatmap or tiled backend improvements)
