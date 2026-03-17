@@ -178,8 +178,8 @@ def api_status():
     return jsonify({
         "prospects_loaded":      _prospects_count(),
         "total_drafted":         len(rows),
-        "pending_approval":      sum(1 for r in rows if r["approved"].lower() != "true" and not r.get("sent_at")),
-        "approved_unsent":       sum(1 for r in rows if r["approved"].lower() == "true" and not r.get("sent_at")),
+        "pending_approval":      sum(1 for r in rows if (r.get("approved") or "").lower() != "true" and not r.get("sent_at")),
+        "approved_unsent":       sum(1 for r in rows if (r.get("approved") or "").lower() == "true" and not r.get("sent_at")),
         "sent":                  sent_real,
         "sent_logged_only":      sent_logged,
         "replied":               sum(1 for r in rows if r.get("replied","").lower() == "true"),
