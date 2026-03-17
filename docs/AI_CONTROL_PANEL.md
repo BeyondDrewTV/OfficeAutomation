@@ -9,18 +9,18 @@ Repository Version: v0.2
 Lead Acquisition Engine
 
 ## Current Focus
-Outreach Positioning Correction
+Discovery Coverage Expansion + Bulk Unschedule
 
 ## Current Build Pass
-Pass 18b — Human Draft Enforcement Layer (complete)
+Pass 29 - Discovery Coverage Expansion + Bulk Unschedule (complete)
 
 ## Last Completed Pass
-Pass 18b — Human Draft Enforcement Layer
+Pass 29 - Discovery Coverage Expansion + Bulk Unschedule
 
-Commit: `ff7564d`
+Commit: pending
 
 ## Next Pass
-Pass 19 — TBD (territory heatmap, saturation view, tiled backend improvements, or outreach doc updates)
+TBD
 
 ## Upcoming Passes
 - Territory heatmap overlay
@@ -32,17 +32,18 @@ Pass 19 — TBD (territory heatmap, saturation view, tiled backend improvements,
 
 ## Execution Model
 
-Passes use **bounded cohesive blocks**, not artificially tiny micro-changes.
+Passes use bounded cohesive blocks, not artificially tiny micro-changes.
 
-- A pass may include 3–6 tightly related changes if they all improve one operator workflow
+- A pass may include 3-6 tightly related changes if they all improve one operator workflow
 - Scope is defined by workflow cohesion: all sub-changes must serve the same outcome
 - Unrelated systems must not be bundled in a single pass
 - Passes must be testable end-to-end when complete
 - No redesigns or protected-system drift without explicit operator approval
 
 Examples:
-- Correct: grid search + dedupe + history + cancel (all serve Discovery Coverage Expansion)
-- Incorrect: discovery + scheduler UX + message quality in one pass (unrelated systems)
+- Correct: grid search + dedupe + history + cancel
+- Incorrect: discovery + scheduler UX + message quality in one pass
+- Latest completed example: Pass 29 combined circle-grid sweep, multi-industry selection, dedupe, history summary, cancel support, and bulk unschedule because all of them served one bounded operator workflow
 
 ---
 
@@ -90,14 +91,12 @@ Copperline is an internal platform used to:
 
 ## Active Constraints
 
-- Discovery must be intentional — no auto-search on pan or zoom
-- Large search areas surface only prominent businesses (by design)
-- Neighborhood-level searches required to find independent operators
-- No build steps — frontend is a single HTML file, CDN dependencies only
-- Email sending is manual — auto-send not enabled
-- Quick reply templates require `COPPERLINE_LINKS` config to be filled in before use
-
----
+- Discovery must be intentional - no auto-search on pan or zoom
+- Large search areas surface only prominent businesses by design
+- Neighborhood-level searches are required to find independent operators
+- No build steps - frontend is a single HTML file with CDN dependencies only
+- Email sending is manual - auto-send is not enabled
+- Quick reply templates require `COPPERLINE_LINKS` config before live use
 
 ## Operator Goal
 
@@ -105,8 +104,6 @@ Copperline is an internal platform used to:
 2. Start conversations via outreach
 3. Close clients
 4. Deploy missed-call texting automation
-
----
 
 ## Repo Quick Reference
 

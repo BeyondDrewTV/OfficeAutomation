@@ -641,3 +641,32 @@ Wired call into `draft_email()` between body assembly and sign-off append.
 - `lead_engine/dashboard_static/index.html`
 
 **Commit:** `d31d720`
+### 2026-03-17 - Pass 29: Discovery Coverage Expansion + Bulk Unschedule
+
+**Goal:** Expand neighborhood discovery coverage from the existing map circle and let operators unschedule batches of scheduled outreach safely.
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**What changed:**
+- Restored `lead_engine/dashboard_static/index.html` from the last committed baseline after a failed transfer left the live file as a 63-byte broken stub.
+- Added `Search Area Grid` UI using the current map circle as a capped 1000m-cell grid.
+- Added multi-industry grid selection, run estimation, hard caps of 36 cells / 120 calls, compact progress status, cancel support, and a single summarized history entry per grid sweep.
+- Added current-run dedupe for accumulated grid markers using place ID first and stable fallbacks.
+- Added bulk `Unschedule` to the outreach table and allowed scheduled rows to be selected in the Scheduled filter.
+- Smoke stabilization fixed one UI bug so bulk `Unschedule` is visibly shown when scheduled rows are selected.
+- Kept the pass frontend-only. No scheduler core, queue schema, sender, or follow-up systems changed.
+
+**Verification:**
+- Extracted inline dashboard JavaScript and ran `node --check` successfully.
+- Ran a live headless-browser smoke checklist covering dashboard load, grid UI, multi-industry selection, oversized blocking, status updates, cancel recovery, history rendering, scheduled-row selection, bulk unschedule visibility/state, and existing single/visible/exhaust discovery actions.
+- Confirmed only `lead_engine/dashboard_static/index.html` changed in product code.
+- Confirmed protected files (`run_lead_engine.py`, queue schema/pipeline, scheduler core) were untouched.
+
+**Commit:** pending
+
+---

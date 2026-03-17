@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-03-16
+Last Updated: 2026-03-17
 
 ## Copperline Version
 v0.2
@@ -9,34 +9,35 @@ v0.2
 Lead Acquisition Engine
 
 ## Current Focus
-Outreach Positioning Correction
+Discovery Coverage Expansion + Bulk Unschedule
 
 ## Copperline Positioning
 Copperline = Service Business Operations
 
-We identify where service businesses are losing work — missed calls, cold estimates, follow-ups that never happen — and install simple systems to fix it.
+We identify where service businesses are losing work - missed calls, cold estimates, follow-ups that never happen - and install simple systems to fix it.
 
 Automation is the implementation layer, not the headline.
 Missed-call texting is one downstream solution, not the primary pitch.
 Outreach goal: start a conversation about operational problems, not sell a product.
 
 ## Last Completed Pass
-Pass 18b — Human Draft Enforcement Layer
+Pass 29 - Discovery Coverage Expansion + Bulk Unschedule
 
-- Added `enforce_human_style()` post-processing function to `email_draft_agent.py`
-- Applied between body assembly and sign-off append in `draft_email()`
-- Strips formal opener phrases, lowercases `Hey` openers, trims at 65 words
-- Does not sentence-split across paragraph breaks (preserves existing structure)
-- 5-draft sample verified: 54–65 words, 2–3 sentences, no formal phrases
-- No schema changes, no DRAFT_VERSION bump, no protected systems touched
+- Restored the dashboard after a failed transfer left `lead_engine/dashboard_static/index.html` as a broken 63-byte stub.
+- Added circle-based grid sweep controls using the existing map circle as the boundary.
+- Added multi-industry grid selection, capped grid/call planning, sequential execution, current-run dedupe, compact progress text, cancel support, and one summarized history entry per grid run.
+- Added bulk unschedule for scheduled outreach rows and allowed scheduled rows to be selected in the Scheduled filter.
+- Smoke-verified the dashboard load, grid run/cancel/history behavior, scheduled-row selection, bulk unschedule UI state, and existing single/visible/exhaust discovery actions.
+- Fixed a small stabilization bug so bulk `Unschedule` becomes visibly available when scheduled rows are selected.
+- Kept the pass frontend-only. No scheduler core, queue schema, or protected pipeline logic changed.
 
-Commit: `ff7564d`
+Commit: pending
 
 ## Previous Completed Pass
-Pass 18a — Discovery State Reset (Phase 2)
+Pass 18b - Human Draft Enforcement Layer
 
 ## Next Pass
-Pass 19 — TBD (territory heatmap, saturation view, tiled backend improvements, or outreach doc updates)
+TBD
 
 ## Protected Systems
 - `run_lead_engine.py`
@@ -51,7 +52,7 @@ Pass 19 — TBD (territory heatmap, saturation view, tiled backend improvements,
 1. Discover businesses via map
 2. System generates outreach drafts
 3. Operator reviews, approves, or schedules for tomorrow morning
-4. Scheduled queue sorted by send time — open it in the morning, send in order
+4. Scheduled queue sorted by send time - open it in the morning, send in order
 5. Emails sent manually via Gmail
 6. Follow-ups tracked automatically
 7. Clients onboarded to missed-call texting service

@@ -79,8 +79,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .sort-select{padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--muted);font-family:var(--sans);font-size:11px;outline:none;cursor:pointer}
 .sort-select option{background:var(--surface2)}
 
-.bulk-bar{display:none;align-items:center;gap:8px;padding:7px 24px;background:var(--blue-glow);border-bottom:1px solid rgba(79,142,247,.2);font-size:12px;color:var(--blue)}
+.bulk-bar{display:none;align-items:center;gap:8px;padding:7px 24px;background:var(--blue-glow);border-bottom:1px solid rgba(79,142,247,.2);font-size:12px;color:var(--blue);flex-wrap:wrap}
 .bulk-bar.visible{display:flex}
+.bulk-btn-unschedule{display:none}
 
 .main{display:flex;min-height:calc(100vh - 200px)}
 .table-wrap{flex:1;overflow-x:auto;min-width:0;padding-top:0}
@@ -571,6 +572,17 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .mrp-modal-ftr{padding:10px 16px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
 .map-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:14px 0 10px}
 .map-status{font-size:12px;color:var(--muted);min-height:18px}
+.map-grid-bar{display:flex;flex-direction:column;gap:8px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px}
+.map-grid-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.map-grid-title{font-size:12px;font-weight:600;color:var(--text)}
+.map-grid-note{font-size:11px;color:var(--muted)}
+.map-grid-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.map-grid-summary{font-size:11px;color:var(--muted)}
+.map-grid-chips{display:flex;flex-wrap:wrap;gap:6px}
+.map-grid-chip{padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:11px;cursor:pointer;transition:.12s}
+.map-grid-chip:hover{color:var(--text);border-color:var(--border-hi)}
+.map-grid-chip.active{background:var(--blue-glow);border-color:rgba(79,142,247,.35);color:var(--blue)}
+.map-grid-chip:disabled{opacity:.5;cursor:not-allowed}
 .btn-coverage{background:transparent;color:var(--muted);border:1px solid var(--border-hi);font-size:11px;padding:4px 9px}
 .btn-coverage:hover{color:var(--text);border-color:var(--blue)}
 .btn-secondary{background:var(--surface2);color:var(--muted);border:1px solid var(--border);font-size:12px;padding:6px 13px}
@@ -740,6 +752,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <strong id="bulk-count">0</strong> selected —
   <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkApprove()">Approve</button>
   <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkUnapprove()">Unapprove</button>
+  <button class="btn btn-ghost bulk-btn-unschedule" id="bulk-unschedule-btn" style="font-size:11px;padding:3px 9px" onclick="bulkUnschedule()">Unschedule</button>
   <span style="display:inline-flex;align-items:center;gap:0;margin:0 1px">
     <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px;border-right:none;border-radius:3px 0 0 3px" onclick="bulkSchedule(document.getElementById('bulk-sched-mode').value)">🕐 Schedule</button><select id="bulk-sched-mode" title="Tomorrow = industry best time window, next business day" style="font-size:11px;padding:3px 5px;background:var(--surface2);border:1px solid var(--border);border-radius:0 3px 3px 0;color:var(--muted);cursor:pointer;height:26px;outline:none"><option value="1">Tomorrow</option><option value="clear">Clear Schedule</option></select>
   </span>
@@ -1188,7 +1201,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     Use <strong>↺ Reset Session</strong> to clear all pins and start fresh.
   </div>
   <div class="map-toolbar">
-    <select id="map-industry" class="d-input" style="min-width:160px" onchange="(function(v){var b=document.getElementById('btnSearchVisible');if(b)b.disabled=!v; var ex=document.getElementById('btnExhaust');if(ex&&_mapCenter)ex.disabled=!v;})(this.value)"><option value="">Loading…</option></select>
+    <select id="map-industry" class="d-input" style="min-width:160px" onchange="_mapUpdateIndustryControls()"><option value="">Loading…</option></select>
     <input id="map-limit" class="d-input d-num" type="number" value="20" min="1" max="20" title="Max results (1–20)">
     <button id="btnMapSearch" class="btn btn-primary" onclick="mapSearch()" disabled>
       <span class="spin"></span>⚡ Search This Area
@@ -1205,6 +1218,22 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     <button class="btn btn-ghost" onclick="mapClearCircle()" title="Reset search session — clears circle, all result pins, and coverage overlays" style="color:var(--dim)">↺ Reset</button>
     <button id="btnClearCoverage" class="btn btn-coverage" onclick="_mapClearCoverage()" title="Remove prior search overlays" style="display:none">◌ Clear Coverage</button>
     <span id="map-radius-label" style="font-size:11px;color:var(--muted)"></span>
+  </div>
+  <div class="map-grid-bar">
+    <div class="map-grid-top">
+      <div>
+        <div class="map-grid-title">Search Area Grid</div>
+        <div class="map-grid-note">Runs the current circle as capped 1000m cells across one or more industries with one summarized history item.</div>
+      </div>
+      <div class="map-grid-actions">
+        <span id="map-grid-summary" class="map-grid-summary">Draw a circle and pick industries to estimate the run.</span>
+        <button id="btnGridSearch" class="btn btn-secondary" onclick="mapSearchAreaGrid()" disabled title="Run a capped grid sweep from the current circle">
+          <span class="spin"></span>▦ Run Grid
+        </button>
+        <button id="btnGridCancel" class="btn btn-ghost" onclick="mapCancelAreaGrid()" style="display:none" title="Cancel after the current grid request finishes">✕ Cancel Grid</button>
+      </div>
+    </div>
+    <div id="map-grid-industries" class="map-grid-chips"></div>
   </div>
   <div id="map-layout">
     <div id="map-container"></div>
@@ -1391,6 +1420,14 @@ function isRowActionable(row) {
   return !row.sent_at && !scheduledButNotReady && !terminal.has(row.contact_result || '');
 }
 
+function isRowScheduled(row) {
+  return !!(row && row.send_after && !row.sent_at);
+}
+
+function isRowBulkSelectable(row) {
+  return isRowActionable(row) || isRowScheduled(row);
+}
+
 function applyFiltersAndSort() {
   let rows = [...allRows];
   const q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
@@ -1517,6 +1554,8 @@ function renderTable() {
       ? `<div class="reply-snippet">↩ ${escHtml(row.reply_snippet.substring(0,80))}</div>` : '';
 
     const actionable = isRowActionable(row);
+    const scheduled = isRowScheduled(row);
+    const bulkSelectable = isRowBulkSelectable(row);
     const approveBtn = row.sent_at
       ? `<span style="color:var(--dim);font-size:10px">sent</span>`
       : row.approved === 'true'
@@ -1525,7 +1564,7 @@ function renderTable() {
 
     return `<tr class="${sentClass} ${repliedClass} ${scheduledClass}" onclick="openPanel(${fi})">
       <td class="td-chk" onclick="event.stopPropagation()">
-        ${actionable ? `<input type="checkbox" class="row-chk" data-gi="${gi}" onchange="updateBulkBar()">` : `<span style="color:var(--dim);font-size:10px">—</span>`}
+        ${bulkSelectable ? `<input type="checkbox" class="row-chk" data-gi="${gi}" onchange="updateBulkBar()">` : `<span style="color:var(--dim);font-size:10px">—</span>`}
       </td>
       <td class="td-biz">
         <span class="biz-name">${escHtml(row.business_name)}</span>
@@ -1542,7 +1581,7 @@ function renderTable() {
           ${approveBtn}
           <button class="act act-edit" onclick="openPanel(${fi})">Edit</button>
           ${actionable && !row.send_after ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowSchedule(${gi},${JSON.stringify(row.business_name)})" title="Schedule for tomorrow">🕐</button>` : ''}
-          ${actionable && row.send_after ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowUnschedule(${gi},${JSON.stringify(row.business_name)})" title="Clear schedule">✕Sched</button>` : ''}
+          ${scheduled ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowUnschedule(${gi},${JSON.stringify(row.business_name)})" title="Clear schedule">✕Sched</button>` : ''}
           ${actionable ? `<button class="act act-del" onclick="deleteRow(${gi})">Del</button>` : ''}
         </div>
       </td>
@@ -1865,6 +1904,7 @@ async function panelUnschedule() {
     row.send_after = '';
     renderTable();
     fillPanel(row, panelIdx);
+    await loadStats();
     toast('Unscheduled', 'ok');
   } catch(e) {
     toast('Connection error', 'err');
@@ -1962,7 +2002,15 @@ async function approveAll() {
 // ── Bulk ──────────────────────────────────────────────────────────────────────
 function getSelectedGIs() { return [...document.querySelectorAll('.row-chk:checked')].map(c=>parseInt(c.dataset.gi)); }
 function _bulkAllowedInCurrentFilter() {
-  return ['active', 'pending', 'approved'].includes(currentFilter);
+  return ['active', 'pending', 'approved', 'scheduled'].includes(currentFilter);
+}
+
+function _selectedRows() {
+  return getSelectedGIs().map(i => allRows[i]).filter(Boolean);
+}
+
+function _selectedHasScheduled() {
+  return _selectedRows().some(row => isRowScheduled(row));
 }
 
 function updateBulkSafety() {
@@ -1982,7 +2030,9 @@ function updateBulkSafety() {
 function updateBulkBar() {
   if (!_bulkAllowedInCurrentFilter()) return;
   const n = document.querySelectorAll('.row-chk:checked').length;
+  const unscheduleBtn = document.getElementById('bulk-unschedule-btn');
   document.getElementById('bulk-count').textContent = n;
+  if (unscheduleBtn) unscheduleBtn.style.display = n > 0 && _selectedHasScheduled() ? 'inline-flex' : 'none';
   document.getElementById('bulk-bar').classList.toggle('visible', n > 0);
 }
 function clearSelection() {
@@ -2037,6 +2087,30 @@ async function bulkDelete() {
   clearSelection(); await loadAll(); toast(`Deleted ${idxs.length}`,'info');
 }
 
+async function bulkUnschedule() {
+  const rows = _selectedRows().filter(row => isRowScheduled(row));
+  if (!rows.length) { toast('No scheduled rows selected', 'err'); return; }
+  if (!confirm(`Unschedule ${rows.length} row(s)?`)) return;
+  let ok = 0, fail = 0;
+  for (const row of rows) {
+    try {
+      const res = await api('/api/schedule_email', {
+        index: row.index,
+        business_name: row.business_name,
+        send_after: '',
+      });
+      if (res.ok) {
+        row.send_after = '';
+        ok++;
+      } else fail++;
+    } catch(e) { fail++; }
+  }
+  renderTable();
+  clearSelection();
+  await loadStats();
+  toast(`Unscheduled ${ok} row(s)${fail ? ' — ' + fail + ' failed' : ''}`, ok > 0 ? 'ok' : 'err');
+}
+
 // Pass 23a — bulk + per-row scheduling
 async function bulkSchedule(mode) {
   const idxs = getSelectedGIs();
@@ -2069,7 +2143,7 @@ async function rowSchedule(gi, businessName) {
   if (!row) return;
   try {
     const res = await api('/api/schedule_email', { index: gi, business_name: businessName, days_ahead: 1 });
-    if (res.ok) { row.send_after = res.send_after; renderTable(); toast('Scheduled: ' + businessName, 'ok'); }
+    if (res.ok) { row.send_after = res.send_after; renderTable(); await loadStats(); toast('Scheduled: ' + businessName, 'ok'); }
     else toast('Schedule failed: ' + (res.error || ''), 'err');
   } catch(e) { toast('Connection error', 'err'); }
 }
@@ -2079,7 +2153,7 @@ async function rowUnschedule(gi, businessName) {
   if (!row) return;
   try {
     const res = await api('/api/schedule_email', { index: gi, business_name: businessName, send_after: '' });
-    if (res.ok) { row.send_after = ''; renderTable(); toast('Schedule cleared', 'ok'); }
+    if (res.ok) { row.send_after = ''; renderTable(); await loadStats(); toast('Schedule cleared', 'ok'); }
     else toast('Clear failed: ' + (res.error || ''), 'err');
   } catch(e) { toast('Connection error', 'err'); }
 }
@@ -2277,6 +2351,86 @@ async function loadIndustries() {
   } catch(e) {}
 }
 
+function _mapIndustryLabel(industry) {
+  return (industry || '').replace(/_/g, ' ');
+}
+
+function _mapGridSelectedIndustriesList() {
+  return [..._mapGridSelectedIndustries];
+}
+
+function _mapRenderGridIndustryChips(list) {
+  const wrap = document.getElementById('map-grid-industries');
+  if (!wrap) return;
+  wrap.innerHTML = list.map(industry => {
+    const active = _mapGridSelectedIndustries.has(industry) ? ' active' : '';
+    return `<button type="button" class="map-grid-chip${active}" data-industry="${industry}" onclick="_mapToggleGridIndustry('${industry}')">${_mapIndustryLabel(industry)}</button>`;
+  }).join('');
+}
+
+function _mapToggleGridIndustry(industry) {
+  if (!industry) return;
+  if (_mapGridSweepActive) return;
+  if (_mapGridSelectedIndustries.has(industry)) _mapGridSelectedIndustries.delete(industry);
+  else _mapGridSelectedIndustries.add(industry);
+  _mapRenderGridIndustryChips(_mapIndustryOptions);
+  _mapUpdateGridControls();
+}
+
+function _mapUpdateIndustryControls() {
+  const industry = document.getElementById('map-industry')?.value || '';
+  const btnVisible = document.getElementById('btnSearchVisible');
+  const btnExhaust = document.getElementById('btnExhaust');
+  if (btnVisible && !_mapVisibleSearchActive && !_mapGridSweepActive) btnVisible.disabled = !industry;
+  if (btnExhaust && !_exhaustSearchActive && !_mapGridSweepActive) btnExhaust.disabled = !industry || !_mapCenter;
+  _mapUpdateGridControls();
+}
+
+function _mapUpdateGridControls() {
+  const summaryEl = document.getElementById('map-grid-summary');
+  const btnRun = document.getElementById('btnGridSearch');
+  if (!summaryEl || !btnRun) return;
+  const selected = _mapGridSelectedIndustriesList();
+  const industryCountLabel = `${selected.length} ${selected.length === 1 ? 'industry' : 'industries'}`;
+  if (_mapGridSweepActive) {
+    btnRun.disabled = true;
+    return;
+  }
+  if (_mapVisibleSearchActive || _exhaustSearchActive) {
+    summaryEl.textContent = 'Finish the current discovery run before starting a grid sweep.';
+    btnRun.disabled = true;
+    return;
+  }
+  if (!_mapCenter) {
+    summaryEl.textContent = selected.length ? `${industryCountLabel} selected — place a circle to estimate the grid.` : 'Draw a circle and pick industries to estimate the run.';
+    btnRun.disabled = true;
+    return;
+  }
+  if (!selected.length) {
+    summaryEl.textContent = 'Select at least one industry for the grid sweep.';
+    btnRun.disabled = true;
+    return;
+  }
+  const plan = _mapCircleGridPlan();
+  if (plan.tooManyCells) {
+    summaryEl.textContent = `${plan.cells.length} cells would exceed the ${MAP_GRID_MAX_CELLS}-cell cap. Shrink the circle first.`;
+    btnRun.disabled = true;
+    return;
+  }
+  if (!plan.cells.length) {
+    summaryEl.textContent = 'Circle is too small to build a grid. Increase the radius a bit.';
+    btnRun.disabled = true;
+    return;
+  }
+  if (plan.totalCalls > MAP_GRID_MAX_CALLS) {
+    summaryEl.textContent = `${plan.totalCalls} calls would exceed the ${MAP_GRID_MAX_CALLS}-call cap. Reduce cells or industries.`;
+    btnRun.disabled = true;
+    return;
+  }
+  summaryEl.textContent = `${industryCountLabel} • ${plan.cells.length} cells • ${plan.totalCalls} calls`;
+  btnRun.disabled = false;
+}
+
 function _mapPopulateIndustries() {
   const dest = document.getElementById('map-industry');
   console.log('[_mapPopulateIndustries] dest:', !!dest);
@@ -2285,6 +2439,10 @@ function _mapPopulateIndustries() {
     console.log('[_mapPopulateIndustries] got', list?.length, 'industries:', list);
     dest.innerHTML = list.map(i => `<option value="${i}">${i.replace('_',' ')}</option>`).join('');
     dest.value = 'plumbing';
+    _mapIndustryOptions = Array.isArray(list) ? list.slice() : [];
+    _mapGridSelectedIndustries = new Set(dest.value ? [dest.value] : []);
+    _mapRenderGridIndustryChips(_mapIndustryOptions);
+    _mapUpdateIndustryControls();
   }).catch(err => { console.error('[_mapPopulateIndustries] fetch error:', err); });
 }
 
@@ -4482,8 +4640,14 @@ let _mapSearchHistory   = [];   // session search history [{lat, lng, radiusM, f
 const MAP_HISTORY_MAX   = 10;   // max entries kept, newest-first
 const MAP_DEFAULT_LAT = 42.2711;  // Rockford, IL
 const MAP_DEFAULT_LNG = -89.0940;
+const MAP_GRID_CELL_RADIUS_M = 1000;
+const MAP_GRID_MAX_CELLS = 36;
+const MAP_GRID_MAX_CALLS = 120;
 let _mapVisibleSearchActive = false;  // true while Search Visible Area is running
 let _mapVisibleSeenKeys     = new Set(); // dedup key set for tiled visible-area search
+let _mapGridSweepActive     = false;
+let _mapGridSelectedIndustries = new Set();
+let _mapIndustryOptions = [];
 
 function _mapClearCoverage() {
   _mapCoverageCircles.forEach(c => c.remove());
@@ -4520,9 +4684,8 @@ function _mapRenderHistory() {
   _mapSearchHistory.forEach((entry) => {
     const row = document.createElement('div');
     row.className = 'mh-item';
-    const miles = entry.radiusM != null ? (entry.radiusM / 1609.34).toFixed(1) + ' mi' : 'tiled';
     const primaryText = entry.label || `${entry.lat.toFixed(3)}, ${entry.lng.toFixed(3)}`;
-    const secondaryText = `${miles} — ${entry.found} found`;
+    const secondaryText = _mapHistoryMeta(entry);
     row.innerHTML =
       `<span class="mh-item-label" title="${entry.lat.toFixed(4)}, ${entry.lng.toFixed(4)}">${primaryText}</span>` +
       `<span class="mh-item-meta">${secondaryText}</span>`;
@@ -4545,6 +4708,81 @@ function _mapClearHistory() {
 }
 
 function _mapMetresToMiles(m) { return (m / 1609.34).toFixed(2); }
+
+function _mapNormalizeWebsite(url) {
+  return (url || '')
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .replace(/^www\./, '')
+    .replace(/\/+$/, '');
+}
+
+function _mapNormalizePhone(phone) {
+  return (phone || '').replace(/\D+/g, '');
+}
+
+function _mapNormalizeName(name) {
+  return (name || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function _mapBizRunKey(biz) {
+  const placeId = (biz?.place_id || '').trim();
+  if (placeId) return `pid:${placeId.toLowerCase()}`;
+  const website = _mapNormalizeWebsite(biz?.website || '');
+  if (website) return `web:${website}`;
+  const phone = _mapNormalizePhone(biz?.phone || '');
+  if (phone) return `phone:${phone}`;
+  const lat = Number(biz?.lat);
+  const lng = Number(biz?.lng);
+  const latKey = Number.isFinite(lat) ? lat.toFixed(3) : '';
+  const lngKey = Number.isFinite(lng) ? lng.toFixed(3) : '';
+  return `fallback:${_mapNormalizeName(biz?.name || '')}|${latKey}|${lngKey}`;
+}
+
+function _mapCurrentResultKeySet() {
+  return new Set(_mapResultItems.map(item => _mapBizRunKey(item.biz)));
+}
+
+function _mapCircleGridPlan() {
+  if (!_mapCenter || !_mapRadiusM) return { cells: [], totalCalls: 0, tooManyCells: false };
+  const cells = [];
+  const step = MAP_GRID_CELL_RADIUS_M * 2;
+  const cosLat = Math.max(Math.cos(_mapCenter.lat * Math.PI / 180), 0.2);
+  for (let y = -_mapRadiusM + MAP_GRID_CELL_RADIUS_M; y <= _mapRadiusM - MAP_GRID_CELL_RADIUS_M + 1; y += step) {
+    for (let x = -_mapRadiusM + MAP_GRID_CELL_RADIUS_M; x <= _mapRadiusM - MAP_GRID_CELL_RADIUS_M + 1; x += step) {
+      if (Math.sqrt((x * x) + (y * y)) > _mapRadiusM) continue;
+      cells.push({
+        lat: _mapCenter.lat + (y / 111320),
+        lng: _mapCenter.lng + (x / (111320 * cosLat)),
+      });
+      if (cells.length > MAP_GRID_MAX_CELLS) {
+        return { cells, totalCalls: cells.length * _mapGridSelectedIndustriesList().length, tooManyCells: true };
+      }
+    }
+  }
+  if (!cells.length) cells.push({ lat: _mapCenter.lat, lng: _mapCenter.lng });
+  return {
+    cells,
+    totalCalls: cells.length * _mapGridSelectedIndustriesList().length,
+    tooManyCells: false,
+  };
+}
+
+function _mapHistoryMeta(entry) {
+  if (entry.runType === 'grid_sweep') {
+    const industries = Array.isArray(entry.industries) ? entry.industries.map(_mapIndustryLabel).join(', ') : '';
+    const prefix = entry.cancelled ? 'grid cancelled' : 'grid sweep';
+    return `${prefix} — ${entry.cellCount || 0} cells — ${industries || 'no industries'} — ${entry.found || 0} unique`;
+  }
+  const miles = entry.radiusM != null ? (entry.radiusM / 1609.34).toFixed(1) + ' mi' : 'tiled';
+  return `${miles} — ${entry.found} found`;
+}
 
 // Step 8 — additive marker helper: appends without clearing existing markers
 function _mapAppendResultMarkers(markers) {
@@ -4595,8 +4833,171 @@ function _mapVisibleTiles() {
   return { tiles, tooLarge: false };
 }
 
+function _mapSetGridRunUi(active) {
+  const btnRun = document.getElementById('btnGridSearch');
+  const btnCancel = document.getElementById('btnGridCancel');
+  const btnMap = document.getElementById('btnMapSearch');
+  const btnVisible = document.getElementById('btnSearchVisible');
+  const btnExhaust = document.getElementById('btnExhaust');
+  const primaryIndustry = document.getElementById('map-industry');
+  const limitInput = document.getElementById('map-limit');
+  const chipButtons = document.querySelectorAll('#map-grid-industries .map-grid-chip');
+  if (btnRun) {
+    btnRun.classList.toggle('loading', active);
+    if (!active) btnRun.classList.remove('loading');
+  }
+  if (btnCancel) btnCancel.style.display = active ? '' : 'none';
+  if (btnMap) btnMap.disabled = active || !_mapCenter;
+  if (btnVisible) btnVisible.disabled = active || !(document.getElementById('map-industry')?.value);
+  if (btnExhaust) btnExhaust.disabled = active || !(document.getElementById('map-industry')?.value) || !_mapCenter;
+  if (primaryIndustry) primaryIndustry.disabled = active;
+  if (limitInput) limitInput.disabled = active;
+  chipButtons.forEach(btn => { btn.disabled = active; });
+}
+
+function _mapGridStatus(cellIndex, cellTotal, industryIndex, industryTotal, industryLabel, uniqueTotal) {
+  return `Grid ${cellIndex}/${cellTotal} | ${industryLabel} ${industryIndex}/${industryTotal} | +${uniqueTotal} unique`;
+}
+
+function mapCancelAreaGrid() {
+  _mapGridSweepActive = false;
+  const statusEl = document.getElementById('map-status');
+  if (statusEl) statusEl.textContent = 'Cancelling grid after current request…';
+}
+
+async function mapSearchAreaGrid() {
+  if (!_mapCenter) { toast('Place a circle on the map first', 'err'); return; }
+  if (_mapGridSweepActive) { toast('Grid sweep already running', 'err'); return; }
+  const industries = _mapGridSelectedIndustriesList();
+  if (!industries.length) { toast('Select at least one grid industry', 'err'); return; }
+
+  const plan = _mapCircleGridPlan();
+  if (plan.tooManyCells) {
+    toast(`Grid would use more than ${MAP_GRID_MAX_CELLS} cells. Shrink the circle first.`, 'err');
+    _mapUpdateGridControls();
+    return;
+  }
+  if (!plan.cells.length) {
+    toast('Circle is too small to build a grid sweep', 'err');
+    return;
+  }
+  if (plan.totalCalls > MAP_GRID_MAX_CALLS) {
+    toast(`Grid would make ${plan.totalCalls} calls. Max allowed is ${MAP_GRID_MAX_CALLS}.`, 'err');
+    _mapUpdateGridControls();
+    return;
+  }
+
+  const limit = parseInt(document.getElementById('map-limit').value) || 20;
+  const statusEl = document.getElementById('map-status');
+  const seenKeys = _mapCurrentResultKeySet();
+  const runCenter = { ..._mapCenter };
+  const runRadiusM = _mapRadiusM;
+  const industryLabels = industries.map(_mapIndustryLabel);
+
+  _mapGridSweepActive = true;
+  _mapSetGridRunUi(true);
+  _mapUpdateGridControls();
+
+  let uniqueFound = 0;
+  let callsDone = 0;
+
+  try {
+    for (let cellIdx = 0; cellIdx < plan.cells.length; cellIdx++) {
+      const cell = plan.cells[cellIdx];
+      let cellHadFresh = false;
+
+      for (let industryIdx = 0; industryIdx < industries.length; industryIdx++) {
+        if (!_mapGridSweepActive) break;
+
+        const industry = industries[industryIdx];
+        const label = _mapIndustryLabel(industry);
+        if (statusEl) statusEl.textContent = _mapGridStatus(cellIdx + 1, plan.cells.length, industryIdx + 1, industries.length, label, uniqueFound);
+
+        try {
+          const res = await api('/api/discover_area', {
+            industry,
+            lat: cell.lat,
+            lng: cell.lng,
+            radius_m: MAP_GRID_CELL_RADIUS_M,
+            limit,
+          });
+
+          if (res.markers && res.markers.length) {
+            const fresh = res.markers.filter(biz => {
+              const key = _mapBizRunKey(biz);
+              if (seenKeys.has(key)) return false;
+              seenKeys.add(key);
+              return true;
+            });
+            if (fresh.length) {
+              _mapAppendResultMarkers(fresh);
+              uniqueFound += fresh.length;
+              cellHadFresh = true;
+            }
+          }
+        } catch (e) {
+          console.warn('[mapSearchAreaGrid] request error', { cellIdx, industryIdx, cell, industry, error: e });
+        }
+
+        callsDone++;
+        if (_mapGridSweepActive && !(cellIdx === plan.cells.length - 1 && industryIdx === industries.length - 1)) {
+          await new Promise(r => setTimeout(r, 1200));
+        }
+      }
+
+      if (cellHadFresh && _mapInstance) {
+        const cov = L.circle([cell.lat, cell.lng], {
+          radius: MAP_GRID_CELL_RADIUS_M,
+          color: '#4f8ef7',
+          fillColor: '#4f8ef7',
+          fillOpacity: 0.04,
+          weight: 1,
+          dashArray: '4 4',
+          interactive: false,
+        }).addTo(_mapInstance);
+        _mapCoverageCircles.push(cov);
+        const btnCov = document.getElementById('btnClearCoverage');
+        if (btnCov) btnCov.style.display = '';
+      }
+
+      if (!_mapGridSweepActive) break;
+    }
+  } finally {
+    const cancelled = !_mapGridSweepActive;
+    _mapGridSweepActive = false;
+    _mapSetGridRunUi(false);
+    _mapUpdateIndustryControls();
+
+    _mapSearchHistory.unshift({
+      runType: 'grid_sweep',
+      lat: runCenter.lat,
+      lng: runCenter.lng,
+      radiusM: runRadiusM,
+      found: uniqueFound,
+      industries,
+      cellCount: plan.cells.length,
+      cancelled,
+      label: `Grid Sweep · ${industryLabels.join(', ')}`,
+    });
+    if (_mapSearchHistory.length > MAP_HISTORY_MAX) _mapSearchHistory.length = MAP_HISTORY_MAX;
+    _mapRenderHistory();
+
+    await loadAll();
+    _mapRenderPanel();
+
+    if (statusEl) {
+      statusEl.textContent = cancelled
+        ? `Grid cancelled — ${callsDone}/${plan.totalCalls} calls — ${uniqueFound} unique`
+        : `✓ Grid sweep complete — ${plan.cells.length} cells — ${industries.length} industries — ${uniqueFound} unique`;
+    }
+    if (!cancelled) toast(`Grid sweep added ${uniqueFound} unique businesses across ${plan.cells.length} cells`, 'ok');
+    else toast(`Grid sweep cancelled after ${callsDone} call(s)`, 'info');
+  }
+}
+
 // Step 8 — sequential tiled visible-area discovery
 async function mapSearchVisible() {
+  if (_mapGridSweepActive || _exhaustSearchActive) { toast('Another discovery run is already active', 'err'); return; }
   const industry = document.getElementById('map-industry').value;
   if (!industry) { toast('Select an industry first', 'err'); return; }
   if (_mapVisibleSearchActive) { toast('Visible-area search already running', 'err'); return; }
@@ -4620,6 +5021,7 @@ async function mapSearchVisible() {
 
   _mapVisibleSearchActive = true;
   _mapVisibleSeenKeys     = new Set();
+  _mapUpdateGridControls();
   const limit    = parseInt(document.getElementById('map-limit').value) || 20;
   const statusEl = document.getElementById('map-status');
   const btnSV    = document.getElementById('btnSearchVisible');
@@ -4687,6 +5089,7 @@ async function mapSearchVisible() {
 
   const didCancel = !_mapVisibleSearchActive;
   _mapVisibleSearchActive = false;
+  _mapUpdateGridControls();
   btnSV.classList.remove('loading'); btnSV.disabled = !industry;
   if (btnCanc) btnCanc.style.display = 'none';
   statusEl.textContent = didCancel
@@ -4707,12 +5110,14 @@ function _mapCancelVisible() {
 let _exhaustSearchActive = false;
 
 async function mapSearchExhaust() {
+  if (_mapGridSweepActive || _mapVisibleSearchActive) { toast('Another discovery run is already active', 'err'); return; }
   const industry = document.getElementById('map-industry').value;
   if (!industry) { toast('Select an industry first', 'err'); return; }
   if (!_mapCenter) { toast('Place a circle on the map first', 'err'); return; }
   if (_exhaustSearchActive) { toast('Scan already running', 'err'); return; }
 
   _exhaustSearchActive = true;
+  _mapUpdateGridControls();
 
   const btn      = document.getElementById('btnExhaust');
   const btnMap   = document.getElementById('btnMapSearch');
@@ -4789,6 +5194,7 @@ async function mapSearchExhaust() {
     toast('Connection error during scan', 'err');
   } finally {
     _exhaustSearchActive = false;
+    _mapUpdateGridControls();
     btn.classList.remove('loading'); btn.disabled = false;
     if (btnMap) btnMap.disabled = !_mapCenter;
     if (btnSV)  btnSV.disabled  = !industry;
@@ -4820,6 +5226,7 @@ function _mapPlaceDragHandle() {
       if (_mapRadiusM > 50000) _mapRadiusM = 50000;
       _mapCircle.setRadius(_mapRadiusM);
       _mapUpdateRadiusLabel();
+      _mapUpdateGridControls();
     });
   }
 }
@@ -4842,6 +5249,7 @@ function _mapDrawCircle(lat, lng) {
   document.getElementById('btnMapSearch').disabled = false;
   const _btnEx = document.getElementById('btnExhaust');
   if (_btnEx && document.getElementById('map-industry').value) _btnEx.disabled = false;
+  _mapUpdateGridControls();
   document.getElementById('map-status').textContent = `Center: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
 }
 
@@ -4853,6 +5261,7 @@ function mapClearCircle() {
   document.getElementById('btnMapSearch').disabled = true;
   const _btnEx2 = document.getElementById('btnExhaust');
   if (_btnEx2) _btnEx2.disabled = true;
+  _mapUpdateGridControls();
   document.getElementById('map-status').textContent = 'Circle cleared.';
   document.getElementById('map-radius-label').textContent = '';
 }
@@ -4891,6 +5300,7 @@ function _mapInit() {
 }
 
 async function mapSearch() {
+  if (_mapGridSweepActive || _mapVisibleSearchActive || _exhaustSearchActive) { toast('Another discovery run is already active', 'err'); return; }
   if (!_mapCenter) { toast('Click the map to set a search area first','err'); return; }
   const industry = document.getElementById('map-industry').value;
   if (!industry) { toast('Select an industry first','err'); return; }

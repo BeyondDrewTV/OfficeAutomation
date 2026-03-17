@@ -1,10 +1,37 @@
 # Current Build Pass
 
 ## Active System
-Dashboard UX Safety Cleanup
+Discovery Coverage Expansion + Bulk Unschedule
 
 ## Status
-Pass 14 complete.
+Pass 29 complete.
+
+---
+
+## Completed: Pass 29 - Discovery Coverage Expansion + Bulk Unschedule - pending
+
+Product change was one file: `lead_engine/dashboard_static/index.html`.
+No backend changes. No scheduler core changes. No protected systems touched.
+
+### Discovery coverage expansion
+
+- Added `Search Area Grid` controls using the existing circle as the search boundary.
+- Added multi-industry grid chips without removing the existing single-industry map controls.
+- Added `_mapCircleGridPlan()` with hard caps of 36 cells and 120 total calls.
+- Added `mapSearchAreaGrid()` for sequential circle-cell x industry sweeps with compact progress text and cancel support through `mapCancelAreaGrid()`.
+- Added current-run dedupe for accumulated grid markers and one summarized history item per sweep.
+
+### Bulk unschedule
+
+- Added bulk `Unschedule` to the outreach bulk bar.
+- Scheduled rows are now selectable in the `Scheduled` filter through `isRowScheduled()` and `isRowBulkSelectable()`.
+- Added `bulkUnschedule()` using the existing `/api/schedule_email` clear path with `send_after: ""`.
+- Per-row schedule and unschedule actions now refresh stats after completion.
+
+### Verification
+
+- Live headless-browser smoke pass covered dashboard load, grid UI visibility, multi-industry selection, oversized-plan blocking, grid status updates, cancel recovery, summarized history rendering, scheduled-row selection, bulk unschedule visibility/state, and existing single/visible/exhaust discovery actions.
+- Smoke stabilization fixed one UI bug: bulk `Unschedule` now forces visible `inline-flex` display when scheduled selections are present.
 
 ---
 
