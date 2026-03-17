@@ -1,4 +1,4 @@
-### 2026-03-17 - Pass 37: Discovery Review Recovery + Action Feedback
+﻿### 2026-03-17 - Pass 37: Discovery Review Recovery + Action Feedback
 
 **Goal:** Fix operator friction introduced by recent dashboard passes — restore editable map preview, add pending-state feedback, fix backdrop close with drag guard, surface Unschedule clearly.
 
@@ -31,7 +31,7 @@
 - `python -c "import dashboard_server"` clean.
 - All change sites confirmed via targeted search (line numbers documented in CURRENT_BUILD.md).
 
-**Commit:** TBD
+**Commit:** `4224d78`
 
 ---
 

@@ -30,7 +30,7 @@ Pass 37 - Discovery Review Recovery + Action Feedback
 - Added mousedown origin guard (`_panelMousedownOnBackdrop`) so text selection or input interaction inside the panel cannot accidentally dismiss it.
 - Pending-state helpers `_btnPending` / `_btnRestore` added as shared utilities.
 
-Commit: TBD
+Commit: `4224d78`
 
 ## Previous Completed Pass
 Pass 36 - Observation-Led Outreach Rewrite

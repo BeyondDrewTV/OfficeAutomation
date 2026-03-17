@@ -1,4 +1,4 @@
-# Current Build Pass
+﻿# Current Build Pass
 
 ## Active System
 Discovery Review Recovery + Action Feedback
@@ -8,7 +8,7 @@ Pass 37 complete.
 
 ---
 
-## Completed: Pass 37 - Discovery Review Recovery + Action Feedback - TBD
+## Completed: Pass 37 - Discovery Review Recovery + Action Feedback - `4224d78`
 
 Product change: `lead_engine/dashboard_static/index.html` only.
 No backend changes. No protected systems touched.
