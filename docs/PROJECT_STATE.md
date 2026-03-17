@@ -21,22 +21,22 @@ Missed-call texting is one downstream solution, not the primary pitch.
 Outreach goal: start a conversation about operational problems, not sell a product.
 
 ## Last Completed Pass
-Pass 17b — KPI Stats Audit: Relabel Prospects Card
+Pass 18a — Discovery State Reset (Phase 2)
 
-- Added missing `normalize_business_name()` to `prospect_discovery_agent.py` — fixes `/api/queue_health` and `/api/exceptions` 500s
-- Changed all-duplicates discovery path from HTTP 400 → 200 with `all_duplicates: true` flag — fixes misleading connection error in map UI
-- Added `None` guards on `approved` field in `queue_integrity.py` and `exception_router.py`
-- Renamed "Prospects" KPI card to "Discovered" with source tooltip
-- Root cause: card read `prospects.csv` (discovery pool) while all other cards read `pending_emails.csv` (live queue)
-- One-line HTML change, no backend changes
+- `prospects.csv`: 231 → 43 rows (gmail-matched, 188 archived to `_backups/`)
+- `search_history.json`: 31 entries → cleared
+- `city_planner.json`: 4 entries → cleared
+- All three files backed up before modification
+- Queue integrity confirmed: `pending_emails.csv` still 26 rows throughout
+- New script: `lead_engine/scripts/reset_discovery_state.py` (reusable, dry-run safe)
 
-Commit: `59d3118`
+Commit: `970a55c`
 
 ## Previous Completed Pass
-Pass 17a — Queue Reset: Gmail Preservation Mode
+Pass 17b — KPI Stats Audit: Relabel Prospects Card
 
 ## Next Pass
-Pass 18 — TBD (territory heatmap, saturation view, tiled backend improvements, or outreach doc updates)
+Pass 18b — TBD (territory heatmap, saturation view, tiled backend improvements, or outreach doc updates)
 
 ## Protected Systems
 - `run_lead_engine.py`

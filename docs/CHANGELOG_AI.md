@@ -134,6 +134,40 @@ Update this file at the end of every pass.
 
 ## 2026-03-16
 
+### Pass 18a — Discovery State Reset (Phase 2)
+
+**Goal:** Reset discovery-layer data to a clean post-outreach baseline after Pass 17a cleaned the live queue.
+
+**Files changed:**
+- `lead_engine/scripts/reset_discovery_state.py` (new)
+- `lead_engine/data/prospects.csv` (reset)
+- `lead_engine/data/search_history.json` (cleared)
+- `lead_engine/data/city_planner.json` (cleared)
+
+**Root cause:** Pass 17a cleaned only `pending_emails.csv`. The three discovery-layer files were untouched, leaving legacy totals visible in the dashboard: "Discovered" KPI still showed 231, Discovery History tab still had 31 old runs, territory planner had stale city data.
+
+**What changed:**
+
+`prospects.csv`: 231 rows → 43 rows. Kept only businesses matching gmail_sent preserve set (by email or name). 188 unmatched rows archived to `_backups/`.
+
+`search_history.json`: 31 entries → `[]`. Full backup archived.
+
+`city_planner.json`: 4 city entries → `{}`. Full backup archived.
+
+`reset_discovery_state.py`: reusable script with dry-run support, backup-before-write safety, and queue integrity check.
+
+**Queue integrity confirmed:** `pending_emails.csv` verified at 26 rows before and after reset.
+
+**Backups in `_backups/` (local, not committed):**
+- `prospects_pre_reset_phase2_20260317T012825Z.csv`
+- `prospects_archived_unmatched_20260317T012825Z.csv`
+- `search_history_pre_reset_phase2_20260317T012825Z.json`
+- `city_planner_pre_reset_phase2_20260317T012825Z.json`
+
+**Commit:** `970a55c`
+
+---
+
 ### Pass 17b — KPI Stats Audit: Relabel Prospects Card
 
 **Goal:** Correct misleading "Prospects" KPI card that shows discovery pool count (`prospects.csv`) on the outreach queue page, making it appear stale after a queue reset.
