@@ -874,6 +874,180 @@ def api_update_conversation():
     rows[idx]["conversation_next_step"] = d.get("next_step",rows[idx].get("conversation_next_step",""))
     _write_pending(rows); return jsonify({"ok":True})
 
+# ── Follow-up status helpers (Pass 22) ───────────────────────────────────────
+# Schedule: touch1=sent_at, touch2=+2d, touch3=+5d, touch4=+10d
+_FOLLOWUP_SCHEDULE = [2, 5, 10]  # days after sent_at for each follow-up touch
+
+def compute_followup_status(row: dict) -> dict:
+    """
+    Compute follow-up status and next_due for a queue row.
+
+    Returns dict with:
+      status: "none" | "waiting" | "due" | "completed"
+      next_due: ISO string or ""
+      touch_num: int (which follow-up touch this would be, 1-3)
+
+    Uses existing fields: sent_at, contact_attempt_count, replied.
+    No new CSV columns required.
+    """
+    sent_raw = (row.get("sent_at") or "").strip()
+    if not sent_raw:
+        return {"status": "none", "next_due": "", "touch_num": 0}
+
+    # Replied or terminal — completed
+    if (row.get("replied") or "").lower() == "true":
+        return {"status": "completed", "next_due": "", "touch_num": 0}
+    if (row.get("contact_result") or "").strip() in _TERMINAL_RESULTS:
+        return {"status": "completed", "next_due": "", "touch_num": 0}
+
+    try:
+        attempt_count = int(row.get("contact_attempt_count") or 0)
+    except (ValueError, TypeError):
+        attempt_count = 0
+
+    # attempt_count = 0 means initial send only. Follow-up touches are 1, 2, 3.
+    # After 3 follow-ups (attempt_count >= 3) → completed
+    if attempt_count >= 3:
+        return {"status": "completed", "next_due": "", "touch_num": 0}
+
+    touch_num = attempt_count + 1  # next touch to send (1, 2, or 3)
+    days_offset = _FOLLOWUP_SCHEDULE[attempt_count]  # index 0→2d, 1→5d, 2→10d
+
+    try:
+        sent_dt = _datetime.fromisoformat(sent_raw.replace("Z", "+00:00"))
+        # Compare in UTC
+        next_due_dt = sent_dt + _td(days=days_offset)
+        now = _datetime.now(_tz.utc)
+        if not next_due_dt.tzinfo:
+            next_due_dt = next_due_dt.replace(tzinfo=_tz.utc)
+        status = "due" if now >= next_due_dt else "waiting"
+        return {"status": status, "next_due": next_due_dt.isoformat(), "touch_num": touch_num}
+    except (ValueError, TypeError):
+        return {"status": "none", "next_due": "", "touch_num": 0}
+
+
+@app.route("/api/followups_due")
+def api_followups_due():
+    """
+    Return rows where follow-up is currently due, sorted by next_due ascending.
+    Excludes rows with no real send, already replied, or in terminal state.
+    """
+    rows = _read_pending()
+    due = []
+    for i, row in enumerate(rows):
+        fs = compute_followup_status(row)
+        if fs["status"] != "due":
+            continue
+        _enrich_row(row, i)
+        row["followup_status"] = fs["status"]
+        row["followup_next_due"] = fs["next_due"]
+        row["followup_touch_num"] = fs["touch_num"]
+        due.append(row)
+    due.sort(key=lambda r: r.get("followup_next_due") or "")
+    return jsonify(due)
+
+
+@app.route("/api/send_followup", methods=["POST"])
+def api_send_followup():
+    """
+    Generate and send a follow-up email for a specific queue row.
+
+    Input: { index, business_name }
+
+    Behavior:
+    - Validates row identity (index + business_name match)
+    - Confirms follow-up is actually due
+    - Generates short follow-up message
+    - Sends via Gmail SMTP
+    - Increments contact_attempt_count
+    - Updates last_contacted_at
+    - Sets contact_result = "sent" if not already in terminal state
+    - Does NOT touch sent_at (that field tracks the initial send only)
+    """
+    from send.email_sender_agent import _send_email_via_gmail, _append_signature
+    d = request.json or {}
+    idx           = d.get("index")
+    business_name = (d.get("business_name") or "").strip()
+
+    if idx is None or not isinstance(idx, int):
+        return jsonify({"ok": False, "error": "index is required and must be an integer"}), 400
+    if not business_name:
+        return jsonify({"ok": False, "error": "business_name is required"}), 400
+
+    rows = _read_pending()
+    if not (0 <= idx < len(rows)):
+        return jsonify({"ok": False, "error": "Invalid index"}), 400
+
+    row = rows[idx]
+    if row.get("business_name", "").strip().lower() != business_name.lower():
+        return jsonify({"ok": False, "error": "Row index/name mismatch — queue may have changed"}), 409
+
+    fs = compute_followup_status(row)
+    if fs["status"] != "due":
+        return jsonify({"ok": False, "error": f"Follow-up not due (status: {fs['status']})"}), 400
+
+    to_email = (row.get("to_email") or "").strip()
+    if not to_email or "@" not in to_email:
+        return jsonify({"ok": False, "error": "No valid email address for this row"}), 400
+
+    touch_num = fs["touch_num"]
+    name      = row.get("business_name", "").strip()
+    city      = row.get("city", "").strip()
+    industry  = (row.get("industry") or "").replace("_", " ").strip()
+
+    # Generate short follow-up copy — conversational, no pitch language
+    if touch_num == 1:
+        subject = "Re: quick question"
+        body = (
+            f"hey {name} — just following up on my note from last week.\n\n"
+            f"i set up a simple missed-call text-back for a few {industry} businesses in {city} "
+            f"and it's been catching a lot of after-hours calls they were losing. "
+            f"happy to show you a quick example if you're curious.\n\n"
+            "– Drew"
+        )
+    elif touch_num == 2:
+        subject = "Re: quick question"
+        body = (
+            f"hey {name} — one more note before i move on.\n\n"
+            f"if the timing's off or you've already got something in place, no worries at all. "
+            f"just didn't want to disappear without checking.\n\n"
+            "– Drew"
+        )
+    else:
+        subject = "last note"
+        body = (
+            f"hey {name} — last one from me.\n\n"
+            f"if things change and you want to talk about how to stop losing after-hours calls, "
+            f"i'm easy to reach. good luck with the busy season.\n\n"
+            "– Drew"
+        )
+
+    try:
+        message_id = _send_email_via_gmail(to_email, subject, body)
+    except RuntimeError as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 500
+    except Exception as exc:
+        log.error("send_followup SMTP error: %s", exc, exc_info=True)
+        return jsonify({"ok": False, "error": f"Send failed: {exc}"}), 500
+
+    # Update row state — increment attempt count, log contact time
+    now_str = _now_utc_iso()
+    try:
+        prev_count = int(row.get("contact_attempt_count") or 0)
+    except (ValueError, TypeError):
+        prev_count = 0
+    row["contact_attempt_count"] = str(prev_count + 1)
+    row["last_contacted_at"]     = now_str
+    row["last_contact_channel"]  = "email"
+    if (row.get("contact_result") or "").strip() not in _TERMINAL_RESULTS:
+        row["contact_result"] = "sent"
+
+    _write_pending(rows)
+    log.info("send_followup ok: idx=%s name=%r touch=%d to=%s mid=%s",
+             idx, name, touch_num, to_email, message_id)
+    return jsonify({"ok": True, "touch_num": touch_num, "message_id": message_id})
+
+
 @app.route("/api/followup_queue")
 def api_followup_queue():
     rows = _read_pending(); now = _datetime.now(_tz.utc)
@@ -887,7 +1061,9 @@ def api_followup_queue():
             if not fs and ss: fdt = _datetime.fromisoformat(ss.replace("Z","+00:00"))+_td(days=_DEFAULT_FOLLOWUP_DAYS)
             else: fdt = _datetime.fromisoformat(fs.replace("Z","+00:00"))
         except: continue
-        _enrich_row(r,i); entry = {**r,"followup_dt":fdt.isoformat()}
+        _enrich_row(r,i)
+        fs_info = compute_followup_status(r)
+        entry = {**r,"followup_dt":fdt.isoformat(),"followup_status":fs_info["status"],"followup_touch_num":fs_info["touch_num"],"followup_next_due":fs_info["next_due"]}
         if fdt < now: overdue.append(entry)
         elif fdt <= today_end: today.append(entry)
         elif fdt <= week_end: this_week.append(entry)

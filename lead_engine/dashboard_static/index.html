@@ -2734,8 +2734,13 @@ function _fqCard(r) {
 }
 
 function _fqBestBtn(r, idx) {
-  if (r.to_email && r.to_email.includes('@'))
-    return `<button class="btn btn-primary" style="font-size:11px;padding:4px 10px" onclick="fqLogAndOpen(${idx},'email','sent')">\u2709 Follow-Up Email</button>`;
+  if (r.to_email && r.to_email.includes('@')) {
+    const touchLabels = ['1st', '2nd', '3rd'];
+    const touchNum  = (r.followup_touch_num || 1) - 1;
+    const touchLabel = touchLabels[Math.min(touchNum, 2)] || '1st';
+    return `<button class="btn btn-success" style="font-size:11px;padding:4px 10px" onclick="sendFollowup(${idx},${JSON.stringify(r.business_name)})" title="Auto-send ${touchLabel} follow-up via Gmail">&#9993; Send ${touchLabel} Follow-Up</button>`
+      + `<button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="fqLogAndOpen(${idx},'email','sent')" title="Log + open Gmail manually">&#9654; Manual</button>`;
+  }
   if (r.facebook_url)
     return `<button class="btn" style="font-size:11px;padding:4px 10px;background:rgba(66,103,178,.2);color:#7b9fd4;border:1px solid rgba(66,103,178,.3)" onclick="fqLogAndOpenUrl(${idx},'facebook','dm_sent',${JSON.stringify(r.facebook_url)})">f Follow-Up DM</button>`;
   if (r.instagram_url)
@@ -2757,6 +2762,28 @@ async function fqLogAndOpenUrl(idx, channel, result, url) {
   await api('/api/log_contact', {index:idx, channel, result});
   if (url) window.open(url, '_blank');
   await fqLoad();
+}
+
+// Pass 22 — auto-send follow-up via SMTP
+async function sendFollowup(idx, businessName) {
+  if (!confirm(`Send follow-up email to ${businessName}?\n\nThis will send immediately via Gmail.`)) return;
+  const btn = event && event.target;
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending\u2026'; }
+  try {
+    const res = await api('/api/send_followup', { index: idx, business_name: businessName });
+    if (res.ok) {
+      const ordinals = ['1st', '2nd', '3rd'];
+      const label = ordinals[Math.min((res.touch_num || 1) - 1, 2)];
+      toast(`${label} follow-up sent to ${businessName}`, 'ok');
+      await fqLoad();
+    } else {
+      toast('Send failed: ' + (res.error || 'unknown'), 'err');
+      if (btn) { btn.disabled = false; btn.textContent = '\u2709 Send Follow-Up'; }
+    }
+  } catch(e) {
+    toast('Connection error', 'err');
+    if (btn) { btn.disabled = false; btn.textContent = '\u2709 Send Follow-Up'; }
+  }
 }
 
 async function fqSnooze(idx) {
