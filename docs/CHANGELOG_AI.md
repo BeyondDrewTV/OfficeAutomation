@@ -667,7 +667,7 @@ Wired call into `draft_email()` between body assembly and sign-off append.
 - Confirmed only `lead_engine/dashboard_static/index.html` changed in product code.
 - Reconfirmed protected systems were untouched.
 
-**Commit:** pending
+**Commit:** `5d11595`
 
 ---
 

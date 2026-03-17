@@ -31,7 +31,7 @@ Pass 30 - Discovery Panel Organization + Edit Stability
 - Smoke-verified dashboard load, grouped result rendering, marker/result interaction, stable edit state across queue filter changes, and basic Pass 29 discovery controls.
 - Kept the pass frontend-only. No scheduler core, queue schema, sender, follow-up, or other protected systems changed.
 
-Commit: pending
+Commit: `5d11595`
 
 ## Previous Completed Pass
 Pass 29 - Discovery Coverage Expansion + Bulk Unschedule
