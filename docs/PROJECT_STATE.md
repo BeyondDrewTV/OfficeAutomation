@@ -9,7 +9,7 @@ v0.2
 Lead Acquisition Engine
 
 ## Current Focus
-Contact Quality Upgrade
+Discovery Triage + Lead Qualification Controls
 
 ## Copperline Positioning
 Copperline = Service Business Operations
@@ -21,19 +21,19 @@ Missed-call texting is one downstream solution, not the primary pitch.
 Outreach goal: start a conversation about operational problems, not sell a product.
 
 ## Last Completed Pass
-Pass 31 - Contact Quality Upgrade
+Pass 32 - Discovery Triage + Lead Qualification Controls
 
-- Expanded website contact extraction to capture more hidden-but-valid email patterns, including `mailto:` actions, attribute-based email values, simple `[at]` / `[dot]` obfuscation, paired `data-user` + `data-domain` attributes, and Cloudflare-style protected email tokens.
-- Strengthened email normalization and candidate ranking so duplicate/junk candidates are filtered more safely and stronger role/domain matches are preferred.
-- Replaced the no-op enrichment helper with a working prospect email-enrichment pass that can upgrade stored discovery rows using the same extraction logic.
-- Tightened outreach draft guardrails so generated email and social/contact-form messages stay shorter, cleaner, and less awkward while preserving the existing short local-business tone.
-- Verified extraction behavior on representative hidden-email patterns, enrichment updates on a temp prospects CSV, and cleaned draft outputs through targeted Python smoke checks.
-- Reconfirmed the live dashboard still loads after the backend changes and did not touch protected systems.
+- Added a frontend-only qualification layer to the discovery results rail so leads are classified at a glance as `Ready now`, `Maybe later`, `Needs contact info`, `Weak / skip`, or `Sent / closed`.
+- Added compact triage chips with live counts so operators can instantly narrow large result sets to ready leads, weak leads, no-email leads, or contact-info gaps without manually scanning a flat list.
+- Added a `Group: Qualification` mode and per-result qualification badges/reason chips so large discovery sweeps are easier to sort into work-now vs later buckets.
+- Preserved Pass 30 edit stability by keeping the visible review context tied to the current narrowed result set and verifying overlay clicks still do not dismiss the review panel.
+- Verified the dashboard still loads, triage chips/grouping render correctly, item clicks still drive marker popups, review opening remains stable, and Pass 29 discovery controls still load.
+- Reconfirmed no protected systems were touched; the pass stayed in `lead_engine/dashboard_static/index.html`.
 
-Commit: `3098082`
+Commit: `8868847`
 
 ## Previous Completed Pass
-Pass 30 - Discovery Panel Organization + Edit Stability
+Pass 31 - Contact Quality Upgrade
 
 ## Next Pass
 TBD

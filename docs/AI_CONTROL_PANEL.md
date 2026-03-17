@@ -9,15 +9,15 @@ Repository Version: v0.2
 Lead Acquisition Engine
 
 ## Current Focus
-Contact Quality Upgrade
+Discovery Triage + Lead Qualification Controls
 
 ## Current Build Pass
-Pass 31 - Contact Quality Upgrade (complete)
+Pass 32 - Discovery Triage + Lead Qualification Controls (complete)
 
 ## Last Completed Pass
-Pass 31 - Contact Quality Upgrade
+Pass 32 - Discovery Triage + Lead Qualification Controls
 
-Commit: `3098082`
+Commit: `8868847`
 
 ## Next Pass
 TBD
@@ -43,7 +43,7 @@ Passes use bounded cohesive blocks, not artificially tiny micro-changes.
 Examples:
 - Correct: hidden email extraction + contact cleanup + message guardrails because all three improve one outreach-readiness workflow
 - Incorrect: discovery + scheduler UX + message quality in one pass
-- Previous completed example: Pass 30 grouped discovery results and stabilized edit state because both changes improved one discovery-review workflow
+- Previous completed example: Pass 32 added qualification buckets, triage chips, and readiness grouping because all three improved one discovery-to-outreach workflow
 
 ---
 

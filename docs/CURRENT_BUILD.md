@@ -1,10 +1,48 @@
 # Current Build Pass
 
 ## Active System
-Contact Quality Upgrade
+Discovery Triage + Lead Qualification Controls
 
 ## Status
-Pass 31 complete.
+Pass 32 complete.
+
+---
+
+## Completed: Pass 32 - Discovery Triage + Lead Qualification Controls - `8868847`
+
+Product change stayed in `lead_engine/dashboard_static/index.html`.
+No backend changes. No protected systems touched.
+
+### Qualification layer
+
+- Added a lightweight qualification helper in the discovery results panel that uses fields already present on the result/queue rows instead of inventing a new backend scoring engine.
+- Leads are now classified into practical operator buckets: `Ready now`, `Maybe later`, `Needs contact info`, `Weak / skip`, and `Sent / closed`.
+- Qualification looks at existing signals such as email presence, website/phone availability, queue state, score, and other contactability-strength hints when available.
+
+### Faster triage controls
+
+- Added quick triage chips with live counts directly in the map results rail for `All`, `Ready`, `Maybe`, `Needs Contact`, `Weak`, and `No Email`.
+- Added `Group: Qualification` so large discovery runs can be sectioned by readiness instead of only workflow/city/email.
+- Existing score-first sorting, workflow grouping, email-only filtering, and map result bulk actions remain available.
+
+### At-a-glance clarity
+
+- Each discovery result now shows a primary qualification badge plus compact "why" chips such as email readiness, score strength, missing website, phone-only, or no direct contact.
+- This makes stronger vs weaker leads clearer without forcing the operator to open each row one by one.
+- The visible review/edit context still follows the currently narrowed result set, so triage and review work together instead of fighting each other.
+
+### Verification
+
+- Extracted inline dashboard JavaScript and ran `node --check` successfully.
+- Ran a focused live headless-browser smoke pass against `http://127.0.0.1:5000` using a synthetic discovery dataset injected into the real dashboard page to verify:
+  - dashboard load
+  - triage chip rendering and counts
+  - qualification grouping
+  - triage narrowing
+  - marker click behavior from panel items
+  - review/edit opening and overlay-close guard stability
+  - basic Pass 29 discovery control availability
+- Reconfirmed the pass stayed frontend-only and did not touch protected systems.
 
 ---
 

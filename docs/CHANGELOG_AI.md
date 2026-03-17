@@ -730,3 +730,24 @@ Wired call into `draft_email()` between body assembly and sign-off append.
 **Commit:** `aaa3276`
 
 ---
+### 2026-03-17 - Pass 32: Discovery Triage + Lead Qualification Controls
+
+**Goal:** Reduce operator friction between discovery and outreach by making newly found leads faster to qualify into work-now, maybe-later, needs-contact, and weak/skip buckets.
+
+**Changes:**
+- Added a frontend-only qualification model in the discovery results rail using existing lead/result signals such as email presence, website/phone availability, queue state, and existing score/contactability hints.
+- Added quick triage chips with live counts for `All`, `Ready`, `Maybe`, `Needs Contact`, `Weak`, and `No Email`.
+- Added `Group: Qualification` to the discovery panel so large result sets can be sectioned by readiness rather than only workflow/city/email.
+- Added compact qualification badges and reason chips on each discovery result to explain at a glance why a lead is strong, weak, or blocked by missing contactability.
+- Kept Pass 30 edit stability intact by preserving the visible review context and verifying that overlay clicks still do not dismiss the review panel.
+
+**Files touched:**
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**Commit:** `8868847`
+
+---
