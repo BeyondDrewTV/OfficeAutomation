@@ -134,6 +134,33 @@ Update this file at the end of every pass.
 
 ## 2026-03-16
 
+### Pass 17a — Queue Reset: Gmail Preservation Mode
+
+**Goal:** Reset the live outreach queue to a clean state after debugging/testing, preserving only the 47 businesses actually contacted via Gmail.
+
+**Files changed:**
+- `lead_engine/scripts/reset_queue_from_gmail.py` (new)
+- `lead_engine/scripts/gmail_sent_preserve_set_for_reset.csv` (new)
+- `lead_engine/queue/pending_emails.csv` (reset)
+
+**What changed:**
+
+New script `reset_queue_from_gmail.py`: one-time queue cleanup utility. Creates a timestamped backup before any write. Matches queue rows to gmail_sent.csv by normalized email (primary) or normalized business name (fallback). Asset-filename fake emails (e.g. `.webp`) are correctly excluded from email matching and caught by name fallback. Keeps matched rows with `approved=true`, `send_after=""`, and `sent_at` populated from gmail sent_date. Preserves all reply/conversation/followup fields. Archives all unmatched rows to `_backups/` — no permanent deletion.
+
+Live reset executed:
+- Original queue: 132 rows
+- Kept (Gmail-matched): 26 rows (25 by email, 1 by name)
+- Archived to `_backups/`: 106 rows
+- Unmatched Gmail entries: 20 (real sends to businesses not in the current queue)
+- Backup: `pending_emails_pre_reset_20260317T003530Z.csv`
+- Archive: `pending_emails_archived_unmatched_20260317T003530Z.csv`
+
+**No schema changes. No protected-system rewrites. No feature work.**
+
+**Commit:** `8b5723b`
+
+---
+
 ### Pass 16a — Bug Stabilization: normalize_business_name, discover 400, None guards
 
 **Goal:** Fix three hard backend failures introduced by prior Codex UX passes that left the dashboard unusable for queue health, exception scanning, and map discovery.
