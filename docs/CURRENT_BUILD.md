@@ -8,7 +8,7 @@ Pass 34 complete.
 
 ---
 
-## Completed: Pass 34 - Outreach Review Throughput + Queue Control - `COMMIT_PENDING`
+## Completed: Pass 34 - Outreach Review Throughput + Queue Control - `67716ce`
 
 Product change stayed in `lead_engine/dashboard_static/index.html`.
 No backend changes. No protected systems touched.

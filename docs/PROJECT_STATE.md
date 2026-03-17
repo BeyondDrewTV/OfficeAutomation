@@ -30,7 +30,7 @@ Pass 34 - Outreach Review Throughput + Queue Control
 - Verified dashboard load, session labeling, queue-position visibility, rapid review actions, overlay-close protection, and basic Pass 29-33 control availability with a focused live headless smoke pass using a synthetic review subset and stubbed API writes.
 - Reconfirmed no protected systems were touched; the pass stayed in `lead_engine/dashboard_static/index.html`.
 
-Commit: `COMMIT_PENDING`
+Commit: `67716ce`
 
 ## Previous Completed Pass
 Pass 33 - Bulk Discovery-to-Outreach Workflow Acceleration

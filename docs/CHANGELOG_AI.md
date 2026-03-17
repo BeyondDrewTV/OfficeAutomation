@@ -794,6 +794,6 @@ Wired call into `draft_email()` between body assembly and sign-off append.
 - Ran a live headless-browser smoke pass against `http://127.0.0.1:5000` with a synthetic review subset and stubbed API writes to verify subset labeling, queue visibility, rapid review actions, skip/next flow, overlay-close protection, and basic Pass 29 discovery control availability.
 - Reconfirmed the pass stayed frontend-only and did not touch protected systems.
 
-**Commit:** `COMMIT_PENDING`
+**Commit:** `67716ce`
 
 ---
