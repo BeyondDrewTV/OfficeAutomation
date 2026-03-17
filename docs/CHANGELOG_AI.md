@@ -134,6 +134,39 @@ Update this file at the end of every pass.
 
 ## 2026-03-16
 
+### Pass 18b — Human Draft Enforcement Layer
+
+**Goal:** Add a post-processing layer to `draft_email()` that enforces human-style copy constraints after generation.
+
+**Files changed:**
+- `lead_engine/outreach/email_draft_agent.py`
+
+**What changed:**
+
+Added two new module-level constants:
+- `_FORMAL_OPENER_SUBS` — list of `(pattern, replacement)` pairs for stripping/rewriting formal phrases and secondary banned words
+- `_WORD_TARGET_MAX = 65` — soft word ceiling for body_text (sign-off excluded)
+
+Added new function `enforce_human_style(body_text: str) -> str`:
+- Applies all `_FORMAL_OPENER_SUBS` substitutions (strips formal openers, replaces residual banned words)
+- Lowercases opener on lines starting with `"Hey "` (not `"Hi "` — intentional)
+- Trims to `_WORD_TARGET_MAX` by dropping last paragraph block if over limit — never mid-sentence
+- Does NOT sentence-split across `\n\n` paragraph breaks (deliberate: existing 3-paragraph structure is already correct format)
+
+Wired call into `draft_email()` between body assembly and sign-off append:
+```python
+body_text = enforce_human_style(body_text)  # new
+body = body_text + _SIGN_OFF
+```
+
+**Sample output verified (5 drafts):** 54–65 words, 2–3 sentences per output, no formal phrases, human tone confirmed.
+
+**No schema changes. No DRAFT_VERSION bump (post-processing only — output structure unchanged). No protected systems touched.**
+
+**Commit:** `ff7564d`
+
+---
+
 ### Pass 18a — Discovery State Reset (Phase 2)
 
 **Goal:** Reset discovery-layer data to a clean post-outreach baseline after Pass 17a cleaned the live queue.

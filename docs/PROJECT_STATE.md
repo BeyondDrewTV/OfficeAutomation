@@ -21,22 +21,22 @@ Missed-call texting is one downstream solution, not the primary pitch.
 Outreach goal: start a conversation about operational problems, not sell a product.
 
 ## Last Completed Pass
-Pass 18a — Discovery State Reset (Phase 2)
+Pass 18b — Human Draft Enforcement Layer
 
-- `prospects.csv`: 231 → 43 rows (gmail-matched, 188 archived to `_backups/`)
-- `search_history.json`: 31 entries → cleared
-- `city_planner.json`: 4 entries → cleared
-- All three files backed up before modification
-- Queue integrity confirmed: `pending_emails.csv` still 26 rows throughout
-- New script: `lead_engine/scripts/reset_discovery_state.py` (reusable, dry-run safe)
+- Added `enforce_human_style()` post-processing function to `email_draft_agent.py`
+- Applied between body assembly and sign-off append in `draft_email()`
+- Strips formal opener phrases, lowercases `Hey` openers, trims at 65 words
+- Does not sentence-split across paragraph breaks (preserves existing structure)
+- 5-draft sample verified: 54–65 words, 2–3 sentences, no formal phrases
+- No schema changes, no DRAFT_VERSION bump, no protected systems touched
 
-Commit: `970a55c`
+Commit: `ff7564d`
 
 ## Previous Completed Pass
-Pass 17b — KPI Stats Audit: Relabel Prospects Card
+Pass 18a — Discovery State Reset (Phase 2)
 
 ## Next Pass
-Pass 18b — TBD (territory heatmap, saturation view, tiled backend improvements, or outreach doc updates)
+Pass 19 — TBD (territory heatmap, saturation view, tiled backend improvements, or outreach doc updates)
 
 ## Protected Systems
 - `run_lead_engine.py`
