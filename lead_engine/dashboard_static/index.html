@@ -1159,10 +1159,11 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     <span class="mc-muted" style="font-size:11px;display:block;margin-top:4px">Queue and draft creation are authoritative; map markers may be partial when source coordinates are unavailable.</span>
   </div>
   <div class="map-instructions">
-    <strong>How to use:</strong> Click anywhere on the map to place a search circle.
+    Click anywhere on the map to place or move the search circle.
     Drag the edge handle to resize the radius.
     Pick an industry and click <strong>Search This Area</strong>.
-    Results are added to the queue and visible on the Outreach tab.
+    Results accumulate across searches — click to reposition without clearing.
+    Use <strong>↺ Reset Session</strong> to clear all pins and start fresh.
   </div>
   <div class="map-toolbar">
     <select id="map-industry" class="d-input" style="min-width:160px" onchange="(function(v){var b=document.getElementById('btnSearchVisible');if(b)b.disabled=!v;})(this.value)"><option value="">Loading…</option></select>
@@ -1177,7 +1178,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <span class="spin"></span>♻ Run Until Exhausted
     </button>
     <button id="btnCancelVisible" class="btn btn-ghost" onclick="_mapCancelVisible()" style="display:none" title="Cancel after current tile finishes">✕ Cancel</button>
-    <button class="btn btn-ghost" onclick="mapClearCircle()" title="Remove current circle">✕ Clear</button>
+    <button class="btn btn-ghost" onclick="mapClearCircle()" title="Reset search session — clears circle, all result pins, and coverage overlays">↺ Reset Session</button>
     <button id="btnClearCoverage" class="btn btn-coverage" onclick="_mapClearCoverage()" title="Remove prior search overlays" style="display:none">◌ Clear Coverage</button>
     <span id="map-radius-label" style="font-size:11px;color:var(--muted)"></span>
   </div>
@@ -4634,7 +4635,9 @@ function _mapPlaceDragHandle() {
 function _mapDrawCircle(lat, lng) {
   if (!_mapInstance) return;
   _mapCenter = { lat, lng };
-  _mapClearResultMarkers();  // clear previous search pins on new placement
+  // Pass 21b: do NOT clear result markers when moving the circle.
+  // Results from prior searches remain visible in the panel.
+  // _mapClearResultMarkers() is only called on explicit Reset.
   if (_mapCircle) { _mapCircle.setLatLng([lat, lng]); _mapCircle.setRadius(_mapRadiusM); }
   else {
     _mapCircle = L.circle([lat, lng], {
@@ -4687,10 +4690,9 @@ function _mapInit() {
   _mapInstance.addLayer(_mapClusterGroup);
   console.log('[_mapInit] cluster group initialized');
   _mapInstance.on('click', (e) => {
-    // Only reposition circle when no results are loaded.
-    // Prevents accidental wipe of results from a stray map click.
-    // Operator must press ✕ Clear explicitly to start a new area.
-    if (_mapResultItems.length === 0) _mapDrawCircle(e.latlng.lat, e.latlng.lng);
+    // Pass 21b: always reposition circle on click — no longer gated on empty results.
+    // Results in the panel accumulate across searches; they're only cleared on Reset.
+    _mapDrawCircle(e.latlng.lat, e.latlng.lng);
   });
   setTimeout(() => { _mapInstance.invalidateSize(); console.log('[_mapInit] invalidateSize @50ms, size:', _mapInstance.getSize()); }, 50);
   setTimeout(() => _mapInstance.invalidateSize(), 300);
