@@ -723,10 +723,16 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <option value="name_desc">Name Z–A</option>
     </select>
     <button class="btn btn-ghost" onclick="approveAll()">✓ Approve All</button>
-    <button id="btnCheckReplies" class="btn btn-ghost" onclick="checkReplies()" title="Poll Gmail inbox for replies to sent emails"><span class="spin"></span>★ Check Replies</button>
-    <button id="btnCheckSent" class="btn btn-ghost" onclick="checkSent()" title="Reconcile queue with recent Gmail Sent mail after interrupted send runs"><span class="spin"></span>↺ Check Sent</button>
-    <button id="btnSendDry" class="btn btn-ghost" onclick="sendDryRun()"><span class="spin"></span>Preview Send</button>
     <button id="btnSendLive" class="btn btn-success" onclick="confirmSend()"><span class="spin"></span>▶ Send Approved</button>
+    <!-- Secondary actions: low-frequency utilities collapsed behind More -->
+    <div style="position:relative;display:inline-block" id="outreach-more-wrap">
+      <button class="btn btn-ghost" style="padding:6px 10px" onclick="const m=document.getElementById('outreach-more-menu');m.style.display=m.style.display==='none'?'block':'none'" title="Utilities">More ▾</button>
+      <div id="outreach-more-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);min-width:160px;z-index:250;box-shadow:0 6px 20px rgba(0,0,0,.4);padding:4px 0" onmouseleave="setTimeout(()=>document.getElementById('outreach-more-menu').style.display='none',200)">
+        <button id="btnSendDry"      class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="sendDryRun();document.getElementById('outreach-more-menu').classList.remove('open')"><span class="spin"></span>Preview Send</button>
+        <button id="btnCheckReplies" class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="checkReplies();document.getElementById('outreach-more-menu').classList.remove('open')" title="Poll Gmail inbox for replies"><span class="spin"></span>★ Check Replies</button>
+        <button id="btnCheckSent"   class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="checkSent();document.getElementById('outreach-more-menu').classList.remove('open')" title="Reconcile queue with Gmail Sent mail"><span class="spin"></span>↺ Check Sent</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1194,7 +1200,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <span class="spin"></span>♻ Run Until Exhausted
     </button>
     <button id="btnCancelVisible" class="btn btn-ghost" onclick="_mapCancelVisible()" style="display:none" title="Cancel after current tile finishes">✕ Cancel</button>
-    <button class="btn btn-ghost" onclick="mapClearCircle()" title="Reset search session — clears circle, all result pins, and coverage overlays">↺ Reset Session</button>
+    <!-- Visual separator before session utilities -->
+    <span style="width:1px;height:20px;background:var(--border);display:inline-block;margin:0 2px;flex-shrink:0"></span>
+    <button class="btn btn-ghost" onclick="mapClearCircle()" title="Reset search session — clears circle, all result pins, and coverage overlays" style="color:var(--dim)">↺ Reset</button>
     <button id="btnClearCoverage" class="btn btn-coverage" onclick="_mapClearCoverage()" title="Remove prior search overlays" style="display:none">◌ Clear Coverage</button>
     <span id="map-radius-label" style="font-size:11px;color:var(--muted)"></span>
   </div>
@@ -1212,7 +1220,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
           </div>
           <div class="mrp-bulk-bar" id="mrp-bulk-bar" style="display:none">
             <span class="mrp-bulk-lbl">Visible:</span>
-            <button class="mrp-bulk-btn" onclick="_mrpBulkApprove()" title="Approve all visible results that are in queue">✓ Approve</button>
+            <button class="mrp-bulk-btn" style="background:var(--green-bg);color:var(--green);border-color:rgba(62,207,114,.35)" onclick="_mrpBulkApprove()" title="Approve all visible results that are in queue">✓ Approve</button>
             <button class="mrp-bulk-btn" onclick="_mrpBulkSchedule()" title="Schedule all visible approved results for tomorrow">🕐 Schedule</button>
             <button class="mrp-bulk-btn danger" onclick="_mrpBulkDelete()" title="Delete all visible results from queue">✕ Delete</button>
           </div>
