@@ -66,6 +66,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 
 .toolbar{display:flex;align-items:center;justify-content:space-between;padding:9px 24px;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;background:var(--surface)}
 .toolbar-l,.toolbar-r{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.queue-note{padding:9px 24px;border-bottom:1px solid var(--border);font-size:12px;line-height:1.5;color:var(--muted);background:rgba(255,255,255,.02)}
+.queue-note strong{color:var(--text)}
+.queue-note.queue-note-ready{background:rgba(46,204,113,.08);color:var(--green)}
+.queue-note.queue-note-scheduled{background:rgba(245,166,35,.08);color:var(--amber)}
+.queue-note.queue-note-pending{background:rgba(79,142,247,.08);color:var(--blue)}
 .filter-tabs{display:flex;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:2px}
 .ftab{padding:4px 11px;border-radius:3px;font-size:11px;font-weight:500;cursor:pointer;color:var(--muted);transition:.12s;user-select:none;white-space:nowrap}
 .ftab.active{background:var(--surface3);color:var(--text)}.ftab:hover:not(.active){color:var(--text)}
@@ -96,7 +101,7 @@ tbody td{padding:10px 14px;vertical-align:middle}
 .td-email{min-width:140px;max-width:180px}
 .td-subject{min-width:160px;max-width:200px}
 .td-score{width:80px;text-align:center}
-.td-status{width:100px}
+.td-status{width:180px}
 .td-actions{width:140px}
 
 .biz-name{font-weight:500;color:var(--text);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
@@ -121,7 +126,14 @@ tbody td{padding:10px 14px;vertical-align:middle}
 .badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
 .badge-pending{background:var(--amber-bg);color:var(--amber)}
 .badge-approved{background:var(--green-bg);color:var(--green)}
+.badge-ready{background:rgba(79,142,247,.14);color:var(--blue);border:1px solid rgba(79,142,247,.3)}
 .badge-sent{background:rgba(100,116,139,.1);color:var(--grey)}
+.status-stack{display:flex;flex-direction:column;gap:2px}
+.status-sub{font-size:10px;line-height:1.35;color:var(--muted)}
+.status-sub.ready{color:var(--green)}
+.status-sub.wait{color:var(--amber)}
+.status-sub.info{color:var(--dim)}
+.status-sub.exact{color:var(--dim)}
 
 .row-acts{display:flex;gap:3px}
 .act{padding:4px 9px;border-radius:3px;font-size:11px;font-weight:500;border:none;cursor:pointer;transition:.12s;font-family:var(--sans)}
@@ -253,6 +265,11 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .panel-save-state.save-err{color:var(--red)}
 .panel-sched-info{background:var(--amber-bg);border:1px solid rgba(245,166,35,.25);border-radius:var(--rs);padding:8px 12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--amber)}
 .panel-sched-info .sched-time{font-weight:600;flex:1}
+.panel-sched-info .sched-sub{font-size:11px;color:var(--muted);flex-basis:100%;line-height:1.45}
+.panel-sched-info.ready-now{background:rgba(46,204,113,.08);border-color:rgba(46,204,113,.18);color:var(--green)}
+.panel-sched-info.ready-now .sched-time{color:var(--green)}
+.panel-sched-info.pending-review{background:rgba(79,142,247,.08);border-color:rgba(79,142,247,.18);color:var(--blue)}
+.panel-sched-info.pending-review .sched-time{color:var(--blue)}
 .panel-sched-info .btn-sched-act{font-size:11px;padding:3px 8px;background:transparent;border:1px solid rgba(245,166,35,.4);color:var(--amber);border-radius:var(--rs);cursor:pointer;transition:.12s}
 .panel-sched-info .btn-sched-act:hover{background:rgba(245,166,35,.12)}
 .reply-snippet{font-size:11px;color:var(--muted);font-style:italic;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:340px}
@@ -779,6 +796,8 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   </div>
 </div>
 
+<div id="queue-timeline-note" class="queue-note"></div>
+
 <div class="bulk-bar" id="bulk-bar">
   <strong id="bulk-count">0</strong> selected —
   <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkApprove()">Approve</button>
@@ -1095,7 +1114,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     <div class="panel-footer">
       <button class="btn btn-success" id="panel-approve-btn" onclick="panelApprove()" style="flex:1">✓ Approve</button>
       <button class="btn btn-ghost" id="panel-unapprove-btn" onclick="panelUnapprove()" style="display:none">Undo Approve</button>
-      <button class="btn btn-secondary" id="panel-schedule-btn" onclick="panelScheduleTomorrow()" title="Schedule this email for tomorrow morning">🕐 Schedule for Tomorrow</button>
+      <button class="btn btn-secondary" id="panel-schedule-btn" onclick="panelScheduleTomorrow()" title="Schedule this email for tomorrow morning using the industry send window">🕐 Schedule for Tomorrow Morning</button>
       <button class="btn btn-ghost" onclick="closePanel()">Close</button>
       <button class="btn btn-ghost" onclick="panelOptOut()" title="Mark as do not contact — blocks future sends">🚫 Opt Out</button>
       <button class="btn btn-danger" onclick="panelDelete()">Delete</button>
@@ -1768,6 +1787,137 @@ function _formatSendAfter(isoStr) {
   return `${days[d.getDay()]} ${months[d.getMonth()]} ${d.getDate()} · ${timeStr}`;
 }
 
+function _formatSendAfterExact(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return isoStr;
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  let h = d.getHours(), m = d.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  const timeStr = m === 0 ? `${h} ${ampm}` : `${h}:${String(m).padStart(2,'0')} ${ampm}`;
+  return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()} at ${timeStr} local time`;
+}
+
+function _queueStateMeta(row) {
+  const isReplied = row.replied === 'true';
+  const isSent = !!row.sent_at;
+  const isStale = !isSent && status_draft_version && row.draft_version !== status_draft_version;
+  const isScheduled = !!(row.send_after && !row.sent_at);
+  const isReadyScheduled = !!(isScheduled && row.is_ready);
+  const isApproved = row.approved === 'true';
+  const relative = isScheduled ? _formatSendAfter(row.send_after) : '';
+  const exact = isScheduled ? _formatSendAfterExact(row.send_after) : '';
+
+  if (isReplied) {
+    return { badgeClass: 'badge-replied', label: 'Replied', title: 'Reply received', subline: 'Conversation active', detail: 'No send action needed', tone: 'info' };
+  }
+  if (isSent) {
+    return { badgeClass: 'badge-sent', label: 'Sent', title: 'Already sent', subline: 'Completed send', detail: 'No further queue action', tone: 'info' };
+  }
+  if (isStale) {
+    return { badgeClass: 'badge-stale', label: 'Stale', title: 'Old copy - regenerate before sending', subline: 'Needs refresh before send', detail: 'Draft version is behind current prompt', tone: 'wait' };
+  }
+  if (isScheduled && !isReadyScheduled) {
+    return {
+      badgeClass: 'badge-scheduled',
+      label: 'Scheduled',
+      title: `Scheduled for ${exact || row.send_after}`,
+      subline: `Waits until ${relative || row.send_after}`,
+      detail: `${exact} - not in Send Approved yet`,
+      tone: 'wait',
+    };
+  }
+  if (isReadyScheduled) {
+    return {
+      badgeClass: 'badge-ready',
+      label: 'Ready Now',
+      title: `Scheduled window reached at ${exact || row.send_after}`,
+      subline: 'Scheduled time reached',
+      detail: `${exact} - included in Send Approved now`,
+      tone: 'ready',
+    };
+  }
+  if (isApproved) {
+    return {
+      badgeClass: 'badge-approved',
+      label: 'Approved',
+      title: 'Approved and ready to send now',
+      subline: 'Ready to send now',
+      detail: 'Included in Send Approved immediately',
+      tone: 'ready',
+    };
+  }
+  return {
+    badgeClass: 'badge-pending',
+    label: 'Pending',
+    title: 'Still needs operator approval',
+    subline: 'Needs approval before send',
+    detail: 'Not in Send Approved yet',
+    tone: 'info',
+  };
+}
+
+function statusCellHtml(row) {
+  const meta = _queueStateMeta(row);
+  return `<div class="status-stack">` +
+    `<span class="badge ${meta.badgeClass}" title="${escHtml(meta.title || meta.label)}">${escHtml(meta.label)}</span>` +
+    `<div class="status-sub ${meta.tone || 'info'}">${escHtml(meta.subline || '')}</div>` +
+    (meta.detail ? `<div class="status-sub exact">${escHtml(meta.detail)}</div>` : '') +
+    `</div>`;
+}
+
+function _queueTimelineNoteHtml() {
+  const futureScheduled = allRows.filter(r => !!(r.send_after && !r.sent_at) && !r.is_ready).length;
+  const readyScheduled = allRows.filter(r => !!(r.send_after && !r.sent_at) && r.is_ready).length;
+  if (currentFilter === 'scheduled') {
+    return {
+      tone: 'scheduled',
+      html: `<strong>Scheduled queue:</strong> future rows wait here until their send window. "Tomorrow morning" uses the backend's industry send time. ${futureScheduled} future-scheduled • ${readyScheduled} window-reached row(s) still carry schedule timing.`,
+    };
+  }
+  if (currentFilter === 'approved') {
+    return {
+      tone: 'ready',
+      html: `<strong>Approved queue:</strong> these rows are ready to send now. Future-scheduled rows stay out until their time arrives; once a scheduled window is reached, the row is send-ready again.`,
+    };
+  }
+  if (currentFilter === 'active') {
+    return {
+      tone: 'ready',
+      html: `<strong>Actionable queue:</strong> work you can handle right now. Future-scheduled rows stay out of this view until their scheduled time arrives.`,
+    };
+  }
+  if (currentFilter === 'pending') {
+    return {
+      tone: 'pending',
+      html: `<strong>Pending queue:</strong> drafts still need approval before they can send or be meaningfully scheduled.`,
+    };
+  }
+  if (currentFilter === 'all') {
+    return {
+      tone: 'scheduled',
+      html: `<strong>All queue:</strong> ready-now work appears first, then future-scheduled rows, then history. ${futureScheduled} future-scheduled • ${readyScheduled} scheduled row(s) have reached their send window.`,
+    };
+  }
+  return null;
+}
+
+function _renderQueueTimelineNote() {
+  const el = document.getElementById('queue-timeline-note');
+  if (!el) return;
+  const note = _queueTimelineNoteHtml();
+  if (!note) {
+    el.style.display = 'none';
+    el.innerHTML = '';
+    return;
+  }
+  el.className = `queue-note queue-note-${note.tone}`;
+  el.innerHTML = note.html;
+  el.style.display = '';
+}
+
 function oppScoreBadge(row) {
   const score = parseInt(row.opp_score ?? row.opportunity_score) || 0;
   const lbl   = row.opp_priority || (score >= 60 ? 'High' : score >= 30 ? 'Medium' : 'Low');
@@ -1785,6 +1935,7 @@ function escHtml(s) {
 
 function renderTable() {
   applyFiltersAndSort();
+  _renderQueueTimelineNote();
   const tbody = document.getElementById('tbody');
   const empty = document.getElementById('empty-state');
   document.getElementById('row-count').textContent = filteredRows.length + ' rows';
@@ -1830,12 +1981,12 @@ function renderTable() {
       <td class="td-subject"><div class="subj-text">${escHtml(row.subject)}</div>${replySnip}</td>
       <td class="td-score"><div class="score-chip ${scoreClass(row.final_priority_score)}" data-tip="${scoreTip(row.final_priority_score)}">${sc}</div></td>
       <td>${oppScoreBadge(row)}</td>
-      <td class="td-status">${statusBadge(row)}${row.send_after && !row.sent_at ? `<div style="font-size:10px;color:var(--muted);margin-top:2px">${_formatSendAfter(row.send_after)}</div>` : ''}</td>
+      <td class="td-status">${statusCellHtml(row)}</td>
       <td class="td-actions" onclick="event.stopPropagation()">
         <div class="row-acts">
           ${approveBtn}
           <button class="act act-edit" onclick="openPanel(${fi})">Edit</button>
-          ${actionable && !row.send_after ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowSchedule(${gi},${JSON.stringify(row.business_name)})" title="Schedule for tomorrow">🕐</button>` : ''}
+          ${actionable && !row.send_after ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowSchedule(${gi},${JSON.stringify(row.business_name)})" title="Schedule for tomorrow morning window">🕐</button>` : ''}
           ${scheduled ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowUnschedule(${gi},${JSON.stringify(row.business_name)})" title="Clear schedule">✕Sched</button>` : ''}
           ${actionable ? `<button class="act act-del" onclick="deleteRow(${gi})">Del</button>` : ''}
         </div>
@@ -1950,17 +2101,35 @@ async function fillPanel(row, fi, totalRows) {
   // ── Schedule info block ───────────────────────────────────────────────────
   const schedEl = document.getElementById('panel-schedule-info');
   if (schedEl) {
+    const queueMeta = _queueStateMeta(row);
     if (row.send_after && !row.sent_at) {
-      const gi_s = allRows.indexOf(row);
+      const waitCopy = row.is_ready
+        ? 'The scheduled time has already arrived. This row is eligible in Send Approved now, but it keeps its schedule until you send or clear it.'
+        : 'This row stays out of Send Approved until the scheduled time arrives. "Tomorrow morning" uses the backend industry send window.';
+      schedEl.className = 'panel-sched-info' + (row.is_ready ? ' ready-now' : '');
       schedEl.innerHTML =
-        `<span class="sched-time">🕐 Scheduled: ${_formatSendAfter(row.send_after)}</span>` +
+        `<span class="sched-time">${row.is_ready ? 'Ready now from schedule' : 'Scheduled for ' + _formatSendAfter(row.send_after)}</span>` +
+        `<div class="sched-sub">${escHtml(_formatSendAfterExact(row.send_after))} - ${escHtml(waitCopy)}</div>` +
         `<button class="btn-sched-act" onclick="panelUnschedule()">Unschedule</button>` +
         `<button class="btn-sched-act" onclick="panelReschedule(1)">+1 day</button>` +
         `<button class="btn-sched-act" onclick="panelReschedule(2)">+2</button>` +
         `<button class="btn-sched-act" onclick="panelReschedule(3)">+3</button>`;
       schedEl.style.display = '';
+    } else if (row.approved === 'true' && !row.sent_at) {
+      schedEl.className = 'panel-sched-info ready-now';
+      schedEl.innerHTML =
+        `<span class="sched-time">Ready to send now</span>` +
+        `<div class="sched-sub">${escHtml(queueMeta.detail || 'Included in Send Approved immediately.')}</div>`;
+      schedEl.style.display = '';
+    } else if (!row.sent_at) {
+      schedEl.className = 'panel-sched-info pending-review';
+      schedEl.innerHTML =
+        `<span class="sched-time">Not sending yet</span>` +
+        `<div class="sched-sub">This draft still needs approval before it can send now or be confidently scheduled for later.</div>`;
+      schedEl.style.display = '';
     } else {
       schedEl.innerHTML = '';
+      schedEl.className = 'panel-sched-info';
       schedEl.style.display = 'none';
     }
   }
@@ -2177,7 +2346,7 @@ async function panelScheduleTomorrow() {
     row.send_after = res.send_after;
     renderTable();
     fillPanel(row, panelIdx, _panelCurrentRows().length);
-    toast('Scheduled for tomorrow', 'ok');
+    toast(`Scheduled for ${_formatSendAfter(row.send_after)} - waits until that time`, 'ok');
     return true;
   } catch(e) {
     toast('Connection error', 'err');
@@ -2200,7 +2369,7 @@ async function panelUnschedule() {
     renderTable();
     fillPanel(row, panelIdx, _panelCurrentRows().length);
     await loadStats();
-    toast('Unscheduled', 'ok');
+    toast('Unscheduled - back in the ready-now queue', 'ok');
     return true;
   } catch(e) {
     toast('Connection error', 'err');
@@ -2223,7 +2392,7 @@ async function panelReschedule(days) {
     row.send_after = res.send_after;
     renderTable();
     fillPanel(row, panelIdx, _panelCurrentRows().length);
-    toast('Rescheduled for ' + _formatSendAfter(row.send_after), 'ok');
+    toast('Rescheduled for ' + _formatSendAfter(row.send_after) + ' - waits until then', 'ok');
     return true;
   } catch(e) {
     toast('Connection error', 'err');
@@ -2244,6 +2413,7 @@ async function panelUnapprove() {
   const gi = allRows.indexOf(row);
   await api('/api/unapprove_row',{index:gi});
   row.approved='false'; fillPanel(row,panelIdx,_panelCurrentRows().length); renderTable(); loadStats();
+  toast('Approval removed - back to pending review','info');
 }
 
 async function panelDelete() {
@@ -2293,7 +2463,7 @@ async function approveAll() {
   if (!count) { toast('No pending unsent rows to approve', 'info'); return; }
   if (!confirm(`Approve ${count} pending unsent row(s)? This writes approval state to the queue.`)) return;
   const res = await api('/api/approve_all',{});
-  await loadAll(); toast(`Approved ${res.approved} rows`,'ok');
+  await loadAll(); toast(`Approved ${res.approved} rows - ready to send now`,'ok');
 }
 
 // ── Bulk ──────────────────────────────────────────────────────────────────────
@@ -2355,7 +2525,7 @@ async function bulkApprove() {
   clearSelection();
   renderTable();
   await loadStats();
-  toast(`Approved ${okCount}`,'ok');
+  toast(`Approved ${okCount} - ready to send now`,'ok');
 }
 
 async function bulkUnapprove() {
@@ -2374,7 +2544,7 @@ async function bulkUnapprove() {
   clearSelection();
   renderTable();
   await loadStats();
-  toast(`Unapproved ${okCount}`,'info');
+  toast(`Unapproved ${okCount} - back to pending review`,'info');
 }
 
 async function bulkDelete() {
@@ -2432,7 +2602,7 @@ async function bulkSchedule(mode) {
   renderTable();
   clearSelection();
   await loadStats();
-  toast(isClear ? `Cleared ${ok} schedule(s)` : `Scheduled ${ok} row(s)`, ok > 0 ? 'ok' : 'err');
+  toast(isClear ? `Cleared ${ok} schedule(s) - back in ready-now queues` : `Scheduled ${ok} row(s) for future morning windows`, ok > 0 ? 'ok' : 'err');
 }
 
 async function rowSchedule(gi, businessName) {
@@ -2440,7 +2610,7 @@ async function rowSchedule(gi, businessName) {
   if (!row) return;
   try {
     const res = await api('/api/schedule_email', { index: gi, business_name: businessName, days_ahead: 1 });
-    if (res.ok) { row.send_after = res.send_after; renderTable(); await loadStats(); toast('Scheduled: ' + businessName, 'ok'); }
+    if (res.ok) { row.send_after = res.send_after; renderTable(); await loadStats(); toast(`Scheduled: ${businessName} for ${_formatSendAfter(row.send_after)} - waits until then`, 'ok'); }
     else toast('Schedule failed: ' + (res.error || ''), 'err');
   } catch(e) { toast('Connection error', 'err'); }
 }
@@ -2450,7 +2620,7 @@ async function rowUnschedule(gi, businessName) {
   if (!row) return;
   try {
     const res = await api('/api/schedule_email', { index: gi, business_name: businessName, send_after: '' });
-    if (res.ok) { row.send_after = ''; renderTable(); await loadStats(); toast('Schedule cleared', 'ok'); }
+    if (res.ok) { row.send_after = ''; renderTable(); await loadStats(); toast('Schedule cleared - back in ready-now queue', 'ok'); }
     else toast('Clear failed: ' + (res.error || ''), 'err');
   } catch(e) { toast('Connection error', 'err'); }
 }
@@ -5243,7 +5413,7 @@ async function _mrpApprove(biz, idx) {
     await api('/api/approve_row', { index: idx });
     await loadAll();
     _mapRenderPanel();
-    toast('Approved: ' + biz.name, 'ok');
+    toast('Approved: ' + biz.name + ' - ready to send now', 'ok');
   } catch(e) { toast('Approve failed', 'err'); }
 }
 
@@ -5257,7 +5427,7 @@ async function _mrpSchedule(biz, idx) {
     if (!res.ok) { toast('Schedule failed: ' + (res.error || ''), 'err'); return; }
     await loadAll();
     _mapRenderPanel();
-    toast('Scheduled: ' + biz.name, 'ok');
+    toast('Scheduled: ' + biz.name + ' for a future morning window', 'ok');
   } catch(e) { toast('Schedule failed', 'err'); }
 }
 

@@ -1,10 +1,51 @@
 # Current Build Pass
 
 ## Active System
-Outreach Review Throughput + Queue Control
+Scheduling Clarity + Queue Timeline UX
 
 ## Status
-Pass 34 complete.
+Pass 35 complete.
+
+---
+
+## Completed: Pass 35 - Scheduling Clarity + Queue Timeline UX - `COMMIT_PENDING`
+
+Product change stayed in `lead_engine/dashboard_static/index.html`.
+No backend changes. No protected systems touched.
+
+### Clearer queue states
+
+- Added a queue-state helper layer so outreach rows now read more clearly as `Pending`, `Approved`, `Scheduled`, or `Ready Now` when a scheduled send window has already arrived.
+- Status cells now include compact explanation lines under the badge instead of only terse labels.
+- Future scheduled rows explicitly say they are waiting, while reached-window rows now explain that they are eligible in `Send Approved` again.
+
+### Better timeline understanding
+
+- Added a queue timeline explainer bar directly under the outreach filters.
+- The note changes by queue view and explains how future scheduled rows behave relative to `Actionable`, `Approved`, `Scheduled`, and `All`.
+- Added an exact local-time formatter for scheduled rows so the UI can show both relative timing and the concrete local send time.
+
+### Clearer review feedback
+
+- Reworked the review panel schedule block so it explains whether a row is:
+  - waiting for a future morning window
+  - ready now because the scheduled time already arrived
+  - approved and immediately sendable
+  - still pending review
+- Updated scheduling feedback copy across queue/review actions so the operator gets immediate confirmation about whether the row is waiting for later or back in a ready-now queue.
+
+### Verification
+
+- Extracted inline dashboard JavaScript and ran `node --check` successfully.
+- Ran a focused live headless-browser smoke pass against `http://127.0.0.1:5000` using a synthetic queue subset with stubbed API writes to verify:
+  - dashboard load
+  - queue timeline note rendering
+  - approved vs scheduled vs ready-now distinction
+  - review panel timing explanations
+  - schedule and unschedule state transitions
+  - schedule button wording clarity
+  - basic Pass 29 discovery control availability
+- Reconfirmed the pass stayed frontend-only and did not touch protected systems.
 
 ---
 

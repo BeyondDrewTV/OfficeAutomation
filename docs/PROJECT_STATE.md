@@ -9,7 +9,7 @@ v0.2
 Lead Acquisition Engine
 
 ## Current Focus
-Outreach Review Throughput + Queue Control
+Scheduling Clarity + Queue Timeline UX
 
 ## Copperline Positioning
 Copperline = Service Business Operations
@@ -21,19 +21,19 @@ Missed-call texting is one downstream solution, not the primary pitch.
 Outreach goal: start a conversation about operational problems, not sell a product.
 
 ## Last Completed Pass
-Pass 34 - Outreach Review Throughput + Queue Control
+Pass 35 - Scheduling Clarity + Queue Timeline UX
 
-- Added a review-session status bar in the outreach panel showing the active review set label plus compact queue-state counts for the current subset.
-- Added throughput-oriented flow actions inside the review panel: `Approve + Next`, `Schedule + Next`, `Unschedule + Next`, `Undo + Next`, and `Skip`, all built on the existing review actions without changing scheduler or sender logic.
-- Added keyboard shortcuts for faster sequential review: arrows to move, `A` approve, `Shift+A` approve and continue, `S` schedule, `Shift+S` schedule and continue, `U` unschedule, and `N` skip to the next row.
-- Preserved discovery-to-review continuity by carrying a `Discovery review subset` session label through the Pass 33 bridge, so review context stays clear after opening a visible discovery subset.
-- Verified dashboard load, session labeling, queue-position visibility, rapid review actions, overlay-close protection, and basic Pass 29-33 control availability with a focused live headless smoke pass using a synthetic review subset and stubbed API writes.
-- Reconfirmed no protected systems were touched; the pass stayed in `lead_engine/dashboard_static/index.html`.
+- Added a queue timeline explainer bar under the outreach filters so operators can tell how `Actionable`, `Approved`, `Scheduled`, and `All` relate to future send windows.
+- Added clearer status-cell messaging for outreach rows, distinguishing `Approved` and ready-now work from future `Scheduled` rows and schedule-window-reached rows.
+- Added exact plus relative schedule timing helpers in the dashboard UI so scheduled rows show both when they are due and whether they are still waiting or already eligible to send now.
+- Upgraded the review panel schedule block so it explains whether a row is waiting for a future morning window, already ready from a reached schedule, or simply approved and ready to send immediately.
+- Tightened schedule/unschedule feedback copy across review/table/discovery bridge actions so the UI clearly says whether a row is waiting for later or back in a ready-now queue.
+- Verified dashboard load, queue status clarity, scheduled vs ready-now distinction, panel schedule explanations, schedule/unschedule actions, and basic Pass 29-34 control availability with a focused live headless smoke pass using a synthetic queue subset and stubbed API writes.
 
-Commit: `67716ce`
+Commit: `COMMIT_PENDING`
 
 ## Previous Completed Pass
-Pass 33 - Bulk Discovery-to-Outreach Workflow Acceleration
+Pass 34 - Outreach Review Throughput + Queue Control
 
 ## Next Pass
 TBD

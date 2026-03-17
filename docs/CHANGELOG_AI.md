@@ -772,6 +772,32 @@ Wired call into `draft_email()` between body assembly and sign-off append.
 **Commit:** `c1a56a4`
 
 ---
+### 2026-03-17 - Pass 35: Scheduling Clarity + Queue Timeline UX
+
+**Goal:** Make outreach queue timing and scheduled state easier to understand without changing scheduler logic.
+
+**Changes:**
+- Added a queue timeline explainer bar under the outreach filters so operators can tell how `Actionable`, `Approved`, `Scheduled`, and `All` relate to future send windows.
+- Added a queue-state helper layer that distinguishes future scheduled rows from schedule-window-reached rows and clearer ready-now approved rows.
+- Added exact plus relative local-time schedule formatting and expanded the review-panel schedule block with clearer waiting vs ready-now explanations.
+- Updated scheduling feedback copy so schedule/unschedule actions clearly explain whether a row is waiting for later or back in a ready-now queue.
+
+**Files touched:**
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**Verification:**
+- Extracted the inline dashboard JavaScript and ran `node --check`.
+- Ran a live headless-browser smoke pass against `http://127.0.0.1:5000` with a synthetic queue subset and stubbed API writes to verify queue timeline notes, status clarity, review-panel timing explanations, schedule/unschedule transitions, schedule button wording, and basic Pass 29 discovery control availability.
+- Reconfirmed the pass stayed frontend-only and did not touch protected systems.
+
+**Commit:** `COMMIT_PENDING`
+
+---
+
 ### 2026-03-17 - Pass 34: Outreach Review Throughput + Queue Control
 
 **Goal:** Increase operator throughput while reviewing large outreach subsets after discovery handoff.

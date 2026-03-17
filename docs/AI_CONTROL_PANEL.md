@@ -9,15 +9,15 @@ Repository Version: v0.2
 Lead Acquisition Engine
 
 ## Current Focus
-Outreach Review Throughput + Queue Control
+Scheduling Clarity + Queue Timeline UX
 
 ## Current Build Pass
-Pass 34 - Outreach Review Throughput + Queue Control (complete)
+Pass 35 - Scheduling Clarity + Queue Timeline UX (complete)
 
 ## Last Completed Pass
-Pass 34 - Outreach Review Throughput + Queue Control
+Pass 35 - Scheduling Clarity + Queue Timeline UX
 
-Commit: `67716ce`
+Commit: `COMMIT_PENDING`
 
 ## Next Pass
 TBD
@@ -43,7 +43,7 @@ Passes use bounded cohesive blocks, not artificially tiny micro-changes.
 Examples:
 - Correct: hidden email extraction + contact cleanup + message guardrails because all three improve one outreach-readiness workflow
 - Incorrect: discovery + scheduler UX + message quality in one pass
-- Previous completed example: Pass 34 added review-session context, rapid next-step controls, and keyboard shortcuts because all three improved one outreach-review throughput workflow
+- Previous completed example: Pass 35 added queue-state clarity, timing explanations, and post-action feedback because all three improved one scheduling-understanding workflow
 
 ---
 
