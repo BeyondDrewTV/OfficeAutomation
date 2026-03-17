@@ -15,7 +15,7 @@
 - `docs/PROJECT_STATE.md`
 - `docs/CHANGELOG_AI.md`
 
-**Commit:** TBD
+**Commit:** `b12cf5e`
 
 ---
 
