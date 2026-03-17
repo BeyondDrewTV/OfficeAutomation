@@ -1,4 +1,27 @@
-﻿### 2026-03-17 - Pass 39: V2 Stage 2A+2B — Unified Lead Record + Workspace Panel
+﻿### 2026-03-17 - Pass 40: V2 Stage 2C — Shared Row State Rendering
+
+**Goal:** Reduce duplicated row-state logic between Discovery and Pipeline renders. Add observation visibility and next-action hints to both views consistently.
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**What changed:**
+- Added `_leadStatusPills(record)` — shared pill renderer from `_leadRecord`. Replaces both inline `mrp-status-pills` blocks in `_mapRenderPanel`. Now also shows observation tag in Discovery list items.
+- Added `_leadNextActionHint(record)` — shared next-action hint HTML. Added to both Discovery list renders.
+- Both `_mapRenderPanel` pill blocks replaced with `_leadStatusPills` + `_leadNextActionHint` via `_leadRecord(qrow)`.
+- `statusCellHtml` subline extended: `obs` tag appended when observation present; `nextAction` text appended when unsent.
+
+**No backend changes. No queue schema changes. No protected systems touched.**
+
+**Commit:** TBD
+
+---
+
+### 2026-03-17 - Pass 39: V2 Stage 2A+2B — Unified Lead Record + Workspace Panel
 
 **Goal:** Introduce a canonical lead record shape and shared workspace panel header so Discovery and Pipeline read/write through the same data model for a business.
 

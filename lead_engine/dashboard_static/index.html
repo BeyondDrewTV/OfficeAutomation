@@ -1554,6 +1554,54 @@ function _renderLeadWorkspaceHeader(record) {
     ${nextHtml}
   </div>`;
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// V2 Stage 2C — Shared Row State Rendering Helpers
+// _leadStatusPills and _leadNextActionHint reduce duplicated inline logic
+// across _mapRenderPanel (both render paths) and statusCellHtml.
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * _leadStatusPills(record) — returns innerHTML string for a .mrp-status-pills div.
+ * Renders: status pill (using mrp-pill CSS classes), score pill, observation tag.
+ * Replaces the inline isSent/isApproved/isScheduled/score blocks in both
+ * _mapRenderPanel render paths.
+ */
+function _leadStatusPills(record) {
+  if (!record) return '';
+  const r = record;
+  // Map statusTone to mrp-pill CSS class
+  const toneToClass = {
+    replied:   'sent',       // reuse sent styling for replied in pills
+    sent:      'sent',
+    scheduled: 'scheduled',
+    approved:  'approved',
+    drafted:   'drafted',
+    new:       'drafted',
+    blocked:   'drafted',
+  };
+  const pillClass = toneToClass[r.statusTone] || 'drafted';
+  let html = `<span class="mrp-pill ${pillClass}">${r.status}</span>`;
+  if (r.priorityScore) {
+    html += `<span class="mrp-pill score">Score ${r.priorityScore}</span>`;
+  }
+  if (r.observation) {
+    html += `<span class="mrp-pill" style="background:rgba(184,115,51,.12);color:var(--copper);border:1px solid rgba(184,115,51,.2)" title="${r.observation.substring(0, 80).replace(/"/g, '&quot;')}">obs</span>`;
+  }
+  return html;
+}
+
+/**
+ * _leadNextActionHint(record) — returns a compact HTML string with the next
+ * recommended action from _leadRecord. Empty string if no action.
+ * Used in map list items and queue table status cells.
+ */
+function _leadNextActionHint(record) {
+  if (!record || !record.nextAction) return '';
+  return `<div style="font-size:9px;color:var(--muted);margin-top:2px;line-height:1.3">` +
+         `<span style="color:var(--dim)">Next:</span> ` +
+         `<span style="color:var(--text);font-weight:500">${record.nextAction}</span></div>`;
+}
 function _panelMakeKey(row) {
   if (!row) return '';
   return [
@@ -1975,9 +2023,17 @@ function _queueStateMeta(row) {
 
 function statusCellHtml(row) {
   const meta = _queueStateMeta(row);
+  // V2 Stage 2C: unified record for obs tag + next-action
+  const _scRecord = _leadRecord(row);
+  // V2 Stage 2C: augment subline with obs presence + next-action
+  const _scSubExtra = []
+    .concat(_scRecord.observation ? ['obs'] : [])
+    .concat(_scRecord.nextAction && !_scRecord.isSent ? [_scRecord.nextAction] : [])
+    .join(' · ');
+  const _scSubline = [meta.subline || '', _scSubExtra].filter(Boolean).join(' · ');
   return `<div class="status-stack">` +
     `<span class="badge ${meta.badgeClass}" title="${escHtml(meta.title || meta.label)}">${escHtml(meta.label)}</span>` +
-    `<div class="status-sub ${meta.tone || 'info'}">${escHtml(meta.subline || '')}</div>` +
+    `<div class="status-sub ${meta.tone || 'info'}">${escHtml(_scSubline)}</div>` +
     (meta.detail ? `<div class="status-sub exact">${escHtml(meta.detail)}</div>` : '') +
     `</div>`;
 }
@@ -5142,20 +5198,20 @@ function _mapRenderPanel() {
     item.appendChild(nameDiv);
     item.appendChild(metaDiv);
 
-    // Queue state pills
+    // Queue state pills (V2 Stage 2C: via _leadStatusPills)
     if (qrow) {
+      const _lrSimple = _leadRecord(qrow);
+      const isSent     = _lrSimple.isSent;
+      const isApproved = _lrSimple.isApproved;
+      const isScheduled = _lrSimple.isScheduled;
+      const score      = _lrSimple.priorityScore;
       const pillsDiv = document.createElement('div');
       pillsDiv.className = 'mrp-status-pills';
-      const isSent     = !!(qrow.sent_at || '').trim();
-      const isApproved = (qrow.approved || '').toLowerCase() === 'true';
-      const isScheduled = !!(qrow.send_after || '').trim() && !isSent;
-      const score      = parseInt(qrow.final_priority_score) || 0;
-      if (isSent)      pillsDiv.innerHTML += `<span class="mrp-pill sent">Sent</span>`;
-      else if (isScheduled) pillsDiv.innerHTML += `<span class="mrp-pill scheduled">Scheduled</span>`;
-      else if (isApproved) pillsDiv.innerHTML += `<span class="mrp-pill approved">Approved</span>`;
-      else             pillsDiv.innerHTML += `<span class="mrp-pill drafted">Drafted</span>`;
-      if (score)       pillsDiv.innerHTML += `<span class="mrp-pill score">Score ${score}</span>`;
+      pillsDiv.innerHTML = _leadStatusPills(_lrSimple);
       item.appendChild(pillsDiv);
+      const hintDiv = document.createElement('div');
+      hintDiv.innerHTML = _leadNextActionHint(_lrSimple);
+      if (hintDiv.innerHTML) item.appendChild(hintDiv);
 
       // Per-item actions (only if not sent)
       if (!isSent) {
@@ -5573,18 +5629,19 @@ function _mapRenderPanel() {
       itemEl.appendChild(detailDiv);
 
       if (qrow) {
+        // V2 Stage 2C: via _leadStatusPills
+        const _lrTriage = _leadRecord(qrow);
+        const isSent = _lrTriage.isSent;
+        const isApproved = _lrTriage.isApproved;
+        const isScheduled = _lrTriage.isScheduled;
+        const score = _lrTriage.priorityScore;
         const pillsDiv = document.createElement('div');
         pillsDiv.className = 'mrp-status-pills';
-        const isSent = !!(qrow.sent_at || '').trim();
-        const isApproved = String(qrow.approved || '').toLowerCase() === 'true';
-        const isScheduled = !!(qrow.send_after || '').trim() && !isSent;
-        const score = _mapPanelItemScore(item, qrow);
-        if (isSent) pillsDiv.innerHTML += `<span class="mrp-pill sent">Sent</span>`;
-        else if (isScheduled) pillsDiv.innerHTML += `<span class="mrp-pill scheduled">Scheduled</span>`;
-        else if (isApproved) pillsDiv.innerHTML += `<span class="mrp-pill approved">Approved</span>`;
-        else pillsDiv.innerHTML += `<span class="mrp-pill drafted">Drafted</span>`;
-        if (score) pillsDiv.innerHTML += `<span class="mrp-pill score">Score ${score}</span>`;
+        pillsDiv.innerHTML = _leadStatusPills(_lrTriage);
         itemEl.appendChild(pillsDiv);
+        const triageHintDiv = document.createElement('div');
+        triageHintDiv.innerHTML = _leadNextActionHint(_lrTriage);
+        if (triageHintDiv.innerHTML) itemEl.appendChild(triageHintDiv);
 
         const actsDiv = document.createElement('div');
         actsDiv.className = 'mrp-item-acts';

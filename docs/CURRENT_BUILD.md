@@ -1,10 +1,72 @@
 ﻿# Current Build Pass
 
 ## Active System
-V2 Stage 2 — Unified Lead Workspace Backbone
+V2 Stage 2C — Shared Row State Rendering
 
 ## Status
-Pass 39 complete.
+Pass 40 complete.
+
+---
+
+## Completed: Pass 40 - V2 Stage 2C — Shared Row State Rendering - TBD
+
+Product change: `lead_engine/dashboard_static/index.html` only.
+No backend changes. No protected systems touched.
+
+Builds on the `_leadRecord` backbone from Pass 39.
+Replaces duplicated inline row-state logic across Discovery and Pipeline
+with two shared helpers, and adds observation + next-action visibility
+to both views.
+
+### New helpers
+
+**`_leadStatusPills(record)`** (line ~1570)
+- Returns innerHTML for a `.mrp-status-pills` div from a `_leadRecord`.
+- Status pill uses the `mrp-pill` CSS classes (sent/scheduled/approved/drafted).
+- Score pill added when `priorityScore > 0`.
+- Observation tag (`obs` in copper) added when `observation` is present.
+- Single source of truth for pill rendering — no more inline copies.
+
+**`_leadNextActionHint(record)`** (line ~1599)
+- Returns a compact `div` HTML string with `record.nextAction`.
+- Empty string when no action is defined.
+- Consistent next-action text across both Discovery renders.
+
+### Changes to existing renders
+
+**First `_mapRenderPanel` block (simple render)**
+- Replaced 8-line inline `isSent / isApproved / isScheduled / score / pill` block
+  with `_leadRecord(qrow)` → `_leadStatusPills` + `_leadNextActionHint`.
+- `isSent`, `isApproved`, `isScheduled`, `score` variables preserved from `_lrSimple`
+  for the downstream action buttons that still need them.
+
+**Second `_mapRenderPanel` block (triage render)**
+- Same replacement pattern via `_lrTriage`.
+- Both list views now show observation tag when present.
+- Both list views now show next-action hint below pills.
+
+**`statusCellHtml` (Pipeline queue table)**
+- `_leadRecord(row)` already injected as `_scRecord` in Pass 40.
+- Added `_scSubExtra` and `_scSubline` to append:
+  - `obs` to the subline text when `_scRecord.observation` is present.
+  - `nextAction` text to the subline when unsent and action is defined.
+- Same `statusBadge` and `_queueStateMeta` behavior preserved — only the
+  subline text is extended.
+
+### What this achieves
+
+| Concern | Before | After |
+|---|---|---|
+| Status pills | Duplicated in 2 places | Shared via `_leadStatusPills` |
+| Observation presence | Not visible in Discovery list | Visible in both list views |
+| Next-action hint | Not visible anywhere in lists | Visible in Discovery lists + Pipeline status subline |
+| Pipeline status subline | `_queueStateMeta` text only | Extended with obs + next-action |
+
+### Verification
+
+- `node --check` on extracted dashboard JS: clean.
+- `python -c "import dashboard_server"` import: clean.
+- All 5 change sites confirmed via targeted search at expected line numbers.
 
 ---
 
