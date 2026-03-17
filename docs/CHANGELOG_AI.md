@@ -134,6 +134,24 @@ Update this file at the end of every pass.
 
 ## 2026-03-16
 
+### Pass 17b — KPI Stats Audit: Relabel Prospects Card
+
+**Goal:** Correct misleading "Prospects" KPI card that shows discovery pool count (`prospects.csv`) on the outreach queue page, making it appear stale after a queue reset.
+
+**Root cause:** `api_status` returns `prospects_loaded` from `_prospects_count()`, which reads `data/prospects.csv` (all ever-discovered businesses). All other KPI cards read from `pending_emails.csv` (live queue). After Pass 17a's queue reset, the live queue dropped to 26 rows but `prospects.csv` was untouched, causing the "Prospects" card to show a legacy total while everything else reflected the clean state.
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html`
+
+**What changed:**
+- Renamed stat card label from `Prospects` → `Discovered`
+- Added `title` attribute: `"Total businesses in discovery pool (prospects.csv) — independent of outreach queue"`
+- No backend changes, no logic changes, no schema changes
+
+**Commit:** `59d3118`
+
+---
+
 ### Pass 17a — Queue Reset: Gmail Preservation Mode
 
 **Goal:** Reset the live outreach queue to a clean state after debugging/testing, preserving only the 47 businesses actually contacted via Gmail.

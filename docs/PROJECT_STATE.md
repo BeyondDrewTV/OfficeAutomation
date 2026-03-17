@@ -21,22 +21,22 @@ Missed-call texting is one downstream solution, not the primary pitch.
 Outreach goal: start a conversation about operational problems, not sell a product.
 
 ## Last Completed Pass
-Pass 17a — Queue Reset: Gmail Preservation Mode
+Pass 17b — KPI Stats Audit: Relabel Prospects Card
 
 - Added missing `normalize_business_name()` to `prospect_discovery_agent.py` — fixes `/api/queue_health` and `/api/exceptions` 500s
 - Changed all-duplicates discovery path from HTTP 400 → 200 with `all_duplicates: true` flag — fixes misleading connection error in map UI
 - Added `None` guards on `approved` field in `queue_integrity.py` and `exception_router.py`
-- Queue reset: 132 → 26 rows kept (Gmail-matched), 106 archived, full backup taken first
-- New script: `lead_engine/scripts/reset_queue_from_gmail.py` (reusable for future resets)
-- No schema changes, no protected-system rewrites
+- Renamed "Prospects" KPI card to "Discovered" with source tooltip
+- Root cause: card read `prospects.csv` (discovery pool) while all other cards read `pending_emails.csv` (live queue)
+- One-line HTML change, no backend changes
 
-Commit: `8b5723b`
+Commit: `59d3118`
 
 ## Previous Completed Pass
-Pass 16a — Bug Stabilization
+Pass 17a — Queue Reset: Gmail Preservation Mode
 
 ## Next Pass
-Pass 17b — TBD (territory heatmap, saturation view, tiled backend improvements, or outreach doc updates)
+Pass 18 — TBD (territory heatmap, saturation view, tiled backend improvements, or outreach doc updates)
 
 ## Protected Systems
 - `run_lead_engine.py`
