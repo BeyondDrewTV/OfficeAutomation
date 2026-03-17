@@ -794,7 +794,7 @@ Wired call into `draft_email()` between body assembly and sign-off append.
 - Ran a live headless-browser smoke pass against `http://127.0.0.1:5000` with a synthetic queue subset and stubbed API writes to verify queue timeline notes, status clarity, review-panel timing explanations, schedule/unschedule transitions, schedule button wording, and basic Pass 29 discovery control availability.
 - Reconfirmed the pass stayed frontend-only and did not touch protected systems.
 
-**Commit:** `COMMIT_PENDING`
+**Commit:** `4e18c3c`
 
 ---
 

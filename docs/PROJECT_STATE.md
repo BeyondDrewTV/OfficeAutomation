@@ -30,7 +30,7 @@ Pass 35 - Scheduling Clarity + Queue Timeline UX
 - Tightened schedule/unschedule feedback copy across review/table/discovery bridge actions so the UI clearly says whether a row is waiting for later or back in a ready-now queue.
 - Verified dashboard load, queue status clarity, scheduled vs ready-now distinction, panel schedule explanations, schedule/unschedule actions, and basic Pass 29-34 control availability with a focused live headless smoke pass using a synthetic queue subset and stubbed API writes.
 
-Commit: `COMMIT_PENDING`
+Commit: `4e18c3c`
 
 ## Previous Completed Pass
 Pass 34 - Outreach Review Throughput + Queue Control

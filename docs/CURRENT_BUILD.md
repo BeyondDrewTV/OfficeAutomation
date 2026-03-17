@@ -8,7 +8,7 @@ Pass 35 complete.
 
 ---
 
-## Completed: Pass 35 - Scheduling Clarity + Queue Timeline UX - `COMMIT_PENDING`
+## Completed: Pass 35 - Scheduling Clarity + Queue Timeline UX - `4e18c3c`
 
 Product change stayed in `lead_engine/dashboard_static/index.html`.
 No backend changes. No protected systems touched.
