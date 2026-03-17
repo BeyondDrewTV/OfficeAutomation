@@ -36,7 +36,41 @@ These rules apply to every session, every pass, every change.
    The frontend is a single HTML file with no build pipeline. CDN links only.
 
 ---
+---
 
+## Pass Size & Structure (Updated)
+
+Each pass must deliver a **complete, testable capability**, not a micro-change.
+
+A pass should:
+- Solve a real operator problem end-to-end
+- Include all required frontend + backend work within its system boundary
+- Be usable immediately after completion
+
+### Allowed Scope
+- A pass may include multiple related changes **within the same system**
+  (e.g. discovery backend + map UI for grid scanning)
+
+### Disallowed Scope
+- Combining unrelated systems (e.g. discovery + outreach + scheduler)
+- Partial implementations (UI without backend, or backend without UI)
+- Splitting one feature across multiple passes
+
+### Target Size
+- Typically 1–5 files changed
+- One clear outcome
+
+---
+
+## Drift Control
+
+If implementation requires modifying a system outside the current pass:
+
+- STOP
+- Explain the blocker
+- Do not proceed without approval
+
+Do not expand scope silently.
 ## Pass Report Format
 
 After every implementation, provide a report in this exact structure:
