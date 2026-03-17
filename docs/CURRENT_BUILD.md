@@ -1,10 +1,52 @@
 # Current Build Pass
 
 ## Active System
-Observation-Led Outreach Rewrite
+Discovery Review Recovery + Action Feedback
 
 ## Status
-Pass 36 complete.
+Pass 37 complete.
+
+---
+
+## Completed: Pass 37 - Discovery Review Recovery + Action Feedback - TBD
+
+Product change: `lead_engine/dashboard_static/index.html` only.
+No backend changes. No protected systems touched.
+
+### Map preview modal — editable
+
+- Replaced read-only `<pre>` body and static subject display with an `<input>` for subject and `<textarea>` for body inside the `mrp-modal`.
+- Added Save Edits button that calls `/api/update_row` with the edited subject and body, updates the in-memory row, and refreshes the map panel — no page switch required.
+- Added Unschedule button to the preview modal footer when the row is currently scheduled.
+- Save status line shows inline feedback (Saving... / Saved. / error) below the textarea.
+- All footer buttons (Save, Approve, Unschedule/Schedule, Delete, Close) are present and context-aware based on row state.
+
+### Pending-state feedback on async actions
+
+- Added `_btnPending(btn, label)` and `_btnRestore(btn)` shared helpers.
+- Wired into `panelApprove` (shows "Approving..."), `panelUnapprove` (shows "Removing..."), `panelScheduleTomorrow` (shows "Scheduling..."), `panelUnschedule` (shows "Clearing...").
+- Map preview modal buttons also use pending state on Approve, Unschedule, Schedule, Save.
+- Buttons disable during the API call and restore label + enabled state after.
+
+### Backdrop close restored
+
+- `closePanelOnOverlay` now performs a real close instead of showing a toast that blocked it.
+- Added `_panelOverlayMousedown(e)` wired to `onmousedown` on the overlay element.
+- `_panelMousedownOnBackdrop` flag tracks whether the mousedown originated on the backdrop vs inside the panel.
+- A click only closes if `_panelMousedownOnBackdrop` is true — so dragging text in a textarea or clicking inside inputs never dismisses the panel.
+- Pending debounced saves still temporarily block close with an informational toast.
+- X close button remains available.
+
+### Unschedule visibility
+
+- Already present in table row actions and panel schedule block. Now also in map preview modal footer.
+- No layout changes to existing locations.
+
+### Verification
+
+- `node --check` on extracted dashboard JS: clean.
+- `python -c "import dashboard_server"` import check: clean.
+- All six targeted search terms confirmed present in file at expected line numbers.
 
 ---
 

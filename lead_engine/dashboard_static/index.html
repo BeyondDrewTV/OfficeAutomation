@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1066,7 +1066,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 </div>
 
 <!-- REVIEW PANEL -->
-<div class="panel-overlay" id="panel-overlay" onclick="closePanelOnOverlay(event)">
+<div class="panel-overlay" id="panel-overlay" onmousedown="_panelOverlayMousedown(event)" onclick="closePanelOnOverlay(event)">
   <div class="panel" id="review-panel">
     <div class="panel-hdr">
       <span class="panel-title" id="panel-biz-title">Review Email</span>
@@ -1463,6 +1463,7 @@ let panelSaveInFlight = false;
 let panelRowsKeys = [];
 let panelRowKey = '';
 let panelSessionLabel = '';
+let _panelMousedownOnBackdrop = false; // Pass 37: drag-close guard
 let status_draft_version = '';
 
 async function api(path, body) {
@@ -2272,10 +2273,21 @@ function closePanel(force) {
   panelSessionLabel = '';
 }
 
+// Pass 37 — backdrop close with drag-select guard
+// mousedown on the backdrop itself sets the flag; click fires only if mousedown was also on backdrop.
+// This prevents textarea drag-selection or input clicks from closing the panel.
+function _panelOverlayMousedown(e) {
+  _panelMousedownOnBackdrop = (e.target === document.getElementById('panel-overlay'));
+}
 function closePanelOnOverlay(e) {
-  if (e.target === document.getElementById('panel-overlay')) {
-    toast('Review stays open until you use Close.', 'info');
+  if (!_panelMousedownOnBackdrop) return;         // mousedown was inside panel — ignore
+  _panelMousedownOnBackdrop = false;
+  if (e.target !== document.getElementById('panel-overlay')) return; // click landed inside panel
+  if (_panelHasPendingSave()) {
+    toast('Finishing your edit save — try again in a moment.', 'info');
+    return;
   }
+  closePanel(true);
 }
 
 function navigatePanel(dir) {
@@ -2538,6 +2550,8 @@ const SEND_WINDOWS = {
 };
 
 async function panelScheduleTomorrow() {
+  const _schedBtn = document.getElementById('panel-schedule-btn');
+  _btnPending(_schedBtn, 'Scheduling...');
   const row = _panelCurrentRow();
   if (!row) return false;
   if (row.sent_at) { toast('Already sent — cannot schedule', 'err'); return; }
@@ -2548,19 +2562,22 @@ async function panelScheduleTomorrow() {
       business_name: row.business_name,
       days_ahead: 1,
     });
-    if (!res.ok) { toast('Schedule error: ' + (res.error || 'unknown'), 'err'); return; }
+    if (!res.ok) { toast('Schedule error: ' + (res.error || 'unknown'), 'err'); _btnRestore(_schedBtn); return; }
     row.send_after = res.send_after;
     renderTable();
     fillPanel(row, panelIdx, _panelCurrentRows().length);
     toast(`Scheduled for ${_formatSendAfter(row.send_after)} - waits until that time`, 'ok');
-    return true;
+    _btnRestore(_schedBtn); return true;
   } catch(e) {
     toast('Connection error', 'err');
   }
+  _btnRestore(_schedBtn);
 }
 
 // Pass 10 — clear existing schedule
 async function panelUnschedule() {
+  const _unschedBtn = document.getElementById('panel-schedule-btn');
+  _btnPending(_unschedBtn, 'Clearing...');
   const row = _panelCurrentRow();
   if (!row) return;
   const gi = allRows.indexOf(row);
@@ -2580,6 +2597,7 @@ async function panelUnschedule() {
   } catch(e) {
     toast('Connection error', 'err');
   }
+  _btnRestore(_unschedBtn);
 }
 
 // Pass 10 / Pass 20a — reschedule to today + N days via backend industry window
@@ -2605,21 +2623,40 @@ async function panelReschedule(days) {
   }
 }
 
+// Pass 37 -- pending-state helpers
+function _btnPending(btn, label) {
+  if (!btn) return; btn.disabled = true; btn._p37label = btn.textContent; btn.textContent = label;
+}
+function _btnRestore(btn) {
+  if (!btn) return; btn.disabled = false;
+  if (btn._p37label !== undefined) { btn.textContent = btn._p37label; delete btn._p37label; }
+}
+
 async function panelApprove() {
   const row = _panelCurrentRow(); if (!row) return;
   if (!row.to_email) { toast('Add a To Email first','err'); return; }
   const gi = allRows.indexOf(row);
-  await api('/api/approve_row',{index:gi});
-  row.approved='true'; fillPanel(row,panelIdx,_panelCurrentRows().length); renderTable(); loadStats();
-  toast('Approved ✓','ok');
+  const btn = document.getElementById('panel-approve-btn');
+  _btnPending(btn, 'Approving...');
+  try {
+    await api('/api/approve_row',{index:gi});
+    row.approved='true'; fillPanel(row,panelIdx,_panelCurrentRows().length); renderTable(); loadStats();
+    toast('Approved','ok');
+  } catch(e) { toast('Approve failed','err'); }
+  _btnRestore(btn);
 }
 
 async function panelUnapprove() {
   const row = _panelCurrentRow(); if (!row) return;
   const gi = allRows.indexOf(row);
-  await api('/api/unapprove_row',{index:gi});
-  row.approved='false'; fillPanel(row,panelIdx,_panelCurrentRows().length); renderTable(); loadStats();
-  toast('Approval removed - back to pending review','info');
+  const btn = document.getElementById('panel-unapprove-btn');
+  _btnPending(btn, 'Removing...');
+  try {
+    await api('/api/unapprove_row',{index:gi});
+    row.approved='false'; fillPanel(row,panelIdx,_panelCurrentRows().length); renderTable(); loadStats();
+    toast('Approval removed -- back to pending review','info');
+  } catch(e) { toast('Unapprove failed','err'); }
+  _btnRestore(btn);
 }
 
 async function panelDelete() {
@@ -5637,68 +5674,104 @@ async function _mrpSchedule(biz, idx) {
   } catch(e) { toast('Schedule failed', 'err'); }
 }
 
-// Pass 24 — inline preview: no page switch
+// Pass 24/37 -- inline preview: editable subject/body, save, unschedule
 function _mrpPreview(biz, qrow) {
   const modal = document.getElementById('mrp-modal');
   if (!modal) return;
-  const subject = qrow.subject || '(no subject)';
-  const body    = qrow.body    || '(no body)';
-  const email   = qrow.to_email || biz.email || '(no email)';
-  const idx     = qrow.index;
-  const bizName = biz.name;
-  const isSent  = !!(qrow.sent_at || '').trim();
-  const isApproved = (qrow.approved || '').toLowerCase() === 'true';
+  const email     = qrow.to_email || biz.email || '(no email)';
+  const idx       = qrow.index;
+  const bizName   = biz.name;
+  const isSent    = !!(qrow.sent_at || '').trim();
+  const isApproved  = (qrow.approved || '').toLowerCase() === 'true';
   const isScheduled = !!(qrow.send_after || '').trim() && !isSent;
 
   document.getElementById('mrp-modal-title').textContent = bizName;
-  document.getElementById('mrp-modal-sub').textContent = email;
-  document.getElementById('mrp-modal-subject').textContent = 'Subject: ' + subject;
-  document.getElementById('mrp-modal-email-body').textContent = body;
+  document.getElementById('mrp-modal-sub').textContent   = email;
+
+  const subInp = document.getElementById('mrp-modal-subject-input');
+  const bodyTa = document.getElementById('mrp-modal-email-body');
+  const saveStatus = document.getElementById('mrp-modal-save-status');
+
+  if (subInp) { subInp.value = qrow.subject || ''; subInp.disabled = isSent; }
+  if (bodyTa) { bodyTa.value = qrow.body    || ''; bodyTa.disabled = isSent; }
+  if (saveStatus) saveStatus.textContent = '';
 
   const ftr = document.getElementById('mrp-modal-ftr');
   ftr.innerHTML = '';
 
   if (!isSent) {
+    const btnSave = document.createElement('button');
+    btnSave.className = 'btn btn-secondary';
+    btnSave.style.fontSize = '12px';
+    btnSave.textContent = 'Save Edits';
+    btnSave.onclick = async () => {
+      const newSubj = subInp ? subInp.value.trim() : '';
+      const newBody = bodyTa ? bodyTa.value : '';
+      if (!newSubj) { if (saveStatus) saveStatus.textContent = 'Subject cannot be empty.'; return; }
+      _btnPending(btnSave, 'Saving...');
+      if (saveStatus) saveStatus.textContent = '';
+      try {
+        const res = await api('/api/update_row', { index: idx, updates: { subject: newSubj, body: newBody } });
+        if (!res || res.ok === false) { if (saveStatus) saveStatus.textContent = 'Save failed.'; }
+        else {
+          qrow.subject = newSubj; qrow.body = newBody;
+          await loadAll(); _mapRenderPanel();
+          if (saveStatus) saveStatus.textContent = 'Saved.';
+          setTimeout(() => { if (saveStatus) saveStatus.textContent = ''; }, 2000);
+        }
+      } catch(e) { if (saveStatus) saveStatus.textContent = 'Save error.'; }
+      _btnRestore(btnSave);
+    };
+    ftr.appendChild(btnSave);
+
     if (!isApproved) {
       const btnA = document.createElement('button');
-      btnA.className = 'btn btn-success';
-      btnA.style.fontSize = '12px';
-      btnA.textContent = '✓ Approve';
+      btnA.className = 'btn btn-success'; btnA.style.fontSize = '12px'; btnA.textContent = 'Approve';
       btnA.onclick = async () => {
+        _btnPending(btnA, 'Approving...');
         await _mrpApprove(biz, idx);
         _mrpModalClose();
       };
       ftr.appendChild(btnA);
     }
-    if (!isScheduled) {
+
+    if (isScheduled) {
+      const btnU = document.createElement('button');
+      btnU.className = 'btn btn-ghost'; btnU.style.fontSize = '12px'; btnU.textContent = 'Unschedule';
+      btnU.onclick = async () => {
+        _btnPending(btnU, 'Removing...');
+        try {
+          await api('/api/schedule_email', { index: idx, business_name: bizName, send_after: '' });
+          qrow.send_after = ''; await loadAll(); _mapRenderPanel();
+          toast('Unscheduled -- back in ready-now queue', 'ok');
+          _mrpModalClose();
+        } catch(e) { toast('Unschedule failed','err'); }
+        _btnRestore(btnU);
+      };
+      ftr.appendChild(btnU);
+    } else {
       const btnS = document.createElement('button');
-      btnS.className = 'btn btn-ghost';
-      btnS.style.fontSize = '12px';
-      btnS.textContent = '🕐 Schedule Tomorrow';
+      btnS.className = 'btn btn-ghost'; btnS.style.fontSize = '12px'; btnS.textContent = 'Schedule Tomorrow';
       btnS.onclick = async () => {
+        _btnPending(btnS, 'Scheduling...');
         await _mrpSchedule(biz, idx);
-        _mrpModalClose();
+        _btnRestore(btnS); _mrpModalClose();
       };
       ftr.appendChild(btnS);
     }
+
     const btnD = document.createElement('button');
-    btnD.className = 'btn btn-danger';
-    btnD.style.fontSize = '12px';
-    btnD.textContent = '✕ Delete';
+    btnD.className = 'btn btn-danger'; btnD.style.fontSize = '12px'; btnD.textContent = 'Delete';
     btnD.onclick = async () => {
       if (!confirm('Delete "' + bizName + '"?')) return;
       await api('/api/delete_row', { index: idx });
-      await loadAll();
-      _mapRenderPanel();
-      _mrpModalClose();
+      await loadAll(); _mapRenderPanel(); _mrpModalClose();
     };
     ftr.appendChild(btnD);
   }
 
   const btnClose = document.createElement('button');
-  btnClose.className = 'btn btn-ghost';
-  btnClose.style.fontSize = '12px';
-  btnClose.textContent = 'Close';
+  btnClose.className = 'btn btn-ghost'; btnClose.style.fontSize = '12px'; btnClose.textContent = 'Close';
   btnClose.onclick = _mrpModalClose;
   ftr.appendChild(btnClose);
 
@@ -6571,8 +6644,11 @@ async function mapSearch() {
       <button class="mrp-modal-close" onclick="_mrpModalClose()">✕</button>
     </div>
     <div class="mrp-modal-body">
-      <div class="mrp-modal-subject" id="mrp-modal-subject"></div>
-      <pre class="mrp-modal-email-body" id="mrp-modal-email-body"></pre>
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px">Subject</div>
+      <input id="mrp-modal-subject-input" type="text" style="width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:12px;padding:6px 9px;margin-bottom:10px;font-family:var(--sans)">
+      <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px">Message</div>
+      <textarea id="mrp-modal-email-body" style="width:100%;box-sizing:border-box;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:12px;padding:8px 9px;font-family:var(--mono,monospace);line-height:1.6;resize:vertical;min-height:140px"></textarea>
+      <div id="mrp-modal-save-status" style="font-size:10px;color:var(--muted);margin-top:5px;min-height:14px"></div>
     </div>
     <div class="mrp-modal-ftr" id="mrp-modal-ftr"></div>
   </div>

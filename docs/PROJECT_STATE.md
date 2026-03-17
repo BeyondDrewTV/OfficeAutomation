@@ -1,4 +1,4 @@
-# Copperline Project State
+﻿# Copperline Project State
 
 Last Updated: 2026-03-17
 
@@ -9,7 +9,7 @@ v0.2
 Lead Acquisition Engine
 
 ## Current Focus
-Observation-Led Outreach Rewrite
+Discovery Review Recovery + Action Feedback
 
 ## Copperline Positioning
 Copperline = Service Business Operations
@@ -21,21 +21,19 @@ Missed-call texting is one downstream solution, not the primary pitch.
 Outreach goal: start a conversation about operational problems, not sell a product.
 
 ## Last Completed Pass
-Pass 36 - Observation-Led Outreach Rewrite
+Pass 37 - Discovery Review Recovery + Action Feedback
 
-- Rewrote `email_draft_agent.py` (DRAFT_VERSION v9) so first-touch email and DM generation requires a `business_specific_observation` field.
-- First-touch generation fails with a clear `ObservationMissingError` if observation is absent or too generic.
-- Validation layer (`validate_draft`) deterministically blocks banned buzzwords, hard CTAs, links, pricing, and drafts that don't materially reflect the observation.
-- Three controlled variation families (A/B/C) are the only allowed output patterns — no open-ended variation that can drift back into sales copy.
-- Added `business_specific_observation` as an additive non-send-path column to `PENDING_COLUMNS` in `dashboard_server.py`.
-- Added `/api/update_observation` and `/api/regenerate_draft` endpoints — both block clearly when observation is missing or invalid.
-- Added observation input field + regenerate button to the review panel in `index.html`, with blocked state messaging when observation is absent.
-- Verified 23/23 checks pass: blocking, validation, output quality, variation, field-vs-arg observation routing.
+- Restored editable map preview modal: subject input + body textarea + Save Edits button so operator can edit and save directly from the Discovery map panel without returning to Pipeline.
+- Added Unschedule button to the map preview modal for scheduled rows.
+- Added pending-state feedback to all slow panel actions: panelApprove, panelUnapprove, panelScheduleTomorrow, panelUnschedule — buttons disable and show in-progress label during the API call.
+- Fixed backdrop close: clicking outside the review panel now closes it (was blocked by a toast). True backdrop mousedown+click required; drag-select inside panel never closes it.
+- Added mousedown origin guard (`_panelMousedownOnBackdrop`) so text selection or input interaction inside the panel cannot accidentally dismiss it.
+- Pending-state helpers `_btnPending` / `_btnRestore` added as shared utilities.
 
-Commit: `00add5d`
+Commit: TBD
 
 ## Previous Completed Pass
-Pass 35 - Scheduling Clarity + Queue Timeline UX
+Pass 36 - Observation-Led Outreach Rewrite
 
 ## Next Pass
 TBD

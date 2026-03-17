@@ -1,3 +1,40 @@
+### 2026-03-17 - Pass 37: Discovery Review Recovery + Action Feedback
+
+**Goal:** Fix operator friction introduced by recent dashboard passes — restore editable map preview, add pending-state feedback, fix backdrop close with drag guard, surface Unschedule clearly.
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**What changed:**
+
+`index.html`:
+- Added `_panelMousedownOnBackdrop` state variable for drag-close guard.
+- Added `_panelOverlayMousedown(e)` — sets flag only when mousedown lands on the backdrop itself.
+- Rewrote `closePanelOnOverlay` — now performs real close instead of toast-only block. Requires mousedown origin to have been the backdrop; pending saves still temporarily block.
+- Wired `onmousedown="_panelOverlayMousedown(event)"` onto the overlay element.
+- Added `_btnPending(btn, label)` and `_btnRestore(btn)` shared helpers.
+- `panelApprove` — pending state (Approving...), try/catch, restore.
+- `panelUnapprove` — pending state (Removing...), try/catch, restore.
+- `panelScheduleTomorrow` — pending state (Scheduling...), restore on all exit paths.
+- `panelUnschedule` — pending state (Clearing...), restore.
+- `mrp-modal` HTML — replaced `<pre>` + static subject `<div>` with `<input>` + `<textarea>` + save-status line.
+- `_mrpPreview` — fully rewritten: populates inputs, wires Save Edits (calls `/api/update_row`), Approve, Unschedule (for scheduled rows) / Schedule Tomorrow (for unscheduled), Delete, Close — all with pending state.
+
+**No backend changes. No protected systems touched.**
+
+**Verification:**
+- `node --check` clean on extracted dashboard JS.
+- `python -c "import dashboard_server"` clean.
+- All change sites confirmed via targeted search (line numbers documented in CURRENT_BUILD.md).
+
+**Commit:** TBD
+
+---
+
 ### 2026-03-17 - Pass 36: Observation-Led Outreach Rewrite
 
 **Goal:** Rewrite first-touch email and DM generation so every draft is observation-led, business-specific, and invalid when generic. This is a product rule change — not copy polish.
