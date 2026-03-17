@@ -169,6 +169,23 @@ _SECOND_SENTENCES = [
     "seems like those turn into lost jobs pretty quick",
 ]
 
+# ── Angle variation pool ──────────────────────────────────────────────────────
+
+ANGLES = [
+    "missed_calls",
+    "response_delay",
+    "lead_loss",
+]
+
+# Per-angle first-sentence clause.
+# {ind} is replaced with _industry_phrase() output.
+# Used inside all three opener formats (A/B/C from 18Y).
+_ANGLE_CLAUSE = {
+    "missed_calls":    "{ind} do calls just get missed sometimes",
+    "response_delay":  "when someone reaches out do you usually get back to them right away or does it lag",
+    "lead_loss":       "ever feel like some leads just disappear before you can even talk to them",
+}
+
 
 def enforce_human_style(body_text: str) -> str:
     """
@@ -317,22 +334,26 @@ def draft_email(prospect: Dict[str, str], final_priority_score: int) -> Tuple[st
         "hey",
     ])
 
-    # Steps 4+5 — Build 2-sentence body with opener format variation
+    # Steps 4+5 — Build 2-sentence body with angle + opener format variation
     opener     = random.choice(OPENERS)
     ind_phrase = _industry_phrase(industry)
     second     = random.choice(_SECOND_SENTENCES)
+    angle      = random.choice(ANGLES)
 
-    # Three opener formats — randomly chosen (Step 2)
+    # Resolve angle clause — {ind} replaced with industry phrase
+    angle_clause = _ANGLE_CLAUSE[angle].replace("{ind}", ind_phrase)
+
+    # Three opener formats — randomly chosen (Step 2 from 18Y)
     fmt = random.randint(0, 2)
     if fmt == 0:
-        # Format A: hey {name} — {opener}, {industry phrase}...
-        sentence_one = f"hey {business_name} — {opener}, {ind_phrase} do calls just get missed sometimes"
+        # Format A: hey {name} — {opener}, {angle clause}
+        sentence_one = f"hey {business_name} — {opener}, {angle_clause}"
     elif fmt == 1:
-        # Format B: hey {name} — {opener} {industry phrase}... (no comma)
-        sentence_one = f"hey {business_name} — {opener} {ind_phrase} do calls just get missed sometimes"
+        # Format B: hey {name} — {opener} {angle clause} (no comma)
+        sentence_one = f"hey {business_name} — {opener} {angle_clause}"
     else:
-        # Format C: hey {name} — {industry phrase}... (opener omitted)
-        sentence_one = f"hey {business_name} — {ind_phrase} do calls just get missed sometimes"
+        # Format C: hey {name} — {angle clause} (opener omitted)
+        sentence_one = f"hey {business_name} — {angle_clause}"
 
     body_text = f"{sentence_one}. {second}."
 
