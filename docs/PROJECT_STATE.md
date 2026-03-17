@@ -32,7 +32,7 @@ Pass 36 - Observation-Led Outreach Rewrite
 - Added observation input field + regenerate button to the review panel in `index.html`, with blocked state messaging when observation is absent.
 - Verified 23/23 checks pass: blocking, validation, output quality, variation, field-vs-arg observation routing.
 
-Commit: TBD
+Commit: `00add5d`
 
 ## Previous Completed Pass
 Pass 35 - Scheduling Clarity + Queue Timeline UX

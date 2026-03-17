@@ -42,7 +42,7 @@
 
 **No protected systems touched:** `run_lead_engine.py`, sender core, scheduler core, follow-up system, and queue pipeline behavior are all unchanged.
 
-**Commit:** TBD
+**Commit:** `00add5d`
 
 ---
 

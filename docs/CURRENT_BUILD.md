@@ -8,7 +8,7 @@ Pass 36 complete.
 
 ---
 
-## Completed: Pass 36 - Observation-Led Outreach Rewrite - TBD
+## Completed: Pass 36 - Observation-Led Outreach Rewrite - `00add5d`
 
 Product changes across three files:
 - `lead_engine/outreach/email_draft_agent.py`
