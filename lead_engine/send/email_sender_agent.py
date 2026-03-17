@@ -123,12 +123,26 @@ def _is_send_eligible(row: Dict[str, str]) -> bool:
       - message_id is empty  (not already SMTP-sent — extra safety guard)
       - to_email is present
       - do_not_contact is not "true"
+      - send_after is either empty OR its scheduled time has passed (send protection)
     """
-    approved     = row.get("approved", "").strip().lower() == "true"
-    no_sent_at   = not (row.get("sent_at") or "").strip()
+    approved      = row.get("approved", "").strip().lower() == "true"
+    no_sent_at    = not (row.get("sent_at") or "").strip()
     no_message_id = not (row.get("message_id") or "").strip()
     has_recipient = bool((row.get("to_email") or "").strip())
-    opted_out    = row.get("do_not_contact", "").strip().lower() == "true"
+    opted_out     = row.get("do_not_contact", "").strip().lower() == "true"
+
+    # Send protection: if send_after is set, block send until that time has passed.
+    # send_after is stored as a naive local ISO string (e.g. "2026-03-17T07:30:00").
+    # Comparison uses local time to match how the timestamp was generated.
+    send_after_raw = (row.get("send_after") or "").strip()
+    if send_after_raw:
+        try:
+            send_after_dt = datetime.fromisoformat(send_after_raw)
+            if datetime.now() < send_after_dt:
+                return False  # scheduled but not yet due
+        except ValueError:
+            pass  # malformed timestamp — don't block the send
+
     return approved and no_sent_at and no_message_id and has_recipient and not opted_out
 
 

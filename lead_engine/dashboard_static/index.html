@@ -1333,7 +1333,10 @@ function _updateRepliedStat(count) {
 
 function isRowActionable(row) {
   const terminal = new Set(['replied','not_interested','bad_lead','no_contact_route','closed']);
-  return !row.sent_at && !row.send_after && !terminal.has(row.contact_result || '');
+  // A row is actionable if: not sent, not terminal, AND either no schedule OR schedule is past-due.
+  // row.is_ready is computed by /api/queue: true when send_after <= now (local time).
+  const scheduledButNotReady = row.send_after && !row.is_ready;
+  return !row.sent_at && !scheduledButNotReady && !terminal.has(row.contact_result || '');
 }
 
 function applyFiltersAndSort() {

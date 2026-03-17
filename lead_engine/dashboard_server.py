@@ -118,6 +118,39 @@ PENDING_COLUMNS = [
 
 _ACTIVE_RESULTS   = {"draft_ready", "sent", "submitted", "dm_sent", "no_reply"}
 _TERMINAL_RESULTS = {"replied", "not_interested", "bad_lead", "no_contact_route", "closed"}
+
+# ── Scheduling: industry send windows ────────────────────────────────────────
+# Each entry is (start_hour, end_hour) in 24-hour local time.
+# A random minute is chosen within the window when scheduling.
+INDUSTRY_WINDOWS = {
+    "hvac":        (7, 10),
+    "plumbing":    (7, 10),
+    "garage_door": (7, 10),
+    "roofing":     (7, 10),
+    "auto":        (8, 11),
+    "locksmith":   (8, 11),
+    "default":     (8, 10),
+}
+
+
+def _schedule_send_after(industry: str, days_ahead: int = 1) -> str:
+    """
+    Build a naive local ISO timestamp for scheduling.
+
+    Picks a random minute within the industry send window on the target day.
+    days_ahead=1 means tomorrow; higher values push further out.
+
+    Returns a string like "2026-03-17T07:42:00".
+    """
+    from datetime import datetime as _dt, timedelta as _tdelta
+    import random as _rand
+    start_h, end_h = INDUSTRY_WINDOWS.get(industry, INDUSTRY_WINDOWS["default"])
+    # Random hour and minute within window
+    hour   = _rand.randint(start_h, end_h - 1)
+    minute = _rand.randint(0, 59)
+    target = _dt.now().replace(hour=hour, minute=minute, second=0, microsecond=0)
+    target += _tdelta(days=days_ahead)
+    return target.strftime("%Y-%m-%dT%H:%M:%S")
 _DEFAULT_FOLLOWUP_DAYS = 7
 CAMPAIGN_PRESETS_FILE  = BASE_DIR / "data" / "campaign_presets.json"
 
@@ -203,12 +236,23 @@ def _enrich_row(row: dict, index: int) -> dict:
 @app.route("/api/queue")
 def api_queue():
     rows = _read_pending()
+    now_local = _datetime.now()
     for i, row in enumerate(rows):
         try: score = int(row.get("final_priority_score") or 0)
         except: score = 0
         row["score"] = score
         row["score_label"] = get_score_label(score) if score else ""
         _enrich_row(row, i)
+        # Computed field: is_ready — true when send_after is set and its time has passed.
+        # Used by frontend to promote past-due scheduled rows into the Actionable filter.
+        send_after_raw = (row.get("send_after") or "").strip()
+        if send_after_raw:
+            try:
+                row["is_ready"] = _datetime.fromisoformat(send_after_raw) <= now_local
+            except ValueError:
+                row["is_ready"] = False
+        else:
+            row["is_ready"] = False
     return jsonify(rows)
 
 @app.route("/api/run_pipeline", methods=["POST"])
@@ -588,39 +632,51 @@ def api_snooze_row():
 def api_schedule_email():
     """
     Record send intent for a queue row by writing send_after.
-    Intent-only: does NOT trigger a send, does NOT modify any other field.
-    send_after may be:
-      - a non-empty datetime string  → schedule
-      - an empty string ""           → clear existing schedule
+    Does NOT trigger a send. Does NOT modify any other field.
+
+    Accepts two scheduling modes:
+      1. Explicit: send_after = "<ISO string>"  — stores exactly as provided
+      2. Window:   days_ahead = <int>           — builds timestamp using industry window
+         (send_after absent or empty triggers window mode when days_ahead provided)
+
+    send_after = "" clears an existing schedule in both modes.
     """
-    d = request.json or {}
+    d             = request.json or {}
     idx           = d.get("index")
     business_name = (d.get("business_name") or "").strip()
-    # Allow empty string explicitly — distinguishes "clear" from "missing"
     send_after_raw = d.get("send_after")
-    if send_after_raw is None:
-        return jsonify({"ok": False, "error": "send_after is required (use empty string to clear)"}), 400
-    send_after = send_after_raw.strip()
+    days_ahead     = d.get("days_ahead")  # optional int — triggers industry window mode
 
-    # Validate required identity fields
+    # Validate identity fields
     if idx is None or not isinstance(idx, int):
         return jsonify({"ok": False, "error": "index is required and must be an integer"}), 400
     if not business_name:
         return jsonify({"ok": False, "error": "business_name is required"}), 400
 
     rows = _read_pending()
-
-    # Validate index in bounds
     if not (0 <= idx < len(rows)):
         return jsonify({"ok": False, "error": "Invalid index"}), 400
 
-    # Validate business_name matches row at index (guards against index drift)
     row_name = rows[idx].get("business_name", "").strip().lower()
     if row_name != business_name.lower():
-        return jsonify({
-            "ok": False,
-            "error": "Row index/name mismatch — queue may have changed",
-        }), 409
+        return jsonify({"ok": False, "error": "Row index/name mismatch — queue may have changed"}), 409
+
+    # Determine the send_after value to store
+    if send_after_raw is not None:
+        # Explicit mode: use whatever was provided (including "" to clear)
+        send_after = send_after_raw.strip()
+    elif days_ahead is not None:
+        # Window mode: compute industry-appropriate timestamp
+        try:
+            days_ahead_int = int(days_ahead)
+            if days_ahead_int < 1:
+                return jsonify({"ok": False, "error": "days_ahead must be >= 1"}), 400
+        except (TypeError, ValueError):
+            return jsonify({"ok": False, "error": "days_ahead must be an integer"}), 400
+        industry = (rows[idx].get("industry") or "default").strip().lower()
+        send_after = _schedule_send_after(industry, days_ahead=days_ahead_int)
+    else:
+        return jsonify({"ok": False, "error": "send_after or days_ahead is required (use send_after=\"\" to clear)"}), 400
 
     # Write send_after only — no other fields touched
     rows[idx]["send_after"] = send_after
