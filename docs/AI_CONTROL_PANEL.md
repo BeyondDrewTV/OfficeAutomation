@@ -1,6 +1,6 @@
 # Copperline AI Control Panel
 
-Last Updated: 2026-03-16
+Last Updated: 2026-03-17
 Repository Version: v0.2
 
 ---
@@ -9,23 +9,40 @@ Repository Version: v0.2
 Lead Acquisition Engine
 
 ## Current Focus
-Dashboard UX Safety Cleanup
+Outreach Positioning Correction
 
 ## Current Build Pass
-Pass 14 — Dashboard UX Safety Cleanup (complete)
+Pass 18b — Human Draft Enforcement Layer (complete)
 
 ## Last Completed Pass
-Pass 14 — Dashboard UX Safety Cleanup
+Pass 18b — Human Draft Enforcement Layer
 
-Commit: `014e68c`
+Commit: `ff7564d`
 
 ## Next Pass
-Pass 15 — TBD (territory heatmap, saturation view, or tiled backend improvements)
+Pass 19 — TBD (territory heatmap, saturation view, tiled backend improvements, or outreach doc updates)
 
 ## Upcoming Passes
-- Search Visible Area button
-- Tiled discovery backend (neighborhood-level grid)
-- Territory discovery system
+- Territory heatmap overlay
+- Industry saturation view
+- Tiled backend improvements (rate-limit handling)
+- Update `Copperline-Outreach-Sequence.md` and `Copperline-Proposal-Template.md`
+
+---
+
+## Execution Model
+
+Passes use **bounded cohesive blocks**, not artificially tiny micro-changes.
+
+- A pass may include 3–6 tightly related changes if they all improve one operator workflow
+- Scope is defined by workflow cohesion: all sub-changes must serve the same outcome
+- Unrelated systems must not be bundled in a single pass
+- Passes must be testable end-to-end when complete
+- No redesigns or protected-system drift without explicit operator approval
+
+Examples:
+- Correct: grid search + dedupe + history + cancel (all serve Discovery Coverage Expansion)
+- Incorrect: discovery + scheduler UX + message quality in one pass (unrelated systems)
 
 ---
 

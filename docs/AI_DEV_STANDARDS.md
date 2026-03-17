@@ -7,9 +7,14 @@ These standards govern how every AI session interacts with this repository.
 
 ## Core Principles
 
-1. **Small incremental passes**
-   Each session implements one clearly scoped feature. No multi-feature
-   commits. No scope creep. One pass, one commit, one report.
+1. **Bounded cohesive passes**
+   Each pass implements one operator outcome end-to-end. Multiple tightly
+   related sub-changes are allowed within a single pass if they all serve
+   the same workflow goal. Scope is defined by workflow cohesion, not by
+   artificially small change count.
+
+   Good: grid search + dedupe + history summary + cancel support (all serve Discovery Coverage Expansion)
+   Bad: discovery + scheduler UX + message quality + email extraction in one pass (unrelated systems)
 
 2. **Additive architecture**
    Extend working systems rather than replacing them. New behavior is layered
@@ -43,12 +48,32 @@ These standards govern how every AI session interacts with this repository.
 
 ---
 
+## Pass Scoping Rules
+
+A pass is correctly scoped when:
+- It delivers one complete operator outcome
+- All sub-changes within it serve that outcome
+- It is testable end-to-end when complete
+- No related work is left half-finished across pass boundaries
+
+A pass is incorrectly scoped when:
+- It bundles unrelated systems (discovery + outreach + scheduler = bad)
+- It leaves UI without backend, or backend without UI
+- It splits one workflow across multiple passes unnecessarily
+- It includes cosmetic refactors unrelated to the current goal
+
+Typical pass size: 1–6 files changed. No hard maximum, but larger passes
+require stronger cohesion justification.
+
+---
+
 ## What AI Assistants Must Not Do
 
 - Guess project goals — always read the docs first
 - Implement features not listed in `CURRENT_BUILD.md`
 - Modify protected systems without operator approval
 - Make large rewrites of working systems
+- Bundle unrelated systems in a single pass
 - Leave changes uncommitted at the end of a session
 - Make ambiguous commits like "fix bug" or "update files"
 - Present untested behavior as verified
@@ -60,9 +85,9 @@ These standards govern how every AI session interacts with this repository.
 Before writing any code, an AI session must:
 
 - [ ] Read `AI_CONTROL_PANEL.md`
-- [ ] Read `docs/PROJECT_STATE.md`
-- [ ] Read `docs/CURRENT_BUILD.md`
-- [ ] Confirm the pass scope is understood
+- [ ] Read `PROJECT_STATE.md`
+- [ ] Read `CURRENT_BUILD.md`
+- [ ] Confirm the pass scope and operator outcome
 - [ ] Confirm no protected systems are in scope
 
 ---
