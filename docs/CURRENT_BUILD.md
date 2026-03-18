@@ -8,7 +8,7 @@ Pass 42 complete.
 
 ---
 
-## Completed: Pass 42 - V2 Stage 2E — Qualification + Status Derivation Unification - TBD
+## Completed: Pass 42 - V2 Stage 2E — Qualification + Status Derivation Unification - `118b787`
 
 Product change: `lead_engine/dashboard_static/index.html` only.
 No backend changes. No protected systems touched.

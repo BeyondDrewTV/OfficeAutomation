@@ -31,7 +31,7 @@ Pass 42 - V2 Stage 2E — Qualification + Status Derivation Unification
 - Discovery and Pipeline now derive qualification bucket and status meaning from the same two shared helpers.
 - Zero backend changes. No queue schema changes. No protected systems touched.
 
-Commit: TBD
+Commit: `118b787`
 
 
 ## Queue State Management Note — Pass 38

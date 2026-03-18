@@ -19,7 +19,7 @@
 **No backend changes. No queue schema changes. No protected systems touched.**
 All caller shapes preserved.
 
-**Commit:** TBD
+**Commit:** `118b787`
 
 ---
 
