@@ -12,12 +12,12 @@ Lead Acquisition Engine
 V2 Stage 2 — Unified Lead Workspace Backbone
 
 ## Current Build Pass
-Pass 42 - V2 Stage 2E — Qualification + Status Derivation Unification (complete)
+Pass 43 - V2 Stage 2F — Next-Action-Driven Controls + History Visibility (complete)
 
 ## Last Completed Pass
-Pass 42 - V2 Stage 2E — Qualification + Status Derivation Unification
+Pass 43 - V2 Stage 2F — Next-Action-Driven Controls + History Visibility
 
-Commit: `118b787`
+Commit: `5a09991`
 
 ## Next Pass
 TBD

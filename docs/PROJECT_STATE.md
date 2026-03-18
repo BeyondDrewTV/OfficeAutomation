@@ -21,17 +21,17 @@ Missed-call texting is one downstream solution, not the primary pitch.
 Outreach goal: start a conversation about operational problems, not sell a product.
 
 ## Last Completed Pass
-Pass 42 - V2 Stage 2E — Qualification + Status Derivation Unification
+Pass 43 - V2 Stage 2F — Next-Action-Driven Controls + History Visibility
 
-- Extended `_leadRecord` with `hasWebsite`, `hasPhone` (contact), `isStale`, `isReadyScheduled` (workflow) so shared helpers can read all qualification + status signals from one place.
-- Added `_leadQualBucket(record, extras)` — shared qualification bucket logic (ready/maybe/needs-contact/weak/closed) extracted from `_mapPanelQualification` and generalized for both Discovery and Pipeline.
-- Added `_leadStatusMeta(record)` — shared status badge/label/subline/detail/tone logic extracted from `_queueStateMeta` and derived entirely from `_leadRecord`.
-- `_queueStateMeta` rewritten as a one-line wrapper: `return _leadStatusMeta(_leadRecord(row))`.
-- `_mapPanelQualification` rewritten as a thin wrapper: builds `_leadRecord`, merges biz-only extras, calls `_leadQualBucket`, returns compatible shape.
-- Discovery and Pipeline now derive qualification bucket and status meaning from the same two shared helpers.
+- Added shared next-action and history UI helpers so operator guidance now comes from `_leadRecord` semantics instead of scattered inline checks.
+- Strengthened the shared workspace header with a clearer `Next Step` callout plus visible history chips for approved, scheduled, sent, replied, stale, and observation-present states.
+- Discovery and Pipeline status rendering now lean more consistently on `_leadStatusMeta(_leadRecord(...))`, including clearer blocked/sent/replied tones.
+- Review-panel footer controls and flow guidance now align with the lead's actual state, including stale-refresh-first and scheduled/unschedule contexts.
+- Queue status cells now surface shared history chips where operators make send/review decisions.
+- `_leadRecord.nextAction` now prioritizes stale or observation-missing refresh work before send-oriented actions.
 - Zero backend changes. No queue schema changes. No protected systems touched.
 
-Commit: `118b787`
+Commit: `5a09991`
 
 
 ## Queue State Management Note — Pass 38
@@ -52,7 +52,7 @@ Backup: `_backups/pending_emails_pre_p38_20260317_182909.csv`
 - unscheduled+unsent: 130
 
 ## Previous Completed Pass
-Pass 41 - V2 Stage 2D — Stable Key Propagation
+Pass 42 - V2 Stage 2E — Qualification + Status Derivation Unification
 
 ## Next Pass
 TBD

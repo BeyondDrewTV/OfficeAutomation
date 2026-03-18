@@ -1,10 +1,65 @@
 ﻿# Current Build Pass
 
 ## Active System
-V2 Stage 2E — Qualification + Status Derivation Unification
+V2 Stage 2F — Next-Action-Driven Controls + History Visibility
 
 ## Status
-Pass 42 complete.
+Pass 43 complete.
+
+---
+
+## Completed: Pass 43 - V2 Stage 2F — Next-Action-Driven Controls + History Visibility - `5a09991`
+
+Product change: `lead_engine/dashboard_static/index.html` only.
+No backend changes. No protected systems touched.
+
+### Problem addressed
+
+The dashboard could already derive shared lead meaning, but the operator-facing
+UI still depended too much on reading scattered status/details and inferring the
+right next move manually. Stale draft state, observation presence, and contact
+history cues were not visible enough where review and send decisions happen.
+
+### Changes
+
+**Shared UI helper layer**
+- Added `_leadNeedsDraftRefresh(record)` to identify stale / refresh-first rows.
+- Added `_leadHistoryWhen(ts)`, `_leadHistoryItems(record)`, and `_leadHistoryChipsHtml(record, opts)` for consistent history-state chips.
+- Added `_leadNextActionContext(record)` for stronger shared `Next Step` messaging.
+- Added `_leadControlGuidance(record)` so panel/discovery/preview controls can label and emphasize the right action from one place.
+
+**Shared status + next-action semantics**
+- `_leadStatusMeta(record)` now includes blocked/DNC handling and clearer sent/replied tones.
+- `_leadStatusPills(record)` now reads `_leadStatusMeta(_leadRecord(row))`, so Discovery and Pipeline share status meaning more consistently.
+- `_leadRecord.nextAction` now prioritizes refresh-first work for stale or observation-missing drafts before send-oriented actions.
+
+**Operator-facing visibility**
+- `_renderLeadWorkspaceHeader(record)` now shows a stronger `Next Step` callout plus shared history chips.
+- `statusCellHtml(row)` now adds shared history chips in the queue table status cell.
+- `fillPanel(row, fi, totalRows)` now uses shared control guidance to relabel and emphasize approve/schedule actions and to surface `Refresh before send` when needed.
+- Discovery list controls, flow notes, and preview-modal buttons now follow the same shared control guidance instead of separate inline action guesses.
+
+### What now follows shared helpers / record semantics
+
+| Concern | Shared source |
+|---|---|
+| Next-step callout text | `_leadNextActionContext(_leadRecord(...))` |
+| History/state chips | `_leadHistoryItems` + `_leadHistoryChipsHtml` |
+| Status badge/tones | `_leadStatusMeta(_leadRecord(...))` |
+| Control emphasis/labels | `_leadControlGuidance(_leadRecord(...))` |
+| Refresh-first stale handling | `_leadNeedsDraftRefresh` + `_leadRecord.nextAction` |
+
+### What remains separate on purpose
+
+- Send and scheduler behavior remain unchanged; this pass only changes guidance and visibility.
+- Qualification extras in Discovery still include biz-only signals outside queue-row semantics.
+- Compact table-specific badge wrappers still exist where the visual format is different, even when the meaning now comes from shared helpers.
+
+### Verification
+
+- `node --check` on extracted dashboard JS: clean.
+- Live dashboard verified successfully at `http://127.0.0.1:5051`.
+- Port `5000` was already occupied by another local app, so verification used the temporary Copperline instance on `5051`.
 
 ---
 

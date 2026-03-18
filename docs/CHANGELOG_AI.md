@@ -1,4 +1,33 @@
-﻿### 2026-03-17 - Pass 42: V2 Stage 2E — Qualification + Status Derivation Unification
+﻿### 2026-03-17 - Pass 43: V2 Stage 2F — Next-Action-Driven Controls + History Visibility
+
+**Goal:** Make operator controls and visibility cues follow the shared lead record model more clearly so the next step is easier to see and act on.
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**What changed:**
+- Added shared UI helpers: `_leadNeedsDraftRefresh`, `_leadHistoryItems`, `_leadHistoryChipsHtml`, `_leadNextActionContext`, and `_leadControlGuidance`.
+- Shared header and status renderers now lean on `_leadStatusMeta(_leadRecord(...))` for clearer blocked/sent/replied/stale meaning.
+- Queue status cells now show shared history chips for approved, scheduled, sent, replied, stale, and observation-present state.
+- `_leadRecord.nextAction` now prioritizes stale / missing-observation refresh work before send-oriented actions.
+- Review panel footer actions, discovery list actions, flow notes, and preview-modal buttons now relabel and emphasize controls from shared control guidance.
+
+**No backend changes. No queue schema changes. No protected systems touched.**
+
+**Verification:**
+- `node --check` clean on extracted dashboard JS.
+- Live dashboard verified at `http://127.0.0.1:5051`.
+- Port `5000` was occupied by another local app, so verification used `5051`.
+
+**Commit:** `5a09991`
+
+---
+
+### 2026-03-17 - Pass 42: V2 Stage 2E — Qualification + Status Derivation Unification
 
 **Goal:** Centralize qualification bucket and status badge/label derivation so Discovery and Pipeline use the same shared helpers, not parallel inline logic.
 
