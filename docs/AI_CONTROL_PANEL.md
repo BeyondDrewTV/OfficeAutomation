@@ -12,21 +12,22 @@ Lead Acquisition Engine
 V2 Stage 2 — Unified Lead Workspace Backbone
 
 ## Current Build Pass
-Pass 46 -- Contacted Memory Seeding + Safer Contact Recording (complete)
+Pass 47 -- Lead Timeline / Lifecycle Event Spine (complete)
 
 ## Last Completed Pass
-Pass 46 -- Contacted Memory Seeding + Safer Contact Recording
+Pass 47 -- Lead Timeline / Lifecycle Event Spine
 
-Commit: `65d113e`
+Commit: `4a4a04b`
 
 ## Next Pass
 TBD
 
 ## Upcoming Passes
+- Pass 48 -- Contact Path Recommendation
+- Pass 49 -- Observation Model Expansion
+- Pass 50 -- Follow-Up System Rebuild
 - Territory heatmap overlay
 - Industry saturation view
-- Tiled backend improvements (rate-limit handling)
-- Update `Copperline-Outreach-Sequence.md` and `Copperline-Proposal-Template.md`
 
 ---
 
@@ -74,7 +75,7 @@ Copperline is an internal platform used to:
 | Follow-up automation | `lead_engine/run_lead_engine.py` |
 | Map discovery interface | `lead_engine/dashboard_static/index.html` |
 | Dashboard API | `lead_engine/dashboard_server.py` |
-| Durable lead memory | `lead_engine/lead_memory.py` + `lead_engine/data/lead_memory.json` |
+| Durable lead memory + timeline | `lead_engine/lead_memory.py` + `lead_engine/data/lead_memory.json` |
 | Memory seed script | `lead_engine/scripts/seed_contacted_memory.py` |
 
 ## Protected Systems
@@ -89,38 +90,31 @@ Copperline is an internal platform used to:
 ## Active Constraints
 
 - Discovery must be intentional - no auto-search on pan or zoom
-- Large search areas surface only prominent businesses by design
-- Neighborhood-level searches are required to find independent operators
 - No build steps - frontend is a single HTML file with CDN dependencies only
 - Email sending is manual - auto-send is not enabled
-- Quick reply templates require `COPPERLINE_LINKS` config before live use
-- Suppressed/contacted leads are filtered from all discovery entry points by default
+- Suppressed/contacted leads filtered from all discovery entry points by default
 
-## Suppression Coverage (as of Pass 46)
+## Lifecycle Event Types (as of Pass 47)
 
-| Route | Suppression filtered? | Override |
+| Constant | Event | Recorded by |
 |---|---|---|
-| `POST /api/discover` | Yes -- before pipeline run | `include_suppressed` in body |
-| `POST /api/discover_area` | Yes -- marker list | `include_suppressed` query param |
-| `POST /api/discover_area_batch` | Yes -- per-iteration markers | `include_suppressed` in body |
+| EVT_DRAFTED | Draft created | (future: run_pipeline hook) |
+| EVT_OBSERVATION_ADDED | Observation saved | api_update_observation |
+| EVT_DRAFT_REGENERATED | Draft regenerated | api_regenerate_draft |
+| EVT_REPLIED | Lead replied | api_log_contact result=replied |
+| EVT_NOTE_ADDED | Conversation note added | api_update_conversation |
+| EVT_FOLLOWUP_SENT | Follow-up sent | (future: send_followup hook) |
 
-## Contacted Memory Recording (as of Pass 46)
+## Suppression States (as of Pass 44-46)
 
-| Path | When recorded | State |
+| State | Meaning | Recorded by |
 |---|---|---|
-| `api_delete_row` | Row deleted from queue | `deleted_intentionally` |
-| `api_opt_out_row` | Opt out from panel | `do_not_contact` |
-| `api_log_contact` (result=sent) | Manual contact log | `contacted` |
-| Panel Hold button | Operator hold action | `hold` |
-| Panel Mark Contacted button | Manual marking for unsent rows | `contacted` |
-| Seed script (one-shot) | Backfill of 34 real-sent rows | `contacted` |
-
-## Operator Goal
-
-1. Find businesses via map
-2. Start conversations via outreach
-3. Close clients
-4. Deploy missed-call texting automation
+| contacted | Outreach confirmed sent | api_log_contact, seed script, Mark Contacted btn |
+| suppressed | General operator suppression | /api/suppress_lead |
+| deleted_intentionally | Removed from queue | api_delete_row |
+| do_not_contact | Opt-out / explicit block | api_opt_out_row |
+| hold | Not now, revisit later | Panel Hold button |
+| revived | Un-suppressed by operator | /api/revive_lead, Memory tab Revive btn |
 
 ## Repo Quick Reference
 
@@ -129,7 +123,5 @@ Copperline is an internal platform used to:
 | What is being built now? | `docs/CURRENT_BUILD.md` |
 | What is the project state? | `docs/PROJECT_STATE.md` |
 | What must not be touched? | `docs/PROTECTED_SYSTEMS.md` |
-| What is the map strategy? | `docs/DISCOVERY_MAP_VISION.md` |
 | Full system overview | `docs/COPPERLINE_OVERVIEW.md` |
-| Build rules | `docs/CLAUDE_BUILD_RULES.md` |
 | Dev history | `docs/CHANGELOG_AI.md` |

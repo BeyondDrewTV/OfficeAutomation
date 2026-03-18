@@ -21,34 +21,33 @@ Missed-call texting is one downstream solution, not the primary pitch.
 Outreach goal: start a conversation about operational problems, not sell a product.
 
 ## Last Completed Pass
-Pass 46 -- Contacted Memory Seeding + Safer Contact Recording
+Pass 47 -- Lead Timeline / Lifecycle Event Spine
 
-- New script `lead_engine/scripts/seed_contacted_memory.py`: idempotent one-shot
-  seed of 34 real-sent rows into lead_memory.json as 'contacted'. Uses is_real_send()
-  as the gate (confirmed SMTP sends only, not logged-only rows). Dry-run by default.
-  Executed: 34/34 seeded, all with web: identity keys.
-- `api_log_contact` hook: when result=='sent', calls _lm.record_suppression(row,
-  'contacted'). Forward-looking -- all future manual contact logs auto-seed memory.
-- Panel footer: 'Mark Contacted' button (hidden when row already has sent_at,
-  visible for unsent rows). Calls /api/suppress_lead with state='contacted'.
-- fillPanel visibility block updated to toggle the new button alongside approve/schedule.
+- Extended lead_memory.py with a second entry type: 'event' entries that append
+  to history[] without changing current_state. EVT_* constants for drafted,
+  observation_added, draft_regenerated, replied, note_added, followup_sent.
+- record_event() and get_timeline() added. get_timeline() back-fills type/label
+  for pre-Pass-47 entries and returns history sorted oldest-first.
+- Four lifecycle hooks in dashboard_server.py: api_update_observation (obs added),
+  api_regenerate_draft (draft regenerated), api_update_conversation (note added),
+  api_log_contact result=replied (replied). All try/except wrapped.
+- New POST /api/lead_timeline route: returns full timeline by lead identity.
+- Panel workspace: async timeline strip below Business Info, last 6 events
+  with hover tooltips, non-blocking (fires after panel renders).
+- Lead Memory tab: event count is now a clickable expand button; full timeline
+  shown inline with icon, label, timestamp, detail per entry. Lazy-loaded.
 - No protected systems touched. No queue schema changes. 6/6 checks passed.
 
-Commit: `65d113e`
+Commit: `4a4a04b`
 
 ## Previous Completed Pass
-Pass 45 -- Durable Memory Coverage Hardening
+Pass 46 -- Contacted Memory Seeding + Safer Contact Recording
 
-Commit: `e7c382c`
+Commit: `65d113e`
 
 ## Queue State Management Note -- Pass 38
 **Date:** 2026-03-17
 **Operation:** Bulk unschedule of 56 pre-Pass-36 (v7 draft) scheduled rows.
-
-All 56 rows were scheduled for 2026-03-18 morning windows but carry old-style
-pre-observation drafts that should not auto-send. `send_after` was cleared on
-each. No rows deleted. No other fields altered. 50 sent rows untouched.
-Total row count unchanged at 180.
 
 Backup: `_backups/pending_emails_pre_p38_20260317_182909.csv`
 
@@ -59,7 +58,7 @@ Backup: `_backups/pending_emails_pre_p38_20260317_182909.csv`
 - unscheduled+unsent: 130
 
 ## Next Pass
-TBD
+TBD (candidates: Pass 48 Contact Path Recommendation, Pass 49 Observation Model Expansion)
 
 ## Protected Systems
 - `run_lead_engine.py`
