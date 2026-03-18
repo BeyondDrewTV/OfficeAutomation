@@ -1,5 +1,43 @@
 ﻿### 2026-03-17 - Pass 43: V2 Stage 2F — Next-Action-Driven Controls + History Visibility
 
+### 2026-03-18 - Pass 48: Lifecycle Coverage Expansion
+
+**Goal:** Fill in the remaining high-value lifecycle events so the timeline
+is meaningfully complete for normal operator work without touching protected systems.
+
+**Files changed:**
+- `lead_engine/lead_memory.py`
+- `lead_engine/dashboard_server.py`
+- `lead_engine/dashboard_static/index.html`
+- docs (4 files)
+
+**What changed:**
+
+`lead_memory.py`:
+- Added `EVT_APPROVED`, `EVT_UNAPPROVED`, `EVT_SCHEDULED`, `EVT_UNSCHEDULED`
+  to constants, `_ALL_EVENT_TYPES`, and `_EVENT_LABELS`.
+
+`dashboard_server.py`:
+- `api_approve_row`: records `EVT_APPROVED` after queue write.
+- `api_unapprove_row`: records `EVT_UNAPPROVED` after queue write.
+- `api_schedule_email`: records `EVT_SCHEDULED` (detail=send_after) when
+  setting a schedule, `EVT_UNSCHEDULED` when clearing. All try/except wrapped.
+
+`index.html`:
+- `_TL_ICON` and `_TL_COLOR` extended for approved (✓ green), unapproved
+  (✗ muted), scheduled (🕐 blue), unscheduled (○ muted).
+
+**Intentional non-hooks:**
+- `discovered`: post-pipeline row attribution is too risky without protected code.
+- `EVT_DRAFTED`: run_pipeline is protected.
+- `EVT_FOLLOWUP_SENT`: deferred to Pass 50.
+- `suppressed`, `revived`, `deleted_intentionally`: already recorded as
+  state-transition entries via `record_suppression()` — no new hooks needed.
+
+**Commit:** `e8d8312`
+
+---
+
 ### 2026-03-18 - Pass 47: Lead Timeline / Lifecycle Event Spine
 
 **Goal:** Introduce durable per-lead event history that records key lifecycle
