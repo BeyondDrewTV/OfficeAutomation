@@ -21,28 +21,27 @@ Missed-call texting is one downstream solution, not the primary pitch.
 Outreach goal: start a conversation about operational problems, not sell a product.
 
 ## Last Completed Pass
-Pass 44 — Durable Lead Memory + Suppression Registry
+Pass 45 — Durable Memory Coverage Hardening
 
-- New standalone module `lead_engine/lead_memory.py` persists suppression/contact
-  memory to `lead_engine/data/lead_memory.json`, independent of the queue CSV.
-- Deleting a queue row now records `deleted_intentionally` in memory before the pop.
-- Opting out a lead records `do_not_contact` in durable memory.
-- Four new API routes: `/api/suppress_lead`, `/api/revive_lead`, `/api/lead_memory`,
-  `/api/lead_memory/check`.
-- `api_discover_area` filters suppressed leads from marker results by default
-  (`?include_suppressed=1` to override).
-- Panel footer gains Hold button (suppresses from discovery without deleting).
-- Tools nav gains Lead Memory sub-tab: searchable table with suppressed-only
-  filter and per-row Revive action.
-- No protected systems touched. No queue schema changes.
-- 6/6 functional verification checks passed.
+- Extended suppression filtering to `api_discover`: suppressed rows are filtered
+  before `run_pipeline` so they are not re-drafted. Returns `suppressed_skipped`
+  count. New `all_suppressed` response state when all rows are filtered.
+- Extended suppression filtering to `api_discover_area_batch`: per-iteration
+  row check before marker accumulation. Adds `suppressed` flag to each marker.
+  Returns `total_suppressed_skipped` in response.
+- Both routes accept `include_suppressed` param to override filtering.
+- All three discovery routes now have consistent suppression behavior.
+- No other ingest paths require changes (api_discover_area: Pass 44;
+  api_run_pipeline: protected-adjacent, not a discovery entry point).
+- 4/4 verification checks passed.
+- Only file changed: `lead_engine/dashboard_server.py`.
 
-Commit: `e4cfc38`
+Commit: `e7c382c`
 
 ## Previous Completed Pass
-Pass 43 - V2 Stage 2F -- Next-Action-Driven Controls + History Visibility
+Pass 44 — Durable Lead Memory + Suppression Registry
 
-Commit: `5a09991`
+Commit: `e4cfc38`
 
 ## Queue State Management Note -- Pass 38
 **Date:** 2026-03-17

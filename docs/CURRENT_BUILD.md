@@ -1,10 +1,46 @@
-﻿# Current Build Pass
+# Current Build Pass
 
 ## Active System
-V2 Stage 2F — Next-Action-Driven Controls + History Visibility
+Pass 45 -- Durable Memory Coverage Hardening
 
 ## Status
-Pass 43 complete.
+Pass 45 complete.
+
+---
+
+## Completed: Pass 45 -- Durable Memory Coverage Hardening -- `e7c382c`
+
+Product change: `lead_engine/dashboard_server.py` only.
+No frontend changes. No protected systems touched. No queue schema changes.
+
+### Problem addressed
+
+Pass 44 introduced suppression filtering in `api_discover_area` (map-area single call),
+but `api_discover` (city-based) and `api_discover_area_batch` (exhaust mode) had no
+suppression awareness. A suppressed lead could still be re-drafted via either route.
+
+### Changes
+
+`api_discover`: reads `include_suppressed` from POST body (default False). Filters rows
+through `_lm.is_suppressed(r)` before `run_pipeline`. Returns `suppressed_skipped` count.
+New `all_suppressed` response when every discovered row is suppressed.
+
+`api_discover_area_batch`: reads `include_suppressed` from POST body (default False).
+Per-iteration row-by-row check. Each marker carries `suppressed` flag. Accumulates
+`total_suppressed_skipped` across all iterations. Returns field in final response.
+
+### Suppression coverage -- complete as of Pass 45
+
+| Route | Where filtered | Override param |
+|---|---|---|
+| POST /api/discover | Before run_pipeline | include_suppressed in body |
+| POST /api/discover_area | Marker list (Pass 44) | include_suppressed query param |
+| POST /api/discover_area_batch | Per-iteration markers | include_suppressed in body |
+
+### Verification
+
+- `python -c "import dashboard_server"` import: clean.
+- 4/4 logic checks passed.
 
 ---
 

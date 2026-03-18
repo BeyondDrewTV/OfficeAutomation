@@ -1,5 +1,54 @@
 ﻿### 2026-03-17 - Pass 43: V2 Stage 2F — Next-Action-Driven Controls + History Visibility
 
+### 2026-03-18 - Pass 45: Durable Memory Coverage Hardening
+
+**Goal:** Extend suppression filtering consistently to all remaining discovery entry points so no bypass paths exist.
+
+**Files changed:**
+- `lead_engine/dashboard_server.py`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**What changed:**
+
+`api_discover` (city-based discovery):
+- Reads `include_suppressed` from POST body (default False).
+- Filters rows returned by `discover_prospects` before passing to `run_pipeline`.
+  Suppressed rows are never re-drafted into the queue.
+- Returns `suppressed_skipped` count in all success responses.
+- New `all_suppressed: True` response state when every discovered row is suppressed.
+
+`api_discover_area_batch` (exhaust-mode discovery):
+- Reads `include_suppressed` from POST body (default False).
+- Per-iteration `_lm.is_suppressed(r)` check before appending to `all_markers`.
+- Adds `suppressed` flag to each marker object (consistent with Pass 44 `api_discover_area`).
+- Accumulates `total_suppressed_skipped` across all iterations.
+- Returns `suppressed_skipped` in final response.
+
+**No other ingest paths require changes:**
+- `api_discover_area`: already done in Pass 44.
+- `api_run_pipeline`: protected-adjacent, not a discovery entry point.
+
+**Suppression coverage after Pass 45:**
+
+| Route | Where filtered | Override param |
+|---|---|---|
+| `POST /api/discover` | Before `run_pipeline` | `include_suppressed` in body |
+| `POST /api/discover_area` | Marker list (Pass 44) | `include_suppressed` query param |
+| `POST /api/discover_area_batch` | Per-iteration marker build | `include_suppressed` in body |
+
+**No protected systems touched. No queue schema changes. No frontend changes.**
+
+**Verification:**
+- `python -c "import dashboard_server"` — clean.
+- 4/4 logic checks passed: api_discover filter, include_suppressed override, batch filter, batch include_suppressed with suppressed flag tagging.
+
+**Commit:** `e7c382c`
+
+---
+
 ### 2026-03-18 - Pass 44: Durable Lead Memory + Suppression Registry
 
 **Goal:** Ensure leads that were contacted, deleted, suppressed, held, or opted-out are durably remembered and do not casually resurface in fresh discovery. Provide an operator-accessible inspector and revive path.

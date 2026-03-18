@@ -12,12 +12,12 @@ Lead Acquisition Engine
 V2 Stage 2 — Unified Lead Workspace Backbone
 
 ## Current Build Pass
-Pass 44 — Durable Lead Memory + Suppression Registry (complete)
+Pass 45 — Durable Memory Coverage Hardening (complete)
 
 ## Last Completed Pass
-Pass 44 — Durable Lead Memory + Suppression Registry
+Pass 45 — Durable Memory Coverage Hardening
 
-Commit: `e4cfc38`
+Commit: `e7c382c`
 
 ## Next Pass
 TBD
@@ -40,11 +40,6 @@ Passes use bounded cohesive blocks, not artificially tiny micro-changes.
 - Unrelated systems must not be bundled in a single pass
 - Passes must be testable end-to-end when complete
 - No redesigns or protected-system drift without explicit operator approval
-
-Examples:
-- Correct: hidden email extraction + contact cleanup + message guardrails because all three improve one outreach-readiness workflow
-- Incorrect: discovery + scheduler UX + message quality in one pass
-- Previous completed example: Pass 35 added queue-state clarity, timing explanations, and post-action feedback because all three improved one scheduling-understanding workflow
 
 ---
 
@@ -99,7 +94,16 @@ Copperline is an internal platform used to:
 - No build steps - frontend is a single HTML file with CDN dependencies only
 - Email sending is manual - auto-send is not enabled
 - Quick reply templates require `COPPERLINE_LINKS` config before live use
-- Suppressed/contacted leads are filtered from fresh discovery by default
+- Suppressed/contacted leads are filtered from all discovery entry points by default
+  (override: include_suppressed=1 query param or body field)
+
+## Suppression Coverage (as of Pass 45)
+
+| Route | Suppression filtered? | Override param |
+|---|---|---|
+| `POST /api/discover` | Yes — before pipeline run | `include_suppressed` in body |
+| `POST /api/discover_area` | Yes — marker list | `include_suppressed` query param |
+| `POST /api/discover_area_batch` | Yes — per-iteration markers | `include_suppressed` in body |
 
 ## Operator Goal
 
