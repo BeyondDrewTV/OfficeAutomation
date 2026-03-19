@@ -72,7 +72,7 @@ instead of generic nurture-style fallback copy.
     `422` with `blocked_reason=insufficient_context`
 - Deterministic sample planning verified for grounded step-1 and step-2 follow-ups.
 
-**Commit:** pending
+**Commit:** `4ab7bd5`
 
 ---
 

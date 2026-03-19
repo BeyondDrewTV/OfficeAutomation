@@ -39,7 +39,7 @@ Pass 50 -- Follow-Up System Rebuild
 - No queue schema reorder/rename changes. No `run_lead_engine.py` changes.
   No email sender core changes. No scheduler timing changes.
 
-Commit: pending
+Commit: `4ab7bd5`
 
 ## Previous Completed Pass
 Pass 49 -- Observation Model Expansion
