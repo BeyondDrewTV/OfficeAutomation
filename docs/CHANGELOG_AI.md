@@ -1633,3 +1633,61 @@ existing observation-led drafting standard.
 **Commit:** `aea9452`
 
 ---
+
+### 2026-03-19 - Docs Governance Sync: Observation Candidate Era
+
+**Goal:** Align the repo-state and startup docs to the actual post-Pass-51
+system without changing product code.
+
+**Files changed:**
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+- `docs/AI_START_HERE.md`
+- `docs/AI_DEV_STANDARDS.md`
+
+**What changed:**
+
+`docs/PROJECT_STATE.md`:
+- Kept Pass 51 as the latest completed product pass.
+- Clarified that observation-led drafting still blocks when no valid
+  observation exists.
+- Updated the core workflow so observations may be operator-authored or
+  system-generated candidates, with operator review/edit still in the loop.
+
+`docs/CURRENT_BUILD.md`:
+- Reframed the active session as a docs-only governance sync instead of a new
+  product implementation pass.
+- Made the post-Pass-51 observation-candidate baseline explicit.
+- Marked the repo as ready for the next intended product pass:
+  territory heatmap overlay.
+
+`docs/AI_CONTROL_PANEL.md`:
+- Updated the current build pass to this docs sync while keeping Pass 51 as the
+  last completed product pass.
+- Added governance distinction language between protected delivery-core systems
+  and additive operator-visible intelligence layers.
+- Added active constraints for generated observations, operator review default,
+  and no hidden bulk mutation / auto-accept behavior.
+
+`docs/AI_START_HERE.md` and `docs/AI_DEV_STANDARDS.md`:
+- Removed manual-only observation framing from startup guidance.
+- Added explicit wording that protected delivery-core systems remain constrained
+  while additive intelligence layers may evolve carefully when truthful,
+  documented, reversible, and operator-visible.
+
+**Design decisions:**
+- Did not change product code.
+- Did not change protected system definitions in `PROTECTED_SYSTEMS.md`.
+- Did not broaden sender, queue, scheduler, or orchestration permissions.
+
+**Verification:**
+- Verified repo-state docs now point to Pass 51 as the last completed product pass.
+- Verified startup/governance docs now reflect the observation-candidate model
+  and operator-review default.
+- Verified this pass is documentation only.
+
+**Commit:** `PENDING_COMMIT`
+
+---

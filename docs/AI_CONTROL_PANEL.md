@@ -12,7 +12,7 @@ Lead Acquisition Engine
 V2 Stage 2 - Unified Lead Workspace Backbone
 
 ## Current Build Pass
-Pass 51 -- Observation Autowrite + Candidate Approval Layer (complete)
+Docs Governance Sync for Observation Candidate Era
 
 ## Last Completed Pass
 Pass 51 -- Observation Autowrite + Candidate Approval Layer
@@ -65,13 +65,24 @@ track replies, convert to clients, deploy missed-call texting.
 - Follow-up scheduler timing/core send logic
 - `safe_autopilot_eligible` logic
 
+## Governance Distinction
+
+- Protected delivery-core systems remain constrained. Do not loosen sender,
+  queue, scheduling, or orchestration protections casually.
+- Operator-visible intelligence layers may evolve additively when changes are
+  truthful, documented, reversible, and do not introduce hidden send-path or
+  bulk-mutation behavior.
+
 ## Active Constraints
 
 - Discovery must be intentional - no auto-search on pan or zoom
 - No build steps - frontend is a single HTML file with CDN dependencies only
 - Email sending is manual/operator-reviewed - auto-send must not drift into generic nurture behavior
-- Follow-up drafting now blocks when lead-specific continuation context is weak
-- Observation candidates can be generated only from stored lead evidence and still require operator review/save before drafting
+- Observation-led drafting remains required
+- Generated observations are allowed only when grounded in real available lead context
+- Generated observations remain operator-reviewed by default during hardening
+- No hidden bulk observation mutation or auto-accept behavior is in scope
+- Follow-up drafting blocks when lead-specific continuation context is weak
 - Stale first-touch rows still keep the direct refresh path from queue row -> observation field -> regenerate -> next stale row
 - Suppressed/contacted leads filtered from all discovery entry points by default
 

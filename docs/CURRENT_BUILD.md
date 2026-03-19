@@ -1,101 +1,60 @@
 # Current Build Pass
 
 ## Active System
-Pass 51 -- Observation Autowrite + Candidate Approval Layer
+Docs Governance Sync for Observation Candidate Era
 
 ## Status
-Pass 51 complete.
+Docs-only sync complete for the post-Pass-51 baseline. Product code is
+unchanged in this pass, and the repo is ready for the next product pass.
 
 ---
 
-## Completed: Pass 51 -- Observation Autowrite + Candidate Approval Layer -- `aea9452`
+## Current Session Scope
 
-Product changes across three code files:
-- `lead_engine/outreach/observation_candidate_agent.py`
-- `lead_engine/dashboard_server.py`
-- `lead_engine/dashboard_static/index.html`
+This session is documentation and governance only.
 
-Docs updated in:
+- Confirm Pass 51 is the latest completed product pass
+- Normalize workflow wording so observations are no longer described as
+  manual-only
+- Clarify that observation-led drafting still requires a valid observation
+- Keep operator review as the default for generated observation candidates
+- Refine governance language so delivery-core protections remain strict while
+  additive operator-visible intelligence layers can evolve carefully
+
+## Verified Product Baseline
+
+The repo is now in the post-Pass-51 observation-candidate state.
+
+- Observation-led drafting remains required
+- Observations may be operator-authored or system-generated candidates grounded
+  in real available context
+- Generated observations remain operator-reviewed by default during hardening
+- Draft regeneration still blocks when no valid observation exists
+- No auto-send, no hidden bulk observation mutation, and no auto-accept path is
+  documented or implied by this pass
+
+## Last Completed Product Pass
+
+Pass 51 -- Observation Autowrite + Candidate Approval Layer -- `aea9452`
+
+## Ready for Next Product Pass
+
+After this docs sync, the repo should be ready for:
+- Territory heatmap overlay
+
+## Docs Updated in This Pass
+
 - `docs/PROJECT_STATE.md`
 - `docs/CURRENT_BUILD.md`
-- `docs/CHANGELOG_AI.md`
 - `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+- `docs/AI_START_HERE.md`
+- `docs/AI_DEV_STANDARDS.md`
 
-No queue schema reorder/rename changes. No `run_lead_engine.py` changes.
-No email sender core changes. No scheduler timing changes.
+## What Remains Out of Scope
 
-### Problem addressed
-
-Observation-led drafting was working, but it still depended too heavily on the
-operator writing observation text manually before first-touch drafts could be
-created or stale rows could be refreshed. That manual bottleneck limited
-throughput even when Copperline already had enough grounded lead evidence on
-file to suggest a safe observation candidate.
-
-### What was added
-
-**`lead_engine/outreach/observation_candidate_agent.py`** (new)
-
-- Added deterministic observation candidate generation with explicit families:
-  `prior_observation_restore`, `limited_contact_methods`,
-  `single_contact_route`, and `phone_only_listing`.
-- Added shared observation validation used by both save and regenerate flows.
-- Added structured blocking for weak evidence, generic copy, banned
-  growth/agency language, missing context overlap, and overlong observations.
-
-**`lead_engine/dashboard_server.py`**
-
-- Added `POST /api/generate_observation_candidate` to build a candidate from
-  safe stored lead context only.
-- `POST /api/update_observation` now uses shared validation and returns
-  structured blocked reasons on invalid save attempts.
-- `POST /api/regenerate_draft` now also re-validates the observation before
-  rebuilding copy, preserving observation-led quality gates.
-- Added prospect matching helpers so candidate generation can safely reuse
-  existing business context already stored in `prospects.csv`.
-
-**`lead_engine/dashboard_static/index.html`**
-
-- Added panel observation actions:
-  `Generate Obs`, `Save Observation`, `Use Candidate`, and
-  `Regenerate Candidate`.
-- Added a candidate review box that shows:
-  candidate text, family, confidence, rationale, evidence, source labels, or
-  a clear blocked reason when no safe candidate exists.
-- Candidate generation runs inside the existing observation panel flow instead
-  of creating a parallel review system.
-- Unsaved observation edits, blocked save/regenerate states, and candidate-ready
-  states now surface directly in-panel.
-
-### What remains intentionally out of scope
-
-- Scheduler timing model and due-date math
-- Send Approved behavior or Gmail/manual send flow
-- Queue schema redesign
-- Hidden or automatic bulk mutation of all leads
-- Auto-accepting observation candidates without operator review
-- Protected send-path rewrites
-
-### Verification
-
-- Dashboard JS extracted and `new vm.Script(...)` parses clean.
-- Python imports clean for `lead_engine.dashboard_server` and
-  `lead_engine.outreach.observation_candidate_agent`.
-- Flask test client verification on the real local repo:
-  - ready candidate on `Massie Heating and Air Conditioning` -> `200`,
-    family `limited_contact_methods`
-  - blocked candidate on `Integrity Auto Care` -> `200`,
-    `blocked_reason=weak_source_context`
-  - invalid save attempt using banned growth language -> `400`,
-    `blocked_reason=observation_banned_language`
-  - invalid regenerate attempt using the same banned observation -> `400`,
-    `blocked_reason=observation_banned_language`
-- Current local queue evaluation through the new candidate layer:
-  `49` ready candidates, `131` blocked
-  (`110` `weak_source_context`, `21` `insufficient_context`).
-
----
-
-## Previous Completed: Pass 50a / 51a -- Stale Draft Refresh Workflow -- `5b43aaa`
-
-- Added direct stale row refresh actions and faster queue-to-observation repair flow.
+- Product code changes
+- Queue schema changes
+- Sender/timing/core delivery behavior changes
+- Hidden automation behavior
+- Protected-system loosening

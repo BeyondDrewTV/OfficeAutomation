@@ -26,6 +26,11 @@ These standards govern how every AI session interacts with this repository.
    `PROTECTED_SYSTEMS.md`. Changes to protected systems require explicit
    operator approval and an isolated commit.
 
+   Protected delivery-core systems stay constrained. Adjacent
+   operator-visible intelligence layers may evolve additively when changes are
+   truthful, documented, reversible, and do not introduce hidden send-path or
+   queue-mutation behavior.
+
 4. **Commit-linked documentation**
    Every completed pass is documented with its commit hash in `CHANGELOG_AI.md`
    and `PROJECT_STATE.md`. Documentation that cannot be traced to a commit is
@@ -37,12 +42,12 @@ These standards govern how every AI session interacts with this repository.
    safety justification, verification steps, commit hash, and remaining risks.
 
 6. **Repository self-documentation**
-   The repository docs must always reflect actual project state — not aspirational
-   or stale state. After each pass, update `PROJECT_STATE.md`, `CURRENT_BUILD.md`,
-   `CHANGELOG_AI.md`, and `AI_CONTROL_PANEL.md`.
+   The repository docs must always reflect actual project state, not
+   aspirational or stale state. After each pass, update `PROJECT_STATE.md`,
+   `CURRENT_BUILD.md`, `CHANGELOG_AI.md`, and `AI_CONTROL_PANEL.md`.
 
 7. **Minimal context loading**
-   AI sessions should be able to orient from 3–4 short files. The documentation
+   AI sessions should be able to orient from 3-4 short files. The documentation
    system is designed to fit full project context under ~1,000 tokens. Keep
    docs files concise and current.
 
@@ -62,14 +67,14 @@ A pass is incorrectly scoped when:
 - It splits one workflow across multiple passes unnecessarily
 - It includes cosmetic refactors unrelated to the current goal
 
-Typical pass size: 1–6 files changed. No hard maximum, but larger passes
+Typical pass size: 1-6 files changed. No hard maximum, but larger passes
 require stronger cohesion justification.
 
 ---
 
 ## What AI Assistants Must Not Do
 
-- Guess project goals — always read the docs first
+- Guess project goals - always read the docs first
 - Implement features not listed in `CURRENT_BUILD.md`
 - Modify protected systems without operator approval
 - Make large rewrites of working systems
@@ -96,7 +101,7 @@ Before writing any code, an AI session must:
 
 - Documentation files: `UPPER_SNAKE_CASE.md`
 - Python modules: `lower_snake_case.py`
-- Frontend: single `index.html` — no additional frontend files without approval
+- Frontend: single `index.html` - no additional frontend files without approval
 - No new directories without pass documentation explaining why
 
 ---

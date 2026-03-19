@@ -27,6 +27,8 @@ Pass 51 -- Observation Autowrite + Candidate Approval Layer
   saved lead memory observations, matched prospect contactability, visible
   contact routes on file, and limited queue insight signals when they support a
   concrete operational/contact-path observation.
+- Observation-led drafting still blocks when no valid observation exists, even
+  after candidate generation is available.
 - Weak evidence now blocks cleanly with structured reasons instead of inventing
   category-level or salesy observation text.
 - Observation validation is now shared across save and regenerate paths, so
@@ -55,12 +57,15 @@ Territory heatmap overlay
 1. Discover businesses via map
 2. System can generate a grounded observation candidate when real lead evidence
    is strong enough
-3. Operator reviews or edits the observation, then saves it to the lead row
-4. System generates observation-led first-touch drafts from the approved/saved
+3. Operator reviews, uses, or edits the observation candidate, then saves the
+   final observation to the lead row
+4. Observation-led first-touch drafting still blocks when there is no valid
+   saved observation
+5. System generates observation-led first-touch drafts from the approved/saved
    observation
-5. Operator reviews, approves, or schedules for tomorrow morning
-6. Emails are sent manually via Gmail
-7. Follow-up drafting only proceeds when the lead record has grounded
+6. Operator reviews, approves, or schedules for tomorrow morning
+7. Emails are sent manually via Gmail
+8. Follow-up drafting only proceeds when the lead record has grounded
    continuation context
-8. Weak or generic follow-ups block instead of auto-queuing generic nurture copy
-9. Clients onboard to missed-call texting service
+9. Weak or generic follow-ups block instead of auto-queuing generic nurture copy
+10. Clients onboard to missed-call texting service
