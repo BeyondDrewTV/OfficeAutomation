@@ -37,7 +37,13 @@ from run_lead_engine import run as run_pipeline, DEFAULT_PENDING_CSV, DEFAULT_PR
 from scoring.opportunity_scoring_agent import score_label as get_score_label, compute_numeric_score, score_priority_label
 from send.email_sender_agent import process_pending_emails, is_real_send, send_next_due_email, CSV_WRITE_LOCK, _is_send_eligible
 from intelligence.email_extractor_agent import enrich_prospects_with_emails
-from discovery.auto_prospect_agent import discover_prospects, INDUSTRY_QUERIES, discover_prospects_area
+from intelligence.observation_evidence_agent import refresh_observation_evidence
+from discovery.auto_prospect_agent import (
+    discover_prospects,
+    INDUSTRY_QUERIES,
+    PROSPECTS_COLUMNS,
+    discover_prospects_area,
+)
 from outreach.followup_scheduler import run_followup_scheduler
 from outreach.followup_draft_agent import build_followup_plan, FollowupBlockedError
 from outreach.observation_candidate_agent import (
@@ -214,6 +220,26 @@ def _read_prospects() -> list:
         return [dict(row) for row in reader]
 
 
+def _read_prospects_with_fieldnames() -> tuple[list, list[str]]:
+    if not PROSPECTS_CSV.exists():
+        return [], list(PROSPECTS_COLUMNS)
+    with PROSPECTS_CSV.open("r", newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        fieldnames = list(reader.fieldnames or PROSPECTS_COLUMNS)
+        rows = [dict(row) for row in reader]
+    return rows, fieldnames
+
+
+def _write_prospects(rows: list, fieldnames: list[str]) -> None:
+    safe_fieldnames = fieldnames or list(PROSPECTS_COLUMNS)
+    safe_rows = [{col: row.get(col, "") for col in safe_fieldnames} for row in rows]
+    with CSV_WRITE_LOCK:
+        with PROSPECTS_CSV.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=safe_fieldnames)
+            writer.writeheader()
+            writer.writerows(safe_rows)
+
+
 def _find_matching_prospect(row: dict, prospects: list) -> dict | None:
     if not row or not prospects:
         return None
@@ -221,6 +247,16 @@ def _find_matching_prospect(row: dict, prospects: list) -> dict | None:
     for prospect in prospects:
         if _lm.lead_key(prospect) == queue_key:
             return prospect
+    return None
+
+
+def _find_matching_prospect_index(row: dict, prospects: list) -> int | None:
+    if not row or not prospects:
+        return None
+    queue_key = _lm.lead_key(row)
+    for idx, prospect in enumerate(prospects):
+        if _lm.lead_key(prospect) == queue_key:
+            return idx
     return None
 
 
@@ -1922,6 +1958,126 @@ def api_generate_observation_candidate():
         "ok": True,
         "blocked": False,
         **candidate,
+    })
+
+
+@app.route("/api/refresh_observation_evidence", methods=["POST"])
+def api_refresh_observation_evidence():
+    """
+    Refresh website/contact evidence for one lead, then retry observation candidate generation.
+
+    Input:  { index, business_name }
+    Output:
+      ready -> { ok, blocked: False, candidate_text..., refresh: {...} }
+      blocked -> { ok, blocked: True, blocked_reason, blocked_message, refresh: {...} }
+
+    Single-lead only. Does not auto-save the observation or regenerate/send any draft.
+    """
+    d             = request.json or {}
+    idx           = d.get("index")
+    business_name = (d.get("business_name") or "").strip()
+
+    if idx is None or not isinstance(idx, int):
+        return jsonify({"ok": False, "error": "index required (int)", "blocked_reason": "invalid_request"}), 400
+    if not business_name:
+        return jsonify({"ok": False, "error": "business_name required", "blocked_reason": "invalid_request"}), 400
+
+    rows = _read_pending()
+    if not (0 <= idx < len(rows)):
+        return jsonify({"ok": False, "error": "Invalid index", "blocked_reason": "invalid_request"}), 400
+
+    row = rows[idx]
+    if row.get("business_name", "").strip().lower() != business_name.lower():
+        return jsonify({"ok": False, "error": "Row index/name mismatch", "blocked_reason": "row_mismatch"}), 409
+
+    memory_record = _lm.get_record(row)
+    prospects, prospect_fieldnames = _read_prospects_with_fieldnames()
+    prospect_idx = _find_matching_prospect_index(row, prospects)
+    prospect_row = prospects[prospect_idx] if prospect_idx is not None else None
+
+    try:
+        refresh = refresh_observation_evidence(row, prospect_row=prospect_row)
+    except Exception as exc:
+        log.warning("api_refresh_observation_evidence error: %s", exc, exc_info=True)
+        return jsonify({"ok": False, "error": str(exc)}), 500
+
+    row_updates = refresh.get("row_updates") or {}
+    prospect_updates = refresh.get("prospect_updates") or {}
+
+    for key, value in row_updates.items():
+        row[key] = value
+    if row_updates:
+        _write_pending(rows)
+
+    refreshed_prospect = prospect_row
+    if prospect_idx is not None and prospect_updates:
+        for key, value in prospect_updates.items():
+            prospects[prospect_idx][key] = value
+        _write_prospects(prospects, prospect_fieldnames)
+        refreshed_prospect = prospects[prospect_idx]
+
+    refresh_payload = {
+        "summary": refresh.get("summary") or "",
+        "website": refresh.get("website") or "",
+        "website_source": refresh.get("website_source") or "",
+        "evidence": refresh.get("evidence") or [],
+        "source_labels": refresh.get("source_labels") or [],
+        "updated_fields": refresh.get("updated_fields") or [],
+        "prospect_updated_fields": refresh.get("prospect_updated_fields") or [],
+        "row_updates": row_updates,
+        "blocked": bool(refresh.get("blocked")),
+        "blocked_reason": refresh.get("blocked_reason") or "",
+        "blocked_message": refresh.get("blocked_message") or "",
+    }
+
+    try:
+        candidate = build_observation_candidate(
+            row,
+            memory_record=memory_record,
+            prospect_row=refreshed_prospect,
+        )
+    except ObservationCandidateBlockedError as exc:
+        blocked_reason = exc.reason
+        blocked_message = exc.message
+        if refresh.get("blocked"):
+            blocked_reason = refresh.get("blocked_reason") or blocked_reason
+            blocked_message = refresh.get("blocked_message") or blocked_message
+        return jsonify({
+            "ok": True,
+            "blocked": True,
+            "blocked_reason": blocked_reason,
+            "blocked_message": blocked_message,
+            "evidence": (refresh.get("evidence") or []) + (exc.evidence or []),
+            "source_labels": list(dict.fromkeys((refresh.get("source_labels") or []) + (exc.source_labels or []))),
+            "confidence": exc.confidence,
+            "family": exc.family,
+            "refresh": refresh_payload,
+        })
+    except ObservationValidationError as exc:
+        blocked_reason = refresh.get("blocked_reason") or exc.reason
+        blocked_message = refresh.get("blocked_message") or exc.message
+        return jsonify({
+            "ok": True,
+            "blocked": True,
+            "blocked_reason": blocked_reason,
+            "blocked_message": blocked_message,
+            "evidence": refresh.get("evidence") or [],
+            "source_labels": refresh.get("source_labels") or [],
+            "refresh": refresh_payload,
+        })
+    except Exception as exc:
+        log.warning("api_refresh_observation_evidence candidate error: %s", exc, exc_info=True)
+        return jsonify({"ok": False, "error": str(exc), "refresh": refresh_payload}), 500
+
+    return jsonify({
+        "ok": True,
+        "blocked": False,
+        **{
+            **candidate,
+            "evidence": (refresh.get("evidence") or []) + (candidate.get("evidence") or []),
+            "source_labels": list(dict.fromkeys((refresh.get("source_labels") or []) + (candidate.get("source_labels") or []))),
+        },
+        "refresh": refresh_payload,
     })
 
 

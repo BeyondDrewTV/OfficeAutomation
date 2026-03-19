@@ -1278,6 +1278,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
           </div>
           <div class="obs-tool-row">
             <button class="btn-obs-tool" id="panel-obs-generate-btn" onclick="panelGenerateObservationCandidate()">Generate Obs</button>
+            <button class="btn-obs-tool" id="panel-obs-refresh-btn" onclick="panelRefreshObservationEvidence()">Refresh Evidence</button>
             <button class="btn-obs-tool" id="panel-obs-save-btn" onclick="panelSaveObservation()" disabled>Save Observation</button>
             <span class="obs-tool-status" id="panel-obs-tool-status"></span>
           </div>
@@ -2753,22 +2754,7 @@ async function fillPanel(row, fi, totalRows) {
   }
 
   // ── Lead insight ──────────────────────────────────────────────────────────
-  const insightSec  = document.getElementById('panel-insight-section');
-  const insightTxt  = document.getElementById('panel-insight-text');
-  const insightSigs = document.getElementById('panel-insight-signals');
-  if (insightSec && insightTxt) {
-    const sentence = row.lead_insight_sentence || '';
-    if (sentence) {
-      insightTxt.textContent = sentence;
-      if (insightSigs) {
-        const sigs = (row.lead_insight_signals || '').split('|').filter(Boolean);
-        insightSigs.textContent = sigs.length ? 'Signals: ' + sigs.join(', ') : '';
-      }
-      insightSec.style.display = '';
-    } else {
-      insightSec.style.display = 'none';
-    }
-  }
+  _panelRenderLeadInsight(row);
 
   // ── Observation field (Pass 36) ───────────────────────────────────────────
   _panelPopulateObs(row);
@@ -3083,18 +3069,45 @@ function _panelSetObservationToolStatus(message, tone) {
   el.className = 'obs-tool-status' + (tone === 'err' ? ' obs-err' : tone === 'ok' ? ' obs-ok' : '');
 }
 
+function _panelRenderLeadInsight(row) {
+  const insightSec  = document.getElementById('panel-insight-section');
+  const insightTxt  = document.getElementById('panel-insight-text');
+  const insightSigs = document.getElementById('panel-insight-signals');
+  if (!insightSec || !insightTxt) return;
+  const sentence = row?.lead_insight_sentence || '';
+  if (!sentence) {
+    insightSec.style.display = 'none';
+    insightTxt.textContent = '';
+    if (insightSigs) insightSigs.textContent = '';
+    return;
+  }
+  insightTxt.textContent = sentence;
+  if (insightSigs) {
+    const sigs = (row.lead_insight_signals || '').split('|').filter(Boolean);
+    insightSigs.textContent = sigs.length ? 'Signals: ' + sigs.join(', ') : '';
+  }
+  insightSec.style.display = '';
+}
+
 function _panelRefreshObservationButtons(row) {
   const obsInput = document.getElementById('panel-obs-input');
   const genBtn   = document.getElementById('panel-obs-generate-btn');
+  const refreshBtn = document.getElementById('panel-obs-refresh-btn');
   const saveBtn  = document.getElementById('panel-obs-save-btn');
-  if (!obsInput || !genBtn || !saveBtn || !row) return;
+  if (!obsInput || !genBtn || !refreshBtn || !saveBtn || !row) return;
   const isSent = !!row.sent_at;
   const currentObs = (obsInput.value || '').trim();
   const savedObs = (row._savedObservationText || '').trim();
   const state = _panelObsCandidateState(row);
+  const isLoading = state.status === 'loading';
+  const isRefreshing = !!state.refresh_mode;
 
-  genBtn.disabled = isSent || state.status === 'loading';
-  genBtn.textContent = state.status === 'ready' ? 'Regenerate Obs' : 'Generate Obs';
+  genBtn.disabled = isSent || isLoading;
+  genBtn.textContent = isLoading && !isRefreshing
+    ? 'Generating...'
+    : (state.status === 'ready' ? 'Regenerate Obs' : 'Generate Obs');
+  refreshBtn.disabled = isSent || isLoading;
+  refreshBtn.textContent = isRefreshing ? 'Refreshing...' : 'Refresh Evidence';
   saveBtn.disabled = isSent || !currentObs || currentObs === savedObs;
 }
 
@@ -3112,10 +3125,10 @@ function _panelRenderObservationCandidate(row) {
     box.className = 'obs-candidate-box loading';
     box.innerHTML =
       `<div class="obs-candidate-head">` +
-      `<div class="obs-candidate-title">Observation Candidate</div>` +
-      `<div class="obs-candidate-meta"><span class="obs-candidate-chip">scanning context</span></div>` +
+      `<div class="obs-candidate-title">${escHtml(state.loading_title || 'Observation Candidate')}</div>` +
+      `<div class="obs-candidate-meta"><span class="obs-candidate-chip">${escHtml(state.loading_chip || 'scanning context')}</span></div>` +
       `</div>` +
-      `<div class="obs-candidate-rationale">Building a candidate from saved lead context only...</div>`;
+      `<div class="obs-candidate-rationale">${escHtml(state.loading_message || 'Building a candidate from saved lead context only...')}</div>`;
     box.style.display = '';
     return;
   }
@@ -3130,7 +3143,10 @@ function _panelRenderObservationCandidate(row) {
       `</div>` +
       `<div class="obs-candidate-rationale">${escHtml(state.blocked_message || 'No grounded observation candidate could be produced from the current evidence.')}</div>` +
       (evidence ? `<div class="obs-candidate-evidence">${evidence}</div>` : '') +
-      `<div class="obs-candidate-actions"><button class="btn-obs-inline" onclick="panelGenerateObservationCandidate()">Try Again</button></div>`;
+      `<div class="obs-candidate-actions">` +
+      `<button class="btn-obs-inline" onclick="panelGenerateObservationCandidate()">Try Again</button>` +
+      `<button class="btn-obs-inline" onclick="panelRefreshObservationEvidence()">Refresh Evidence</button>` +
+      `</div>`;
     box.style.display = '';
     return;
   }
@@ -3153,6 +3169,7 @@ function _panelRenderObservationCandidate(row) {
     `<div class="obs-candidate-actions">` +
     `<button class="btn-obs-inline" onclick="panelUseObservationCandidate()">Use Candidate</button>` +
     `<button class="btn-obs-inline" onclick="panelGenerateObservationCandidate()">Regenerate Candidate</button>` +
+    `<button class="btn-obs-inline" onclick="panelRefreshObservationEvidence()">Refresh Evidence</button>` +
     `</div>`;
   box.style.display = '';
 }
@@ -3314,7 +3331,13 @@ async function panelGenerateObservationCandidate(opts) {
     return false;
   }
 
-  row._obsCandidateState = { status: 'loading' };
+  row._obsCandidateState = {
+    status: 'loading',
+    refresh_mode: false,
+    loading_title: 'Observation Candidate',
+    loading_chip: 'scanning context',
+    loading_message: 'Building a candidate from saved lead context only...',
+  };
   _panelRenderObservationCandidate(row);
   _panelSetObservationToolStatus(options.auto ? 'Scanning saved context for a grounded candidate...' : 'Generating observation candidate...', '');
   _panelRefreshObservationButtons(row);
@@ -3373,6 +3396,103 @@ async function panelGenerateObservationCandidate(opts) {
       status: 'blocked',
       blocked_reason: 'candidate_error',
       blocked_message: _operatorRequestError(err, 'Candidate generation failed.'),
+      evidence: [],
+      source_labels: [],
+    };
+    _panelRenderObservationCandidate(row);
+    _panelSetObservationToolStatus(row._obsCandidateState.blocked_message, 'err');
+    _panelRefreshObservationButtons(row);
+    return false;
+  }
+}
+
+function _panelApplyObservationRefresh(row, refresh) {
+  if (!row || !refresh) return;
+  const updates = refresh.row_updates || {};
+  Object.keys(updates).forEach(key => {
+    row[key] = updates[key];
+  });
+}
+
+async function panelRefreshObservationEvidence() {
+  const row = _panelCurrentRow();
+  if (!row || row.sent_at) return false;
+  const gi = allRows.indexOf(row);
+  if (gi < 0) {
+    _panelSetObservationToolStatus('Cannot locate row - refresh queue first.', 'err');
+    return false;
+  }
+
+  row._obsCandidateState = {
+    status: 'loading',
+    refresh_mode: true,
+    loading_title: 'Refreshing Evidence',
+    loading_chip: 'live refresh',
+    loading_message: 'Rechecking website and contact evidence for this lead, then retrying the observation candidate...',
+  };
+  _panelRenderObservationCandidate(row);
+  _panelSetObservationToolStatus('Refreshing live evidence for this lead...', '');
+  _panelRefreshObservationButtons(row);
+
+  try {
+    const res = await apiJson('/api/refresh_observation_evidence', {
+      index: gi,
+      business_name: row.business_name,
+    });
+    const refresh = res.refresh || {};
+    _panelApplyObservationRefresh(row, refresh);
+    _panelRenderLeadInsight(row);
+    renderTable();
+
+    if (!res.ok && !res.blocked) {
+      row._obsCandidateState = {
+        status: 'blocked',
+        blocked_reason: res.blocked_reason || 'refresh_error',
+        blocked_message: res.error || 'Evidence refresh failed.',
+        evidence: refresh.evidence || [],
+        source_labels: refresh.source_labels || [],
+      };
+      _panelRenderObservationCandidate(row);
+      _panelSetObservationToolStatus(row._obsCandidateState.blocked_message, 'err');
+      _panelRefreshObservationButtons(row);
+      return false;
+    }
+
+    if (res.blocked) {
+      row._obsCandidateState = {
+        status: 'blocked',
+        blocked_reason: res.blocked_reason || 'insufficient_evidence',
+        blocked_message: res.blocked_message || 'No safe candidate was produced after the evidence refresh.',
+        evidence: res.evidence || refresh.evidence || [],
+        source_labels: res.source_labels || refresh.source_labels || [],
+        confidence: res.confidence || '',
+        family: res.family || '',
+      };
+      _panelRenderObservationCandidate(row);
+      _panelSetObservationToolStatus(res.blocked_message || refresh.summary || 'Evidence refreshed, but no safe candidate was produced.', 'err');
+      _panelRefreshObservationButtons(row);
+      return false;
+    }
+
+    row._obsCandidateState = {
+      status: 'ready',
+      candidate_text: res.candidate_text || '',
+      family: res.family || '',
+      confidence: res.confidence || '',
+      rationale: res.rationale || '',
+      evidence: res.evidence || refresh.evidence || [],
+      source_labels: res.source_labels || refresh.source_labels || [],
+      grade: res.grade || null,
+    };
+    _panelRenderObservationCandidate(row);
+    _panelSetObservationToolStatus(refresh.summary || 'Fresh evidence retrieved and candidate rebuilt.', 'ok');
+    _panelRefreshObservationButtons(row);
+    return true;
+  } catch (err) {
+    row._obsCandidateState = {
+      status: 'blocked',
+      blocked_reason: 'refresh_error',
+      blocked_message: _operatorRequestError(err, 'Evidence refresh failed.'),
       evidence: [],
       source_labels: [],
     };

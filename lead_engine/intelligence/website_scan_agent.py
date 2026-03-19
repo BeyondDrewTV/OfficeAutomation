@@ -141,6 +141,7 @@ def scan_website(website_url: str, timeout_seconds: int = DEFAULT_TIMEOUT_SECOND
     result: Dict[str, object] = {
         "website_reachable": False,
         "scanned_urls": [],
+        "text_corpus": "",
         "has_contact_form": False,
         "has_email_visible": False,
         "has_phone_visible": False,
@@ -170,6 +171,7 @@ def scan_website(website_url: str, timeout_seconds: int = DEFAULT_TIMEOUT_SECOND
     scanned: List[str] = []
     seen: Set[str] = set()
     text_content_total = 0
+    text_chunks: List[str] = []
     cta_found = False
     gmail_or_yahoo_email = False
 
@@ -190,7 +192,10 @@ def scan_website(website_url: str, timeout_seconds: int = DEFAULT_TIMEOUT_SECOND
 
         scanned.append(url)
         html_lower = html.lower()
-        text_content_total += len(_strip_html(html_lower))
+        page_text = _strip_html(html_lower)
+        text_content_total += len(page_text)
+        if page_text:
+            text_chunks.append(page_text[:4000])
 
         if not result["website_reachable"]:
             result["website_reachable"] = True
@@ -240,6 +245,7 @@ def scan_website(website_url: str, timeout_seconds: int = DEFAULT_TIMEOUT_SECOND
             result["mobile_friendly_hint"] = True
 
     result["scanned_urls"] = scanned
+    result["text_corpus"] = " ".join(text_chunks)[:16000]
 
     weak_signals: List[str] = []
     positive_signals: List[str] = []

@@ -80,6 +80,7 @@ class _RouteContext:
     contactability: str
     insight_sentence: str
     insight_signals: List[str]
+    refresh_signal_terms: List[str]
 
     @property
     def route_labels(self) -> List[str]:
@@ -156,7 +157,16 @@ def build_observation_candidate(
     confidence = ""
     rationale = ""
 
-    if "limited_contact_methods" in ctx.insight_signals and ctx.website and 1 <= ctx.route_count <= 2:
+    if _has_fresh_site_evidence(ctx):
+        text = ctx.insight_sentence
+        family = "fresh_site_evidence"
+        confidence = "high" if len(ctx.refresh_signal_terms) >= 2 else "medium"
+        rationale = "Built from fresh website evidence saved on this lead during an operator-triggered refresh."
+    elif (
+        any(signal in {"limited_contact_methods", "limited contact methods"} for signal in ctx.insight_signals)
+        and ctx.website
+        and 1 <= ctx.route_count <= 2
+    ):
         text = _limited_contact_methods_candidate(ctx)
         family = "limited_contact_methods"
         confidence = "high" if ctx.route_count == 1 else "medium"
@@ -206,6 +216,7 @@ def _build_route_context(row: Dict[str, str], prospect_row: Optional[Dict[str, s
         if part.strip()
     ]
     prospect = prospect_row or {}
+    refresh_terms = _refresh_signal_terms(insight_signals)
     return _RouteContext(
         website=(row.get("website") or prospect.get("website") or "").strip(),
         phone=(row.get("phone") or prospect.get("phone") or "").strip(),
@@ -216,6 +227,7 @@ def _build_route_context(row: Dict[str, str], prospect_row: Optional[Dict[str, s
         contactability=(prospect.get("contactability") or "").strip().lower(),
         insight_sentence=insight_sentence,
         insight_signals=insight_signals,
+        refresh_signal_terms=refresh_terms,
     )
 
 
@@ -252,6 +264,14 @@ def _has_weak_source_only(ctx: _RouteContext) -> bool:
     return any(phrase in lower for phrase in _WEAK_SOURCE_PHRASES)
 
 
+def _has_fresh_site_evidence(ctx: _RouteContext) -> bool:
+    if not ctx.insight_sentence:
+        return False
+    if _has_weak_source_only(ctx):
+        return False
+    return any(signal in {"fresh site evidence", "fresh_site_evidence"} for signal in ctx.insight_signals)
+
+
 def _limited_contact_methods_candidate(ctx: _RouteContext) -> str:
     if ctx.route_count == 1:
         return _single_route_candidate(ctx)
@@ -279,8 +299,38 @@ def _route_phrase(route_labels: List[str]) -> str:
     return ", ".join(route_labels[:-1]) + " and " + route_labels[-1]
 
 
+def _refresh_signal_terms(signals: List[str]) -> List[str]:
+    stopwords = {
+        "fresh", "site", "evidence", "area", "coverage", "service", "services",
+        "contact", "form", "email", "available", "facebook", "instagram",
+    }
+    terms: List[str] = []
+    for label in signals:
+        lower = (label or "").strip().lower()
+        if lower in {"fresh site evidence", "fresh_site_evidence", "limited_contact_methods", "limited contact methods"}:
+            continue
+        for token in _WORD_RE.findall(lower):
+            if len(token) < 4 or token in stopwords:
+                continue
+            if token not in terms:
+                terms.append(token)
+    return terms
+
+
 def _validate_generated_overlap(text: str, ctx: _RouteContext, family: str) -> None:
     lower = text.lower()
+    if family == "fresh_site_evidence":
+        has_site_term = any(term in lower for term in ["site", "website"])
+        has_refresh_overlap = not ctx.refresh_signal_terms or any(term in lower for term in ctx.refresh_signal_terms)
+        if has_site_term and has_refresh_overlap:
+            return
+        raise ObservationCandidateBlockedError(
+            "invalid_missing_context_overlap",
+            "Generated candidate did not stay close enough to the refreshed evidence on file.",
+            evidence=_build_base_evidence(ctx, None),
+            source_labels=["generated_candidate"],
+            family=family,
+        )
     required_terms: List[str] = []
     if family in {"limited_contact_methods", "single_contact_route"}:
         required_terms.extend(["site", "contact", "facebook", "instagram", "email", "form"])
