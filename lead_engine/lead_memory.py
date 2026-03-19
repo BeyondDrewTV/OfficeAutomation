@@ -2,6 +2,7 @@
 lead_memory.py
 Durable Lead Memory + Suppression Registry — Pass 44
 Lead Timeline / Lifecycle Event Spine — Pass 47
+Observation Model Expansion — Pass 49
 
 Persists suppression/contact state and lifecycle event history for leads
 independently from the queue CSV. Deleting a queue row does NOT erase this memory.
@@ -15,6 +16,11 @@ Each lead record contains a single history[] list. Two entry types coexist:
 
   type "event"  — lifecycle event entries written by record_event().
                   These do NOT update current_state. They add narrative detail.
+
+Pass 49: obs_history[] per record.
+  Each time an observation is saved, the prior and new text are archived in
+  obs_history[] with a timestamp. This gives the operator a compact revision
+  trail without touching the queue CSV or the protected send path.
 
 Event types (EVT_*):
   EVT_DRAFTED           — a draft was created for this lead
@@ -366,6 +372,16 @@ def record_event(
             # Refresh identity fields if richer data is now available
             record["business_name"] = entry["business_name"] or record.get("business_name", "")
             record["city"]          = entry["city"] or record.get("city", "")
+            # Pass 49: archive observation revision when observation_added is recorded
+            if event_type == EVT_OBSERVATION_ADDED and detail:
+                prior = record.get("current_observation", "")
+                obs_entry = {
+                    "ts":    entry["ts"],
+                    "prior": prior,
+                    "text":  detail,
+                }
+                record.setdefault("obs_history", []).append(obs_entry)
+                record["current_observation"] = detail
             record["website"]       = _norm(row.get("website") or "") or record.get("website", "")
             record["phone"]         = _norm(row.get("phone") or "") or record.get("phone", "")
             _save(data)
@@ -408,3 +424,140 @@ def get_timeline(row: dict) -> list:
     # Sort oldest-first by timestamp
     timeline.sort(key=lambda e: e.get("ts", ""))
     return timeline
+
+
+# ---------------------------------------------------------------------------
+# Pass 49: Observation history + grading
+# ---------------------------------------------------------------------------
+
+def get_obs_history(row: dict) -> list:
+    """
+    Return the observation revision history for a lead, oldest-first.
+
+    Each entry: { ts, prior, text }
+      ts    — ISO timestamp of when this observation was saved
+      prior — observation text that was on file before this save (empty string if first)
+      text  — the new observation text saved at this timestamp
+
+    Returns [] if the lead has no memory record or no obs_history.
+    """
+    record = get_record(row)
+    if not record:
+        return []
+    history = record.get("obs_history", [])
+    return sorted(history, key=lambda e: e.get("ts", ""))
+
+
+# ---------------------------------------------------------------------------
+# Observation quality grading — deterministic, no AI required
+# ---------------------------------------------------------------------------
+
+# Phrases that indicate a generic / category-level observation
+_GENERIC_GRADE_PHRASES = [
+    "noticed you do ",
+    "saw you're in ",
+    "looks like you help homeowners",
+    "noticed you offer ",
+    "saw you do ",
+    "you do landscaping",
+    "you do roofing",
+    "you do concrete",
+    "you do plumbing",
+    "you do hvac",
+    "you do electrical",
+    "you provide services",
+    "you offer services",
+    "local business",
+    "small business",
+    "family owned",
+    "family-owned",
+]
+
+# Signals that suggest the observation is tied to something real on their site/workflow
+_SPECIFIC_SIGNAL_PHRASES = [
+    "website", "site", "page", "their page", "instagram", "facebook",
+    "google", "review", "reviews", "menu", "pricing", "price", "form",
+    "contact form", "phone", "number", "no email", "no contact",
+    "listed", "says", "shows", "mentioned", "photo", "photos",
+    "hours", "schedule", "booking", "appointment", "quote",
+    "they're", "they are", "juggling", "mixing", "splitting",
+    "seasonal", "slow", "busy", "gap", "overlap",
+]
+
+
+def grade_observation(obs: str) -> dict:
+    """
+    Grade an observation string without AI.
+
+    Returns a dict:
+      grade    — "empty" | "too_short" | "generic" | "category_only" |
+                 "specific" | "tied_to_workflow"
+      label    — short display label
+      tone     — "blocked" | "warn" | "ok" | "strong"
+      message  — one-line operator guidance
+      chars    — character count
+      words    — word count
+
+    Rules (evaluated in order):
+      1. empty       — blank input
+      2. too_short   — under 15 chars
+      3. generic     — matches a known generic phrase
+      4. category_only — under 40 chars and no specific signals
+      5. tied_to_workflow — has ≥2 specific signal words
+      6. specific    — everything else that passes the length check
+    """
+    text = (obs or "").strip()
+    chars = len(text)
+    words = len(text.split()) if text else 0
+    lower = text.lower()
+
+    if not text:
+        return {
+            "grade": "empty", "label": "No observation",
+            "tone": "blocked",
+            "message": "Add a specific business observation before generating a draft.",
+            "chars": 0, "words": 0,
+        }
+
+    if chars < 15:
+        return {
+            "grade": "too_short", "label": "Too short",
+            "tone": "blocked",
+            "message": f"Only {chars} chars — write a real specific detail ({15 - chars} more needed).",
+            "chars": chars, "words": words,
+        }
+
+    # Generic category-label check
+    if any(phrase in lower for phrase in _GENERIC_GRADE_PHRASES):
+        return {
+            "grade": "generic", "label": "Too generic",
+            "tone": "warn",
+            "message": "This reads like a category label. Write something specific to this business only.",
+            "chars": chars, "words": words,
+        }
+
+    # Count how many specific signal words appear
+    signal_hits = sum(1 for sig in _SPECIFIC_SIGNAL_PHRASES if sig in lower)
+
+    if chars < 40 and signal_hits == 0:
+        return {
+            "grade": "category_only", "label": "Needs more detail",
+            "tone": "warn",
+            "message": "Short and no specific signal. Add a detail tied to their website, workflow, or gap.",
+            "chars": chars, "words": words,
+        }
+
+    if signal_hits >= 2:
+        return {
+            "grade": "tied_to_workflow", "label": "Strong",
+            "tone": "strong",
+            "message": "Specific and tied to real signals — good to draft from.",
+            "chars": chars, "words": words,
+        }
+
+    return {
+        "grade": "specific", "label": "Specific",
+        "tone": "ok",
+        "message": "Specific enough to draft from.",
+        "chars": chars, "words": words,
+    }

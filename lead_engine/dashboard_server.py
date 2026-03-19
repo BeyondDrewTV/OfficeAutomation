@@ -38,6 +38,7 @@ from send.email_sender_agent import process_pending_emails, is_real_send, send_n
 from intelligence.email_extractor_agent import enrich_prospects_with_emails
 from discovery.auto_prospect_agent import discover_prospects, INDUSTRY_QUERIES, discover_prospects_area
 from outreach.followup_scheduler import run_followup_scheduler
+from outreach.followup_draft_agent import build_followup_plan, FollowupBlockedError
 from outreach.reply_checker import check_for_replies, reconcile_sent_mail
 from outreach.email_draft_agent import DRAFT_VERSION as _CURRENT_DRAFT_VERSION
 from city_planner import CityPlanner
@@ -350,7 +351,7 @@ def api_run_followups_dry_run():
         import csv as _csv
         from send.email_sender_agent import is_real_send as _is_real_send
         from outreach.followup_scheduler import (
-            followup_eligible, _followup_step, _read_pending, FOLLOWUP_DAYS_DEFAULT,
+            followup_eligible, _followup_step, _read_pending,
         )
         from discovery.prospect_discovery_agent import dedupe_key_for_prospect
 
@@ -364,21 +365,44 @@ def api_run_followups_dry_run():
         }
 
         preview = []
+        blocked_preview = []
         for row in rows:
             if not _is_real_send(row):
                 continue
             eligible, _ = followup_eligible(row, now, unsent_keys)
             if eligible:
                 step = _followup_step(row, now)
+                try:
+                    plan = build_followup_plan(row, step)
+                except FollowupBlockedError as exc:
+                    blocked_preview.append({
+                        "business_name": row.get("business_name", ""),
+                        "to_email": row.get("to_email", ""),
+                        "sent_at": row.get("sent_at", ""),
+                        "followup_step": step,
+                        "blocked_reason": exc.reason,
+                        "error": str(exc),
+                    })
+                    continue
+
                 preview.append({
                     "business_name": row.get("business_name", ""),
-                    "to_email":      row.get("to_email", ""),
-                    "sent_at":       row.get("sent_at", ""),
+                    "to_email": row.get("to_email", ""),
+                    "sent_at": row.get("sent_at", ""),
                     "followup_step": step,
                     "contact_attempt_count": row.get("contact_attempt_count", "0"),
+                    "angle_family": plan["angle_family"],
+                    "angle_label": plan["angle_label"],
+                    "context_source": plan["context"].get("anchor_source", ""),
                 })
 
-        return jsonify({"ok": True, "preview": preview, "count": len(preview)})
+        return jsonify({
+            "ok": True,
+            "preview": preview,
+            "blocked_preview": blocked_preview,
+            "count": len(preview),
+            "blocked_count": len(blocked_preview),
+        })
     except Exception as exc:
         log.error("followup dry_run error: %s", exc, exc_info=True)
         return jsonify({"ok": False, "error": str(exc)}), 500
@@ -1098,7 +1122,7 @@ def api_send_followup():
     - Sets contact_result = "sent" if not already in terminal state
     - Does NOT touch sent_at (that field tracks the initial send only)
     """
-    from send.email_sender_agent import _send_email_via_gmail, _append_signature
+    from send.email_sender_agent import _send_email_via_gmail
     d = request.json or {}
     idx           = d.get("index")
     business_name = (d.get("business_name") or "").strip()
@@ -1126,35 +1150,18 @@ def api_send_followup():
 
     touch_num = fs["touch_num"]
     name      = row.get("business_name", "").strip()
-    city      = row.get("city", "").strip()
-    industry  = (row.get("industry") or "").replace("_", " ").strip()
+    try:
+        plan = build_followup_plan(row, touch_num)
+    except FollowupBlockedError as exc:
+        return jsonify({
+            "ok": False,
+            "blocked": True,
+            "blocked_reason": exc.reason,
+            "error": str(exc),
+        }), 422
 
-    # Generate short follow-up copy — conversational, no pitch language
-    if touch_num == 1:
-        subject = "Re: quick question"
-        body = (
-            f"hey {name} — just following up on my note from last week.\n\n"
-            f"i set up a simple missed-call text-back for a few {industry} businesses in {city} "
-            f"and it's been catching a lot of after-hours calls they were losing. "
-            f"happy to show you a quick example if you're curious.\n\n"
-            "– Drew"
-        )
-    elif touch_num == 2:
-        subject = "Re: quick question"
-        body = (
-            f"hey {name} — one more note before i move on.\n\n"
-            f"if the timing's off or you've already got something in place, no worries at all. "
-            f"just didn't want to disappear without checking.\n\n"
-            "– Drew"
-        )
-    else:
-        subject = "last note"
-        body = (
-            f"hey {name} — last one from me.\n\n"
-            f"if things change and you want to talk about how to stop losing after-hours calls, "
-            f"i'm easy to reach. good luck with the busy season.\n\n"
-            "– Drew"
-        )
+    subject = plan["subject"]
+    body = plan["body"]
 
     try:
         message_id = _send_email_via_gmail(to_email, subject, body)
@@ -1177,9 +1184,20 @@ def api_send_followup():
         row["contact_result"] = "sent"
 
     _write_pending(rows)
+    try:
+        _lm.record_event(row, _lm.EVT_FOLLOWUP_SENT,
+                         detail=f"touch={touch_num}; angle={plan['angle_family']}")
+    except Exception as _lm_exc:
+        log.warning("lead_memory event failed (followup_sent): %s", _lm_exc)
     log.info("send_followup ok: idx=%s name=%r touch=%d to=%s mid=%s",
              idx, name, touch_num, to_email, message_id)
-    return jsonify({"ok": True, "touch_num": touch_num, "message_id": message_id})
+    return jsonify({
+        "ok": True,
+        "touch_num": touch_num,
+        "message_id": message_id,
+        "angle_family": plan["angle_family"],
+        "angle_label": plan["angle_label"],
+    })
 
 
 @app.route("/api/followup_queue")
@@ -1198,6 +1216,21 @@ def api_followup_queue():
         _enrich_row(r,i)
         fs_info = compute_followup_status(r)
         entry = {**r,"followup_dt":fdt.isoformat(),"followup_status":fs_info["status"],"followup_touch_num":fs_info["touch_num"],"followup_next_due":fs_info["next_due"]}
+        if fs_info["touch_num"] and (r.get("to_email") or "").strip():
+            try:
+                plan = build_followup_plan(r, fs_info["touch_num"])
+                entry.update({
+                    "followup_copy_ready": True,
+                    "followup_angle_family": plan["angle_family"],
+                    "followup_angle_label": plan["angle_label"],
+                    "followup_context_source": plan["context"].get("anchor_source", ""),
+                })
+            except FollowupBlockedError as exc:
+                entry.update({
+                    "followup_copy_ready": False,
+                    "followup_blocked_reason": exc.reason,
+                    "followup_blocked_message": str(exc),
+                })
         if fdt < now: overdue.append(entry)
         elif fdt <= today_end: today.append(entry)
         elif fdt <= week_end: this_week.append(entry)
@@ -1588,13 +1621,92 @@ def api_update_observation():
     row["business_specific_observation"] = observation
     _write_pending(rows)
     log.info("update_observation: idx=%d biz=%s", idx, business_name)
-    # Pass 47: record lifecycle event
+    # Pass 47: record lifecycle event (also archives obs_history — Pass 49)
     try:
         _lm.record_event(rows[idx], _lm.EVT_OBSERVATION_ADDED,
                          detail=observation[:120])
     except Exception as _e:
         log.warning("lead_memory event failed (observation_added): %s", _e)
-    return jsonify({"ok": True, "observation": observation})
+
+    grade = {}
+    try:
+        grade = _lm.grade_observation(observation)
+    except Exception:
+        pass
+    obs_history_count = 0
+    try:
+        obs_history_count = len(_lm.get_obs_history(rows[idx]))
+    except Exception:
+        pass
+    return jsonify({
+        "ok": True,
+        "observation": observation,
+        "grade": grade,
+        "obs_history_count": obs_history_count,
+    })
+
+
+@app.route("/api/obs_grade", methods=["POST"])
+def api_obs_grade():
+    """
+    Grade an observation text without persisting it.
+
+    Input:  { observation }
+    Output: { ok, grade: { grade, label, tone, message, chars, words } }
+
+    Safe to call on every keystroke — reads nothing, writes nothing.
+    """
+    d   = request.json or {}
+    obs = (d.get("observation") or "").strip()
+    try:
+        grade = _lm.grade_observation(obs)
+    except Exception as exc:
+        return jsonify({"ok": False, "error": str(exc)}), 500
+    return jsonify({"ok": True, "grade": grade})
+
+
+@app.route("/api/obs_history", methods=["POST"])
+def api_obs_history():
+    """
+    Return the observation revision history for a lead.
+
+    Input:  { business_name, website?, phone?, place_id?, city? }
+    Output: { ok, key, obs_history: [...], current_observation, grade }
+
+    obs_history entries: [ { ts, prior, text }, ... ]  oldest-first.
+    grade is computed from current_observation (or empty-string grade if none).
+    """
+    d = request.json or {}
+    row = {
+        "business_name": (d.get("business_name") or "").strip(),
+        "website":       (d.get("website")       or "").strip(),
+        "phone":         (d.get("phone")          or "").strip(),
+        "place_id":      (d.get("place_id")       or "").strip(),
+        "city":          (d.get("city")            or "").strip(),
+    }
+    if not row["business_name"] and not row["website"] and not row["phone"] and not row["place_id"]:
+        return jsonify({"ok": False, "error": "At least one identity field required"}), 400
+
+    try:
+        obs_history = _lm.get_obs_history(row)
+        record      = _lm.get_record(row)
+        key         = _lm.lead_key(row)
+        current_obs = (record or {}).get("current_observation", "")
+        # Fall back to last history entry if current_observation not yet set
+        if not current_obs and obs_history:
+            current_obs = obs_history[-1].get("text", "")
+        grade = _lm.grade_observation(current_obs)
+    except Exception as exc:
+        log.warning("api_obs_history error: %s", exc)
+        return jsonify({"ok": False, "error": str(exc)}), 500
+
+    return jsonify({
+        "ok":                  True,
+        "key":                 key,
+        "current_observation": current_obs,
+        "obs_history":         obs_history,
+        "grade":               grade,
+    })
 
 
 @app.route("/api/regenerate_draft", methods=["POST"])

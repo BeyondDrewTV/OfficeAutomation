@@ -1,4 +1,177 @@
-﻿### 2026-03-17 - Pass 43: V2 Stage 2F — Next-Action-Driven Controls + History Visibility
+﻿### 2026-03-18 - Pass 50: Follow-Up System Rebuild
+
+**Goal:** Rebuild follow-up drafting so follow-ups become grounded, state-aware
+continuation messages tied to the actual lead record, with deterministic blocking
+instead of generic nurture-style fallback copy.
+
+**Files changed:**
+- `lead_engine/outreach/followup_draft_agent.py` (new)
+- `lead_engine/outreach/followup_scheduler.py`
+- `lead_engine/dashboard_server.py`
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**What changed:**
+
+`lead_engine/outreach/followup_draft_agent.py` (new):
+- Added deterministic follow-up planner `build_followup_plan(row, touch_num)`.
+- Added five explicit angle families:
+  `observation_continuation`, `operational_nudge`, `note_reframe`,
+  `timeline_reframe`, `low_pressure_closeout`.
+- Planner now consumes safe existing context only:
+  current observation, obs history, timeline detail, conversation notes,
+  conversation next step, send timing, contact history, and email-path gating.
+- Added deterministic validation/blocking with structured reasons:
+  `insufficient_context`, `generic_context`, `contact_path_not_email`,
+  `invalid_banned_language`, `invalid_hard_cta`, `invalid_generic_copy`,
+  `invalid_missing_context_overlap`, `invalid_not_continuation`,
+  `invalid_too_long`.
+- Explicitly prefers no follow-up over weak or swappable copy.
+
+`lead_engine/outreach/followup_scheduler.py`:
+- Preserved scheduler timing / due-date logic and queue write flow.
+- Replaced inline follow-up copy generation with the shared planner.
+- Added `blocked` and `blocked_reasons` counters to scheduler stats.
+- Scheduler now skips context-poor rows cleanly instead of writing generic drafts.
+
+`lead_engine/dashboard_server.py`:
+- `POST /api/run_followups_dry_run` now returns both ready previews and blocked previews.
+- `GET /api/followup_queue` now annotates rows with follow-up copy readiness,
+  angle family, context source, and blocked reason/message.
+- `POST /api/send_followup` now uses the shared planner and returns structured
+  blocked responses before any send attempt when context is weak.
+- Successful direct sends now record `EVT_FOLLOWUP_SENT`.
+
+`lead_engine/dashboard_static/index.html`:
+- Follow-Up run toast now reports blocked rows when applicable.
+- Dry-run console preview now prints ready rows and blocked rows separately.
+- Follow-Up cards now show angle/source metadata when copy is ready.
+- Follow-Up cards now show blocker text when safe copy is unavailable.
+- Auto-send button is hidden for rows that are not due or do not have ready follow-up copy.
+  Manual/open workflow remains available.
+
+**Design decisions:**
+- Did not touch `run_lead_engine.py`.
+- Did not change queue column order or naming.
+- Did not rewrite sender core.
+- Did not change follow-up timing math; this pass is drafting/validation only.
+- Dropped fallback use of old first-touch body text as a follow-up anchor because
+  it produced unsafe/generic continuations on real queue rows.
+
+**Verification:**
+- `python` imports clean for `outreach.followup_draft_agent`,
+  `outreach.followup_scheduler`, and `dashboard_server`.
+- Dashboard JS parses clean via `new vm.Script(...)`.
+- Flask test client:
+  - `POST /api/run_followups_dry_run` -> `200`
+  - `GET /api/followup_queue` -> `200`
+  - real blocked send check on current due row `Lars Plumbing` ->
+    `422` with `blocked_reason=insufficient_context`
+- Deterministic sample planning verified for grounded step-1 and step-2 follow-ups.
+
+**Commit:** pending
+
+---
+
+### 2026-03-17 - Pass 43: V2 Stage 2F — Next-Action-Driven Controls + History Visibility
+
+### 2026-03-18 - Pass 49: Observation Model Expansion
+
+**Goal:** Make the observation field smarter and more informative — richer
+structure, quality grading, revision history, "why this lead now?" reasoning,
+and explicit contact-path recommendation — without touching protected systems
+or the queue schema.
+
+**Files changed:**
+- `lead_engine/lead_memory.py`
+- `lead_engine/dashboard_server.py`
+- `lead_engine/dashboard_static/index.html`
+- docs (3 files)
+
+**What changed:**
+
+`lead_memory.py`:
+- Module docstring updated to document Pass 49 obs_history model.
+- `record_event()`: when `event_type == EVT_OBSERVATION_ADDED`, archives
+  `{ ts, prior, text }` into `obs_history[]` on the record and updates
+  `current_observation`. Non-breaking — existing records gain the field
+  on the next observation save.
+- `get_obs_history(row)`: new public function. Returns `obs_history[]`
+  sorted oldest-first. Returns `[]` if no record or no history.
+- `grade_observation(obs)`: new deterministic grader. No AI. Six grades
+  evaluated in order:
+  - `empty` — blank input
+  - `too_short` — under 15 chars
+  - `generic` — matches a known generic phrase list
+  - `category_only` — under 40 chars with no specific signal words
+  - `tied_to_workflow` — has 2+ specific signal words (website, reviews,
+    form, schedule, juggling, seasonal, gap, etc.)
+  - `specific` — everything else that passes the length check
+  Returns `{ grade, label, tone, message, chars, words }`.
+
+`dashboard_server.py`:
+- `api_update_observation`: now returns `grade` and `obs_history_count`
+  alongside `ok` and `observation`. Grade computed from the saved text.
+- New `POST /api/obs_grade`: stateless, writes nothing. Grades a text
+  string and returns `{ ok, grade }`. Safe to call from any context.
+- New `POST /api/obs_history`: accepts any identity signal
+  (business_name, website, phone, place_id, city). Returns
+  `{ ok, key, current_observation, obs_history, grade }`.
+
+`index.html`:
+- New CSS: obs grade bar (6 visual states by grade/tone), obs history
+  strip, "why now" card, contact-path chip (5 path variants).
+- HTML: grade bar div (`panel-obs-grade-bar`), history toggle
+  (`panel-obs-history-toggle`), history list (`panel-obs-history-list`)
+  inserted inside obs section. `panel-why-now` div inserted after
+  `panel-timeline-strip` in Business Info section.
+- `_obsRenderGradeBar(obs)`: client-side grade logic mirrors server (no
+  network call). Renders pill + message + char count on every keystroke.
+- `_panelPopulateObs()` extended: calls `_obsRenderGradeBar` on open,
+  calls `_loadObsHistory(row)` non-blocking at end.
+- `panelObsChanged()` extended: calls `_obsRenderGradeBar(obs)` on every
+  input event.
+- `_loadObsHistory(row)`: async, non-blocking. Fetches `/api/obs_history`,
+  builds revision list HTML, shows toggle only when 2+ entries exist.
+  Resets on every panel open.
+- `panelObsHistoryToggle()`: toggles the history list, updates arrow glyph.
+- `_contactPathRecommendation(record)`: returns `{ path, chipClass, icon,
+  reason }`. Priority: DNC → replied → sent → scheduled → no-contact-enrich
+  → email → facebook → instagram → form → enrich.
+- `_buildWhyNowCard(row)`: builds chip row from `_leadRecord`. Positive
+  chips: obs on file, email reachable, high score, replied, not yet
+  contacted. Warning chips: stale draft, draft with no obs. Negative:
+  no contact info. Contact-path chip appended below reasons.
+- `_renderWhyNowCard(row)`: writes card HTML into `panel-why-now`, hides
+  div when card is empty (sent + not replied).
+- `_renderWhyNowCard(row)` wired into `fillPanel()` alongside
+  `_loadPanelTimeline`.
+
+**Design decisions:**
+- Grade bar is fully client-side. The server `/api/obs_grade` endpoint
+  exists for future use (e.g. batch audits, API callers) but the panel
+  does not call it — zero latency on every keystroke matters here.
+- History toggle only appears when obs_history has 2+ entries. A single
+  save has no "prior" worth showing.
+- Why-now card is suppressed for sent+not-replied rows — there is nothing
+  actionable to surface there.
+- Contact-path recommendation is one chip, one reason. No ambiguity list.
+
+**No protected systems touched. No queue schema changes.**
+
+**Verification:**
+- `python -c "import lead_memory; import dashboard_server"` clean.
+- JS extracted and `vm.Script` syntax check: clean.
+- 15/15 targeted checks passed: all new functions defined, wired into
+  correct call sites, all HTML elements present, grade bar uses
+  client-side logic, obs_history endpoint called correctly.
+
+**Commit:** pending
+
+---
 
 ### 2026-03-18 - Pass 48: Lifecycle Coverage Expansion
 

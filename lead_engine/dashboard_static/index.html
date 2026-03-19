@@ -378,6 +378,44 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .obs-regen-status.obs-ok{color:var(--green)}
 .obs-blocked-banner{background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:var(--rs);padding:7px 10px;font-size:11px;color:var(--amber);line-height:1.45;margin-top:6px}
 
+/* ── Pass 49: Obs grade bar ──────────────────────────────────────────────── */
+.obs-grade-bar{display:flex;align-items:center;gap:7px;margin-top:6px;min-height:18px}
+.obs-grade-pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:10px;font-weight:600;letter-spacing:.04em;transition:.15s}
+.obs-grade-pill.grade-empty,.obs-grade-pill.grade-too_short,.obs-grade-pill.grade-generic{background:rgba(231,76,60,.12);color:#e74c3c;border:1px solid rgba(231,76,60,.25)}
+.obs-grade-pill.grade-category_only,.obs-grade-pill.grade-warn{background:rgba(245,166,35,.13);color:var(--amber);border:1px solid rgba(245,166,35,.3)}
+.obs-grade-pill.grade-specific{background:rgba(79,142,247,.1);color:var(--blue);border:1px solid rgba(79,142,247,.25)}
+.obs-grade-pill.grade-tied_to_workflow{background:rgba(62,207,114,.1);color:var(--green);border:1px solid rgba(62,207,114,.25)}
+.obs-grade-msg{font-size:10px;color:var(--muted);flex:1;line-height:1.4}
+.obs-chars{font-size:9px;color:var(--dim);font-family:var(--mono);white-space:nowrap}
+
+/* ── Pass 49: Obs history strip ─────────────────────────────────────────── */
+.obs-history-toggle{font-size:10px;color:var(--muted);cursor:pointer;margin-top:5px;display:inline-flex;align-items:center;gap:4px;user-select:none}
+.obs-history-toggle:hover{color:var(--text)}
+.obs-history-list{margin-top:6px;display:flex;flex-direction:column;gap:5px}
+.obs-history-entry{background:var(--surface3);border:1px solid var(--border);border-radius:var(--rs);padding:6px 9px;font-size:10px;line-height:1.5}
+.obs-history-ts{font-size:9px;color:var(--dim);font-family:var(--mono);margin-bottom:2px}
+.obs-history-text{color:var(--text)}
+.obs-history-prior{color:var(--muted);text-decoration:line-through;font-size:9px;margin-top:2px}
+
+/* ── Pass 49: "Why this lead now?" reason card ───────────────────────────── */
+.why-now-card{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--copper);border-radius:var(--rs);padding:8px 12px;margin-bottom:8px;display:flex;flex-direction:column;gap:4px}
+.why-now-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.why-now-reasons{display:flex;flex-wrap:wrap;gap:5px}
+.why-now-chip{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:500;border:1px solid}
+.why-chip-pos{background:rgba(62,207,114,.08);color:var(--green);border-color:rgba(62,207,114,.25)}
+.why-chip-warn{background:rgba(245,166,35,.1);color:var(--amber);border-color:rgba(245,166,35,.3)}
+.why-chip-neg{background:rgba(231,76,60,.08);color:#e74c3c;border-color:rgba(231,76,60,.2)}
+
+/* ── Pass 49: Contact-path recommendation ───────────────────────────────── */
+.cpath-row{display:flex;align-items:center;gap:7px;margin-top:5px;flex-wrap:wrap}
+.cpath-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:600;border:1px solid}
+.cpath-email{background:rgba(62,207,114,.1);color:var(--green);border-color:rgba(62,207,114,.3)}
+.cpath-social{background:rgba(79,142,247,.1);color:var(--blue);border-color:rgba(79,142,247,.3)}
+.cpath-hold{background:rgba(245,166,35,.1);color:var(--amber);border-color:rgba(245,166,35,.3)}
+.cpath-enrich{background:var(--surface3);color:var(--muted);border-color:var(--border)}
+.cpath-suppress{background:rgba(231,76,60,.08);color:#e74c3c;border-color:rgba(231,76,60,.2)}
+.cpath-label{font-size:10px;color:var(--dim)}
+
 /* ══════════════════════════════════════════════════════
    TERRITORY PLANNER — City cards + industry coverage
    ══════════════════════════════════════════════════════ */
@@ -1114,6 +1152,8 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
         <div class="panel-label">Business Info</div>
         <div class="panel-meta" id="panel-meta"></div>
         <div id="panel-timeline-strip" style="margin-top:6px"></div>
+        <!-- Pass 49: Why this lead now? + contact-path recommendation -->
+        <div id="panel-why-now" style="display:none;margin-top:8px"></div>
       </div>
       <div class="panel-section">
         <div class="panel-label">To Email</div>
@@ -1154,8 +1194,19 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
           <textarea class="obs-input" id="panel-obs-input" rows="2"
             placeholder="e.g. saw they're juggling snow work and regular contracting on the same page — mixed seasonal vs steady-work lineup"
             oninput="panelObsChanged(this.value)"></textarea>
+          <!-- Pass 49: live grade bar -->
+          <div class="obs-grade-bar" id="panel-obs-grade-bar" style="display:none">
+            <span class="obs-grade-pill" id="panel-obs-grade-pill"></span>
+            <span class="obs-grade-msg" id="panel-obs-grade-msg"></span>
+            <span class="obs-chars" id="panel-obs-chars"></span>
+          </div>
           <div class="obs-hint" id="panel-obs-hint">
             Specific detail about this business — not a category label. Must be specific enough it wouldn't fit most businesses in the same trade.
+          </div>
+          <!-- Pass 49: obs history toggle + list -->
+          <div id="panel-obs-history-wrap" style="display:none">
+            <span class="obs-history-toggle" onclick="panelObsHistoryToggle()" id="panel-obs-history-toggle">▸ prior observations</span>
+            <div class="obs-history-list" id="panel-obs-history-list" style="display:none"></div>
           </div>
           <div class="obs-regen-row">
             <button class="btn-regen" id="panel-regen-btn" onclick="panelRegenerateDraft()" disabled>↻ Regenerate Draft</button>
@@ -2633,6 +2684,8 @@ async function fillPanel(row, fi, totalRows) {
   }
   // Pass 47: load timeline strip asynchronously — doesn't block panel render
   _loadPanelTimeline(row);
+  // Pass 49: render why-now card and contact-path recommendation
+  _renderWhyNowCard(row);
 }
 
 // ── Pass 47: Panel timeline strip ────────────────────────────────────────────
@@ -2774,7 +2827,68 @@ function channelBadgesInline(row) {
   return parts.length ? `<div class="ch-wrap" style="margin-top:2px">${parts.join('')}</div>` : '';
 }
 
-// ── Observation field helpers (Pass 36) ──────────────────────────────────────
+// ── Observation field helpers (Pass 36, extended Pass 49) ────────────────────
+
+function _obsRenderGradeBar(obs) {
+  // Render the grade bar from a local grade computation (no round-trip needed
+  // for the pill/message; server grade is used only on save confirmation).
+  const gradePill = document.getElementById('panel-obs-grade-pill');
+  const gradeMsg  = document.getElementById('panel-obs-grade-msg');
+  const gradeBar  = document.getElementById('panel-obs-grade-bar');
+  const gradeChars = document.getElementById('panel-obs-chars');
+  if (!gradePill || !gradeBar) return;
+
+  if (!obs) {
+    gradeBar.style.display = 'none';
+    return;
+  }
+
+  // Client-side grade (mirrors server logic, no network call needed live)
+  const len   = obs.length;
+  const lower = obs.toLowerCase();
+  const _genericPhrases = [
+    'noticed you do ','saw you\'re in ','looks like you help homeowners',
+    'noticed you offer ','saw you do ','you do landscaping','you do roofing',
+    'you do concrete','you do plumbing','you do hvac','you do electrical',
+    'you provide services','you offer services','local business',
+    'small business','family owned','family-owned',
+  ];
+  const _specificSignals = [
+    'website','site','page','their page','instagram','facebook','google',
+    'review','reviews','menu','pricing','price','form','contact form',
+    'phone','number','no email','no contact','listed','says','shows',
+    'mentioned','photo','photos','hours','schedule','booking',
+    'appointment','quote','they\'re','they are','juggling','mixing',
+    'splitting','seasonal','slow','busy','gap','overlap',
+  ];
+
+  let grade, label, tone, msg;
+  if (len < 15) {
+    grade = 'too_short'; label = 'Too short'; tone = 'blocked';
+    msg = `${len} chars — need at least 15`;
+  } else if (_genericPhrases.some(p => lower.includes(p))) {
+    grade = 'generic'; label = 'Too generic'; tone = 'warn';
+    msg = 'Reads like a category label — write something specific to this business only';
+  } else {
+    const hits = _specificSignals.filter(s => lower.includes(s)).length;
+    if (len < 40 && hits === 0) {
+      grade = 'category_only'; label = 'Needs more detail'; tone = 'warn';
+      msg = 'Short + no specific signal — add a detail tied to their site or workflow';
+    } else if (hits >= 2) {
+      grade = 'tied_to_workflow'; label = 'Strong ✓'; tone = 'strong';
+      msg = 'Specific and tied to real signals — good to draft from';
+    } else {
+      grade = 'specific'; label = 'Specific'; tone = 'ok';
+      msg = 'Specific enough to draft from';
+    }
+  }
+
+  gradePill.className   = `obs-grade-pill grade-${grade}`;
+  gradePill.textContent = label;
+  gradeMsg.textContent  = msg;
+  if (gradeChars) gradeChars.textContent = `${len}c`;
+  gradeBar.style.display = 'flex';
+}
 
 function _panelPopulateObs(row) {
   const obsInput   = document.getElementById('panel-obs-input');
@@ -2792,28 +2906,31 @@ function _panelPopulateObs(row) {
   regenStat.textContent = '';
   regenStat.className   = 'obs-regen-status';
 
+  // Pass 49: render grade bar from current obs value
+  _obsRenderGradeBar(isSent ? '' : obs);
+
   if (isSent) {
-    // Already sent — observation is read-only reference only
     obsInput.classList.remove('obs-blocked');
     if (regenBtn) regenBtn.disabled = true;
     if (obsReqTag) obsReqTag.style.display = 'none';
     obsHint.textContent = 'Draft already sent — observation is read-only.';
     obsHint.className   = 'obs-hint';
   } else if (!obs) {
-    // Missing — block regeneration clearly
     obsInput.classList.add('obs-blocked');
     if (regenBtn) regenBtn.disabled = true;
     if (obsReqTag) { obsReqTag.style.display = ''; obsReqTag.textContent = 'required for draft'; }
     obsHint.textContent = 'Add a specific detail about this business before regenerating. Must not be a generic category label — write something that would not fit most businesses in the same trade.';
     obsHint.className   = 'obs-hint obs-hint-blocked';
   } else {
-    // Has observation — ready to regenerate
     obsInput.classList.remove('obs-blocked');
     if (regenBtn) regenBtn.disabled = false;
     if (obsReqTag) { obsReqTag.style.display = ''; obsReqTag.textContent = 'observation on file'; }
     obsHint.textContent = 'Observation saved. Use ↻ Regenerate Draft to rebuild email + DM copy from this observation.';
     obsHint.className   = 'obs-hint';
   }
+
+  // Pass 49: load obs history asynchronously — non-blocking
+  _loadObsHistory(row);
 }
 
 function panelObsChanged(value) {
@@ -2827,6 +2944,9 @@ function panelObsChanged(value) {
 
   // Update in-memory row so navigation preserves unsaved text
   row.business_specific_observation = obs;
+
+  // Pass 49: live grade bar on every keystroke (pure client logic — no network)
+  _obsRenderGradeBar(obs);
 
   if (!obs) {
     if (regenBtn) regenBtn.disabled = true;
@@ -2938,6 +3058,163 @@ async function panelRegenerateDraft() {
   }
 
   regenBtn.disabled = false;
+}
+
+// ── Pass 49: Obs history load + toggle ───────────────────────────────────────
+
+async function _loadObsHistory(row) {
+  const wrap   = document.getElementById('panel-obs-history-wrap');
+  const toggle = document.getElementById('panel-obs-history-toggle');
+  const list   = document.getElementById('panel-obs-history-list');
+  if (!wrap) return;
+
+  // Reset state on every panel open
+  wrap.style.display = 'none';
+  if (list) { list.style.display = 'none'; list.innerHTML = ''; }
+  if (toggle) toggle.textContent = '▸ prior observations';
+
+  try {
+    const res = await api('/api/obs_history', 'POST', {
+      business_name: row.business_name || '',
+      website:       row.website       || '',
+      phone:         row.phone         || '',
+      place_id:      row.place_id      || '',
+      city:          row.city          || '',
+    });
+    if (!res || !res.ok) return;
+    const history = res.obs_history || [];
+    if (history.length < 2) return;  // Only show if there is actually prior history
+
+    // Build history entries (all except the most recent = "prior" revisions)
+    const revisions = history.slice(0, -1).reverse();  // newest-first for display
+    const count     = revisions.length;
+    if (!count) return;
+
+    if (list) {
+      list.innerHTML = revisions.map(entry => {
+        const ts   = entry.ts  ? new Date(entry.ts).toLocaleString([], {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+        const text = escHtml(entry.text || '');
+        const prior = entry.prior ? `<div class="obs-history-prior">was: ${escHtml(entry.prior.slice(0, 80))}${entry.prior.length > 80 ? '…' : ''}</div>` : '';
+        return `<div class="obs-history-entry">
+          <div class="obs-history-ts">${ts}</div>
+          <div class="obs-history-text">${text}</div>
+          ${prior}
+        </div>`;
+      }).join('');
+    }
+
+    if (toggle) toggle.textContent = `▸ ${count} prior observation${count !== 1 ? 's' : ''}`;
+    wrap.style.display = 'block';
+  } catch (_) {
+    // Non-blocking — history is optional UI
+  }
+}
+
+function panelObsHistoryToggle() {
+  const list   = document.getElementById('panel-obs-history-list');
+  const toggle = document.getElementById('panel-obs-history-toggle');
+  if (!list) return;
+  const open = list.style.display === 'none';
+  list.style.display = open ? 'flex' : 'none';
+  if (toggle) {
+    const countMatch = toggle.textContent.match(/(\d+)/);
+    const n = countMatch ? countMatch[1] : '';
+    toggle.textContent = open
+      ? `▾ ${n} prior observation${n !== '1' ? 's' : ''}`
+      : `▸ ${n} prior observation${n !== '1' ? 's' : ''}`;
+  }
+}
+
+// ── Pass 49: "Why this lead now?" card + contact-path recommendation ─────────
+
+function _contactPathRecommendation(record) {
+  // Returns { path, chipClass, icon, reason }
+  // path: 'email' | 'social' | 'hold' | 'enrich' | 'suppress' | 'followup'
+  if (!record) return null;
+  const r = record;
+
+  if (r.isDNC)    return { path:'suppress',  chipClass:'cpath-suppress', icon:'🚫', reason:'Marked do-not-contact' };
+  if (r.isSent && r.isReplied) return { path:'followup', chipClass:'cpath-email',   icon:'↩', reason:'Replied — manage conversation' };
+  if (r.isSent)   return { path:'followup',  chipClass:'cpath-hold',    icon:'⏳', reason:'Sent — waiting for reply' };
+  if (r.isScheduled && !r.isReadyScheduled) return { path:'hold', chipClass:'cpath-hold', icon:'🕐', reason:'Scheduled — sending soon' };
+
+  if (!r.hasContact) {
+    if (r.hasWebsite) return { path:'enrich', chipClass:'cpath-enrich', icon:'🔍', reason:'Has website — extract contact info' };
+    return { path:'enrich', chipClass:'cpath-enrich', icon:'🔍', reason:'No contact found — needs enrichment' };
+  }
+
+  if (r.hasEmail)     return { path:'email',  chipClass:'cpath-email',  icon:'✉',  reason:'Email available — lead with email' };
+  if (r.hasFacebook)  return { path:'social', chipClass:'cpath-social', icon:'f',  reason:'No email — try Facebook DM first' };
+  if (r.hasInstagram) return { path:'social', chipClass:'cpath-social', icon:'◎',  reason:'No email — try Instagram DM first' };
+  if (r.hasForm)      return { path:'social', chipClass:'cpath-social', icon:'⊟',  reason:'No email — use contact form' };
+
+  return { path:'enrich', chipClass:'cpath-enrich', icon:'🔍', reason:'No usable contact channel — find contact info first' };
+}
+
+function _buildWhyNowCard(row) {
+  // Returns HTML string for the why-now card, or '' if nothing useful to show.
+  const isSent    = !!(row.sent_at || '').trim();
+  const isReplied = !!(String(row.replied || '').toLowerCase() === 'true');
+  if (isSent && !isReplied) return '';  // Already sent + no reply: nothing actionable
+
+  const record = _leadRecord(row);
+  const reasons = [];
+
+  // ── Positive signals ──
+  if ((row.business_specific_observation || '').trim())
+    reasons.push({ cls:'why-chip-pos', icon:'🔍', text:'Observation on file' });
+
+  if (record.hasEmail)
+    reasons.push({ cls:'why-chip-pos', icon:'✉', text:'Email reachable' });
+  else if (record.hasFacebook || record.hasInstagram || record.hasForm)
+    reasons.push({ cls:'why-chip-pos', icon:'📱', text:'Social channel available' });
+
+  if (record.priorityScore >= 70)
+    reasons.push({ cls:'why-chip-pos', icon:'★', text:`Score ${record.priorityScore}` });
+
+  if (isReplied)
+    reasons.push({ cls:'why-chip-pos', icon:'↩', text:'Replied — active conversation' });
+
+  // ── Warning signals ──
+  const isLegacy = !!(row.draft_version && row.draft_version !== 'v9');
+  if (isLegacy)
+    reasons.push({ cls:'why-chip-warn', icon:'⚠', text:'Stale draft — refresh before send' });
+
+  if (!(row.business_specific_observation || '').trim() && (row.subject || '').trim())
+    reasons.push({ cls:'why-chip-warn', icon:'⚠', text:'No observation — draft may be generic' });
+
+  if (!record.hasContact)
+    reasons.push({ cls:'why-chip-neg', icon:'✗', text:'No contact info' });
+
+  const contactedYet = !!(row.sent_at || row.contact_attempt_count > 0);
+  if (!contactedYet && record.hasEmail)
+    reasons.push({ cls:'why-chip-pos', icon:'○', text:'Not yet contacted' });
+
+  if (!reasons.length) return '';
+
+  const chipsHtml = reasons.map(r =>
+    `<span class="why-now-chip ${r.cls}">${r.icon} ${escHtml(r.text)}</span>`
+  ).join('');
+
+  // Contact-path recommendation
+  const cpath = _contactPathRecommendation(record);
+  const cpathHtml = cpath
+    ? `<div class="cpath-row"><span class="cpath-label">Contact via:</span><span class="cpath-chip ${cpath.chipClass}">${cpath.icon} ${escHtml(cpath.reason)}</span></div>`
+    : '';
+
+  return `<div class="why-now-card">
+    <div class="why-now-title">Why this lead now</div>
+    <div class="why-now-reasons">${chipsHtml}</div>
+    ${cpathHtml}
+  </div>`;
+}
+
+function _renderWhyNowCard(row) {
+  const el = document.getElementById('panel-why-now');
+  if (!el) return;
+  const html = _buildWhyNowCard(row);
+  el.innerHTML = html;
+  el.style.display = html ? 'block' : 'none';
 }
 
 function panelCopyDm(btn) {
@@ -3823,7 +4100,13 @@ async function runFollowups() {
     if (res.ok) {
       await loadAll();
       const n = res.stats.queued || 0;
-      toast(n > 0 ? `Queued ${n} follow-up draft(s) — review below` : 'No follow-ups due yet', n > 0 ? 'ok' : 'info');
+      const blocked = res.stats.blocked || 0;
+      const msg = n > 0
+        ? `Queued ${n} follow-up draft(s) — review below`
+        : blocked > 0
+          ? `No follow-ups queued — ${blocked} blocked for weak context`
+          : 'No follow-ups due yet';
+      toast(msg, n > 0 ? 'ok' : 'info');
       fqLoad();
     } else { toast('Error: '+res.error,'err'); }
   } catch(e) { toast('Connection error','err'); }
@@ -3836,9 +4119,26 @@ async function runFollowupsDryRun() {
     const res = await api('/api/run_followups_dry_run',{});
     if (res.ok) {
       const n = (res.preview || []).length;
-      if (n === 0) { toast('Dry run: no rows eligible for follow-up right now','info'); return; }
-      toast(`Dry run: ${n} row(s) would receive follow-up drafts — details in browser console`,'ok');
-      console.table((res.preview||[]).map(r=>({ business: r.business_name, email: r.to_email, step: r.followup_step, sent_at: r.sent_at })));
+      const blocked = (res.blocked_preview || []).length;
+      if (n === 0 && blocked === 0) { toast('Dry run: no rows eligible for follow-up right now','info'); return; }
+      toast(`Dry run: ${n} row(s) would queue, ${blocked} blocked — details in browser console`,'ok');
+      console.table((res.preview||[]).map(r=>({
+        business: r.business_name,
+        email: r.to_email,
+        step: r.followup_step,
+        angle: r.angle_family,
+        context: r.context_source,
+        sent_at: r.sent_at
+      })));
+      if (blocked) {
+        console.table((res.blocked_preview||[]).map(r=>({
+          business: r.business_name,
+          email: r.to_email,
+          step: r.followup_step,
+          blocked_reason: r.blocked_reason,
+          detail: r.error
+        })));
+      }
     } else { toast('Error: '+res.error,'err'); }
   } catch(e) { toast('Connection error','err'); }
 }
@@ -4331,6 +4631,11 @@ function _fqCard(r) {
   const dueLbl  = isOverdue ? 'overdue' : 'ok';
   const resBadge = '<span class="fq-result-badge fqr-' + escHtml(result) + '">' + result.replace('_',' ') + '</span>';
   const bestBtn = _fqBestBtn(r, idx);
+  const followupMeta = r.followup_copy_ready === false
+    ? `<div style="margin-top:6px;font-size:11px;color:var(--amber)" title="${escHtml(r.followup_blocked_message || '')}">Needs grounded context: ${escHtml((r.followup_blocked_reason || 'blocked').replace(/_/g,' '))}</div>`
+    : r.followup_angle_label
+      ? `<div style="margin-top:6px;font-size:11px;color:var(--muted)">Angle: ${escHtml(r.followup_angle_label)} · source: ${escHtml((r.followup_context_source || '').replace(/_/g,' '))}</div>`
+      : '';
   return '<div class="' + cardCls + '">'
     + '<div class="fq-info">'
     + '<div class="fq-name">' + escHtml(r.business_name) + '</div>'
@@ -4340,6 +4645,7 @@ function _fqCard(r) {
     + '<span>' + attempts + ' attempt' + (attempts !== '1' ? 's' : '') + '</span>'
     + resBadge + '</div>'
     + (due ? '<div class="fq-due ' + dueLbl + '">Due ' + _fqFmtDue(due) + '</div>' : '')
+    + followupMeta
     + '</div>'
     + '<div class="fq-actions">' + bestBtn
     + '<button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="fqSnooze(' + idx + ')">\uD83D\uDCA4 Snooze 7d</button>'
@@ -4353,8 +4659,15 @@ function _fqBestBtn(r, idx) {
     const touchLabels = ['1st', '2nd', '3rd'];
     const touchNum  = (r.followup_touch_num || 1) - 1;
     const touchLabel = touchLabels[Math.min(touchNum, 2)] || '1st';
+    const manualBtn = `<button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="fqLogAndOpen(${idx},'email','sent')" title="Log + open Gmail manually">&#9654; Manual</button>`;
+    if (r.followup_status !== 'due') {
+      return `<span style="font-size:11px;color:var(--dim)">Auto-send when due</span>` + manualBtn;
+    }
+    if (r.followup_copy_ready === false) {
+      return `<span style="font-size:11px;color:var(--amber)" title="${escHtml(r.followup_blocked_message || '')}">Needs context</span>` + manualBtn;
+    }
     return `<button class="btn btn-success" style="font-size:11px;padding:4px 10px" onclick="sendFollowup(${idx},${JSON.stringify(r.business_name)})" title="Auto-send ${touchLabel} follow-up via Gmail">&#9993; Send ${touchLabel} Follow-Up</button>`
-      + `<button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="fqLogAndOpen(${idx},'email','sent')" title="Log + open Gmail manually">&#9654; Manual</button>`;
+      + manualBtn;
   }
   if (r.facebook_url)
     return `<button class="btn" style="font-size:11px;padding:4px 10px;background:rgba(66,103,178,.2);color:#7b9fd4;border:1px solid rgba(66,103,178,.3)" onclick="fqLogAndOpenUrl(${idx},'facebook','dm_sent',${JSON.stringify(r.facebook_url)})">f Follow-Up DM</button>`;
