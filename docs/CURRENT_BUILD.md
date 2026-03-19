@@ -8,7 +8,7 @@ Pass 50a / 51a complete.
 
 ---
 
-## Completed: Pass 50a / 51a -- Stale Draft Refresh Workflow -- `pending`
+## Completed: Pass 50a / 51a -- Stale Draft Refresh Workflow -- `5b43aaa`
 
 Product changes across one code file:
 - `lead_engine/dashboard_static/index.html`

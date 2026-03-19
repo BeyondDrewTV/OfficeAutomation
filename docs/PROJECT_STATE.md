@@ -33,7 +33,7 @@ Pass 50a / 51a -- Stale Draft Refresh Workflow
   operator anchored on the observation field with visible UI error text instead
   of feeling like a backend-only failure.
 
-Commit: `pending`
+Commit: `5b43aaa`
 
 ## Previous Completed Pass
 Pass 50 -- Follow-Up System Rebuild

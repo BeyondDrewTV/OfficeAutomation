@@ -54,7 +54,7 @@ send/scheduler behavior.
   `POST /api/regenerate_draft` for `Integrity Auto Care` -> `400` with
   `blocked_reason=observation_missing`
 
-**Commit:** `pending`
+**Commit:** `5b43aaa`
 
 ---
 
