@@ -8,7 +8,7 @@ Pass 54 complete. Repo is ready for the next product pass.
 
 ---
 
-## Completed: Pass 54 -- On-Demand Observation Evidence Refresh -- `e643def`
+## Completed: Pass 54 -- On-Demand Observation Evidence Refresh -- `8ad0e99`
 
 Product changes in:
 - `lead_engine/dashboard_server.py`

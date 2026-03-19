@@ -1947,6 +1947,6 @@ observation-led drafting rules.
     reused the stored fresh evidence on the refreshed `Massie...` fixture and
     returned the same candidate.
 
-**Commit:** `e643def`
+**Commit:** `8ad0e99`
 
 ---
