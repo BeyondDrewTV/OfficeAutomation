@@ -32,7 +32,7 @@ Pass 51 -- Observation Autowrite + Candidate Approval Layer
 - Observation validation is now shared across save and regenerate paths, so
   banned generic growth/agency language stays blocked even if manually entered.
 
-Commit: `PENDING_COMMIT`
+Commit: `aea9452`
 
 ## Previous Completed Pass
 Pass 50a / 51a -- Stale Draft Refresh Workflow

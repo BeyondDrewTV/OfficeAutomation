@@ -1630,6 +1630,6 @@ existing observation-led drafting standard.
   `49` ready rows, `131` blocked rows
   (`110` `weak_source_context`, `21` `insufficient_context`).
 
-**Commit:** `PENDING_COMMIT`
+**Commit:** `aea9452`
 
 ---

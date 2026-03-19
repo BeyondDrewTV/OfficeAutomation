@@ -8,7 +8,7 @@ Pass 51 complete.
 
 ---
 
-## Completed: Pass 51 -- Observation Autowrite + Candidate Approval Layer -- `PENDING_COMMIT`
+## Completed: Pass 51 -- Observation Autowrite + Candidate Approval Layer -- `aea9452`
 
 Product changes across three code files:
 - `lead_engine/outreach/observation_candidate_agent.py`
