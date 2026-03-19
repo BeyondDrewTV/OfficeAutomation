@@ -30,7 +30,7 @@ Pass 52a -- Observation Route Recovery + Discovery Connection Hardening + Circle
   cells guide where to search next, while the circle remains the working search
   geometry used by the existing discovery flow.
 
-Commit: `PENDING_COMMIT`
+Commit: `fdbd2fb`
 
 ## Previous Completed Pass
 Pass 52 -- Territory Heatmap Overlay

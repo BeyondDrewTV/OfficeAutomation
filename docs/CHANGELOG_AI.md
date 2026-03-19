@@ -1816,6 +1816,6 @@ with Pass 52's territory-cell workflow without rewriting discovery itself.
     which matches the stale-server route mismatch this pass now hardens in the
     UI instead of dumping raw HTML into the observation panel.
 
-**Commit:** `PENDING_COMMIT`
+**Commit:** `fdbd2fb`
 
 ---
