@@ -12,12 +12,12 @@ Lead Acquisition Engine
 V2 Stage 2 - Unified Lead Workspace Backbone
 
 ## Current Build Pass
-Pass 53 -- Industry Saturation View (complete)
+Pass 54 -- On-Demand Observation Evidence Refresh (complete)
 
 ## Last Completed Pass
-Pass 53 -- Industry Saturation View
+Pass 54 -- On-Demand Observation Evidence Refresh
 
-Commit: `f2ac842`
+Commit: `e643def`
 
 ## Next Pass
 TBD
@@ -46,6 +46,7 @@ track replies, convert to clients, deploy missed-call texting.
 | System | Location |
 |---|---|
 | Lead discovery engine | `lead_engine/discovery/` |
+| Observation evidence refresh | `lead_engine/intelligence/observation_evidence_agent.py` |
 | First-touch drafting | `lead_engine/outreach/email_draft_agent.py` |
 | Observation candidate generation | `lead_engine/outreach/observation_candidate_agent.py` |
 | Follow-up drafting | `lead_engine/outreach/followup_draft_agent.py` |
@@ -83,8 +84,11 @@ track replies, convert to clients, deploy missed-call texting.
 - Observation-led drafting remains required
 - Generated observations are allowed only when grounded in real available lead context
 - Generated observations remain operator-reviewed by default during hardening
+- Observation evidence refresh is operator-triggered and single-lead only
+- Evidence refresh may update lead-side contact/insight fields, but it must not auto-save the observation
 - Observation candidate failures must surface as clean operator-facing blocked/error states - never raw HTML dumps
 - No hidden bulk observation mutation or auto-accept behavior is in scope
+- Fallback websites may be used to scan live evidence, but this pass does not silently rewrite lead identity fields with them
 - Territory cells may guide the operator to the next search area, but do not auto-run discovery
 - Discovery failures should surface the real operator-facing API error where available, not a generic connection label
 - Industry suggestions may guide the next search choice, but must not auto-run search or silently change territory state
@@ -94,7 +98,7 @@ track replies, convert to clients, deploy missed-call texting.
 
 ---
 
-## Lifecycle Event Registry (as of Pass 53)
+## Lifecycle Event Registry (as of Pass 54)
 
 | Constant | Event | Hook point | Status |
 |---|---|---|---|

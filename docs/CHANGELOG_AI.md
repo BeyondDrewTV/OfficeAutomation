@@ -1867,3 +1867,86 @@ with Pass 52's territory-cell workflow without rewriting discovery itself.
 **Commit:** `fdbd2fb`
 
 ---
+### 2026-03-19 - Pass 54: On-Demand Observation Evidence Refresh
+
+**Goal:** Add an operator-triggered, single-lead evidence refresh path so the
+review panel can re-check live website/contact signals, store safe lead-side
+updates, and retry grounded observation candidate generation without weakening
+observation-led drafting rules.
+
+**Files changed:**
+- `lead_engine/dashboard_server.py`
+- `lead_engine/dashboard_static/index.html`
+- `lead_engine/intelligence/website_scan_agent.py`
+- `lead_engine/intelligence/observation_evidence_agent.py`
+- `lead_engine/outreach/observation_candidate_agent.py`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/CHANGELOG_AI.md`
+- `docs/AI_CONTROL_PANEL.md`
+
+**What changed:**
+
+`lead_engine/dashboard_server.py`:
+- Added `POST /api/refresh_observation_evidence`.
+- The route validates the current row, refreshes website/contact evidence for
+  that single lead, writes lead-side updates, and reruns observation candidate
+  generation before responding.
+- The route returns structured refresh metadata plus either a ready candidate or
+  a blocked reason/message.
+
+`lead_engine/intelligence/observation_evidence_agent.py`:
+- Added a deterministic evidence refresh helper for one lead.
+- Reused the existing website fallback, contact extraction, and bounded website
+  scan logic.
+- Added bounded site-signal extraction for:
+  specialty/service cues, emergency or same-day language, estimate/booking
+  language, and explicit service-area coverage.
+- Added refresh-specific blocked reasons:
+  `no_retrievable_source`, `fetch_failed`,
+  `generic_template_language`, and `no_concrete_business_signal`.
+
+`lead_engine/intelligence/website_scan_agent.py`:
+- Added a capped `text_corpus` output to the existing bounded site scan so the
+  refresh helper can derive evidence from the same fetch pass.
+
+`lead_engine/outreach/observation_candidate_agent.py`:
+- Added support for `fresh site evidence` already stored on the lead.
+- The regular candidate route can now reuse refreshed insight fields after a
+  successful refresh, not just the immediate refresh response.
+
+`lead_engine/dashboard_static/index.html`:
+- Added `Refresh Evidence` in the observation tool row and candidate box.
+- Added a refresh-specific loading state and in-panel handling for clean ready
+  or blocked outcomes.
+- Refresh now updates the AI Insight section, candidate box, and operator
+  status text in place.
+
+**Design decisions:**
+- Kept refresh operator-triggered and single-lead only.
+- Did not auto-save or auto-accept the observation.
+- Did not touch `run_lead_engine.py`.
+- Did not change queue schema ordering/naming.
+- Did not change sender, scheduler timing, or send-path behavior.
+- Did not silently persist fallback websites into lead identity fields in this
+  pass, to avoid fragmenting lead-memory identity.
+
+**Verification:**
+- Python compile checks passed for the new/updated intelligence, candidate, and
+  dashboard server files.
+- Dashboard JS parses clean via `new vm.Script(...)`.
+- Flask test client against temporary fixtures built from real repo rows:
+  - `Massie Heating and Air Conditioning` -> `200`, ready candidate:
+    `site is pretty explicit about ductless mini-split work and emergency service.`
+  - `Premier Auto Repairs` -> `200`, ready candidate:
+    `site is pretty explicit about brake work and service scheduling.`
+  - `Dunham Plumbing LLC` -> `200`, refresh blocked reason
+    `no_retrievable_source`, with the route still returning the existing
+    phone-only candidate path truthfully.
+  - After refresh, the normal `/api/generate_observation_candidate` route
+    reused the stored fresh evidence on the refreshed `Massie...` fixture and
+    returned the same candidate.
+
+**Commit:** `e643def`
+
+---

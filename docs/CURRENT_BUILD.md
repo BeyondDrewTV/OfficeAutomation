@@ -1,80 +1,114 @@
 # Current Build Pass
 
 ## Active System
-Pass 53 -- Industry Saturation View
+Pass 54 -- On-Demand Observation Evidence Refresh
 
 ## Status
-Pass 53 complete. Repo is ready for the next product pass.
+Pass 54 complete. Repo is ready for the next product pass.
 
 ---
 
-## Completed: Pass 53 -- Industry Saturation View -- `f2ac842`
+## Completed: Pass 54 -- On-Demand Observation Evidence Refresh -- `e643def`
 
 Product changes in:
+- `lead_engine/dashboard_server.py`
 - `lead_engine/dashboard_static/index.html`
+- `lead_engine/intelligence/website_scan_agent.py`
+- `lead_engine/intelligence/observation_evidence_agent.py`
+- `lead_engine/outreach/observation_candidate_agent.py`
 
 Docs updated in:
 - `docs/PROJECT_STATE.md`
 - `docs/CURRENT_BUILD.md`
 - `docs/CHANGELOG_AI.md`
 - `docs/AI_CONTROL_PANEL.md`
-- `docs/DISCOVERY_MAP_VISION.md`
 
 No queue schema reorder/rename changes. No `run_lead_engine.py` changes.
 No email sender core changes. No scheduler timing changes. No send-path changes.
-No backend route changes.
 
 ### Problem addressed
 
-Pass 52 made territory cells useful for where-to-search-next guidance, but the
-map still lacked a truthful view of which industries in those areas were
-underworked, actively worked, or saturated. Operators could see coarse cells,
-but not the industry mix inside those cells or the visible territory.
+Observation-led drafting could still stall when the saved lead evidence was too
+weak for a safe candidate, which forced manual human observation writing even
+when the operator intent was simply to re-check the business site and contact
+signals.
 
 ### What was added
 
+**`lead_engine/dashboard_server.py`**
+
+- Added `POST /api/refresh_observation_evidence` for a single lead.
+- The route refreshes website/contact evidence, writes safe lead-side updates,
+  then reruns observation candidate generation before responding.
+- Refresh stays bounded:
+  no observation auto-save, no auto-regenerate/send, no scheduler/send-path
+  changes.
+
+**`lead_engine/intelligence/observation_evidence_agent.py`**
+
+- Added a deterministic single-lead evidence refresh helper that reuses the
+  existing website fallback, contact extraction, and website scan paths.
+- Added bounded site-signal extraction for concrete operational evidence such
+  as specialty/service, emergency or same-day language, estimate/booking
+  language, and explicit service-area coverage.
+- Added specific blocked reasons for:
+  `no_retrievable_source`, `fetch_failed`,
+  `generic_template_language`, and `no_concrete_business_signal`.
+
+**`lead_engine/intelligence/website_scan_agent.py`**
+
+- Extended the bounded site scan to keep a capped text corpus so the refresh
+  helper can derive deterministic observation evidence without a second fetch
+  loop.
+
+**`lead_engine/outreach/observation_candidate_agent.py`**
+
+- Added support for fresh site evidence already saved on the lead.
+- The normal candidate generator can now reuse refreshed insight fields after a
+  successful refresh, not just the immediate refresh response.
+
 **`lead_engine/dashboard_static/index.html`**
 
-- Added an `Industry Saturation` toggle alongside the existing territory
-  overlay controls.
-- Added a visible-territory industry coverage view that aggregates per-industry
-  territory evidence across the current map viewport.
-- Added `Best Next Industries` suggestions for the current map view.
-- Added `Working Area Industry Mix` for the territory cell under the current
-  working circle.
-- Added `Set Industry` actions so operators can push an industry from the
-  saturation view into the existing search selector without auto-running a
-  search.
-- Kept the heuristics truthful and coarse by using only the existing territory
-  overlay payload:
-  per-cell lead counts, area-search counts, duplicate-heavy counts, found
-  counts, and AREA planner checks/leads.
+- Added a `Refresh Evidence` action in the review panel.
+- Refresh now updates the lead insight section, candidate box, and operator
+  status text in place.
+- The panel now shows clean ready/blocked states after refresh instead of
+  forcing manual observation entry first.
 
 ### What remains intentionally out of scope
 
-- Exact neighborhood/zip/polygon territory modeling
-- Geospatial analytics or BI dashboarding
-- Hidden background search automation
-- Replacing circle-based discovery with a new spatial backend model
-- Auto-selecting industries or auto-running search from saturation cues
-- Queue, sender, scheduler, or send-path changes
-- Fake precision beyond stored search centers and stored prospect coordinates
+- Bulk evidence refresh
+- Hidden background evidence mutation
+- Observation auto-save or auto-accept
+- Queue/send/scheduler changes
+- `run_lead_engine.py` changes
+- Persisting fallback websites into lead identity fields during this pass
 
 ### Verification
 
+- Python compile checks:
+  - `lead_engine/intelligence/website_scan_agent.py`
+  - `lead_engine/intelligence/observation_evidence_agent.py`
+  - `lead_engine/outreach/observation_candidate_agent.py`
+  - `lead_engine/dashboard_server.py`
 - Dashboard JS parses clean via `new vm.Script(...)`.
-- Flask test client:
-  - `GET /api/map_territory_overlay` -> `200`
-  - `GET /api/industries` -> `200`
-  - current summary still built from `226` area-search rows, `11` AREA planner
-    rows, and `613` coordinate-bearing prospects
-- Dashboard HTML now includes:
-  `Industry Saturation`, `Visible Industry Coverage`,
-  `Best Next Industries`, `Working Area Industry Mix`, and `Set Industry`
+- Flask test client against temporary fixtures built from real repo rows:
+  - `POST /api/refresh_observation_evidence` for `Massie Heating and Air Conditioning` -> `200`
+    with candidate:
+    `site is pretty explicit about ductless mini-split work and emergency service.`
+  - `POST /api/refresh_observation_evidence` for `Premier Auto Repairs` -> `200`
+    with candidate:
+    `site is pretty explicit about brake work and service scheduling.`
+  - `POST /api/refresh_observation_evidence` for `Dunham Plumbing LLC` -> `200`
+    with refresh blocked reason `no_retrievable_source`, while the route still
+    returned the existing phone-only candidate path truthfully.
+  - After refresh, a normal `POST /api/generate_observation_candidate` on the
+    refreshed `Massie Heating and Air Conditioning` fixture reused the stored
+    fresh insight sentence/signals and returned the same candidate.
 
 ---
 
-## Previous Completed: Pass 52a -- Observation Route Recovery + Discovery Connection Hardening + Circle Interaction Review -- `fdbd2fb`
+## Previous Completed: Pass 53 -- Industry Saturation View -- `f2ac842`
 
-- Fixed stale-route observation candidate failures and discovery error handling,
-  while keeping territory cells primary and the circle secondary.
+- Added a truthful industry saturation layer to the territory overlay workflow
+  without changing the discovery backend or replacing the working circle.
