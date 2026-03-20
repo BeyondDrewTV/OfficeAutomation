@@ -2002,3 +2002,61 @@ generic consulting or hypey automation copy.
   - `Acme Plumbing`
 
 ---
+
+### 2026-03-19 - Pass 56: First-Touch Naturalness + Owner Readability
+
+**Goal:** Keep first-touch drafts deterministic and observation-led, but make
+them sound more human, more owner-readable, and less assembled.
+
+**Files changed:**
+- `lead_engine/outreach/email_draft_agent.py`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**What changed:**
+
+`lead_engine/outreach/email_draft_agent.py`:
+- Bumped `DRAFT_VERSION` from `v10` to `v11`.
+- Kept the deterministic observation -> consequence -> offer -> soft CTA
+  structure from Pass 55, but rewrote the actual wording to sound more like a
+  real owner-facing cold email.
+- Added observation-clause cleanup for saved/site-derived phrases like
+  `site is pretty explicit about ...`, `they are pushing ...`, and similar
+  machine-y site-summary wording.
+- Reworked opener phrasing toward more natural lines like
+  `i was checking out your site and noticed ...`,
+  `saw on your site that ...`, and
+  `noticed on your site that ...`.
+- Reworked consequence lines to stay probabilistic and plain-English:
+  missed calls, slow follow-up, inquiries slipping through, estimate requests
+  sitting too long, and callbacks piling up.
+- Reworked offer lines to describe what Drew does in owner language rather than
+  tool labels or vague consulting language.
+- Reworked CTA lines so they finish naturally and softly instead of using
+  awkward half-lines like `happy to send over where i'd start`.
+- Tightened vague-phrase blocking to reject old awkward copy such as
+  `the mess shows up`, `if that is a live issue there`, and related phrasing.
+- Expanded the concrete-signal validation list so plain-English bottleneck
+  wording still passes without needing internal tool names.
+
+**Design decisions:**
+- Did not change `run_lead_engine.py`.
+- Did not change queue schema order/naming.
+- Did not change sender logic, pending email pipeline, or send-path behavior.
+- Did not change follow-up drafting or scheduler timing/core logic.
+- Did not widen into dashboard workflow or discovery/map systems.
+
+**Verification:**
+- Python compile check passed for `lead_engine/outreach/email_draft_agent.py`.
+- Direct draft-agent verification covered:
+  - 10 first-touch examples across multiple observation types
+  - missing observation blocks
+  - generic observation blocks
+  - hype language blocks
+  - vague positioning blocks
+- Before/after comparison against the previous committed Pass 55 version showed
+  cleaner opener, consequence, offer, and CTA phrasing on the same examples.
+
+---

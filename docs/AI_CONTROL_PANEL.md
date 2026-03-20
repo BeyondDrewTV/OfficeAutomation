@@ -12,10 +12,10 @@ Lead Acquisition Engine
 V2 Stage 2 - Unified Lead Workspace Backbone
 
 ## Current Build Pass
-Pass 55 -- First-Touch Service Positioning Hardening (complete)
+Pass 56 -- First-Touch Naturalness + Owner Readability (complete)
 
 ## Last Completed Pass
-Pass 55 -- First-Touch Service Positioning Hardening
+Pass 56 -- First-Touch Naturalness + Owner Readability
 
 ## Next Pass
 UNKNOWN / TBD
@@ -84,6 +84,9 @@ track replies, convert to clients, deploy missed-call texting.
   service-business bottlenecks
 - First-touch positioning should sound like one-on-one owner/operator workflow
   help, not generic consulting or agency copy
+- First-touch wording should prefer plain-English problem language like missed
+  calls, slow follow-up, and inquiries slipping through over internal tool
+  labels or jargon
 - First-touch drafts may name practical fixes like missed-call text back,
   after-hours response, estimate follow-up, callback recovery, contact routing,
   or simple lead tracking when the observation supports them
@@ -103,7 +106,7 @@ track replies, convert to clients, deploy missed-call texting.
 
 ---
 
-## Lifecycle Event Registry (as of Pass 55)
+## Lifecycle Event Registry (as of Pass 56)
 
 | Constant | Event | Hook point | Status |
 |---|---|---|---|

@@ -4,7 +4,7 @@ import hashlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-DRAFT_VERSION = "v10"
+DRAFT_VERSION = "v11"
 
 # ---------------------------------------------------------------------------
 # Industry detection (pipeline-compatible, unchanged)
@@ -73,9 +73,14 @@ _VAGUE_POSITIONING_PHRASES = [
     "operational stuff",
     "compare notes sometime",
     "worth comparing notes",
+    "site is pretty explicit about",
+    "the mess shows up",
+    "if that is a live issue there",
+    "where i'd start",
+    "what i'd look at first",
+    "first place i'd look",
 ]
 
-# Opener patterns to strip/rewrite during post-processing
 _FORMAL_OPENER_SUBS = [
     ("I noticed that ", ""),
     ("I wanted to reach out ", ""),
@@ -118,8 +123,10 @@ _GENERIC_OBSERVATION_PHRASES = [
 _CONCRETE_SERVICE_SIGNALS = [
     "missed-call text back",
     "text-back",
+    "missed calls",
     "after-hours response",
     "after-hours reply",
+    "after-hours calls",
     "lead tracking",
     "contact form routing",
     "inquiry routing",
@@ -129,14 +136,17 @@ _CONCRETE_SERVICE_SIGNALS = [
     "intake capture",
     "pipeline",
     "calls",
-    "call",
     "callbacks",
-    "callback",
     "estimate requests",
     "quotes",
     "follow-up",
+    "slow follow-up",
     "inquiries",
-    "scheduling",
+    "new leads",
+    "new requests",
+    "service requests",
+    "getting back to people",
+    "response side",
 ]
 
 
@@ -225,7 +235,7 @@ def validate_draft(body: str, observation: str) -> None:
         for w in observation.split()
         if w.lower().strip(".,;:!?\"'()") not in stop_words and len(w) > 3
     }
-    body_text = re.sub(r"\n\n[-–—]\s*\w+\s*$", "", body, flags=re.IGNORECASE)
+    body_text = re.sub(r"\n\n-\s*\w+\s*$", "", body, flags=re.IGNORECASE)
     body_tokens = {w.lower().strip(".,;:!?\"'()") for w in body_text.split()}
     overlap = obs_tokens & body_tokens
     if not overlap:
@@ -244,7 +254,7 @@ def validate_draft(body: str, observation: str) -> None:
 # Post-processing: human style enforcement
 # ---------------------------------------------------------------------------
 
-_WORD_TARGET_MAX = 68
+_WORD_TARGET_MAX = 86
 _SIGN_OFF = "\n\n- Drew"
 
 
@@ -314,15 +324,32 @@ def _normalize_observation_sentence(observation: str) -> str:
         obs,
         flags=re.IGNORECASE,
     ).strip()
+    obs_lower = obs.lower()
+    replacements = [
+        ("site is pretty explicit about ", "you put a lot of emphasis on "),
+        ("site is explicit about ", "you put a lot of emphasis on "),
+        ("site is clear about ", "you put a lot of emphasis on "),
+        ("they are pushing ", "you put a lot of emphasis on "),
+        ("they're pushing ", "you put a lot of emphasis on "),
+        ("your site leans hard on ", "you put a lot of emphasis on "),
+        ("your site pushes ", "you put a lot of emphasis on "),
+        ("your site keeps ", "you keep "),
+        ("your site splits ", "you split "),
+        ("they are ", "you're "),
+        ("they're ", "you're "),
+        ("their ", "your "),
+        ("contact form ", "your contact form "),
+        ("phone number ", "your phone number "),
+        ("site ", "your site "),
+    ]
+    for old, new in replacements:
+        if obs_lower.startswith(old):
+            obs = new + obs[len(old):]
+            break
+    obs = obs.replace(" pretty hard on the homepage", " on the homepage")
     if obs and obs[0].isalpha():
         obs = obs[0].lower() + obs[1:]
     return obs
-
-
-def _sentence_case(text: str) -> str:
-    if not text:
-        return text
-    return text[0].upper() + text[1:]
 
 
 def _pick_offer_angle(prospect: Dict[str, str], observation: str) -> str:
@@ -357,102 +384,92 @@ def _subject_from_observation(observation: str, business_name: str, angle: str) 
 def _angle_consequence(angle: str, variant: int) -> str:
     options = {
         "after_hours_response": [
-            "usually the breakdown is calls and after-hours requests getting answered consistently",
-            "usually the mess shows up when emergency calls come in after the day is already packed",
-            "usually the strain is keeping late calls and urgent follow-up from slipping",
+            "usually the hard part is not the work itself, it's making sure after-hours calls and follow-up do not get missed once the day gets busy",
+            "a lot of shops pushing that kind of work run into missed calls and slow follow-up after hours",
+            "that kind of setup often creates pressure around after-hours calls, callbacks, and getting people a response quickly",
         ],
         "estimate_follow_up": [
-            "usually the breakdown is quote requests and follow-up sitting too long",
-            "usually the mess shows up once estimates go out and nobody has time to stay on them",
-            "usually the strain is keeping estimate requests and callbacks moving once the day gets busy",
+            "usually the hard part is not the work itself, it's estimate requests sitting too long once the day gets busy",
+            "a lot of shops in that position run into slow quote follow-up even when the work itself is solid",
+            "that kind of setup often turns into estimate requests and callbacks stacking up when the schedule gets full",
         ],
         "service_requests": [
-            "usually the breakdown is new service requests and callbacks slipping once the day gets busy",
-            "usually the mess shows up when appointment requests start stacking up without a clean follow-up path",
-            "usually the strain is keeping new requests from getting a quick response once the day fills up",
+            "usually the hard part is not the work itself, it's new service requests not getting handled consistently once the day gets busy",
+            "a lot of shops in that position run into slow follow-up on new requests when the schedule fills up",
+            "that kind of setup often leads to appointment requests and callbacks piling up faster than anyone can stay on them",
         ],
         "inquiry_routing": [
-            "usually the breakdown is web inquiries landing in the wrong place or sitting too long",
-            "usually the mess shows up when form fills and booking requests are not getting routed cleanly",
-            "usually the strain is keeping new inquiries from disappearing once jobs start stacking up",
+            "usually the hard part is not the work itself, it's web inquiries and messages slipping through once the day gets busy",
+            "a lot of shops in that position run into slow follow-up when new inquiries come in from a few different places",
+            "that kind of setup often means new inquiries sit too long or get handled inconsistently",
         ],
         "callback_recovery": [
-            "usually the breakdown is calls and callbacks slipping once the phone starts stacking up",
-            "usually the mess shows up when the day gets busy and new inquiries stop getting quick follow-up",
-            "usually the strain is keeping missed calls from turning into dead ends",
+            "usually the hard part is not the work itself, it's missed calls and callbacks piling up once the phone starts going",
+            "a lot of shops in that position run into slow follow-up when calls come in faster than anyone can get back to them",
+            "that kind of setup often leaves missed calls and new inquiries sitting longer than they should",
         ],
         "owner_workflow": [
-            "usually the breakdown is calls, estimate requests, or follow-up slipping once the day fills up",
-            "usually the mess shows up when a busy day leaves no clean handoff for new inquiries",
-            "usually the strain is keeping callbacks, quotes, and follow-up moving once work starts piling up",
+            "usually the hard part is not the work itself, it's missed calls, slow follow-up, and estimate requests sitting too long once the day gets busy",
+            "a lot of shops in that position run into new inquiries slipping through when everyone is focused on the work in front of them",
+            "that kind of setup often creates missed calls, delayed quotes, or inconsistent follow-up once things get busy",
         ],
     }
     family = options.get(angle) or options["owner_workflow"]
     return family[variant % len(family)]
 
 
-def _angle_offer(angle: str, variant: int, *, channel: str) -> str:
+def _angle_offer(angle: str, variant: int) -> str:
     if angle == "after_hours_response":
         offers = [
-            "i work one-on-one with owners on practical fixes like missed-call text back or after-hours response",
-            "i help owners tighten things up with simple missed-call text back and after-hours reply coverage",
-            "i work one-on-one with owners on simple after-hours response and callback recovery",
+            "i work one-on-one with owners to figure out where that handoff is breaking down and put something practical in place",
+            "i work directly with owners on the follow-up side, usually around missed calls, callbacks, and after-hours coverage",
+            "i help owners tighten the response side so new calls do not just sit until someone has time",
         ]
     elif angle == "estimate_follow_up":
         offers = [
-            "i work one-on-one with owners on practical fixes like estimate follow-up or simple lead tracking",
-            "i help owners clean up quote follow-up and the basic pipeline around it",
-            "i work one-on-one with owners on estimate reminders and simple lead tracking that fits how they already run",
+            "i work one-on-one with owners to figure out where follow-up is stalling and tighten it up without changing how the shop already runs",
+            "i help owners clean up the part between an incoming request and an actual follow-up",
+            "i work directly with owners on the follow-up side, usually around estimate requests, callbacks, and keeping good leads from cooling off",
         ]
     elif angle == "inquiry_routing":
         offers = [
-            "i work one-on-one with owners on practical fixes like contact form routing or basic intake capture",
-            "i help owners clean up inquiry routing, text-back, and basic intake without changing the whole shop",
-            "i work one-on-one with owners on simple intake capture and contact routing so good inquiries do not disappear",
+            "i work one-on-one with owners to figure out where inquiries are slipping through and make the follow-up side more consistent",
+            "i help owners clean up the part between a web inquiry coming in and somebody actually getting back to it",
+            "i work directly with owners on the response side when messages are coming in from a few different places",
         ]
     elif angle == "service_requests":
         offers = [
-            "i work one-on-one with owners on practical fixes like callback recovery, text-back, or basic intake capture",
-            "i help owners tighten how new service requests get answered and handed off",
-            "i work one-on-one with owners on simple intake and callback follow-up that fits how they already run",
+            "i work one-on-one with owners to figure out where new requests are getting hung up and make the response side easier to stay on top of",
+            "i help owners clean up the handoff from the first inquiry to the first real follow-up",
+            "i work directly with owners on the response side so new requests do not depend on whoever happens to notice them first",
         ]
     elif angle == "callback_recovery":
         offers = [
-            "i work one-on-one with owners on practical fixes like callback recovery or missed-call text back",
-            "i help owners tighten missed-call follow-up and simple inquiry handling",
-            "i work one-on-one with owners on callback recovery and after-hours response that fits how the business already runs",
+            "i work one-on-one with owners to figure out where missed calls and follow-up are breaking down and make that easier to stay on top of",
+            "i help owners clean up the part after the phone rings, especially when callbacks start getting pushed",
+            "i work directly with owners on missed calls, slow follow-up, and making sure good inquiries do not just sit",
         ]
     else:
         offers = [
-            "i work one-on-one with owners on practical fixes like missed-call text back, estimate follow-up, or inquiry routing",
-            "i help owners figure out where calls, quotes, or follow-up are breaking down and tighten the weak spot",
-            "i work one-on-one with owners on simple intake, callback, or follow-up fixes that fit how they already run",
+            "i work one-on-one with owners to figure out where calls, estimate requests, or follow-up are breaking down once the day gets busy",
+            "i help owners clean up the response side so new inquiries do not depend on somebody remembering them later",
+            "i work directly with owners on the part after the lead comes in - missed calls, slow follow-up, and estimate requests sitting too long",
         ]
-
-    offer = offers[variant % len(offers)]
-    if channel == "dm" and "one-on-one with owners" in offer:
-        offer = offer.replace("one-on-one with owners", "directly with owners")
-    return offer
+    return offers[variant % len(offers)]
 
 
-def _soft_close(angle: str, variant: int, *, channel: str) -> str:
+def _soft_close(channel: str, variant: int) -> str:
     if channel == "dm":
         closers = [
-            "happy to share what i'd check first if useful",
-            "if that is a live issue there, happy to send over what i'd look at first",
-            "if useful, i can send the first fix i'd usually look at",
-        ]
-    elif angle == "estimate_follow_up":
-        closers = [
-            "happy to share what i'd check first if useful",
-            "if that is a live issue there, happy to send over where i'd start",
-            "if helpful, i can send the first thing i'd look at",
+            "happy to share a couple ideas if useful",
+            "if useful, i can send a few thoughts based on what i saw",
+            "if you'd like, i can send over a couple ideas that might fit your setup",
         ]
     else:
         closers = [
-            "happy to share what i'd check first if useful",
-            "if that is a live issue there, happy to send over where i'd start",
-            "if helpful, i can send the first place i'd look",
+            "happy to share a few ideas specific to your setup if useful",
+            "if useful, i'm happy to send a couple thoughts based on what i saw",
+            "if you'd like, i can send over a few ideas that might fit the way you already run things",
         ]
     return closers[variant % len(closers)]
 
@@ -466,21 +483,35 @@ def _build_first_touch_body(
 ) -> str:
     obs_norm = _normalize_observation_sentence(observation)
     angle = _pick_offer_angle(prospect, observation)
-    opener = {
-        "email": [
+    if obs_norm.startswith("your site "):
+        email_openers = [
+            f"i noticed {obs_norm}.",
             f"saw that {obs_norm}.",
-            f"noticed {obs_norm}.",
-            f"{_sentence_case(obs_norm)}.",
-        ],
-        "dm": [
+            f"noticed that {obs_norm}.",
+        ]
+        dm_openers = [
+            f"hey - i noticed {obs_norm}.",
             f"hey - saw that {obs_norm}.",
-            f"hey - noticed {obs_norm}.",
-            f"hey - {obs_norm}.",
-        ],
+            f"hey - noticed that {obs_norm}.",
+        ]
+    else:
+        email_openers = [
+            f"i was checking out your site and noticed {obs_norm}.",
+            f"saw on your site that {obs_norm}.",
+            f"noticed on your site that {obs_norm}.",
+        ]
+        dm_openers = [
+            f"hey - i was checking out your site and noticed {obs_norm}.",
+            f"hey - saw on your site that {obs_norm}.",
+            f"hey - noticed on your site that {obs_norm}.",
+        ]
+    opener = {
+        "email": email_openers,
+        "dm": dm_openers,
     }[channel][variant % 3]
     consequence = _angle_consequence(angle, variant)
-    offer = _angle_offer(angle, variant, channel=channel)
-    close = _soft_close(angle, variant, channel=channel)
+    offer = _angle_offer(angle, variant)
+    close = _soft_close(channel, variant)
     return f"{opener} {consequence}. {offer}. {close}."
 
 

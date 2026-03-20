@@ -15,22 +15,23 @@ V2 Stage 2 - Unified Lead Workspace Backbone
 Copperline = Service Business Operations
 
 ## Last Completed Pass
-Pass 55 -- First-Touch Service Positioning Hardening
+Pass 56 -- First-Touch Naturalness + Owner Readability
 
-- Rebuilt first-touch email and DM body construction around deterministic
-  operational offer angles instead of vague "workflow gap" style copy.
-- Observation-led drafting still remains required, but the offer now stays tied
-  to what Drew actually does:
-  identify where calls, estimate requests, callbacks, intake, or follow-up are
-  breaking down and suggest practical fixes that fit how the shop already runs.
-- First-touch drafts now use short concrete positioning like missed-call text
-  back, after-hours response, estimate follow-up, callback recovery, contact
-  routing, or simple lead tracking when the observation supports that angle.
-- Deterministic validation now blocks vague consulting filler that drifts away
-  from real service-business bottlenecks or practical fixes.
+- Kept the deterministic observation-led structure from Pass 55, but rewrote
+  the first-touch language to read more like a real owner-facing cold email and
+  less like assembled system copy.
+- Openers now use more natural site-reference phrasing and normalize some
+  machine-y observation text into plain owner-facing language.
+- Consequence sentences now stay probabilistic and owner-readable:
+  missed calls, slow follow-up, inquiries slipping through, and estimate
+  requests sitting too long once the day gets busy.
+- Offer and CTA lines now stay concrete without drifting into product-feature
+  dumping, jargon, or unfinished phrasing.
+- Validation still blocks missing observation, generic observation, hype, and
+  vague positioning.
 
 ## Previous Completed Pass
-Pass 54 -- On-Demand Observation Evidence Refresh
+Pass 55 -- First-Touch Service Positioning Hardening
 
 ## Next Pass
 UNKNOWN / TBD

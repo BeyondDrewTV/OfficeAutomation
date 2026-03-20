@@ -1,14 +1,14 @@
 # Current Build Pass
 
 ## Active System
-Pass 55 -- First-Touch Service Positioning Hardening
+Pass 56 -- First-Touch Naturalness + Owner Readability
 
 ## Status
-Pass 55 complete. Repo is ready for the next product pass.
+Pass 56 complete. Repo is ready for the next product pass.
 
 ---
 
-## Completed: Pass 55 -- First-Touch Service Positioning Hardening
+## Completed: Pass 56 -- First-Touch Naturalness + Owner Readability
 
 Product changes in:
 - `lead_engine/outreach/email_draft_agent.py`
@@ -25,28 +25,30 @@ No send-path changes. No follow-up system changes.
 
 ### Problem addressed
 
-Observation-led first-touch drafts were still at risk of sounding vague,
-category-generic, or loosely "random observation" driven instead of sounding
-like a believable one-person operator helping service businesses fix real lead
-handling bottlenecks.
+Observation-led first-touch drafts had already moved onto the right business
+positioning, but they still had some assembled wording:
+awkward site observation openers, clunky "what goes wrong" lines, and CTA
+phrases that did not sound like a real person finishing the thought naturally.
 
 ### What was added
 
 **`lead_engine/outreach/email_draft_agent.py`**
 
-- Bumped `DRAFT_VERSION` from `v9` to `v10` so stale detection can treat the
-  new first-touch positioning as a real copy revision.
-- Replaced the old controlled families with deterministic angle-based first-touch
-  framing:
-  after-hours response, estimate follow-up, service requests, inquiry routing,
-  callback recovery, and a general owner-workflow fallback.
-- Each first-touch draft now follows the same bounded structure:
-  observation -> concrete operational consequence -> what Drew actually helps
-  with -> soft ask.
-- Added deterministic language controls to block vague positioning like
-  `workflow gap`, `another set of eyes`, or `business side` drift.
-- Added validation that a first-touch draft must mention a concrete
-  service-business bottleneck or fix, not just a generic observation.
+- Bumped `DRAFT_VERSION` from `v10` to `v11`.
+- Kept the same deterministic structure and angle model, but rewrote the
+  generated wording around:
+  more natural site-observation openers, plainer owner-readable consequence
+  language, cleaner offer lines, and complete soft CTAs.
+- Added observation-clause cleanup for common machine-y phrases from saved
+  observations like:
+  `site is pretty explicit about ...`,
+  `they are pushing ...`, and similar site-summary wording.
+- Tightened the vague-phrase blocklist to reject awkward old phrasing like
+  `the mess shows up`, `if that is a live issue there`, and unfinished
+  `where i'd start` style closes.
+- Expanded the concrete-signal validation list so plain-English bottleneck
+  language like `missed calls`, `slow follow-up`, `new requests`, and
+  `response side` still passes without needing internal tool labels.
 
 ### What remains intentionally out of scope
 
@@ -62,16 +64,18 @@ handling bottlenecks.
 - Python compile check:
   - `lead_engine/outreach/email_draft_agent.py`
 - Direct draft-agent verification:
+  - 10 first-touch examples across after-hours, estimate, inquiry, service
+    request, and general owner-workflow observations
   - missing observation still blocks
   - generic observation still blocks
-  - vague positioning and banned sales language now block deterministically
-  - multiple example first-touch drafts now mention believable service-business
-    fixes tied to the observation instead of generic consulting language
+  - hype language still blocks
+  - vague positioning still blocks
+  - before/after comparison against the previous committed Pass 55 draft agent
+    shows more natural opener, consequence, offer, and CTA phrasing
 
 ---
 
-## Previous Completed: Pass 54 -- On-Demand Observation Evidence Refresh
+## Previous Completed: Pass 55 -- First-Touch Service Positioning Hardening
 
-- Added a bounded single-lead evidence refresh path that can re-check business
-  evidence and retry observation candidate generation without auto-saving the
-  observation.
+- Added deterministic first-touch service-positioning angles so outreach could
+  describe Drew's real offer more concretely without generic consulting copy.
