@@ -2060,6 +2060,60 @@ them sound more human, more owner-readable, and less assembled.
   cleaner opener, consequence, offer, and CTA phrasing on the same examples.
 
 ---
+### 2026-03-20 - Pass 58: First-Touch Batch Variation Distribution
+
+**Goal:** Reduce first-touch batch repetition by spreading subject, opener,
+consequence, offer, and CTA phrasing more evenly across deterministic outputs
+without weakening observation-led drafting or validation.
+
+**Files changed:**
+- `lead_engine/outreach/email_draft_agent.py`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**What changed:**
+
+`lead_engine/outreach/email_draft_agent.py`:
+- Bumped `DRAFT_VERSION` from `v12` to `v13`.
+- Added `_component_variant_index(...)` so subject, opener, consequence, offer,
+  and CTA selection each get their own deterministic variation key based on the
+  lead, observation, angle, and channel.
+- Updated `_subject_from_observation(...)` to use component-specific
+  deterministic selection instead of the older shared business-name-only
+  variant path.
+- Split consequence, offer, and close helpers into reusable option-family
+  helpers so the body can vary per component without changing the angle model.
+- Updated `_build_first_touch_body(...)` so opener, consequence, offer, and CTA
+  are selected independently but still fit the same truthful angle.
+- Added a bounded length fallback so longer component combinations keep the
+  closing CTA instead of trimming away the fourth sentence.
+
+**Design decisions:**
+- Did not change `run_lead_engine.py`.
+- Did not change queue schema order/naming.
+- Did not change sender logic, pending email pipeline, or send-path behavior.
+- Did not change follow-up drafting or scheduler timing/core logic.
+- Did not widen into dashboard workflow or discovery/map systems.
+
+**Verification:**
+- Python compile check passed for `lead_engine/outreach/email_draft_agent.py`.
+- Direct draft-agent verification covered:
+  - 20 first-touch outputs across multiple observation types
+  - comparison against the previous committed Pass 57 draft agent on the same batch
+  - missing observation blocks
+  - generic observation blocks
+  - hype language blocks
+  - vague positioning blocks
+- Batch comparison showed:
+  - subject distribution moved to `11` direct-style / `9` question-style
+  - opener stems spread more evenly instead of clustering heavily on
+    `saw on your site that`
+  - consequence and offer unique counts both increased from `10` to `11`
+  - CTA distribution stayed bounded while preserving the fourth sentence
+
+---
 ### 2026-03-20 - Pass 57: First-Touch Subject Fit + Variation
 
 **Goal:** Make first-touch subject lines more human, more varied, and more

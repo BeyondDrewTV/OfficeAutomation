@@ -12,10 +12,10 @@ Lead Acquisition Engine
 V2 Stage 2 - Unified Lead Workspace Backbone
 
 ## Current Build Pass
-Pass 57 -- First-Touch Subject Fit + Variation (complete)
+Pass 58 -- First-Touch Batch Variation Distribution (complete)
 
 ## Last Completed Pass
-Pass 57 -- First-Touch Subject Fit + Variation
+Pass 58 -- First-Touch Batch Variation Distribution
 
 ## Next Pass
 UNKNOWN / TBD
@@ -86,6 +86,8 @@ track replies, convert to clients, deploy missed-call texting.
   help, not generic consulting or agency copy
 - First-touch subject lines must stay short, calm, owner-readable, and matched
   to the actual body angle without drifting into clickbait or sales language
+- First-touch batch generation must stay deterministic while spreading subject,
+  opener, consequence, offer, and CTA phrasing more evenly across similar rows
 - First-touch wording should prefer plain-English problem language like missed
   calls, slow follow-up, and inquiries slipping through over internal tool
   labels or jargon
@@ -108,7 +110,7 @@ track replies, convert to clients, deploy missed-call texting.
 
 ---
 
-## Lifecycle Event Registry (as of Pass 57)
+## Lifecycle Event Registry (as of Pass 58)
 
 | Constant | Event | Hook point | Status |
 |---|---|---|---|

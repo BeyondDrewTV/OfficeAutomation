@@ -1,14 +1,14 @@
 # Current Build Pass
 
 ## Active System
-Pass 57 -- First-Touch Subject Fit + Variation
+Pass 58 -- First-Touch Batch Variation Distribution
 
 ## Status
-Pass 57 complete. Repo is ready for the next product pass.
+Pass 58 complete. Repo is ready for the next product pass.
 
 ---
 
-## Completed: Pass 57 -- First-Touch Subject Fit + Variation
+## Completed: Pass 58 -- First-Touch Batch Variation Distribution
 
 Product changes in:
 - `lead_engine/outreach/email_draft_agent.py`
@@ -25,25 +25,25 @@ No send-path changes. No follow-up system changes.
 
 ### Problem addressed
 
-Observation-led first-touch drafts were in a better place after Pass 56, but
-the subject lines were still too repetitive, too dependent on generic
-`question` patterns, and not always well matched to the actual body angle.
+Observation-led first-touch drafts were stronger after Pass 57, but batches of
+drafts could still feel templated because one shared deterministic variant
+choice was driving subject, opener, consequence, offer, and CTA phrasing in
+lockstep.
 
 ### What was added
 
 **`lead_engine/outreach/email_draft_agent.py`**
 
-- Bumped `DRAFT_VERSION` from `v11` to `v12`.
-- Replaced the old one-subject-per-angle approach with bounded deterministic
-  subject families tied to the actual first-touch angle.
-- Added subject variation across after-hours, estimate follow-up, service
-  requests, inquiries/contact-form follow-up, call handling, and fallback
-  owner-workflow cases.
-- Added explicit subject validation so first-touch subjects stay short,
-  non-salesy, and owner-readable while blocking hype, clickbait, and generic
-  spam wording.
-- Kept the existing observation-led body generation intact; this pass was
-  limited to subject quality and subject/body fit.
+- Bumped `DRAFT_VERSION` from `v12` to `v13`.
+- Added per-component deterministic variation selection for subject, opener,
+  consequence, offer, and CTA phrasing.
+- Replaced the old single-variant lockstep pattern with context-hashed
+  component picks based on lead/business fields plus the actual observation and
+  angle.
+- Kept the existing angle model and validation rules intact while reducing
+  repeated sentence skeletons across a batch.
+- Added a bounded body-fit fallback so longer combinations keep the CTA instead
+  of trimming off the fourth sentence.
 
 ### What remains intentionally out of scope
 
@@ -59,18 +59,19 @@ the subject lines were still too repetitive, too dependent on generic
 - Python compile check:
   - `lead_engine/outreach/email_draft_agent.py`
 - Direct draft-agent verification:
-  - 12 subject/body pairs across after-hours, estimate, inquiry, service
+  - 20 first-touch outputs across after-hours, estimate, inquiry, service
     request, callback, and fallback owner-workflow observations
   - missing observation still blocks
   - generic observation still blocks
   - hype language still blocks
   - vague positioning still blocks
-  - subject/body comparison against the previous committed Pass 56 draft agent
-    shows cleaner subject fit and less repetitive `question` usage
+  - comparison against the previous committed Pass 57 draft agent shows more
+    even subject distribution, more even opener spread, and less repeated
+    consequence/offer/CTA phrasing across the same batch
 
 ---
 
-## Previous Completed: Pass 56 -- First-Touch Naturalness + Owner Readability
+## Previous Completed: Pass 57 -- First-Touch Subject Fit + Variation
 
-- Kept the deterministic observation-led body structure, but rewrote first-touch
-  wording so the outreach sounded more human and owner-readable.
+- Kept first-touch subjects short and angle-matched while improving subject/body
+  fit and reducing overuse of generic `question` constructions.

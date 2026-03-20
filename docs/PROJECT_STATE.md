@@ -15,21 +15,20 @@ V2 Stage 2 - Unified Lead Workspace Backbone
 Copperline = Service Business Operations
 
 ## Last Completed Pass
-Pass 57 -- First-Touch Subject Fit + Variation
+Pass 58 -- First-Touch Batch Variation Distribution
 
-- Kept Pass 56's natural-language body structure, but upgraded first-touch
-  subject lines so they are more human, more varied, and more closely matched
-  to the observation/body angle.
-- Added bounded deterministic subject families for after-hours calls, estimate
-  follow-up, service requests, inquiries/contact-form follow-up, call handling,
-  and fallback owner-workflow cases.
-- Added subject validation so first-touch subjects stay short, calm,
-  owner-readable, and non-salesy while still blocking hype, clickbait, and
-  vague generic spam patterns.
-- Existing observation-required drafting and body validation remain intact.
+- Kept Pass 57's subject/body fit improvements, but split first-touch variation
+  selection across subject, opener, consequence, offer, and CTA components so
+  batches feel less templated.
+- Variation stays deterministic by hashing real lead context per component
+  instead of using one shared business-name-only variant across the whole draft.
+- Added a bounded body-fit fallback so longer variation combinations keep the
+  four-part structure intact instead of trimming away the CTA.
+- Existing observation-required drafting, subject validation, and body
+  validation remain intact.
 
 ## Previous Completed Pass
-Pass 56 -- First-Touch Naturalness + Owner Readability
+Pass 57 -- First-Touch Subject Fit + Variation
 
 ## Next Pass
 UNKNOWN / TBD

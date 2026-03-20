@@ -4,7 +4,7 @@ import hashlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-DRAFT_VERSION = "v12"
+DRAFT_VERSION = "v13"
 
 # ---------------------------------------------------------------------------
 # Industry detection (pipeline-compatible, unchanged)
@@ -337,6 +337,27 @@ def _variant_index(business_name: str, n: int = 3) -> int:
     return int(digest[:8], 16) % n
 
 
+def _component_variant_index(
+    prospect: Dict[str, str],
+    observation: str,
+    angle: str,
+    component: str,
+    n: int,
+    *,
+    channel: str = "email",
+) -> int:
+    if n <= 0:
+        return 0
+    business_name = (prospect.get("business_name") or "").strip().lower()
+    city = (prospect.get("city") or "").strip().lower()
+    industry = (prospect.get("industry") or "").strip().lower()
+    obs_norm = re.sub(r"\s+", " ", (observation or "").strip().lower())
+    digest = hashlib.sha256(
+        f"{component}|{channel}|{angle}|{business_name}|{city}|{industry}|{obs_norm}".encode()
+    ).hexdigest()
+    return int(digest[:8], 16) % n
+
+
 def _normalize_observation_sentence(observation: str) -> str:
     obs = observation.strip().rstrip(".")
     obs = re.sub(
@@ -438,14 +459,14 @@ def _subject_options_for_angle(angle: str, observation: str) -> List[str]:
     ]
 
 
-def _subject_from_observation(observation: str, business_name: str, angle: str) -> str:
+def _subject_from_observation(prospect: Dict[str, str], observation: str, angle: str) -> str:
     """Pick a short subject that fits the body angle without sounding spammy."""
     options = _subject_options_for_angle(angle, observation)
-    pick = _variant_index(business_name, len(options))
+    pick = _component_variant_index(prospect, observation, angle, "subject", len(options))
     return options[pick]
 
 
-def _angle_consequence(angle: str, variant: int) -> str:
+def _consequence_options(angle: str) -> List[str]:
     options = {
         "after_hours_response": [
             "usually the hard part is not the work itself, it's making sure after-hours calls and follow-up do not get missed once the day gets busy",
@@ -478,11 +499,15 @@ def _angle_consequence(angle: str, variant: int) -> str:
             "that kind of setup often creates missed calls, delayed quotes, or inconsistent follow-up once things get busy",
         ],
     }
-    family = options.get(angle) or options["owner_workflow"]
+    return options.get(angle) or options["owner_workflow"]
+
+
+def _angle_consequence(angle: str, variant: int) -> str:
+    family = _consequence_options(angle)
     return family[variant % len(family)]
 
 
-def _angle_offer(angle: str, variant: int) -> str:
+def _offer_options(angle: str) -> List[str]:
     if angle == "after_hours_response":
         offers = [
             "i work one-on-one with owners to figure out where that handoff is breaking down and put something practical in place",
@@ -519,10 +544,15 @@ def _angle_offer(angle: str, variant: int) -> str:
             "i help owners clean up the response side so new inquiries do not depend on somebody remembering them later",
             "i work directly with owners on the part after the lead comes in - missed calls, slow follow-up, and estimate requests sitting too long",
         ]
+    return offers
+
+
+def _angle_offer(angle: str, variant: int) -> str:
+    offers = _offer_options(angle)
     return offers[variant % len(offers)]
 
 
-def _soft_close(channel: str, variant: int) -> str:
+def _close_options(channel: str) -> List[str]:
     if channel == "dm":
         closers = [
             "happy to share a couple ideas if useful",
@@ -535,13 +565,17 @@ def _soft_close(channel: str, variant: int) -> str:
             "if useful, i'm happy to send a couple thoughts based on what i saw",
             "if you'd like, i can send over a few ideas that might fit the way you already run things",
         ]
+    return closers
+
+
+def _soft_close(channel: str, variant: int) -> str:
+    closers = _close_options(channel)
     return closers[variant % len(closers)]
 
 
 def _build_first_touch_body(
     prospect: Dict[str, str],
     observation: str,
-    variant: int,
     *,
     channel: str,
 ) -> str:
@@ -572,27 +606,76 @@ def _build_first_touch_body(
     opener = {
         "email": email_openers,
         "dm": dm_openers,
-    }[channel][variant % 3]
-    consequence = _angle_consequence(angle, variant)
-    offer = _angle_offer(angle, variant)
-    close = _soft_close(channel, variant)
-    return f"{opener} {consequence}. {offer}. {close}."
+    }[channel]
+    opener_pick = _component_variant_index(
+        prospect,
+        observation,
+        angle,
+        "opener",
+        len(opener),
+        channel=channel,
+    )
+    consequence_options = _consequence_options(angle)
+    offer_options = _offer_options(angle)
+    close_options = _close_options(channel)
+    consequence_pick = _component_variant_index(
+        prospect,
+        observation,
+        angle,
+        "consequence",
+        len(consequence_options),
+        channel=channel,
+    )
+    offer_pick = _component_variant_index(
+        prospect,
+        observation,
+        angle,
+        "offer",
+        len(offer_options),
+        channel=channel,
+    )
+    close_pick = _component_variant_index(
+        prospect,
+        observation,
+        angle,
+        "close",
+        len(close_options),
+        channel=channel,
+    )
+    opener_text = opener[opener_pick]
+    consequence = consequence_options[consequence_pick]
+    offer = offer_options[offer_pick]
+    close = close_options[close_pick]
+    body = f"{opener_text} {consequence}. {offer}. {close}."
+    if len(body.split()) <= _WORD_TARGET_MAX:
+        return body
+
+    shortest_close = min(close_options, key=lambda x: (len(x.split()), len(x)))
+    body = f"{opener_text} {consequence}. {offer}. {shortest_close}."
+    if len(body.split()) <= _WORD_TARGET_MAX:
+        return body
+
+    shortest_offer = min(offer_options, key=lambda x: (len(x.split()), len(x)))
+    body = f"{opener_text} {consequence}. {shortest_offer}. {shortest_close}."
+    if len(body.split()) <= _WORD_TARGET_MAX:
+        return body
+
+    shortest_consequence = min(consequence_options, key=lambda x: (len(x.split()), len(x)))
+    return f"{opener_text} {shortest_consequence}. {shortest_offer}. {shortest_close}."
 
 
 def _build_email_body(
     prospect: Dict[str, str],
     observation: str,
-    variant: int,
 ) -> str:
-    return _build_first_touch_body(prospect, observation, variant, channel="email")
+    return _build_first_touch_body(prospect, observation, channel="email")
 
 
 def _build_dm_body(
     prospect: Dict[str, str],
     observation: str,
-    variant: int,
 ) -> str:
-    return _build_first_touch_body(prospect, observation, variant, channel="dm")
+    return _build_first_touch_body(prospect, observation, channel="dm")
 
 
 # ---------------------------------------------------------------------------
@@ -641,10 +724,9 @@ def draft_email(
             "Write something specific to this business."
         )
 
-    variant = _variant_index(business_name)
     angle = _pick_offer_angle(prospect, obs)
-    subject = _subject_from_observation(obs, business_name, angle)
-    body_text = _build_email_body(prospect, obs, variant)
+    subject = _subject_from_observation(prospect, obs, angle)
+    body_text = _build_email_body(prospect, obs)
     body_text = enforce_human_style(body_text)
 
     full_body = body_text + _SIGN_OFF
@@ -690,8 +772,7 @@ def draft_social_messages(
             "Write something specific to this business."
         )
 
-    variant = _variant_index(business_name)
-    dm_body = _build_dm_body(prospect, obs, variant)
+    dm_body = _build_dm_body(prospect, obs)
     dm_body = enforce_human_style(dm_body)
 
     validate_draft(dm_body, obs)
