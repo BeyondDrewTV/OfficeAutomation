@@ -4,7 +4,7 @@ import hashlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-DRAFT_VERSION = "v13"
+DRAFT_VERSION = "v14"
 
 # ---------------------------------------------------------------------------
 # Industry detection (pipeline-compatible, unchanged)
@@ -409,53 +409,121 @@ def _pick_offer_angle(prospect: Dict[str, str], observation: str) -> str:
 
 
 def _subject_options_for_angle(angle: str, observation: str) -> List[str]:
+    """
+    Return a tight pool of subject options that match both the angle family and
+    the actual observation emphasis. Deterministic pick happens in _subject_from_observation.
+    All options in a pool must be semantically appropriate for the angle; no generic
+    fallbacks are included unless the observation truly has no specific signal.
+    """
     obs_lower = observation.lower()
     if angle == "after_hours_response":
+        # Match emergency/urgent emphasis vs. general after-hours framing
+        if "emergency" in obs_lower or "urgent" in obs_lower:
+            return [
+                "emergency calls",
+                "after-hours calls",
+                "after-hours follow-up",
+            ]
+        if "weekend" in obs_lower or "nights" in obs_lower:
+            return [
+                "after-hours calls",
+                "after-hours follow-up",
+                "weekend calls",
+            ]
         return [
             "after-hours calls",
-            "question about emergency calls",
-            "emergency calls",
+            "after-hours follow-up",
+            "after-hours response",
         ]
     if angle == "estimate_follow_up":
+        # Prefer quote-specific language when observation is quote-heavy
+        if "quote" in obs_lower or "quotes" in obs_lower:
+            return [
+                "quote requests",
+                "estimate follow-up",
+                "quote follow-up",
+            ]
         return [
             "estimate follow-up",
-            "estimate follow-up question",
-            "quote requests",
+            "estimate requests",
+            "quote follow-up",
         ]
     if angle == "service_requests":
-        if "scheduling" in obs_lower or "appointment" in obs_lower:
+        # Differentiate appointment/booking emphasis from generic service request
+        if "appointment" in obs_lower or "booking" in obs_lower:
             return [
+                "appointment requests",
+                "new bookings",
                 "service requests",
-                "question about scheduling",
+            ]
+        if "scheduling" in obs_lower or "schedule" in obs_lower:
+            return [
+                "scheduling follow-up",
+                "service requests",
                 "new requests",
             ]
         return [
             "service requests",
-            "question about scheduling",
             "new requests",
+            "service request follow-up",
         ]
     if angle == "inquiry_routing":
-        if "contact form" in obs_lower:
+        # Keep contact-form subjects when observation explicitly mentions forms
+        if "contact form" in obs_lower or "contact-form" in obs_lower:
             return [
                 "contact form follow-up",
-                "question about inquiries",
-                "new inquiries",
+                "form inquiries",
+                "contact form inquiries",
+            ]
+        if "text" in obs_lower or "chat" in obs_lower or "message" in obs_lower:
+            return [
+                "new messages",
+                "incoming inquiries",
+                "inquiry follow-up",
             ]
         return [
-            "inquiries",
-            "question about inquiries",
             "new inquiries",
+            "inquiry follow-up",
+            "incoming inquiries",
         ]
     if angle == "callback_recovery":
+        # "missed calls" is the precise fit; avoid leading with the broader "call handling"
+        if "voicemail" in obs_lower or "dispatch" in obs_lower:
+            return [
+                "missed calls",
+                "voicemail follow-up",
+                "callback follow-up",
+            ]
         return [
-            "call handling",
-            "question about call handling",
             "missed calls",
+            "callback follow-up",
+            "call follow-up",
         ]
+    # owner_workflow fallback: use observation signals to select a tighter pool
+    # rather than defaulting to generic "call handling" or "new inquiries"
+    if any(kw in obs_lower for kw in ("missed call", "missed-call", "callback", "voicemail", "phone")):
+        return [
+            "missed calls",
+            "callback follow-up",
+            "call follow-up",
+        ]
+    if any(kw in obs_lower for kw in ("estimate", "quote", "proposal")):
+        return [
+            "estimate follow-up",
+            "estimate requests",
+            "quote follow-up",
+        ]
+    if any(kw in obs_lower for kw in ("contact form", "inquiry", "inquiries", "message", "form")):
+        return [
+            "new inquiries",
+            "inquiry follow-up",
+            "contact follow-up",
+        ]
+    # True generic fallback - only when observation has no recognizable signal
     return [
-        "call handling",
-        "question about follow-up",
+        "missed calls",
         "new inquiries",
+        "follow-up timing",
     ]
 
 
