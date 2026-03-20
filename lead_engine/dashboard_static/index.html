@@ -646,8 +646,40 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cv-empty{padding:80px 24px;text-align:center;color:var(--muted)}
 .cv-empty-icon{font-size:40px;margin-bottom:10px;opacity:.35}
 .cv-fire{color:var(--copper);font-size:12px;font-weight:700}
-/* Map Search tab */
-#map-layout{display:flex;gap:0;align-items:stretch;border:1px solid var(--border);border-radius:var(--rs);overflow:hidden}
+/* ── Pass 63: Boundary Territory Selector ──────────────────────────────── */
+.bnd-bar{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px;flex-wrap:wrap}
+.bnd-search-wrap{position:relative;display:flex;align-items:center;gap:6px;flex:1;min-width:200px}
+.bnd-input{flex:1;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:12px;outline:none;transition:.12s}
+.bnd-input:focus{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-glow)}
+.bnd-input::placeholder{color:var(--dim)}
+.bnd-results{position:absolute;top:calc(100% + 4px);left:0;min-width:320px;max-width:420px;background:var(--surface);border:1px solid var(--border-hi);border-radius:var(--r);box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:600;display:none}
+.bnd-results.open{display:block}
+.bnd-result-item{padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--border);font-size:12px;display:flex;align-items:flex-start;gap:8px}
+.bnd-result-item:last-child{border-bottom:none}
+.bnd-result-item:hover{background:var(--surface2)}
+.bnd-result-name{font-weight:500;color:var(--text);line-height:1.3}
+.bnd-result-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.bnd-result-type{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:1px 6px;border-radius:10px;background:var(--surface3);color:var(--dim);flex-shrink:0;margin-top:2px}
+.bnd-active{display:flex;align-items:center;gap:7px;padding:5px 10px;background:var(--blue-glow);border:1px solid rgba(79,142,247,.35);border-radius:var(--rs);font-size:11px;font-weight:600;color:var(--blue)}
+.bnd-active-name{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bnd-active-tiles{font-size:10px;color:var(--muted);font-weight:400}
+.bnd-clear{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0}
+.bnd-clear:hover{color:var(--text)}
+.bnd-empty{padding:12px;font-size:12px;color:var(--muted);text-align:center}
+.bnd-loading{padding:12px;font-size:12px;color:var(--muted);text-align:center}
+
+/* Map toolbar simplified */
+.map-toolbar-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:6px 0}
+
+/* Results panel grouping */
+.mrp-group-hdr{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:space-between;padding:5px 10px;background:var(--surface);border-bottom:1px solid var(--border);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.mrp-group-hdr.ready-hdr{color:var(--green);background:rgba(62,207,114,.05)}
+.mrp-group-hdr.maybe-hdr{color:var(--blue);background:rgba(79,142,247,.05)}
+.mrp-group-hdr.weak-hdr{color:var(--dim);background:var(--surface)}
+.mrp-group-collapsed .mrp-item{display:none}
+.mrp-group-toggle{cursor:pointer;user-select:none;font-size:10px;color:var(--dim)}
+
+display:flex;gap:0;align-items:stretch;border:1px solid var(--border);border-radius:var(--rs);overflow:hidden}
 #map-container{flex:1;height:480px;min-width:0;overflow:hidden}
 #map-results-panel{width:320px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--border);display:none;flex-direction:column;height:480px}
 #map-results-panel.visible{display:flex}
@@ -1446,47 +1478,78 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     <span class="mc-muted" style="font-size:11px;display:block;margin-top:4px">Queue and draft creation are authoritative; map markers may be partial when source coordinates are unavailable.</span>
   </div>
   <div class="map-instructions">
-    Start with <strong>Territory Overlay</strong> or <strong>Next Areas</strong> to find underworked cells, then use <strong>Use Cell</strong> or click the map to place the search circle.
-    Drag the edge handle to resize the radius.
-    Pick an industry and click <strong>Search This Area</strong>.
-    Results accumulate across searches — click to reposition without clearing.
-    Use <strong>↺ Reset Session</strong> to clear all pins and start fresh.
+    <strong>Search by territory:</strong> Type a city or county in the boundary selector above and click Search Territory to automatically tile and search the entire area.
+    Or place a circle manually, pick an industry, and click <strong>Search Here</strong>.
+    Use <strong>Territory Overlay</strong> to see what has already been covered.
   </div>
-  <div class="map-toolbar">
-    <select id="map-industry" class="d-input" style="min-width:160px" onchange="_mapUpdateIndustryControls()"><option value="">Loading…</option></select>
-    <input id="map-limit" class="d-input d-num" type="number" value="20" min="1" max="20" title="Max results (1–20)">
-    <button id="btnMapSearch" class="btn btn-primary" onclick="mapSearch()" disabled>
-      <span class="spin"></span>⚡ Search This Area
+  <!-- Pass 63: Boundary Territory Selector -->
+  <div class="bnd-bar" id="bnd-bar">
+    <div class="bnd-search-wrap">
+      <input id="bnd-input" class="bnd-input" type="text"
+        placeholder="Search city or county (e.g. Winnebago County, Loves Park)"
+        autocomplete="off"
+        oninput="bndSearchInput()"
+        onkeydown="bndSearchKey(event)"
+        onblur="setTimeout(()=>bndCloseResults(),200)">
+      <div id="bnd-results" class="bnd-results"></div>
+      <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px;flex-shrink:0" onclick="bndSearchSubmit()">
+        <span id="bnd-search-spin" class="spin"></span>Search
+      </button>
+    </div>
+    <div id="bnd-active-wrap" style="display:none">
+      <div class="bnd-active">
+        <span>◈</span>
+        <span class="bnd-active-name" id="bnd-active-name"></span>
+        <span class="bnd-active-tiles" id="bnd-active-tiles"></span>
+        <button class="bnd-clear" onclick="bndClearBoundary()" title="Clear territory">✕</button>
+      </div>
+    </div>
+    <button id="btnSearchTerritory" class="btn btn-primary" onclick="bndSearchTerritory()" disabled style="flex-shrink:0">
+      <span class="spin"></span>⊞ Search Territory
     </button>
-    <button id="btnSearchVisible" class="btn btn-secondary" onclick="mapSearchVisible()" disabled title="Tile the visible map area and run sequential discovery across each cell">
+    <button id="btnCancelTerritory" class="btn btn-ghost" onclick="bndCancelTerritory()" style="display:none;flex-shrink:0">✕ Cancel</button>
+    <span id="bnd-progress-label" style="font-size:11px;color:var(--muted);display:none"></span>
+  </div>
+
+  <!-- Simplified map toolbar: industry + radius + actions in clean rows -->
+  <div class="map-toolbar-row">
+    <select id="map-industry" class="d-input" style="min-width:160px" onchange="_mapUpdateIndustryControls()"><option value="">Loading…</option></select>
+    <input id="map-limit" class="d-input d-num" type="number" value="20" min="1" max="20" title="Max results per search (1–20)">
+    <button id="btnMapSearch" class="btn btn-primary" onclick="mapSearch()" disabled>
+      <span class="spin"></span>⚡ Search Here
+    </button>
+    <button id="btnSearchVisible" class="btn btn-secondary" onclick="mapSearchVisible()" disabled title="Tile the visible map area and run sequential searches across each cell">
       <span class="spin"></span>⊞ Search Visible Area
     </button>
-    <button id="btnExhaust" class="btn btn-ghost" onclick="mapSearchExhaust()" disabled title="Repeat discovery on this circle until results are exhausted (max 25 runs)">
-      <span class="spin"></span>♻ Run Until Exhausted
+    <button id="btnExhaust" class="btn btn-ghost" onclick="mapSearchExhaust()" disabled title="Repeat on this circle until exhausted (max 25 runs)">
+      <span class="spin"></span>♻ Exhaust Circle
     </button>
-    <button id="btnCancelVisible" class="btn btn-ghost" onclick="_mapCancelVisible()" style="display:none" title="Cancel after current tile finishes">✕ Cancel</button>
-    <!-- Visual separator before session utilities -->
+    <button id="btnCancelVisible" class="btn btn-ghost" onclick="_mapCancelVisible()" style="display:none">✕ Cancel</button>
     <span style="width:1px;height:20px;background:var(--border);display:inline-block;margin:0 2px;flex-shrink:0"></span>
-    <button class="btn btn-ghost" onclick="mapClearCircle()" title="Reset search session — clears circle, all result pins, and coverage overlays" style="color:var(--dim)">↺ Reset</button>
-    <button id="btnClearCoverage" class="btn btn-coverage" onclick="_mapClearCoverage()" title="Remove prior search overlays" style="display:none">◌ Clear Coverage</button>
+    <button class="btn btn-ghost" onclick="mapClearCircle()" style="color:var(--dim)" title="Reset session — clears circle, pins, coverage">↺ Reset</button>
+    <button id="btnClearCoverage" class="btn btn-coverage" onclick="_mapClearCoverage()" style="display:none">◌ Clear Coverage</button>
     <span id="map-radius-label" style="font-size:11px;color:var(--muted)"></span>
   </div>
-  <div class="map-grid-bar">
+
+  <!-- Grid bar (collapsed by default, show when circle is placed) -->
+  <div class="map-grid-bar" id="map-grid-bar" style="display:none">
     <div class="map-grid-top">
       <div>
         <div class="map-grid-title">Search Area Grid</div>
-        <div class="map-grid-note">Runs the current working circle as capped 1000m cells across one or more industries with one summarized history item.</div>
+        <div class="map-grid-note">Runs the current working circle as capped 1000m cells across one or more industries.</div>
       </div>
       <div class="map-grid-actions">
-        <span id="map-grid-summary" class="map-grid-summary">Draw a circle and pick industries to estimate the run.</span>
-        <button id="btnGridSearch" class="btn btn-secondary" onclick="mapSearchAreaGrid()" disabled title="Run a capped grid sweep from the current circle">
+        <span id="map-grid-summary" class="map-grid-summary"></span>
+        <button id="btnGridSearch" class="btn btn-secondary" onclick="mapSearchAreaGrid()" disabled>
           <span class="spin"></span>▦ Run Grid
         </button>
-        <button id="btnGridCancel" class="btn btn-ghost" onclick="mapCancelAreaGrid()" style="display:none" title="Cancel after the current grid request finishes">✕ Cancel Grid</button>
+        <button id="btnGridCancel" class="btn btn-ghost" onclick="mapCancelAreaGrid()" style="display:none">✕ Cancel Grid</button>
       </div>
     </div>
     <div id="map-grid-industries" class="map-grid-chips"></div>
   </div>
+
+  <!-- Territory overlay controls (compact, secondary) -->
   <div class="map-territory-toolbar">
     <div class="map-territory-actions">
       <button id="btnMapTerritoryToggle" class="btn btn-secondary map-territory-btn active" onclick="mapToggleTerritoryOverlay()">◫ Territory Overlay</button>
@@ -1494,7 +1557,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <button id="btnMapTerritorySaturation" class="btn btn-ghost map-territory-btn active" onclick="mapToggleIndustrySaturation()">◎ Industry Saturation</button>
       <button id="btnMapTerritoryRefresh" class="btn btn-coverage" onclick="mapReloadTerritoryOverlay()">↻ Refresh Overlay</button>
     </div>
-    <div class="map-territory-note">Coarse territory cells from stored area searches and stored lead coordinates. Use them for neighborhood guidance, then compare industries before choosing the next search.</div>
+    <div class="map-territory-note">Coarse territory cells from stored area searches and stored lead coordinates.</div>
   </div>
   <div id="map-layout">
     <div id="map-container"></div>
@@ -6994,11 +7057,26 @@ function _mapRenderPanel() {
     sectionEl.className = 'mrp-section';
 
     if (groupKey !== 'flat') {
+      const isWeakSection = ['weak', 'needs-contact', 'closed'].includes(section.id);
+      // Pass 63: collapse weak/needs-contact sections by default in workflow view
+      const collapsedByDefault = groupKey === 'workflow' && isWeakSection;
+      if (collapsedByDefault) sectionEl.classList.add('mrp-group-collapsed');
       const hdr = document.createElement('div');
-      hdr.className = 'mrp-section-hdr';
+      hdr.className = 'mrp-section-hdr' + (isWeakSection ? ' weak-hdr' : (section.id === 'ready' ? ' ready-hdr' : section.id === 'maybe' ? ' maybe-hdr' : ''));
       hdr.innerHTML =
         `<span class="mrp-section-title">${escHtml(section.label)}</span>` +
-        `<span class="mrp-section-meta">${section.items.length} lead${section.items.length === 1 ? '' : 's'}</span>`;
+        `<span style="display:flex;align-items:center;gap:8px">` +
+        `<span class="mrp-section-meta">${section.items.length} lead${section.items.length === 1 ? '' : 's'}</span>` +
+        (collapsedByDefault ? `<span class="mrp-group-toggle" title="Click to expand/collapse">▸</span>` : '') +
+        `</span>`;
+      if (isWeakSection) {
+        hdr.style.cursor = 'pointer';
+        hdr.onclick = () => {
+          sectionEl.classList.toggle('mrp-group-collapsed');
+          const arrow = hdr.querySelector('.mrp-group-toggle');
+          if (arrow) arrow.textContent = sectionEl.classList.contains('mrp-group-collapsed') ? '▸' : '▾';
+        };
+      }
       sectionEl.appendChild(hdr);
     }
 
@@ -7509,6 +7587,176 @@ let _mapVisibleSeenKeys     = new Set(); // dedup key set for tiled visible-area
 let _mapGridSweepActive     = false;
 let _mapGridSelectedIndustries = new Set();
 let _mapIndustryOptions = [];
+// ══════════════════════════════════════════════════════════════════
+// Pass 63: BOUNDARY TERRITORY SELECTOR
+// Fetch city/county polygon from /api/boundary_search (Nominatim proxy)
+// Render on map, tile into 800m cells, run sequential searches.
+// ══════════════════════════════════════════════════════════════════
+let _bndBoundaryLayer = null;   // Leaflet GeoJSON layer for active boundary
+let _bndActiveBoundary = null;  // { display_name, geojson, bbox, center_lat, center_lng, estimated_tiles }
+let _bndTerritoryAbort = false; // cancel flag for territory sweep
+let _bndSearchDebounce = null;
+
+function bndSearchInput() {
+  clearTimeout(_bndSearchDebounce);
+  const q = (document.getElementById('bnd-input')?.value || '').trim();
+  if (q.length < 3) { bndCloseResults(); return; }
+  _bndSearchDebounce = setTimeout(() => bndSearchSubmit(), 500);
+}
+
+function bndSearchKey(e) {
+  if (e.key === 'Enter') { clearTimeout(_bndSearchDebounce); bndSearchSubmit(); }
+  if (e.key === 'Escape') bndCloseResults();
+}
+
+async function bndSearchSubmit() {
+  const q = (document.getElementById('bnd-input')?.value || '').trim();
+  if (!q) return;
+  const resultsEl = document.getElementById('bnd-results');
+  const spinEl = document.getElementById('bnd-search-spin');
+  if (!resultsEl) return;
+  resultsEl.innerHTML = '<div class="bnd-loading">Searching…</div>';
+  resultsEl.classList.add('open');
+  if (spinEl) { spinEl.style.display = 'inline-block'; }
+  try {
+    const stateEl = document.getElementById('d-state');
+    const state = (stateEl?.value || 'IL').trim().toUpperCase();
+    const res = await apiJson(`/api/boundary_search?q=${encodeURIComponent(q)}&state=${state}`);
+    if (spinEl) spinEl.style.display = 'none';
+    if (!res.ok) {
+      resultsEl.innerHTML = `<div class="bnd-empty">${escHtml(res.error || 'No results found')}</div>`;
+      return;
+    }
+    // Single result — auto-select it
+    bndSelectBoundary(res);
+    bndCloseResults();
+  } catch(e) {
+    if (spinEl) spinEl.style.display = 'none';
+    resultsEl.innerHTML = `<div class="bnd-empty">Search failed: ${escHtml(String(e))}</div>`;
+  }
+}
+
+function bndCloseResults() {
+  const el = document.getElementById('bnd-results');
+  if (el) { el.innerHTML = ''; el.classList.remove('open'); }
+}
+
+function bndSelectBoundary(data) {
+  _bndActiveBoundary = data;
+  // Render polygon on map
+  if (_bndBoundaryLayer) { _bndBoundaryLayer.remove(); _bndBoundaryLayer = null; }
+  if (_mapInstance && data.geojson) {
+    _bndBoundaryLayer = L.geoJSON(data.geojson, {
+      style: {
+        color: '#4f8ef7',
+        weight: 2.5,
+        opacity: 0.9,
+        fillColor: '#4f8ef7',
+        fillOpacity: 0.08,
+        dashArray: '6 3',
+      }
+    }).addTo(_mapInstance);
+    // Fit map to boundary
+    try { _mapInstance.fitBounds(_bndBoundaryLayer.getBounds(), { padding: [20, 20] }); }
+    catch(e) {}
+  }
+  // Update UI
+  const activeWrap = document.getElementById('bnd-active-wrap');
+  const activeName = document.getElementById('bnd-active-name');
+  const activeTiles = document.getElementById('bnd-active-tiles');
+  const btnSearch = document.getElementById('btnSearchTerritory');
+  if (activeWrap) activeWrap.style.display = '';
+  if (activeName) activeName.textContent = data.display_name.split(',')[0];
+  if (activeTiles && data.estimated_tiles) {
+    activeTiles.textContent = `~${data.estimated_tiles} tiles`;
+  }
+  if (btnSearch) btnSearch.disabled = false;
+  // Clear the input
+  const input = document.getElementById('bnd-input');
+  if (input) input.value = '';
+  toast(`Territory loaded: ${data.display_name.split(',')[0]}`, 'ok');
+}
+
+function bndClearBoundary() {
+  _bndActiveBoundary = null;
+  if (_bndBoundaryLayer) { _bndBoundaryLayer.remove(); _bndBoundaryLayer = null; }
+  const activeWrap = document.getElementById('bnd-active-wrap');
+  const btnSearch = document.getElementById('btnSearchTerritory');
+  if (activeWrap) activeWrap.style.display = 'none';
+  if (btnSearch) btnSearch.disabled = true;
+}
+
+function _bndTileBoundary(geojson, bbox, tileRadiusM) {
+  // Generate a grid of lat/lng centers that cover the bounding box
+  // We use the bbox and step by ~tileRadiusM * 1.6 to ensure overlap
+  if (!bbox || bbox.length < 4) return [];
+  const minLat = parseFloat(bbox[0]);
+  const maxLat = parseFloat(bbox[1]);
+  const minLng = parseFloat(bbox[2]);
+  const maxLng = parseFloat(bbox[3]);
+  const stepLat = (tileRadiusM * 1.6) / 111320;
+  const stepLng = (tileRadiusM * 1.6) / (111320 * Math.cos(((minLat + maxLat) / 2) * Math.PI / 180));
+  const tiles = [];
+  for (let lat = minLat + stepLat / 2; lat < maxLat; lat += stepLat) {
+    for (let lng = minLng + stepLng / 2; lng < maxLng; lng += stepLng) {
+      // Basic point-in-bbox check (boundary polygon check would need turf.js)
+      tiles.push({ lat: parseFloat(lat.toFixed(6)), lng: parseFloat(lng.toFixed(6)) });
+    }
+  }
+  return tiles;
+}
+
+async function bndSearchTerritory() {
+  if (!_bndActiveBoundary) { toast('No territory selected', 'err'); return; }
+  const industry = (document.getElementById('map-industry')?.value || '').trim();
+  if (!industry) { toast('Pick an industry before searching', 'err'); return; }
+  const limit = parseInt(document.getElementById('map-limit')?.value || '20', 10);
+  const TILE_RADIUS = 800;
+  const MAX_TILES = 60;
+  const tiles = _bndTileBoundary(_bndActiveBoundary.geojson, _bndActiveBoundary.bbox, TILE_RADIUS);
+  if (!tiles.length) { toast('Could not tile boundary — try a manual circle', 'err'); return; }
+  const capped = tiles.slice(0, MAX_TILES);
+  _bndTerritoryAbort = false;
+  // Update UI
+  const btnSearch = document.getElementById('btnSearchTerritory');
+  const btnCancel = document.getElementById('btnCancelTerritory');
+  const progress = document.getElementById('bnd-progress-label');
+  if (btnSearch) btnSearch.disabled = true;
+  if (btnCancel) btnCancel.style.display = '';
+  if (progress) { progress.style.display = ''; progress.textContent = `0 / ${capped.length} tiles`; }
+  let totalFound = 0;
+  let tilesDone = 0;
+  for (const tile of capped) {
+    if (_bndTerritoryAbort) break;
+    try {
+      const res = await apiJson('/api/discover_area', {
+        industry, lat: tile.lat, lng: tile.lng,
+        radius_m: TILE_RADIUS, limit,
+      });
+      if (res.prospects_added > 0) totalFound += res.prospects_added;
+      if (res.markers && res.markers.length) _mapPlaceResultMarkers(res.markers);
+    } catch(e) {
+      // Tile error — continue
+    }
+    tilesDone++;
+    if (progress) progress.textContent = `${tilesDone} / ${capped.length} tiles — ${totalFound} found`;
+    await new Promise(r => setTimeout(r, 300)); // Brief pause between tiles
+  }
+  // Cleanup UI
+  if (btnSearch) btnSearch.disabled = false;
+  if (btnCancel) btnCancel.style.display = 'none';
+  if (progress) progress.style.display = 'none';
+  await loadAll();
+  await _mapLoadTerritoryOverlay(true);
+  const aborted = _bndTerritoryAbort ? ' (cancelled)' : '';
+  toast(`Territory search complete — ${totalFound} new leads${aborted}`, totalFound > 0 ? 'ok' : 'info');
+}
+
+function bndCancelTerritory() {
+  _bndTerritoryAbort = true;
+  toast('Cancelling after current tile…', 'info');
+}
+
 let _mapTerritoryData = null;
 let _mapTerritoryLayer = null;
 let _mapTerritoryVisible = true;
@@ -8884,6 +9132,9 @@ function _mapDrawCircle(lat, lng) {
   const _btnEx = document.getElementById('btnExhaust');
   if (_btnEx && document.getElementById('map-industry').value) _btnEx.disabled = false;
   _mapUpdateGridControls();
+  // Pass 63: show grid bar when circle is placed
+  const _gb = document.getElementById('map-grid-bar');
+  if (_gb) _gb.style.display = '';
   document.getElementById('map-status').textContent = `Center: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
 }
 
@@ -8896,6 +9147,9 @@ function mapClearCircle() {
   const _btnEx2 = document.getElementById('btnExhaust');
   if (_btnEx2) _btnEx2.disabled = true;
   _mapUpdateGridControls();
+  // Pass 63: hide grid bar when circle is cleared
+  const _gb2 = document.getElementById('map-grid-bar');
+  if (_gb2) _gb2.style.display = 'none';
   document.getElementById('map-status').textContent = 'Circle cleared. Choose a territory cell or click the map to set a new search area.';
   document.getElementById('map-radius-label').textContent = '';
 }

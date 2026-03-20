@@ -1526,6 +1526,71 @@ def api_territory_mark_exhausted():
     _city_planner.ensure_city(city,state).setdefault("industries",{}).setdefault(industry,{"leads_found":0,"last_checked_at":None,"new_leads_last_run":0,"status":"never_checked"})["status"]="exhausted"
     _city_planner._save(); return jsonify({"ok":True})
 
+@app.route("/api/boundary_search")
+def api_boundary_search():
+    """
+    Proxy Nominatim boundary search so the frontend avoids CORS issues.
+    Returns simplified GeoJSON polygon + bbox + tiling metadata for a city or county.
+    Query params: q (place name, required), state (2-letter, appended to q if not already in q)
+    """
+    from urllib.request import urlopen, Request as URLRequest
+    import json as _json
+    q = request.args.get("q", "").strip()
+    state = request.args.get("state", "").strip()
+    if not q:
+        return jsonify({"ok": False, "error": "q is required"}), 400
+    # Append state if provided and not already in query
+    search_q = q if (state.lower() in q.lower()) else f"{q} {state}".strip()
+    url = (
+        "https://nominatim.openstreetmap.org/search"
+        f"?q={search_q.replace(' ', '+')}"
+        "&format=json&polygon_geojson=1&limit=5"
+        "&countrycodes=us"
+    )
+    try:
+        req = URLRequest(url, headers={"User-Agent": "Copperline/1.0 boundary-search"})
+        with urlopen(req, timeout=10) as r:
+            results = _json.loads(r.read().decode())
+        # Filter to boundary/administrative types — skip road/poi results
+        filtered = [
+            r for r in results
+            if r.get("class") in ("boundary", "place")
+            and r.get("geojson")
+        ]
+        if not filtered:
+            return jsonify({"ok": False, "error": f"No boundary found for '{q}'"}), 200
+        best = filtered[0]
+        geo = best.get("geojson", {})
+        bbox = best.get("boundingbox", [])  # [min_lat, max_lat, min_lng, max_lng]
+        # Compute center and rough tile grid from bbox
+        center_lat = center_lng = tile_count = None
+        if len(bbox) == 4:
+            try:
+                min_lat, max_lat, min_lng, max_lng = float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])
+                center_lat = round((min_lat + max_lat) / 2, 6)
+                center_lng = round((min_lng + max_lng) / 2, 6)
+                # Estimate tile count at 800m radius (0.014 deg approx)
+                lat_tiles = max(1, round((max_lat - min_lat) / 0.014))
+                lng_tiles = max(1, round((max_lng - min_lng) / 0.018))
+                tile_count = lat_tiles * lng_tiles
+            except (ValueError, TypeError):
+                pass
+        return jsonify({
+            "ok": True,
+            "display_name": best.get("display_name", ""),
+            "type": best.get("type", ""),
+            "osm_type": best.get("osm_type", ""),
+            "geojson": geo,
+            "bbox": bbox,
+            "center_lat": center_lat,
+            "center_lng": center_lng,
+            "estimated_tiles": tile_count,
+        })
+    except Exception as exc:
+        log.error("boundary_search error: %s", exc)
+        return jsonify({"ok": False, "error": str(exc)}), 500
+
+
 @app.route("/api/city_leads")
 def api_city_leads():
     city = request.args.get("city","").strip().lower(); state = request.args.get("state","").strip().lower()
