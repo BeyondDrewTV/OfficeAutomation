@@ -4,7 +4,7 @@ import hashlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-DRAFT_VERSION = "v14"
+DRAFT_VERSION = "v15"
 
 # ---------------------------------------------------------------------------
 # Industry detection (pipeline-compatible, unchanged)
@@ -153,6 +153,11 @@ _CONCRETE_SERVICE_SIGNALS = [
     "service requests",
     "getting back to people",
     "response side",
+    "sit",
+    "stack up",
+    "pile up",
+    "slip",
+    "fall through",
 ]
 
 
@@ -408,232 +413,203 @@ def _pick_offer_angle(prospect: Dict[str, str], observation: str) -> str:
     return "owner_workflow"
 
 
+def _build_reactive_consequence(obs: str, angle: str) -> str:
+    """
+    Build a consequence sentence that logically extends the specific observation
+    rather than pulling from a generic angle-keyed pool.
+
+    Reads observation signals in priority order. Falls back to a short
+    angle-keyed sentence only when no specific signal is detected.
+    No randomness. One output per observation.
+    """
+    o = obs.lower()
+
+    # --- No confirmation / no response after submission ---
+    if any(p in o for p in (
+        "no confirmation", "no immediate confirmation", "no response",
+        "nothing back", "no follow", "unclear", "no next step",
+        "no idea if it went", "no acknowledgment",
+    )):
+        if any(p in o for p in ("contact form", "form", "submit", "inquiry")):
+            return "someone fills that out and gets nothing back — no confirmation, no idea if it went anywhere"
+        return "when there's no confirmation after someone reaches out, a lot of those just slip through"
+
+    # --- Voicemail / dispatch number ---
+    if any(p in o for p in ("voicemail", "dispatch number", "dispatch line")):
+        return "requests that go to voicemail often don't get followed up until the next morning at the earliest"
+
+    # --- Phone as only or primary contact path ---
+    if any(p in o for p in (
+        "only contact", "primary contact", "only way to reach",
+        "no other contact", "just a phone", "single phone",
+        "phone number prominently", "phone is the main",
+    )):
+        return "if someone calls and you're mid-job, that goes to voicemail and may not get returned same day"
+
+    # --- Estimate / quote form as primary CTA ---
+    if any(p in o for p in (
+        "estimate request form", "quote request form", "estimate form",
+        "request form as the primary", "free estimate as the primary",
+        "free quote as the primary", "primary call to action",
+    )):
+        return "the gap is usually after someone submits — those tend to sit until someone has time to get back to them"
+
+    # --- Pushes quotes / estimates on every page ---
+    if any(p in o for p in (
+        "push free quote", "pushes free quote", "quote on every page",
+        "quote button", "quote requests on every",
+    )):
+        return "quote requests tend to sit until someone gets around to following up, especially once the schedule fills"
+
+    # --- 24/7 or emergency / same-day claims ---
+    if any(p in o for p in ("24/7", "24 7", "emergency service", "same-day response", "same day response")):
+        return "that works when someone picks up, but after-hours calls and same-day requests can stack up between jobs"
+
+    # --- After-hours or weekend availability ---
+    if any(p in o for p in (
+        "after-hours", "after hours", "weekend availability",
+        "weekend and evening", "nights and weekend", "nights and week",
+    )):
+        return "nights and weekends are when people actually need help, and that's also when follow-up tends to slip"
+
+    # --- Multiple contact channels / chat widget / text-back ---
+    if any(p in o for p in (
+        "chat widget", "text-back", "text back",
+        "couple different places", "few different places",
+        "multiple contact", "more than one way",
+    )):
+        return "the tricky part is staying on top of messages coming from a couple different places at the same time"
+
+    # --- Online booking / scheduling widget ---
+    if any(p in o for p in (
+        "online booking", "booking widget", "scheduling widget",
+        "book online", "book appointments online",
+    )):
+        return "the booking side is covered, but requests that come in outside the widget tend to sit"
+
+    # --- Estimate / proposal request (general, no form specifics) ---
+    if any(p in o for p in ("proposal request", "proposal form", "free in-home")):
+        return "the gap is usually after someone requests — those tend to sit until someone circles back"
+
+    # --- Angle-keyed fallbacks (short, plain, no template feel) ---
+    fallbacks = {
+        "after_hours_response":
+            "after-hours calls and follow-up tend to slip once the day gets busy",
+        "estimate_follow_up":
+            "estimate requests tend to sit longer than they should once the schedule fills up",
+        "service_requests":
+            "new requests pile up faster than it looks, especially once the schedule is full",
+        "inquiry_routing":
+            "inquiries coming in from different places tend to get missed or handled late",
+        "callback_recovery":
+            "a lot of those calls don't get returned until the next opening in the schedule",
+        "owner_workflow":
+            "calls and requests tend to sit longer than they should once the job load picks up",
+    }
+    return fallbacks.get(angle, fallbacks["owner_workflow"])
+
+
 def _subject_options_for_angle(angle: str, observation: str) -> List[str]:
     """
-    Return a tight pool of subject options that match both the angle family and
-    the actual observation emphasis. Deterministic pick happens in _subject_from_observation.
-    All options in a pool must be semantically appropriate for the angle; no generic
-    fallbacks are included unless the observation truly has no specific signal.
+    Return a tight pool of subject options matched to the angle and observation.
+    Deterministic pick happens in _subject_from_observation.
     """
     obs_lower = observation.lower()
     if angle == "after_hours_response":
-        # Match emergency/urgent emphasis vs. general after-hours framing
         if "emergency" in obs_lower or "urgent" in obs_lower:
-            return [
-                "emergency calls",
-                "after-hours calls",
-                "after-hours follow-up",
-            ]
+            return ["emergency calls", "after-hours calls", "after-hours follow-up"]
         if "weekend" in obs_lower or "nights" in obs_lower:
-            return [
-                "after-hours calls",
-                "after-hours follow-up",
-                "weekend calls",
-            ]
-        return [
-            "after-hours calls",
-            "after-hours follow-up",
-            "after-hours response",
-        ]
+            return ["after-hours calls", "after-hours follow-up", "weekend calls"]
+        return ["after-hours calls", "after-hours follow-up", "after-hours response"]
     if angle == "estimate_follow_up":
-        # Prefer quote-specific language when observation is quote-heavy
         if "quote" in obs_lower or "quotes" in obs_lower:
-            return [
-                "quote requests",
-                "estimate follow-up",
-                "quote follow-up",
-            ]
-        return [
-            "estimate follow-up",
-            "estimate requests",
-            "quote follow-up",
-        ]
+            return ["quote requests", "estimate follow-up", "quote follow-up"]
+        return ["estimate follow-up", "estimate requests", "quote follow-up"]
     if angle == "service_requests":
-        # Differentiate appointment/booking emphasis from generic service request
         if "appointment" in obs_lower or "booking" in obs_lower:
-            return [
-                "appointment requests",
-                "new bookings",
-                "service requests",
-            ]
+            return ["appointment requests", "new bookings", "service requests"]
         if "scheduling" in obs_lower or "schedule" in obs_lower:
-            return [
-                "scheduling follow-up",
-                "service requests",
-                "new requests",
-            ]
-        return [
-            "service requests",
-            "new requests",
-            "service request follow-up",
-        ]
+            return ["scheduling follow-up", "service requests", "new requests"]
+        return ["service requests", "new requests", "service request follow-up"]
     if angle == "inquiry_routing":
-        # Keep contact-form subjects when observation explicitly mentions forms
         if "contact form" in obs_lower or "contact-form" in obs_lower:
-            return [
-                "contact form follow-up",
-                "form inquiries",
-                "contact form inquiries",
-            ]
+            return ["contact form follow-up", "form inquiries", "contact form inquiries"]
         if "text" in obs_lower or "chat" in obs_lower or "message" in obs_lower:
-            return [
-                "new messages",
-                "incoming inquiries",
-                "inquiry follow-up",
-            ]
-        return [
-            "new inquiries",
-            "inquiry follow-up",
-            "incoming inquiries",
-        ]
+            return ["new messages", "incoming inquiries", "inquiry follow-up"]
+        return ["new inquiries", "inquiry follow-up", "incoming inquiries"]
     if angle == "callback_recovery":
-        # "missed calls" is the precise fit; avoid leading with the broader "call handling"
         if "voicemail" in obs_lower or "dispatch" in obs_lower:
-            return [
-                "missed calls",
-                "voicemail follow-up",
-                "callback follow-up",
-            ]
-        return [
-            "missed calls",
-            "callback follow-up",
-            "call follow-up",
-        ]
-    # owner_workflow fallback: use observation signals to select a tighter pool
-    # rather than defaulting to generic "call handling" or "new inquiries"
+            return ["missed calls", "voicemail follow-up", "callback follow-up"]
+        return ["missed calls", "callback follow-up", "call follow-up"]
     if any(kw in obs_lower for kw in ("missed call", "missed-call", "callback", "voicemail", "phone")):
-        return [
-            "missed calls",
-            "callback follow-up",
-            "call follow-up",
-        ]
+        return ["missed calls", "callback follow-up", "call follow-up"]
     if any(kw in obs_lower for kw in ("estimate", "quote", "proposal")):
-        return [
-            "estimate follow-up",
-            "estimate requests",
-            "quote follow-up",
-        ]
+        return ["estimate follow-up", "estimate requests", "quote follow-up"]
     if any(kw in obs_lower for kw in ("contact form", "inquiry", "inquiries", "message", "form")):
-        return [
-            "new inquiries",
-            "inquiry follow-up",
-            "contact follow-up",
-        ]
-    # True generic fallback - only when observation has no recognizable signal
-    return [
-        "missed calls",
-        "new inquiries",
-        "follow-up timing",
-    ]
+        return ["new inquiries", "inquiry follow-up", "contact follow-up"]
+    return ["missed calls", "new inquiries", "follow-up timing"]
 
 
 def _subject_from_observation(prospect: Dict[str, str], observation: str, angle: str) -> str:
-    """Pick a short subject that fits the body angle without sounding spammy."""
     options = _subject_options_for_angle(angle, observation)
     pick = _component_variant_index(prospect, observation, angle, "subject", len(options))
     return options[pick]
 
 
-def _consequence_options(angle: str) -> List[str]:
-    options = {
-        "after_hours_response": [
-            "usually the hard part is not the work itself, it's making sure after-hours calls and follow-up do not get missed once the day gets busy",
-            "a lot of shops pushing that kind of work run into missed calls and slow follow-up after hours",
-            "that kind of setup often creates pressure around after-hours calls, callbacks, and getting people a response quickly",
-        ],
-        "estimate_follow_up": [
-            "usually the hard part is not the work itself, it's estimate requests sitting too long once the day gets busy",
-            "a lot of shops in that position run into slow quote follow-up even when the work itself is solid",
-            "that kind of setup often turns into estimate requests and callbacks stacking up when the schedule gets full",
-        ],
-        "service_requests": [
-            "usually the hard part is not the work itself, it's new service requests not getting handled consistently once the day gets busy",
-            "a lot of shops in that position run into slow follow-up on new requests when the schedule fills up",
-            "that kind of setup often leads to appointment requests and callbacks piling up faster than anyone can stay on them",
-        ],
-        "inquiry_routing": [
-            "usually the hard part is not the work itself, it's web inquiries and messages slipping through once the day gets busy",
-            "a lot of shops in that position run into slow follow-up when new inquiries come in from a few different places",
-            "that kind of setup often means new inquiries sit too long or get handled inconsistently",
-        ],
-        "callback_recovery": [
-            "usually the hard part is not the work itself, it's missed calls and callbacks piling up once the phone starts going",
-            "a lot of shops in that position run into slow follow-up when calls come in faster than anyone can get back to them",
-            "that kind of setup often leaves missed calls and new inquiries sitting longer than they should",
-        ],
-        "owner_workflow": [
-            "usually the hard part is not the work itself, it's missed calls, slow follow-up, and estimate requests sitting too long once the day gets busy",
-            "a lot of shops in that position run into new inquiries slipping through when everyone is focused on the work in front of them",
-            "that kind of setup often creates missed calls, delayed quotes, or inconsistent follow-up once things get busy",
-        ],
-    }
-    return options.get(angle) or options["owner_workflow"]
-
-
-def _angle_consequence(angle: str, variant: int) -> str:
-    family = _consequence_options(angle)
-    return family[variant % len(family)]
-
-
 def _offer_options(angle: str) -> List[str]:
+    """
+    Short, plain offer sentences. Varied openers so the same skeleton
+    does not repeat across a batch. All stay first-person, direct, no hype.
+    """
     if angle == "after_hours_response":
-        offers = [
-            "i work one-on-one with owners to figure out where that handoff is breaking down and put something practical in place",
-            "i work directly with owners on the follow-up side, usually around missed calls, callbacks, and after-hours coverage",
-            "i help owners tighten the response side so new calls do not just sit until someone has time",
+        return [
+            "i help owners tighten the response side so after-hours calls don't just sit",
+            "worth a look at how the after-hours handoff is set up — usually a small fix makes a big difference",
+            "i work directly with owners on the callback and after-hours side, one-on-one",
         ]
-    elif angle == "estimate_follow_up":
-        offers = [
-            "i work one-on-one with owners to figure out where follow-up is stalling and tighten it up without changing how the shop already runs",
-            "i help owners clean up the part between an incoming request and an actual follow-up",
-            "i work directly with owners on the follow-up side, usually around estimate requests, callbacks, and keeping good leads from cooling off",
+    if angle == "estimate_follow_up":
+        return [
+            "i help owners close that gap between an incoming request and an actual follow-up",
+            "worth looking at how the estimate follow-up side is set up — usually pretty fixable",
+            "i work directly with owners on the follow-up side, specifically around requests that go cold",
         ]
-    elif angle == "inquiry_routing":
-        offers = [
-            "i work one-on-one with owners to figure out where inquiries are slipping through and make the follow-up side more consistent",
-            "i help owners clean up the part between a web inquiry coming in and somebody actually getting back to it",
-            "i work directly with owners on the response side when messages are coming in from a few different places",
+    if angle == "inquiry_routing":
+        return [
+            "i help owners make the follow-up side more consistent when inquiries come in from a few places",
+            "worth a look at how that intake path is set up — usually not a big lift to tighten",
+            "i work directly with owners on the gap between an inquiry coming in and someone actually getting back to it",
         ]
-    elif angle == "service_requests":
-        offers = [
-            "i work one-on-one with owners to figure out where new requests are getting hung up and make the response side easier to stay on top of",
-            "i help owners clean up the handoff from the first inquiry to the first real follow-up",
-            "i work directly with owners on the response side so new requests do not depend on whoever happens to notice them first",
+    if angle == "service_requests":
+        return [
+            "i help owners make the response side easier to stay on top of when new requests come in",
+            "worth looking at how new requests are being handled — usually there's a simple fix in there",
+            "i work directly with owners on the handoff between the first inquiry and the first real follow-up",
         ]
-    elif angle == "callback_recovery":
-        offers = [
-            "i work one-on-one with owners to figure out where missed calls and follow-up are breaking down and make that easier to stay on top of",
-            "i help owners clean up the part after the phone rings, especially when callbacks start getting pushed",
-            "i work directly with owners on missed calls, slow follow-up, and making sure good inquiries do not just sit",
+    if angle == "callback_recovery":
+        return [
+            "i help owners tighten the missed-call and callback side so good leads don't just sit",
+            "worth a look at how callbacks are being handled — usually pretty straightforward to fix",
+            "i work directly with owners on the part after the phone rings, especially when callbacks start getting pushed",
         ]
-    else:
-        offers = [
-            "i work one-on-one with owners to figure out where calls, estimate requests, or follow-up are breaking down once the day gets busy",
-            "i help owners clean up the response side so new inquiries do not depend on somebody remembering them later",
-            "i work directly with owners on the part after the lead comes in - missed calls, slow follow-up, and estimate requests sitting too long",
-        ]
-    return offers
-
-
-def _angle_offer(angle: str, variant: int) -> str:
-    offers = _offer_options(angle)
-    return offers[variant % len(offers)]
+    return [
+        "i help owners clean up the response side so new leads don't depend on someone remembering to follow up",
+        "worth a look at how the follow-up side is set up — usually a small fix covers most of the gap",
+        "i work directly with owners on missed calls, slow follow-up, and requests that sit too long",
+    ]
 
 
 def _close_options(channel: str) -> List[str]:
     if channel == "dm":
-        closers = [
+        return [
             "happy to share a couple ideas if useful",
             "if useful, i can send a few thoughts based on what i saw",
             "if you'd like, i can send over a couple ideas that might fit your setup",
         ]
-    else:
-        closers = [
-            "happy to share a few ideas specific to your setup if useful",
-            "if useful, i'm happy to send a couple thoughts based on what i saw",
-            "if you'd like, i can send over a few ideas that might fit the way you already run things",
-        ]
-    return closers
+    return [
+        "happy to share a few ideas specific to your setup if useful",
+        "if useful, i'm happy to send a couple thoughts based on what i saw",
+        "if you'd like, i can send over a few ideas that might fit the way you already run things",
+    ]
 
 
 def _soft_close(channel: str, variant: int) -> str:
@@ -649,6 +625,7 @@ def _build_first_touch_body(
 ) -> str:
     obs_norm = _normalize_observation_sentence(observation)
     angle = _pick_offer_angle(prospect, observation)
+
     if obs_norm.startswith("your site "):
         email_openers = [
             f"i noticed {obs_norm}.",
@@ -671,78 +648,48 @@ def _build_first_touch_body(
             f"hey - saw on your site that {obs_norm}.",
             f"hey - noticed on your site that {obs_norm}.",
         ]
-    opener = {
-        "email": email_openers,
-        "dm": dm_openers,
-    }[channel]
+
+    opener_pool = email_openers if channel == "email" else dm_openers
     opener_pick = _component_variant_index(
-        prospect,
-        observation,
-        angle,
-        "opener",
-        len(opener),
-        channel=channel,
+        prospect, observation, angle, "opener", len(opener_pool), channel=channel,
     )
-    consequence_options = _consequence_options(angle)
+    opener_text = opener_pool[opener_pick]
+
+    # Consequence: observation-reactive, not angle-pooled
+    consequence = _build_reactive_consequence(observation, angle)
+
     offer_options = _offer_options(angle)
     close_options = _close_options(channel)
-    consequence_pick = _component_variant_index(
-        prospect,
-        observation,
-        angle,
-        "consequence",
-        len(consequence_options),
-        channel=channel,
-    )
+
     offer_pick = _component_variant_index(
-        prospect,
-        observation,
-        angle,
-        "offer",
-        len(offer_options),
-        channel=channel,
+        prospect, observation, angle, "offer", len(offer_options), channel=channel,
     )
     close_pick = _component_variant_index(
-        prospect,
-        observation,
-        angle,
-        "close",
-        len(close_options),
-        channel=channel,
+        prospect, observation, angle, "close", len(close_options), channel=channel,
     )
-    opener_text = opener[opener_pick]
-    consequence = consequence_options[consequence_pick]
+
     offer = offer_options[offer_pick]
     close = close_options[close_pick]
+
     body = f"{opener_text} {consequence}. {offer}. {close}."
     if len(body.split()) <= _WORD_TARGET_MAX:
         return body
 
+    # Body-fit fallback: shorten close, then offer
     shortest_close = min(close_options, key=lambda x: (len(x.split()), len(x)))
     body = f"{opener_text} {consequence}. {offer}. {shortest_close}."
     if len(body.split()) <= _WORD_TARGET_MAX:
         return body
 
     shortest_offer = min(offer_options, key=lambda x: (len(x.split()), len(x)))
-    body = f"{opener_text} {consequence}. {shortest_offer}. {shortest_close}."
-    if len(body.split()) <= _WORD_TARGET_MAX:
-        return body
-
-    shortest_consequence = min(consequence_options, key=lambda x: (len(x.split()), len(x)))
-    return f"{opener_text} {shortest_consequence}. {shortest_offer}. {shortest_close}."
+    return f"{opener_text} {consequence}. {shortest_offer}. {shortest_close}."
 
 
-def _build_email_body(
-    prospect: Dict[str, str],
-    observation: str,
-) -> str:
+def _build_email_body(prospect: Dict[str, str], observation: str) -> str:
     return _build_first_touch_body(prospect, observation, channel="email")
 
 
-def _build_dm_body(
-    prospect: Dict[str, str],
-    observation: str,
-) -> str:
+def _build_dm_body(prospect: Dict[str, str], observation: str) -> str:
     return _build_first_touch_body(prospect, observation, channel="dm")
 
 
@@ -768,11 +715,7 @@ def draft_email(
 ) -> Tuple[str, str]:
     """
     Generate a first-touch email draft.
-
-    Requires `observation` - either passed directly or read from
-    `prospect["business_specific_observation"]`.
-
-    Raises ObservationMissingError if observation is absent.
+    Requires observation. Raises ObservationMissingError if absent.
     Raises DraftInvalidError if the generated draft fails validation.
     """
     business_name = (prospect.get("business_name") or "").strip()
@@ -810,11 +753,7 @@ def draft_email_json(
     observation: Optional[str] = None,
 ) -> Dict:
     subject, body = draft_email(prospect, final_priority_score, observation=observation)
-    return {
-        "subject": subject,
-        "email_body": body,
-        "tone": "casual",
-    }
+    return {"subject": subject, "email_body": body, "tone": "casual"}
 
 
 def draft_social_messages(
@@ -824,13 +763,8 @@ def draft_social_messages(
 ) -> Tuple[str, str, str]:
     """
     Return short companion drafts for Facebook DM, Instagram DM, and contact-form use.
-
-    Requires observation - either explicit or from prospect field.
-    Raises ObservationMissingError if absent.
-    Raises DraftInvalidError if generated draft fails validation.
+    Requires observation. Raises ObservationMissingError if absent.
     """
-    business_name = (prospect.get("business_name") or "there").strip()
-
     raw_obs = observation or prospect.get("business_specific_observation") or ""
     obs = _require_observation(raw_obs)
 
@@ -842,7 +776,6 @@ def draft_social_messages(
 
     dm_body = _build_dm_body(prospect, obs)
     dm_body = enforce_human_style(dm_body)
-
     validate_draft(dm_body, obs)
 
     return dm_body, dm_body, dm_body
