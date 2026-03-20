@@ -1526,6 +1526,75 @@ def api_territory_mark_exhausted():
     _city_planner.ensure_city(city,state).setdefault("industries",{}).setdefault(industry,{"leads_found":0,"last_checked_at":None,"new_leads_last_run":0,"status":"never_checked"})["status"]="exhausted"
     _city_planner._save(); return jsonify({"ok":True})
 
+@app.route("/api/reverse_boundary")
+def api_reverse_boundary():
+    """
+    Reverse geocode a lat/lng to the nearest political boundary at the given zoom level.
+    zoom=8  → county
+    zoom=10 → city
+    zoom=13 → neighborhood/suburb
+    Returns same shape as /api/boundary_search.
+    """
+    from urllib.request import urlopen, Request as URLRequest
+    import json as _json
+    try:
+        lat = float(request.args.get("lat", ""))
+        lng = float(request.args.get("lng", ""))
+        zoom = int(request.args.get("zoom", "10"))
+        zoom = max(6, min(14, zoom))
+    except (TypeError, ValueError):
+        return jsonify({"ok": False, "error": "lat, lng, zoom required"}), 400
+    url = (
+        f"https://nominatim.openstreetmap.org/reverse"
+        f"?lat={lat}&lon={lng}&zoom={zoom}&format=json&polygon_geojson=1"
+    )
+    try:
+        req = URLRequest(url, headers={"User-Agent": "Copperline/1.0 reverse-boundary"})
+        with urlopen(req, timeout=10) as r:
+            result = _json.loads(r.read().decode())
+        if "error" in result:
+            return jsonify({"ok": False, "error": result["error"]}), 200
+        geo = result.get("geojson", {})
+        bbox = result.get("boundingbox", [])
+        center_lat = center_lng = tile_count = None
+        if len(bbox) == 4:
+            try:
+                min_lat, max_lat = float(bbox[0]), float(bbox[1])
+                min_lng, max_lng = float(bbox[2]), float(bbox[3])
+                center_lat = round((min_lat + max_lat) / 2, 6)
+                center_lng = round((min_lng + max_lng) / 2, 6)
+                lat_tiles = max(1, round((max_lat - min_lat) / 0.014))
+                lng_tiles = max(1, round((max_lng - min_lng) / 0.018))
+                tile_count = lat_tiles * lng_tiles
+            except (ValueError, TypeError):
+                pass
+        address = result.get("address", {})
+        short_name = (
+            address.get("neighbourhood") or
+            address.get("suburb") or
+            address.get("city") or
+            address.get("town") or
+            address.get("county") or
+            result.get("display_name", "").split(",")[0]
+        )
+        return jsonify({
+            "ok": True,
+            "display_name": result.get("display_name", ""),
+            "short_name": short_name,
+            "type": result.get("type", ""),
+            "class": result.get("class", ""),
+            "geojson": geo,
+            "bbox": bbox,
+            "center_lat": center_lat,
+            "center_lng": center_lng,
+            "estimated_tiles": tile_count,
+            "zoom_used": zoom,
+        })
+    except Exception as exc:
+        log.error("reverse_boundary error: %s", exc)
+        return jsonify({"ok": False, "error": str(exc)}), 500
+
+
 @app.route("/api/boundary_search")
 def api_boundary_search():
     """

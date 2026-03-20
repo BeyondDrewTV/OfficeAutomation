@@ -1591,7 +1591,10 @@ display:flex;gap:0;align-items:stretch;border:1px solid var(--border);border-rad
           <div class="mrp-list" id="mrp-list"></div>
         </div>
       </div>
-      <div id="map-status" class="map-status" style="margin-top:8px"></div>
+      <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div id="map-status" class="map-status"></div>
+        <span id="map-zoom-hint" style="font-size:10px;color:var(--dim);white-space:nowrap;font-family:var(--mono);flex-shrink:0"></span>
+      </div>
       <div id="map-territory-legend"></div>
       <div id="map-history">
         <div class="mh-hdr">
@@ -7591,11 +7594,164 @@ let _mapGridSweepActive     = false;
 let _mapGridSelectedIndustries = new Set();
 let _mapIndustryOptions = [];
 // ══════════════════════════════════════════════════════════════════
-// Pass 63: BOUNDARY TERRITORY SELECTOR
-// Fetch city/county polygon from /api/boundary_search (Nominatim proxy)
-// Render on map, tile into 800m cells, run sequential searches.
+// Pass 64: CLICK-TO-BOUNDARY — map click reverse geocodes to county/
+// city/neighborhood depending on zoom level, highlights polygon,
+// auto-populates the results sidebar with leads in that area.
+// Shift+click falls back to manual circle placement.
 // ══════════════════════════════════════════════════════════════════
-let _bndBoundaryLayer = null;   // Leaflet GeoJSON layer for active boundary
+
+let _mapClickBoundaryLayer = null;  // Current highlighted boundary polygon
+let _mapClickBoundaryData  = null;  // Current boundary metadata
+let _mapClickPending       = false; // Debounce — only one reverse lookup at a time
+
+function _mapUpdateZoomHint() {
+  if (!_mapInstance) return;
+  const z = _mapInstance.getZoom();
+  const level = z <= 7 ? 'state' : z <= 9 ? 'county' : z <= 12 ? 'city' : 'neighborhood';
+  const hint = document.getElementById('map-zoom-hint');
+  if (hint) hint.textContent = `Click = ${level} (zoom ${z})`;
+}
+
+function _mapZoomToNominatimZoom(leafletZoom) {
+  // Map Leaflet zoom to Nominatim zoom for appropriate boundary granularity
+  if (leafletZoom <= 7)  return 6;   // state
+  if (leafletZoom <= 9)  return 8;   // county
+  if (leafletZoom <= 12) return 10;  // city
+  return 13;                          // neighborhood/suburb
+}
+
+async function _mapClickSelectBoundary(lat, lng) {
+  if (_mapClickPending) return;
+  _mapClickPending = true;
+  const statusEl = document.getElementById('map-status');
+  if (statusEl) statusEl.textContent = 'Looking up area…';
+  try {
+    const leafletZoom = _mapInstance ? _mapInstance.getZoom() : 10;
+    const nomZoom = _mapZoomToNominatimZoom(leafletZoom);
+    const res = await apiJson(`/api/reverse_boundary?lat=${lat}&lng=${lng}&zoom=${nomZoom}`);
+    if (!res.ok) {
+      // Fallback: place circle instead
+      _mapDrawCircle(lat, lng);
+      if (statusEl) statusEl.textContent = `No boundary found — placed circle instead.`;
+      return;
+    }
+    _mapSetClickBoundary(res);
+  } catch(e) {
+    _mapDrawCircle(lat, lng);
+    if (statusEl) statusEl.textContent = 'Boundary lookup failed — placed circle instead.';
+  } finally {
+    _mapClickPending = false;
+  }
+}
+
+function _mapSetClickBoundary(data) {
+  // Remove previous boundary highlight
+  if (_mapClickBoundaryLayer) { _mapClickBoundaryLayer.remove(); _mapClickBoundaryLayer = null; }
+  _mapClickBoundaryData = data;
+
+  if (_mapInstance && data.geojson) {
+    _mapClickBoundaryLayer = L.geoJSON(data.geojson, {
+      style: {
+        color: '#b87333',       // copper — matches Copperline brand
+        weight: 2.5,
+        opacity: 1,
+        fillColor: '#b87333',
+        fillOpacity: 0.10,
+        dashArray: null,
+      }
+    }).addTo(_mapInstance);
+
+    // Place search circle at the center of the boundary
+    if (data.center_lat && data.center_lng) {
+      // Estimate a reasonable radius from the bbox
+      let radiusM = 2000;
+      if (data.bbox && data.bbox.length === 4) {
+        const latSpan = Math.abs(parseFloat(data.bbox[1]) - parseFloat(data.bbox[0]));
+        const lngSpan = Math.abs(parseFloat(data.bbox[3]) - parseFloat(data.bbox[2]));
+        radiusM = Math.min(Math.max(Math.round((latSpan * 111320) / 2), 800), 8000);
+      }
+      _mapRadiusM = radiusM;
+      _mapDrawCircle(data.center_lat, data.center_lng);
+    }
+  }
+
+  // Update boundary selector bar to show this as the active territory
+  // so Search Territory uses this boundary for tiling
+  bndSelectBoundary(data);
+
+  // Update sidebar with leads in this area
+  _mapBoundaryPopulateSidebar(data);
+
+  const statusEl = document.getElementById('map-status');
+  const shortName = data.short_name || data.display_name.split(',')[0];
+  const zoom = data.zoom_used;
+  const level = zoom <= 6 ? 'state' : zoom <= 8 ? 'county' : zoom <= 10 ? 'city' : 'neighborhood';
+  if (statusEl) statusEl.textContent = `${shortName} — ${level} selected. Click Search Territory to discover leads here.`;
+}
+
+function _mapBoundaryPopulateSidebar(data) {
+  // Filter the existing results panel to show leads in this area,
+  // and show a count summary even before a search runs.
+  if (!data || !data.bbox || data.bbox.length < 4) return;
+  const minLat = parseFloat(data.bbox[0]);
+  const maxLat = parseFloat(data.bbox[1]);
+  const minLng = parseFloat(data.bbox[2]);
+  const maxLng = parseFloat(data.bbox[3]);
+
+  // Find queue rows that fall within this boundary's bbox
+  const shortName = data.short_name || data.display_name.split(',')[0];
+  const existingLeads = (allRows || []).filter(row => {
+    const lat = parseFloat(row.lat || 0);
+    const lng = parseFloat(row.lng || 0);
+    if (!lat && !lng) {
+      // Fall back to city name match if no coords
+      const city = (row.city || '').toLowerCase();
+      return data.display_name.toLowerCase().includes(city) && city.length > 2;
+    }
+    return lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng;
+  });
+
+  // Update the boundary active tiles label to include lead count
+  const activeTiles = document.getElementById('bnd-active-tiles');
+  const leadsMsg = existingLeads.length > 0
+    ? `~${data.estimated_tiles || '?'} tiles · ${existingLeads.length} leads on file`
+    : `~${data.estimated_tiles || '?'} tiles · no leads yet`;
+  if (activeTiles) activeTiles.textContent = leadsMsg;
+
+  // If we have results in the panel already, filter to this boundary
+  if (_mapResultItems.length > 0) {
+    _mapPanelTriageFilter = 'all';
+    _mapRenderPanel();
+  }
+
+  // Show a status note
+  const statusEl = document.getElementById('map-status');
+  if (statusEl) {
+    const sent = existingLeads.filter(r => r.sent_at).length;
+    const ready = existingLeads.filter(r => (r.approved === 'true') && !r.sent_at).length;
+    if (existingLeads.length > 0) {
+      statusEl.textContent = `${shortName}: ${existingLeads.length} leads on file — ${sent} sent, ${ready} approved & ready. Click Search Territory to find more.`;
+    }
+  }
+}
+
+function mapClearClickBoundary() {
+  if (_mapClickBoundaryLayer) { _mapClickBoundaryLayer.remove(); _mapClickBoundaryLayer = null; }
+  _mapClickBoundaryData = null;
+}
+
+// Override mapClearCircle to also clear the click boundary highlight
+const _mapClearCircle_orig = mapClearCircle;
+function mapClearCircle() {
+  mapClearClickBoundary();
+  bndClearBoundary();
+  if (typeof _mapClearCircle_orig === 'function') _mapClearCircle_orig();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Pass 63: BOUNDARY TERRITORY SELECTOR (text search path)
+// ══════════════════════════════════════════════════════════════════
+let _bndBoundaryLayer   = null;
 let _bndActiveBoundary = null;  // { display_name, geojson, bbox, center_lat, center_lng, estimated_tiles }
 let _bndTerritoryAbort = false; // cancel flag for territory sweep
 let _bndSearchDebounce = null;
@@ -7646,9 +7802,12 @@ function bndCloseResults() {
 
 function bndSelectBoundary(data) {
   _bndActiveBoundary = data;
-  // Render polygon on map
-  if (_bndBoundaryLayer) { _bndBoundaryLayer.remove(); _bndBoundaryLayer = null; }
-  if (_mapInstance && data.geojson) {
+
+  // Render polygon on map — but only if called from text search path
+  // (click path already renders its own copper-colored boundary via _mapSetClickBoundary)
+  // We detect the click path by presence of zoom_used field
+  if (!data.zoom_used && _mapInstance && data.geojson) {
+    if (_bndBoundaryLayer) { _bndBoundaryLayer.remove(); _bndBoundaryLayer = null; }
     _bndBoundaryLayer = L.geoJSON(data.geojson, {
       style: {
         color: '#4f8ef7',
@@ -7659,30 +7818,31 @@ function bndSelectBoundary(data) {
         dashArray: '6 3',
       }
     }).addTo(_mapInstance);
-    // Fit map to boundary
     try { _mapInstance.fitBounds(_bndBoundaryLayer.getBounds(), { padding: [20, 20] }); }
     catch(e) {}
   }
+
   // Update UI
   const activeWrap = document.getElementById('bnd-active-wrap');
   const activeName = document.getElementById('bnd-active-name');
   const activeTiles = document.getElementById('bnd-active-tiles');
   const btnSearch = document.getElementById('btnSearchTerritory');
   if (activeWrap) activeWrap.style.display = '';
-  if (activeName) activeName.textContent = data.display_name.split(',')[0];
+  const shortName = data.short_name || data.display_name.split(',')[0];
+  if (activeName) activeName.textContent = shortName;
   if (activeTiles && data.estimated_tiles) {
     activeTiles.textContent = `~${data.estimated_tiles} tiles`;
   }
   if (btnSearch) btnSearch.disabled = false;
-  // Clear the input
   const input = document.getElementById('bnd-input');
   if (input) input.value = '';
-  toast(`Territory loaded: ${data.display_name.split(',')[0]}`, 'ok');
+  if (!data.zoom_used) toast(`Territory loaded: ${shortName}`, 'ok');
 }
 
 function bndClearBoundary() {
   _bndActiveBoundary = null;
   if (_bndBoundaryLayer) { _bndBoundaryLayer.remove(); _bndBoundaryLayer = null; }
+  mapClearClickBoundary();
   const activeWrap = document.getElementById('bnd-active-wrap');
   const btnSearch = document.getElementById('btnSearchTerritory');
   if (activeWrap) activeWrap.style.display = 'none';
@@ -9181,19 +9341,29 @@ function _mapInit() {
   _mapClusterGroup = L.markerClusterGroup();
   _mapInstance.addLayer(_mapClusterGroup);
   // Staggered invalidateSize to handle tab-visibility timing
-  setTimeout(() => { _mapInstance.invalidateSize(true); console.log('[_mapInit] invalidateSize @50ms'); }, 50);
+  setTimeout(() => { _mapInstance.invalidateSize(true); }, 50);
   setTimeout(() => { _mapInstance.invalidateSize(true); }, 200);
   setTimeout(() => { _mapInstance.invalidateSize(true); }, 600);
+  // Pass 64: show zoom hint immediately
+  setTimeout(() => _mapUpdateZoomHint(), 100);
   console.log('[_mapInit] cluster group initialized');
-  _mapInstance.on('moveend zoomend', () => _mapRenderTerritoryOverlay());
+  _mapInstance.on('moveend zoomend', () => {
+    _mapRenderTerritoryOverlay();
+    // Pass 64: update zoom-level hint so operator knows click granularity
+    _mapUpdateZoomHint();
+  });
   _mapInstance.on('click', (e) => {
-    // Pass 21b: always reposition circle on click — no longer gated on empty results.
-    // Results in the panel accumulate across searches; they're only cleared on Reset.
-    _mapDrawCircle(e.latlng.lat, e.latlng.lng);
+    // Pass 64: click → reverse geocode → highlight county/city/neighborhood boundary
+    // Falls back to placing a circle if reverse geocoding fails or shift is held
+    if (e.originalEvent && e.originalEvent.shiftKey) {
+      _mapDrawCircle(e.latlng.lat, e.latlng.lng);
+      return;
+    }
+    _mapClickSelectBoundary(e.latlng.lat, e.latlng.lng);
   });
   const statusEl = document.getElementById('map-status');
   if (statusEl && !statusEl.textContent.trim()) {
-    statusEl.textContent = 'Tip: type a city or county above and click Search Territory, or click the map to place a circle.';
+    statusEl.textContent = 'Click any area to highlight and search that territory. Shift+click to place a manual circle.';
   }
 }
 
