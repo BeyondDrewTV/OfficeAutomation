@@ -1,14 +1,14 @@
 # Current Build Pass
 
 ## Active System
-Pass 58 -- First-Touch Batch Variation Distribution
+Pass 59 -- First-Touch Subject Semantic Precision
 
 ## Status
-Pass 58 complete. Repo is ready for the next product pass.
+Pass 59 complete. Repo is ready for the next product pass.
 
 ---
 
-## Completed: Pass 58 -- First-Touch Batch Variation Distribution
+## Completed: Pass 59 -- First-Touch Subject Semantic Precision
 
 Product changes in:
 - `lead_engine/outreach/email_draft_agent.py`
@@ -25,25 +25,36 @@ No send-path changes. No follow-up system changes.
 
 ### Problem addressed
 
-Observation-led first-touch drafts were stronger after Pass 57, but batches of
-drafts could still feel templated because one shared deterministic variant
-choice was driving subject, opener, consequence, offer, and CTA phrasing in
-lockstep.
+First-touch subjects were better distributed after Pass 58, but some could
+still feel broader or less exact than the underlying observation/body angle.
+"call handling" led the callback pool, "question about X" appeared in multiple
+angle families, and the owner_workflow fallback always returned the same generic
+trio regardless of what the observation actually said.
 
 ### What was added
 
 **`lead_engine/outreach/email_draft_agent.py`**
 
-- Bumped `DRAFT_VERSION` from `v12` to `v13`.
-- Added per-component deterministic variation selection for subject, opener,
-  consequence, offer, and CTA phrasing.
-- Replaced the old single-variant lockstep pattern with context-hashed
-  component picks based on lead/business fields plus the actual observation and
-  angle.
-- Kept the existing angle model and validation rules intact while reducing
-  repeated sentence skeletons across a batch.
-- Added a bounded body-fit fallback so longer combinations keep the CTA instead
-  of trimming off the fourth sentence.
+- Bumped `DRAFT_VERSION` from `v13` to `v14`.
+- Rewrote `_subject_options_for_angle` to be observation-aware within each
+  angle family. Subject pool options are now filtered/ordered toward the actual
+  observation emphasis before the deterministic pick runs.
+- `after_hours_response`: three sub-pools — emergency-first, weekend-first,
+  general after-hours. No longer always offers "question about emergency calls".
+- `estimate_follow_up`: quote-heavy observations now lead with "quote requests";
+  estimate-heavy observations lead with "estimate follow-up". Dropped
+  "estimate follow-up question" phrasing.
+- `service_requests`: appointment/booking observations now lead with
+  "appointment requests"; scheduling observations lead with "scheduling follow-up".
+  Dead-code duplicate branch removed.
+- `inquiry_routing`: contact-form observations get form-specific pool; text/chat
+  observations get message-specific pool; general gets inquiry pool.
+- `callback_recovery`: now leads with "missed calls" instead of "call handling".
+  Voicemail/dispatch observations get voicemail-specific pool.
+- `owner_workflow` fallback: routes by observation signal (phone/callback ?
+  missed-calls pool; estimate/quote ? estimate pool; form/inquiry ? inquiry pool;
+  true no-signal ? `["missed calls", "new inquiries", "follow-up timing"]`).
+  "call handling" fully removed from all pools.
 
 ### What remains intentionally out of scope
 
@@ -52,26 +63,22 @@ lockstep.
 - `run_lead_engine.py` changes
 - Follow-up drafting
 - Discovery/map work
-- Hidden bulk regeneration or auto-send behavior
 
 ### Verification
 
-- Python compile check:
-  - `lead_engine/outreach/email_draft_agent.py`
-- Direct draft-agent verification:
-  - 20 first-touch outputs across after-hours, estimate, inquiry, service
-    request, callback, and fallback owner-workflow observations
-  - missing observation still blocks
-  - generic observation still blocks
-  - hype language still blocks
-  - vague positioning still blocks
-  - comparison against the previous committed Pass 57 draft agent shows more
-    even subject distribution, more even opener spread, and less repeated
-    consequence/offer/CTA phrasing across the same batch
+- AST parse clean, all public functions present, DRAFT_VERSION=v14
+- 25 first-touch outputs across callback, after-hours (emergency/weekend/general),
+  estimate, quote, contact-form, scheduling/appointment, voicemail, text/chat,
+  and fallback observations — 23/25 generated; 2 fired expected pre-existing
+  validation blocks (banned phrases in observation text)
+- 8/8 before/after subject comparisons showed tighter semantic fit
+- All blocking rules still hold (missing obs, short obs, generic obs,
+  missing business_name)
+- "call handling" confirmed absent from all subject pools
 
 ---
 
-## Previous Completed: Pass 57 -- First-Touch Subject Fit + Variation
+## Previous Completed: Pass 58 -- First-Touch Batch Variation Distribution
 
-- Kept first-touch subjects short and angle-matched while improving subject/body
-  fit and reducing overuse of generic `question` constructions.
+- Split first-touch variation selection across subject, opener, consequence,
+  offer, and CTA components so batches feel less templated.
