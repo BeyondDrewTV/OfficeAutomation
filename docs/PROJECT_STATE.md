@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-03-19
+Last Updated: 2026-03-20
 
 ## Copperline Version
 v0.2
@@ -15,23 +15,21 @@ V2 Stage 2 - Unified Lead Workspace Backbone
 Copperline = Service Business Operations
 
 ## Last Completed Pass
-Pass 56 -- First-Touch Naturalness + Owner Readability
+Pass 57 -- First-Touch Subject Fit + Variation
 
-- Kept the deterministic observation-led structure from Pass 55, but rewrote
-  the first-touch language to read more like a real owner-facing cold email and
-  less like assembled system copy.
-- Openers now use more natural site-reference phrasing and normalize some
-  machine-y observation text into plain owner-facing language.
-- Consequence sentences now stay probabilistic and owner-readable:
-  missed calls, slow follow-up, inquiries slipping through, and estimate
-  requests sitting too long once the day gets busy.
-- Offer and CTA lines now stay concrete without drifting into product-feature
-  dumping, jargon, or unfinished phrasing.
-- Validation still blocks missing observation, generic observation, hype, and
-  vague positioning.
+- Kept Pass 56's natural-language body structure, but upgraded first-touch
+  subject lines so they are more human, more varied, and more closely matched
+  to the observation/body angle.
+- Added bounded deterministic subject families for after-hours calls, estimate
+  follow-up, service requests, inquiries/contact-form follow-up, call handling,
+  and fallback owner-workflow cases.
+- Added subject validation so first-touch subjects stay short, calm,
+  owner-readable, and non-salesy while still blocking hype, clickbait, and
+  vague generic spam patterns.
+- Existing observation-required drafting and body validation remain intact.
 
 ## Previous Completed Pass
-Pass 55 -- First-Touch Service Positioning Hardening
+Pass 56 -- First-Touch Naturalness + Owner Readability
 
 ## Next Pass
 UNKNOWN / TBD
@@ -61,8 +59,8 @@ UNKNOWN / TBD
 6. Observation-led first-touch drafting still blocks when there is no valid
    saved observation
 7. System generates observation-led first-touch drafts from the approved/saved
-   observation, framing the message around a believable owner/operator offer
-   instead of generic consulting language
+   observation, with subject lines and body copy both framed around a
+   believable owner/operator offer instead of generic consulting language
 8. Operator reviews, approves, or schedules for tomorrow morning
 9. Emails are sent manually via Gmail
 10. Follow-up drafting only proceeds when the lead record has grounded

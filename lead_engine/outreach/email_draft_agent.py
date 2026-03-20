@@ -4,7 +4,7 @@ import hashlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-DRAFT_VERSION = "v11"
+DRAFT_VERSION = "v12"
 
 # ---------------------------------------------------------------------------
 # Industry detection (pipeline-compatible, unchanged)
@@ -63,6 +63,12 @@ _BANNED_WORDS = [
     "schedule a call", "book a call", "let's hop on", "hop on a call",
     "free audit", "free consultation", "streamline operations",
     "maximize efficiency", "unlock growth", "transform your business",
+]
+
+_SUBJECT_BANNED_PHRASES = [
+    "ai", "automation", "automate", "solution", "opportunity", "support",
+    "checking in", "increase revenue", "grow your business", "urgent",
+    "last chance", "free audit", "free consultation",
 ]
 
 _VAGUE_POSITIONING_PHRASES = [
@@ -250,6 +256,21 @@ def validate_draft(body: str, observation: str) -> None:
         )
 
 
+def validate_subject(subject: str) -> None:
+    subj = (subject or "").strip().lower()
+    if not subj:
+        raise DraftInvalidError("First-touch subject must not be empty.")
+    if len(subj) > 48:
+        raise DraftInvalidError("First-touch subject is too long.")
+    if len(subj.split()) > 6:
+        raise DraftInvalidError("First-touch subject uses too many words.")
+    if "!" in subj:
+        raise DraftInvalidError("First-touch subject must not use hype punctuation.")
+    hits = [phrase for phrase in _SUBJECT_BANNED_PHRASES if phrase in subj]
+    if hits:
+        raise DraftInvalidError(f"Banned phrase(s) in subject: {hits}")
+
+
 # ---------------------------------------------------------------------------
 # Post-processing: human style enforcement
 # ---------------------------------------------------------------------------
@@ -366,19 +387,62 @@ def _pick_offer_angle(prospect: Dict[str, str], observation: str) -> str:
     return "owner_workflow"
 
 
-def _subject_from_observation(observation: str, business_name: str, angle: str) -> str:
-    """Pick a short subject that reflects the real offer without sounding salesy."""
+def _subject_options_for_angle(angle: str, observation: str) -> List[str]:
+    obs_lower = observation.lower()
     if angle == "after_hours_response":
-        return "after-hours question"
+        return [
+            "after-hours calls",
+            "question about emergency calls",
+            "emergency calls",
+        ]
     if angle == "estimate_follow_up":
-        return "estimate follow-up question"
+        return [
+            "estimate follow-up",
+            "estimate follow-up question",
+            "quote requests",
+        ]
     if angle == "service_requests":
-        return "service request question"
+        if "scheduling" in obs_lower or "appointment" in obs_lower:
+            return [
+                "service requests",
+                "question about scheduling",
+                "new requests",
+            ]
+        return [
+            "service requests",
+            "question about scheduling",
+            "new requests",
+        ]
     if angle == "inquiry_routing":
-        return "contact flow question"
+        if "contact form" in obs_lower:
+            return [
+                "contact form follow-up",
+                "question about inquiries",
+                "new inquiries",
+            ]
+        return [
+            "inquiries",
+            "question about inquiries",
+            "new inquiries",
+        ]
     if angle == "callback_recovery":
-        return "missed calls question"
-    return "quick question"
+        return [
+            "call handling",
+            "question about call handling",
+            "missed calls",
+        ]
+    return [
+        "call handling",
+        "question about follow-up",
+        "new inquiries",
+    ]
+
+
+def _subject_from_observation(observation: str, business_name: str, angle: str) -> str:
+    """Pick a short subject that fits the body angle without sounding spammy."""
+    options = _subject_options_for_angle(angle, observation)
+    pick = _variant_index(business_name, len(options))
+    return options[pick]
 
 
 def _angle_consequence(angle: str, variant: int) -> str:
@@ -584,6 +648,7 @@ def draft_email(
     body_text = enforce_human_style(body_text)
 
     full_body = body_text + _SIGN_OFF
+    validate_subject(subject)
     validate_draft(full_body, obs)
 
     return subject, full_body

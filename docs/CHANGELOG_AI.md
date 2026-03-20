@@ -2060,3 +2060,55 @@ them sound more human, more owner-readable, and less assembled.
   cleaner opener, consequence, offer, and CTA phrasing on the same examples.
 
 ---
+### 2026-03-20 - Pass 57: First-Touch Subject Fit + Variation
+
+**Goal:** Make first-touch subject lines more human, more varied, and more
+closely matched to the observation/body angle without drifting into clickbait,
+sales language, or generic spam patterns.
+
+**Files changed:**
+- `lead_engine/outreach/email_draft_agent.py`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**What changed:**
+
+`lead_engine/outreach/email_draft_agent.py`:
+- Bumped `DRAFT_VERSION` from `v11` to `v12`.
+- Added deterministic subject variation families tied to the existing
+  first-touch angle model:
+  after-hours calls, estimate follow-up, service requests,
+  inquiries/contact-form follow-up, call handling, and fallback owner-workflow
+  subjects.
+- Added `validate_subject(...)` so subjects now block if they are empty, too
+  long, too wordy, use exclamation points, or contain banned sales/clickbait
+  phrases like `AI`, `automation`, `opportunity`, `support`, `checking in`, or
+  `increase revenue`.
+- Updated subject selection to use business-name + angle-based deterministic
+  variation instead of one fixed subject per angle.
+- Kept the body-generation path unchanged so this pass stays scoped to
+  first-touch subject quality and subject/body fit only.
+
+**Design decisions:**
+- Did not change `run_lead_engine.py`.
+- Did not change queue schema order/naming.
+- Did not change sender logic, pending email pipeline, or send-path behavior.
+- Did not change follow-up drafting or scheduler timing/core logic.
+- Did not widen into dashboard workflow or discovery/map systems.
+
+**Verification:**
+- Python compile check passed for `lead_engine/outreach/email_draft_agent.py`.
+- Direct draft-agent verification covered:
+  - 12 subject/body pairs across multiple observation types
+  - before/after subject comparison against the previous committed Pass 56
+    draft agent
+  - missing observation blocks
+  - generic observation blocks
+  - hype language blocks
+  - vague positioning blocks
+- Subject families are more balanced than Pass 56, though `question`-style
+  subjects are still slightly overrepresented in the current bounded set.
+
+---

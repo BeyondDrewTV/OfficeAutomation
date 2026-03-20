@@ -1,6 +1,6 @@
 # Copperline AI Control Panel
 
-Last Updated: 2026-03-19
+Last Updated: 2026-03-20
 Repository Version: v0.2
 
 ---
@@ -12,10 +12,10 @@ Lead Acquisition Engine
 V2 Stage 2 - Unified Lead Workspace Backbone
 
 ## Current Build Pass
-Pass 56 -- First-Touch Naturalness + Owner Readability (complete)
+Pass 57 -- First-Touch Subject Fit + Variation (complete)
 
 ## Last Completed Pass
-Pass 56 -- First-Touch Naturalness + Owner Readability
+Pass 57 -- First-Touch Subject Fit + Variation
 
 ## Next Pass
 UNKNOWN / TBD
@@ -84,6 +84,8 @@ track replies, convert to clients, deploy missed-call texting.
   service-business bottlenecks
 - First-touch positioning should sound like one-on-one owner/operator workflow
   help, not generic consulting or agency copy
+- First-touch subject lines must stay short, calm, owner-readable, and matched
+  to the actual body angle without drifting into clickbait or sales language
 - First-touch wording should prefer plain-English problem language like missed
   calls, slow follow-up, and inquiries slipping through over internal tool
   labels or jargon
@@ -106,7 +108,7 @@ track replies, convert to clients, deploy missed-call texting.
 
 ---
 
-## Lifecycle Event Registry (as of Pass 56)
+## Lifecycle Event Registry (as of Pass 57)
 
 | Constant | Event | Hook point | Status |
 |---|---|---|---|

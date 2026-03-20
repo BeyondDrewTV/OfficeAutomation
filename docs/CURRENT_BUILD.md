@@ -1,14 +1,14 @@
 # Current Build Pass
 
 ## Active System
-Pass 56 -- First-Touch Naturalness + Owner Readability
+Pass 57 -- First-Touch Subject Fit + Variation
 
 ## Status
-Pass 56 complete. Repo is ready for the next product pass.
+Pass 57 complete. Repo is ready for the next product pass.
 
 ---
 
-## Completed: Pass 56 -- First-Touch Naturalness + Owner Readability
+## Completed: Pass 57 -- First-Touch Subject Fit + Variation
 
 Product changes in:
 - `lead_engine/outreach/email_draft_agent.py`
@@ -25,30 +25,25 @@ No send-path changes. No follow-up system changes.
 
 ### Problem addressed
 
-Observation-led first-touch drafts had already moved onto the right business
-positioning, but they still had some assembled wording:
-awkward site observation openers, clunky "what goes wrong" lines, and CTA
-phrases that did not sound like a real person finishing the thought naturally.
+Observation-led first-touch drafts were in a better place after Pass 56, but
+the subject lines were still too repetitive, too dependent on generic
+`question` patterns, and not always well matched to the actual body angle.
 
 ### What was added
 
 **`lead_engine/outreach/email_draft_agent.py`**
 
-- Bumped `DRAFT_VERSION` from `v10` to `v11`.
-- Kept the same deterministic structure and angle model, but rewrote the
-  generated wording around:
-  more natural site-observation openers, plainer owner-readable consequence
-  language, cleaner offer lines, and complete soft CTAs.
-- Added observation-clause cleanup for common machine-y phrases from saved
-  observations like:
-  `site is pretty explicit about ...`,
-  `they are pushing ...`, and similar site-summary wording.
-- Tightened the vague-phrase blocklist to reject awkward old phrasing like
-  `the mess shows up`, `if that is a live issue there`, and unfinished
-  `where i'd start` style closes.
-- Expanded the concrete-signal validation list so plain-English bottleneck
-  language like `missed calls`, `slow follow-up`, `new requests`, and
-  `response side` still passes without needing internal tool labels.
+- Bumped `DRAFT_VERSION` from `v11` to `v12`.
+- Replaced the old one-subject-per-angle approach with bounded deterministic
+  subject families tied to the actual first-touch angle.
+- Added subject variation across after-hours, estimate follow-up, service
+  requests, inquiries/contact-form follow-up, call handling, and fallback
+  owner-workflow cases.
+- Added explicit subject validation so first-touch subjects stay short,
+  non-salesy, and owner-readable while blocking hype, clickbait, and generic
+  spam wording.
+- Kept the existing observation-led body generation intact; this pass was
+  limited to subject quality and subject/body fit.
 
 ### What remains intentionally out of scope
 
@@ -64,18 +59,18 @@ phrases that did not sound like a real person finishing the thought naturally.
 - Python compile check:
   - `lead_engine/outreach/email_draft_agent.py`
 - Direct draft-agent verification:
-  - 10 first-touch examples across after-hours, estimate, inquiry, service
-    request, and general owner-workflow observations
+  - 12 subject/body pairs across after-hours, estimate, inquiry, service
+    request, callback, and fallback owner-workflow observations
   - missing observation still blocks
   - generic observation still blocks
   - hype language still blocks
   - vague positioning still blocks
-  - before/after comparison against the previous committed Pass 55 draft agent
-    shows more natural opener, consequence, offer, and CTA phrasing
+  - subject/body comparison against the previous committed Pass 56 draft agent
+    shows cleaner subject fit and less repetitive `question` usage
 
 ---
 
-## Previous Completed: Pass 55 -- First-Touch Service Positioning Hardening
+## Previous Completed: Pass 56 -- First-Touch Naturalness + Owner Readability
 
-- Added deterministic first-touch service-positioning angles so outreach could
-  describe Drew's real offer more concretely without generic consulting copy.
+- Kept the deterministic observation-led body structure, but rewrote first-touch
+  wording so the outreach sounded more human and owner-readable.
