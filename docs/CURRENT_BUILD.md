@@ -1,14 +1,14 @@
 # Current Build Pass
 
 ## Active System
-Pass 60 -- Observation-Reactive Consequence Sentence
+Pass 61 -- Fully Reactive Offer, Close, Opener Variety
 
 ## Status
-Pass 60 complete. Repo is ready for the next product pass.
+Pass 61 complete. Repo is ready for the next product pass.
 
 ---
 
-## Completed: Pass 60 -- Observation-Reactive Consequence Sentence
+## Completed: Pass 61 -- Fully Reactive Offer, Close, Opener Variety
 
 Product changes in:
 - `lead_engine/outreach/email_draft_agent.py`
@@ -24,34 +24,50 @@ No sender/scheduler/follow-up changes.
 
 ### Problem addressed
 
-First-touch bodies had a rigid structure: specific observation in S1, then
-immediately generic angle-pool sentence in S2 ("usually the hard part is not
-the work itself..."). Every draft in the batch used the same skeleton regardless
-of what was specifically noticed. The S2 pattern was a clear template fingerprint.
+After Pass 60, consequence sentences were observation-reactive but offer and
+close sentences were still pulled from angle-keyed pools. The offer said "i help
+owners tighten X" regardless of the specific thing noticed. The close always
+defaulted to "happy to share a few ideas specific to your setup if useful."
+All openers started with the same verb cluster (i noticed / saw / noticed that).
 
 ### What was changed
 
-**`lead_engine/outreach/email_draft_agent.py`** (v14 -> v15)
+**`lead_engine/outreach/email_draft_agent.py`** (v15 -> v16)
 
-- Removed `_consequence_options(angle)` pool entirely.
-- Added `_build_reactive_consequence(obs, angle)`: reads the observation text
-  directly across 13 prioritized signal patterns and returns a consequence
-  sentence that logically extends the specific thing noticed.
-  Signal patterns covered: no-confirmation, voicemail/dispatch, phone-as-only-path,
-  estimate-form-as-CTA, quote-buttons-every-page, 24/7-emergency,
-  after-hours/weekend, chat-widget/text-back, online-booking-widget,
-  proposal-request. Falls back to a short plain angle-keyed sentence (not a
-  pool) when no specific signal is found.
-- "usually the hard part is not the work itself..." pattern fully eliminated.
-- Updated `_build_first_touch_body` to call `_build_reactive_consequence`
-  directly. Body-fit fallback still works; consequence is never trimmed.
-- Freshened `_offer_options` openers: "i help owners X", "worth a look at Y",
-  "i work directly with owners on Z" so the same skeleton does not repeat
-  across a batch.
-- Added "sit", "stack up", "pile up", "slip", "fall through" to
-  `_CONCRETE_SERVICE_SIGNALS` so reactive consequence sentences pass the
-  concrete-signal validator.
-- DRAFT_VERSION bumped v14 -> v15.
+- Added `_build_reactive_offer(obs, angle)`: names the specific practical fix
+  implied by the observation. Covers: no-confirmation-after-form, phone-only
+  path, voicemail/dispatch, 24/7-emergency, after-hours/weekend, estimate-form
+  as-CTA, quote-buttons-every-page, proposal/free-in-home, chat/text-back
+  multi-channel, online-booking-widget, scheduling-link. Falls back to short
+  plain angle sentence when no signal found. Removed `_offer_options` pool.
+
+- Added `_build_reactive_close(obs, angle, channel)`: closes with a reference
+  to something specific from the observation (dispatch setup, emergency-response
+  operation, shop running nights and weekends, practice, etc.) instead of always
+  defaulting to the generic permission phrase. Stays soft, no hard CTA.
+
+- Expanded opener variety: "came across your site —" and "was looking at your
+  site and noticed" added alongside existing "i was checking out your site".
+  Openers now spread naturally across a batch (9 came-across, 5 was-looking,
+  1 i-was-checking across a 15-draft sample).
+
+- Updated `_build_first_touch_body` to call all three reactive functions
+  directly. Fit fallback trims offer at first clause boundary; final fallback
+  drops offer entirely (consequence + close preserved).
+
+- Extended `_CONCRETE_SERVICE_SIGNALS` with reactive-sentence signal words so
+  new offer/close phrasing passes the concrete-signal validator.
+
+- DRAFT_VERSION bumped v15 -> v16.
+
+### Sample draft (voicemail/dispatch observation)
+
+  came across your site — your site lists a dispatch number and pushes voicemail
+  for after-hours tow requests. requests that go to voicemail often don't get
+  followed up until the next morning at the earliest. the fix is usually just a
+  text that fires when a call goes to voicemail, so people know you got it and
+  aren't calling around. happy to walk through what that looks like for a
+  dispatch setup if useful.
 
 ### What remains intentionally out of scope
 
@@ -62,17 +78,16 @@ of what was specifically noticed. The S2 pattern was a clear template fingerprin
 
 ### Verification
 
-- AST parse clean. DRAFT_VERSION=v15. All public functions present.
-- 22/22 drafts generated cleanly across all angle families.
-- 13/22 unique consequence sentences (expected — some observation patterns
-  share the same precise consequence by design).
-- 8/8 before/after comparisons: every v15 consequence is specific to the
-  actual observation. Generic pool pattern fully gone.
+- AST parse clean. DRAFT_VERSION=v16. All public functions present.
+- 20/20 drafts generated cleanly across all angle families and obs types.
+- 8/8 before/after comparisons: offer and close both now specific to the
+  actual observation. Generic pool patterns eliminated.
+- Opener variety confirmed spread across batch.
 - All blocking rules confirmed holding.
 
 ---
 
-## Previous Completed: Pass 59 -- First-Touch Subject Semantic Precision
+## Previous Completed: Pass 60 -- Observation-Reactive Consequence Sentence
 
-- Rewrote `_subject_options_for_angle` to be observation-aware within each
-  angle family. "call handling" and "question about X" eliminated from all pools.
+- Replaced the fixed angle-keyed consequence pool with `_build_reactive_consequence`.
+  "usually the hard part is not the work itself..." fully eliminated.
