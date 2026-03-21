@@ -12,10 +12,10 @@ Lead Acquisition Engine
 V2 Stage 2 - Unified Lead Workspace Backbone
 
 ## Current Build Pass
-Pass 66 -- Command Bar, Coverage Fill, RTS Map (complete)
+Pass 67 -- Region Zoom, Coverage Clarity, Map Polish (complete)
 
 ## Last Completed Pass
-Pass 66 -- Command Bar, Coverage Fill, RTS Map (`adff4a8`)
+Pass 67 -- Region Zoom, Coverage Clarity, Map Polish (`bcc787c`)
 
 ## Next Pass
 UNKNOWN / TBD
