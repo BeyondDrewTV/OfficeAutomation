@@ -5251,8 +5251,9 @@ function _tpCityCard(c) {
     ? '<span style="font-size:10px;color:var(--muted)">Next: <strong style="color:var(--text)">' + escHtml(nextInd.industry) + '</strong></span>'
     : '';
 
-  const cj = '"' + escHtml(c.city) + '"';
-  const sj = '"' + escHtml(c.state) + '"';
+  // Single-quoted args so they work inside double-quoted onclick attributes
+  const cj = "'" + (c.city  || '').replace(/'/g, "\\'") + "'";
+  const sj = "'" + (c.state || '').replace(/'/g, "\\'") + "'";
 
   const indContent = isOpen ? (
     '<table class="tp-ind-table"><thead><tr><th>Industry</th><th>Status</th><th>Leads</th><th>Last Run</th><th style=\"text-align:right\">Actions</th></tr></thead><tbody>'
@@ -5285,19 +5286,22 @@ function _tpCityCard(c) {
 function _tpIndRow(city, r) {
   const sm = { never_checked:['tp-s-never','\u25CF Not run'], checked:['tp-s-checked','\u2713 Done'], due:['tp-s-due','\u26A0 Due'], skipped:['tp-s-skipped','\u2014 Skipped'], exhausted:['tp-s-exhausted','\u2717 Exhausted'] };
   const [cls, label] = sm[r.status] || ['tp-s-never', r.status];
-  const cj = '"' + escHtml(city.city) + '"', sj = '"' + escHtml(city.state) + '"', ij = '"' + escHtml(r.industry) + '"';
+  // Use single-quoted string args inside onclick (attribute is double-quoted)
+  const cq = "'" + (city.city  || '').replace(/'/g, "\\'") + "'";
+  const sq = "'" + (city.state || '').replace(/'/g, "\\'") + "'";
+  const iq = "'" + (r.industry || '').replace(/'/g, "\\'") + "'";
   const runBtn = r.status !== 'exhausted'
-    ? '<button class="tp-btn tp-btn-run" onclick="tpRunIndustry(' + cj + ',' + sj + ',' + ij + ',this)"><span class="tp-spin" style="display:none"></span>\u26A1 Run</button>'
+    ? '<button class="tp-btn tp-btn-run" onclick="tpRunIndustry(' + cq + ',' + sq + ',' + iq + ',this)"><span class="tp-spin" style="display:none"></span>\u26A1 Run</button>'
     : '';
   const exhBtn = r.status !== 'exhausted'
-    ? '<button class="tp-btn tp-btn-exh" onclick="tpExhaustIndustry(' + cj + ',' + sj + ',' + ij + ')">\u2717</button>'
+    ? '<button class="tp-btn tp-btn-exh" onclick="tpExhaustIndustry(' + cq + ',' + sq + ',' + iq + ')">\u2717</button>'
     : '';
   return '<tr><td class="tp-ind-name">' + escHtml(r.industry) + '</td>'
     + '<td><span class="tp-ind-status ' + cls + '">' + label + '</span></td>'
     + '<td>' + (r.leads_found||0) + (r.new_leads_last_run ? ' <span style="color:var(--green);font-size:10px">+' + r.new_leads_last_run + '</span>' : '') + '</td>'
     + '<td style="color:var(--muted)">' + _tpFmt(r.last_checked_at) + '</td>'
     + '<td><div class="tp-ind-acts" style="justify-content:flex-end">' + runBtn
-    + '<button class="tp-btn tp-btn-skip" onclick="tpSkipIndustry(' + cj + ',' + sj + ',' + ij + ')">Skip</button>'
+    + '<button class="tp-btn tp-btn-skip" onclick="tpSkipIndustry(' + cq + ',' + sq + ',' + iq + ')">Skip</button>'
     + exhBtn + '</div></td></tr>';
 }
 
@@ -5338,8 +5342,8 @@ function tpToggle(key) {
 
   // If now open, inject the industry table + footer
   if (isNowOpen) {
-    const cj = '"' + escHtml(c.city) + '"';
-    const sj = '"' + escHtml(c.state) + '"';
+    const cj = "'" + (c.city  || '').replace(/'/g, "\\'") + "'";
+    const sj = "'" + (c.state || '').replace(/'/g, "\\'") + "'";
     const indHtml = '<table class="tp-ind-table"><thead><tr>'
       + '<th>Industry</th><th>Status</th><th>Leads</th><th>Last Run</th>'
       + '<th style="text-align:right">Actions</th>'
