@@ -271,16 +271,32 @@ def filter_and_score_rows(
 
 
 INDUSTRY_QUERIES = {
-    "plumbing":      "plumber",
-    "hvac":          "HVAC heating cooling",
-    "electrical":    "electrician",
-    "locksmith":     "locksmith",
-    "garage_door":   "garage door repair",
-    "towing":        "towing roadside assistance",
-    "roofing":       "roofing contractor",
-    "pest_control":  "pest control exterminator",
-    "auto":          "auto repair mechanic",
-    "construction":  "general contractor construction",
+    # Original trades — kept, strong owner-operator density
+    "plumbing":          "plumber",
+    "hvac":              "HVAC heating cooling",
+    "electrical":        "electrician",
+    "roofing":           "roofing contractor",
+    "towing":            "towing roadside assistance",
+    "auto":              "auto repair mechanic",
+    "construction":      "general contractor construction",
+    # Original — moderate, kept
+    "pest_control":      "pest control exterminator",
+    "landscaping":       "landscaping lawn care",
+    "cleaning":          "cleaning service janitorial",
+    # Expanded — owner-operated SMBs with visible workflow problems
+    "painting":          "painting contractor",
+    "concrete":          "concrete contractor",
+    "tree_service":      "tree service arborist",
+    "pressure_washing":  "pressure washing power washing",
+    "moving":            "moving company movers",
+    "flooring":          "flooring contractor hardwood tile",
+    "appliance_repair":  "appliance repair service",
+    "pool_service":      "pool service maintenance",
+    "drywall":           "drywall contractor",
+    "welding":           "welding fabrication shop",
+    # Retained from original — lower priority but valid
+    "locksmith":         "locksmith",
+    "garage_door":       "garage door repair",
 }
 
 CONTACTABILITY_EMAIL_FOUND  = "email_found"

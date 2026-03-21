@@ -1303,28 +1303,36 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <div class="panel-session-shortcuts" id="panel-session-shortcuts"></div>
     </div>
     <div class="panel-body">
-      <div class="panel-section">
-        <div class="panel-label">Business Info</div>
-        <div class="panel-meta" id="panel-meta"></div>
-        <div id="panel-timeline-strip" style="margin-top:6px"></div>
-        <!-- Pass 49: Why this lead now? + contact-path recommendation -->
-        <div id="panel-why-now" style="display:none;margin-top:8px"></div>
+
+      <!-- ── ZONE 1: The draft — what you're actually deciding on ───────── -->
+      <!-- Auto-regen status (Pass 68) — shown briefly during background regen -->
+      <div id="panel-autoregen-status" style="display:none;padding:6px 10px;border-radius:var(--rs);background:rgba(79,142,247,.08);border:1px solid rgba(79,142,247,.2);font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px">
+        <span style="width:8px;height:8px;border:2px solid var(--blue);border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0;display:inline-block"></span>
+        <span id="panel-autoregen-msg">Refreshing draft…</span>
       </div>
-      <div class="panel-section">
-        <div class="panel-label">To Email</div>
-        <input class="panel-input" id="panel-email" type="email" placeholder="contact@business.com"
-               oninput="panelFieldChanged('to_email', this.value)">
+
+      <div class="panel-section" style="flex:1">
+        <div class="panel-label" style="display:flex;align-items:center;justify-content:space-between">
+          <span>Email Body <span id="panel-save-state" class="panel-save-state"></span></span>
+          <span id="panel-regen-status" class="obs-regen-status" style="font-size:10px"></span>
+        </div>
+        <textarea class="panel-textarea" id="panel-body" style="min-height:200px"
+                  oninput="panelFieldChanged('body', this.value)"></textarea>
       </div>
+
       <div class="panel-section">
         <div class="panel-label">Subject</div>
         <input class="panel-input" id="panel-subject" type="text"
                oninput="panelFieldChanged('subject', this.value)">
       </div>
-      <div class="panel-section" style="flex:1">
-        <div class="panel-label">Email Body <span id="panel-save-state" class="panel-save-state"></span></div>
-        <textarea class="panel-textarea" id="panel-body"
-                  oninput="panelFieldChanged('body', this.value)"></textarea>
+
+      <div class="panel-section">
+        <div class="panel-label">To Email</div>
+        <input class="panel-input" id="panel-email" type="email" placeholder="contact@business.com"
+               oninput="panelFieldChanged('to_email', this.value)">
       </div>
+
+      <!-- ── ZONE 2: Lead context — score, why now, status ─────────────── -->
       <div class="panel-section">
         <div class="panel-score-row">
           <div class="score-chip sc-3" id="panel-score-chip">—</div>
@@ -1333,30 +1341,45 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
         </div>
         <div id="panel-approval-reason" style="display:none;font-size:10px;color:var(--green);margin-top:4px;font-weight:600;letter-spacing:.03em"></div>
       </div>
+
+      <!-- Pass 49: Why this lead now? -->
+      <div id="panel-why-now" style="display:none"></div>
+
+      <!-- ── ZONE 3: Business info — collapsed, expand if needed ────────── -->
+      <details class="panel-section" style="cursor:pointer">
+        <summary style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);list-style:none;display:flex;align-items:center;gap:6px;padding:4px 0">
+          <span>▸</span> Business Info
+        </summary>
+        <div style="margin-top:8px">
+          <div class="panel-meta" id="panel-meta"></div>
+          <div id="panel-timeline-strip" style="margin-top:6px"></div>
+        </div>
+      </details>
+
       <!-- AI Insight section — shown when lead_insight_sentence exists -->
       <div class="panel-section" id="panel-insight-section" style="display:none">
         <div class="panel-label">💡 AI Insight</div>
         <div id="panel-insight-signals" style="font-size:10px;color:var(--muted);margin-bottom:4px"></div>
         <div id="panel-insight-text" class="sq-insight"></div>
       </div>
-      <!-- Observation field (Pass 36) — required for first-touch regeneration -->
-      <div class="panel-section" id="panel-obs-section">
-        <div class="obs-section">
-          <div class="obs-label">
-            <span>🔍 Business Observation</span>
-            <span class="obs-label-required" id="panel-obs-required-tag">required for draft</span>
-          </div>
+
+      <!-- ── ZONE 4: Observation — collapsed, agent handles it automatically -->
+      <!-- Only needs attention if auto-regen failed -->
+      <details class="panel-section" id="panel-obs-section">
+        <summary style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);list-style:none;display:flex;align-items:center;gap:6px;padding:4px 0;cursor:pointer">
+          <span>▸</span> Observation <span id="panel-obs-required-tag" style="font-size:9px;color:var(--amber);font-weight:600;margin-left:4px"></span>
+        </summary>
+        <div class="obs-section" style="margin-top:8px">
           <textarea class="obs-input" id="panel-obs-input" rows="2"
             placeholder="e.g. saw they're juggling snow work and regular contracting on the same page — mixed seasonal vs steady-work lineup"
             oninput="panelObsChanged(this.value)"></textarea>
-          <!-- Pass 49: live grade bar -->
           <div class="obs-grade-bar" id="panel-obs-grade-bar" style="display:none">
             <span class="obs-grade-pill" id="panel-obs-grade-pill"></span>
             <span class="obs-grade-msg" id="panel-obs-grade-msg"></span>
             <span class="obs-chars" id="panel-obs-chars"></span>
           </div>
           <div class="obs-hint" id="panel-obs-hint">
-            Specific detail about this business — not a category label. Must be specific enough it wouldn't fit most businesses in the same trade.
+            Specific detail about this business — not a category label.
           </div>
           <div class="obs-tool-row">
             <button class="btn-obs-tool" id="panel-obs-generate-btn" onclick="panelGenerateObservationCandidate()">Generate Obs</button>
@@ -1365,17 +1388,16 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
             <span class="obs-tool-status" id="panel-obs-tool-status"></span>
           </div>
           <div class="obs-candidate-box" id="panel-obs-candidate-box" style="display:none"></div>
-          <!-- Pass 49: obs history toggle + list -->
           <div id="panel-obs-history-wrap" style="display:none">
             <span class="obs-history-toggle" onclick="panelObsHistoryToggle()" id="panel-obs-history-toggle">▸ prior observations</span>
             <div class="obs-history-list" id="panel-obs-history-list" style="display:none"></div>
           </div>
           <div class="obs-regen-row">
             <button class="btn-regen" id="panel-regen-btn" onclick="panelRegenerateDraft()" disabled>↻ Regenerate Draft</button>
-            <span class="obs-regen-status" id="panel-regen-status"></span>
           </div>
         </div>
-      </div>
+      </details>
+
       <!-- Social channels section — shown when social data exists -->
       <div class="panel-section" id="panel-social-section" style="display:none">
         <div class="panel-label">Outreach Channels</div>
@@ -2854,6 +2876,14 @@ async function fillPanel(row, fi, totalRows) {
   _panelPopulateObs(row);
   _panelConsumeOpenIntent(row);
 
+  // ── Pass 68: Auto-regen stale drafts silently on panel open ──────────────
+  // If draft is stale and row hasn't been sent, do the full agent chain in the
+  // background: generate obs candidate → apply it → regenerate draft.
+  // No scrolling, no clicking required. User sees a fresh draft on arrival.
+  if (!row.sent_at && _rowNeedsDraftRefresh(row)) {
+    setTimeout(() => _panelAutoRegenOnOpen(row), 400);
+  }
+
   // ── Schedule info block ───────────────────────────────────────────────────
   const schedEl = document.getElementById('panel-schedule-info');
   if (schedEl) {
@@ -3663,6 +3693,48 @@ async function panelSaveObservation() {
     return false;
   } finally {
     _panelRefreshObservationButtons(row);
+  }
+}
+
+// ── Pass 68: Silent auto-regen chain ─────────────────────────────────────
+// Called when a stale lead panel opens. Does the full observation → regen
+// chain in the background. User lands on a ready draft without clicking.
+async function _panelAutoRegenOnOpen(row) {
+  // Bail if panel moved to a different row while we were waiting
+  if (_panelCurrentRow() !== row) return;
+  if (row.sent_at) return;
+
+  const regenStat = document.getElementById('panel-regen-status');
+  const hasObs = (row.business_specific_observation || '').trim().length > 10;
+
+  if (!hasObs) {
+    // Step 1: generate observation candidate automatically
+    if (regenStat) { regenStat.textContent = 'Auto-scanning for observation…'; regenStat.className = 'obs-regen-status'; }
+    const candidateOk = await panelGenerateObservationCandidate({ auto: true });
+    if (_panelCurrentRow() !== row) return; // panel moved
+    if (candidateOk) {
+      // Step 2: apply candidate to obs field
+      panelUseObservationCandidate();
+    } else {
+      // No candidate available — can't auto-regen, surface the issue quietly
+      if (regenStat) { regenStat.textContent = 'Need observation — no evidence found automatically.'; regenStat.className = 'obs-regen-status obs-err'; }
+      return;
+    }
+  }
+
+  // Step 3: regenerate the draft silently
+  if (_panelCurrentRow() !== row) return;
+  if (regenStat) { regenStat.textContent = 'Refreshing draft…'; regenStat.className = 'obs-regen-status'; }
+  const regenOk = await panelRegenerateDraft({ suppressToast: true, auto: true });
+  if (_panelCurrentRow() !== row) return;
+
+  if (regenOk) {
+    if (regenStat) { regenStat.textContent = ''; regenStat.className = 'obs-regen-status'; }
+    // Scroll panel to top so user sees the fresh email immediately
+    const panelBody = document.querySelector('.panel-body');
+    if (panelBody) panelBody.scrollTop = 0;
+  } else {
+    if (regenStat) { regenStat.textContent = 'Auto-refresh failed — check observation.'; regenStat.className = 'obs-regen-status obs-err'; }
   }
 }
 

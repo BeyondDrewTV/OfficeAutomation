@@ -1495,7 +1495,11 @@ def api_followup_queue():
     return jsonify({"overdue":overdue,"today":today,"this_week":this_week,"upcoming":upcoming,
                     "counts":{"overdue":len(overdue),"today":len(today),"this_week":len(this_week),"upcoming":len(upcoming),"total":len(overdue)+len(today)+len(this_week)+len(upcoming)}})
 
-TERRITORY_INDUSTRIES = ["plumbing","hvac","electrical","roofing","locksmith","garage_door","pest_control","cleaning","landscaping","towing"]
+TERRITORY_INDUSTRIES = [
+    "plumbing", "hvac", "electrical", "roofing", "construction",
+    "landscaping", "painting", "tree_service", "cleaning", "auto",
+    "flooring", "concrete", "towing", "appliance_repair", "pressure_washing",
+]
 
 @app.route("/api/territory")
 def api_territory(): return jsonify({"cities":_city_planner.get_industry_matrix(TERRITORY_INDUSTRIES),"industries":TERRITORY_INDUSTRIES})

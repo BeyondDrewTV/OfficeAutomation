@@ -187,7 +187,10 @@ def scan_website(website_url: str, timeout_seconds: int = DEFAULT_TIMEOUT_SECOND
         try:
             html = _fetch_html(url, timeout_seconds)
         except Exception as exc:
-            print(f"[scan warning] {url} fetch failed: {exc}")
+            # 404s on candidate paths are expected — only warn on unexpected errors
+            exc_str = str(exc)
+            if "404" not in exc_str and "Not Found" not in exc_str:
+                print(f"[scan warning] {url} fetch failed: {exc}")
             continue
 
         scanned.append(url)
