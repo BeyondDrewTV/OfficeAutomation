@@ -12,10 +12,10 @@ Lead Acquisition Engine
 V2 Stage 2 - Unified Lead Workspace Backbone
 
 ## Current Build Pass
-Pass 64 -- Click-to-Boundary, Reverse Geocoding, Zoom Drill-Down (complete)
+Pass 65 -- US Sales Regions + Visual Makeover (complete)
 
 ## Last Completed Pass
-Pass 64 -- Click-to-Boundary, Reverse Geocoding, Zoom Drill-Down (`a81567e`)
+Pass 65 -- US Sales Regions + Visual Makeover (`8c75e3f`)
 
 ## Next Pass
 UNKNOWN / TBD
