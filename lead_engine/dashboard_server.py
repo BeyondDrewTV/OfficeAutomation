@@ -1504,9 +1504,6 @@ TERRITORY_INDUSTRIES = [
 @app.route("/api/territory")
 def api_territory(): return jsonify({"cities":_city_planner.get_industry_matrix(TERRITORY_INDUSTRIES),"industries":TERRITORY_INDUSTRIES})
 
-@app.route("/api/territory")
-def api_territory(): return jsonify({"cities":_city_planner.get_industry_matrix(TERRITORY_INDUSTRIES),"industries":TERRITORY_INDUSTRIES})
-
 @app.route("/api/territory/leads", methods=["POST"])
 def api_territory_leads():
     """
