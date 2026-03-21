@@ -1504,8 +1504,68 @@ TERRITORY_INDUSTRIES = [
 @app.route("/api/territory")
 def api_territory(): return jsonify({"cities":_city_planner.get_industry_matrix(TERRITORY_INDUSTRIES),"industries":TERRITORY_INDUSTRIES})
 
-@app.route("/api/territory/next_industry", methods=["POST"])
-def api_territory_next_industry():
+@app.route("/api/territory")
+def api_territory(): return jsonify({"cities":_city_planner.get_industry_matrix(TERRITORY_INDUSTRIES),"industries":TERRITORY_INDUSTRIES})
+
+@app.route("/api/territory/leads", methods=["POST"])
+def api_territory_leads():
+    """
+    Return leads in the queue for a given city+industry combination.
+    Input:  { city, state, industry }
+    Output: { ok, leads: [{business_name, to_email, city, status, sent_at, approved, final_priority_score}] }
+    """
+    d        = request.json or {}
+    city     = (d.get("city") or "").strip().lower()
+    state    = (d.get("state") or "").strip().upper()
+    industry = (d.get("industry") or "").strip().lower()
+    is_area  = state == "AREA"
+
+    rows = _read_pending()
+    results = []
+    for r in rows:
+        row_city     = (r.get("city") or "").strip().lower()
+        row_state    = (r.get("state") or "").strip().upper()
+        row_industry = (r.get("industry") or r.get("search_industry") or "").strip().lower()
+
+        # Area entries match by proximity using lat/lng stored in city field
+        if is_area:
+            lat_str, lng_str = city.split(",", 1) if "," in city else (None, None)
+            try:
+                clat = float(lat_str); clng = float(lng_str)
+                rlat = float(r.get("lat") or 0); rlng = float(r.get("lng") or 0)
+                if not rlat and not rlng:
+                    continue
+                # Within ~15km of the area center
+                if abs(clat - rlat) > 0.14 or abs(clng - rlng) > 0.14:
+                    continue
+            except Exception:
+                continue
+        else:
+            if row_city != city:
+                continue
+            if state and row_state != state:
+                continue
+
+        if industry and row_industry != industry:
+            continue
+
+        results.append({
+            "business_name":  r.get("business_name", ""),
+            "to_email":        r.get("to_email", ""),
+            "city":            r.get("city", ""),
+            "state":           r.get("state", ""),
+            "industry":        r.get("industry", ""),
+            "sent_at":         r.get("sent_at", ""),
+            "approved":        r.get("approved", ""),
+            "replied":         r.get("replied", ""),
+            "final_priority_score": r.get("final_priority_score", ""),
+            "website":         r.get("website", ""),
+            "phone":           r.get("phone", ""),
+        })
+
+    return jsonify({"ok": True, "leads": results, "total": len(results)})
+
+
     d = request.json or {}; city = d.get("city","").strip(); state = d.get("state","").strip()
     if not city or not state: return jsonify({"ok":False,"error":"city and state required"}),400
     entry = _city_planner._find(city,state); ci = entry.get("industries",{}) if entry else {}

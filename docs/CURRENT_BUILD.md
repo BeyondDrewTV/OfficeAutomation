@@ -1,54 +1,50 @@
 # Current Build Pass
 
 ## Active System
-Pass 76 -- Email/Lead Search, Global Lead Finder (Ctrl+K)
+Pass 77 -- Command Center polish: real city names, industry lead drill-down, map init fix
 
 ## Status
-Pass 76 complete.
+Pass 77 complete.
 
 ---
 
-## Completed: Pass 76 -- Email/Lead Search + Global Lead Finder
+## Completed: Pass 77 -- Command Center Polish
 
-Files: `lead_engine/dashboard_static/index.html`
+**Files:** `dashboard_static/index.html`, `city_planner.py`, `dashboard_server.py`
 
-### Pipeline search now includes email + phone
-The search box in Outreach previously only matched business name, city, subject.
-Now matches: name, email address, city, phone, subject.
-Placeholder updated: "Search name, email, city, phone…"
+### Real city names for Map Area entries
+`CityPlanner._display_name()` — reverse-geocodes coordinate entries via Nominatim
+once, caches result in `city_planner.json`. AREA entries now show real place names.
+`_tpCityDisplay(c)` updated to accept full city object and use `display_name`.
 
-Use case: you see a bounce in Gmail for `tad@marksautoil.com`, type that into
-the pipeline search and the lead surfaces instantly.
+### Industry lead drill-down
+Click any industry row in the territory panel → expands inline lead list:
+- Lead name, email, status badge (Replied/Sent/Approved/Draft)
+- Summary counts: X replied, X sent, X approved, X draft
+- Click any lead row → opens panel directly via `qlfJump(gi)`
+- Up to 20 leads shown, overflow count displayed
+- Click again to collapse. Arrow indicator ▸/▾ per row.
+Backend: `/api/territory/leads` — matches by city+state (exact) or lat/lng
+proximity for AREA entries.
 
-### Global Lead Finder — Ctrl+K
-Floating quick-find overlay that works from ANY tab in the app.
-- Press Ctrl+K anywhere (or click "🔍 Find Lead" in header)
-- Type email, name, phone, or city — results appear instantly
-- Copper highlight on matching text in results
-- Status badges: Sent / Approved / Replied / Draft
-- Arrow keys to navigate, Enter to open, ESC to close
-- Clicking a result: switches to Pipeline → Outreach, opens review panel
-  on that lead directly. If lead is filtered out, populates search box
-  with email to surface it.
+### Map init fix (first-load blank)
+`_runPageHooks` now fires 5x `invalidateSize` at 30/100/300/700/1200ms after
+`requestAnimationFrame`. Leaflet now renders correctly on first Discovery click.
+
+### Nav renamed
+Top nav: "🔍 Discovery" → "🗺 Command Center"
+Sub-tab: "⚡ Command Center" → "🗺 Map + Territory"
+
+### Territory panel bottom cutoff fixed
+`.cc-tp-body` padding-bottom 14px → 60px. Last card no longer clipped.
+
+### event.stopPropagation on Run/Skip/X buttons
+Industry row click triggers lead list. Run/Skip/X buttons stop propagation
+so they don't accidentally toggle the lead list.
 
 ---
 
-## Pass 75 -- Command Center (Map + Territory Combined)
-
-Files: `lead_engine/dashboard_static/index.html`
-
-Replaced two Discovery sub-tabs (Map Search + Territory) with single
-"⚡ Command Center" tab — split-pane layout: map left 60%, territory right 40%.
-
-Bidirectional wiring:
-- Map boundary click → territory panel finds/adds city, opens card,
-  scrolls to it, flashes copper border
-- Territory Run/Run Remaining/Run Next → map coverage overlay refreshes
-
-Pass 74 -- MX validation before send (catches scrape-error domains)
-Pass 73 -- Follow-up voice rewrite (Drew tone, industry fallback, anchor cleaning)
-Pass 72 -- Territory button fix (JSON.stringify quote bug), stale warning fix
-Pass 71 -- Industry fallback drafts (17 trades, no obs = no problem)
-Pass 70 -- Bulk regenerate endpoint + "Regen Stale" toolbar button
-Pass 69 -- v18 voice rewrite (grammar, confident consequence + close)
-Pass 68 -- Auto-regen on panel open, panel layout overhaul, 22 industries
+## Pass 76 -- Email/Lead Search + Global Lead Finder (Ctrl+K)
+## Pass 75 -- Command Center split-pane (map + territory combined)
+## Pass 74 -- MX validation before send
+## Pass 73 -- Follow-up voice rewrite

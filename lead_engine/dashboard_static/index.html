@@ -734,7 +734,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cc-tp-stats{display:flex;gap:12px;padding:6px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
 .cc-tp-stat{font-size:11px;color:var(--muted)}.cc-tp-stat strong{color:var(--text);font-weight:600}
 .cc-tp-filters{display:flex;gap:6px;padding:6px 14px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;align-items:center}
-.cc-tp-body{flex:1;overflow-y:auto;padding:8px 10px 14px}
+.cc-tp-body{flex:1;overflow-y:auto;padding:8px 10px 60px}
 .cc-tp-body .tp-card{margin-bottom:8px}
 /* Highlight territory card when map selects it */
 .tp-card.cc-selected{border-color:var(--copper)!important;box-shadow:0 0 0 1px var(--copper),0 4px 16px rgba(184,115,51,.2)!important}
@@ -746,6 +746,21 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 /* ── Pass 75: Territory indicator on map click ───────────────────── */
 .cc-city-flash{animation:cc-flash .6s ease}
 @keyframes cc-flash{0%{background:rgba(184,115,51,.35)}100%{background:transparent}}
+
+/* ── Territory industry lead drill-down ──────────────────────────── */
+.tp-ind-leads{background:rgba(0,0,0,.25);border-top:1px solid var(--border)}
+.tp-ind-leads-hdr{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.tp-lead-row{display:flex;align-items:center;gap:10px;padding:6px 12px;border-top:1px solid rgba(255,255,255,.04);cursor:pointer;transition:background .1s}
+.tp-lead-row:hover{background:rgba(184,115,51,.08)}
+.tp-lead-name{font-size:12px;font-weight:600;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-lead-email{font-size:10px;color:var(--muted);font-family:var(--mono);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tp-lead-badge{font-size:9px;padding:1px 6px;border-radius:8px;font-weight:700;flex-shrink:0}
+.tp-lead-sent{background:rgba(62,207,114,.12);color:var(--green)}
+.tp-lead-approved{background:rgba(79,142,247,.12);color:var(--blue)}
+.tp-lead-replied{background:rgba(62,207,114,.25);color:var(--green)}
+.tp-lead-draft{background:rgba(255,255,255,.06);color:var(--dim)}
+.tp-ind-row-clickable{cursor:pointer;user-select:none}
+.tp-ind-row-clickable:hover td{background:rgba(184,115,51,.06)}
 .map-page-wrap{width:100%;padding:12px 16px 0;box-sizing:border-box}
 #map-layout{display:flex;gap:0;align-items:stretch;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;height:calc(100vh - 260px);min-height:500px;box-shadow:var(--card-shadow)}
 #map-container{flex:1;height:100%;min-height:500px;min-width:0;overflow:hidden}
@@ -947,7 +962,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 <!-- App Navigation -->
 <nav class="app-nav" id="top-nav">
   <div class="nav-tab active" data-parent="pipeline"  onclick="switchParent('pipeline',this)">📤 Pipeline</div>
-  <div class="nav-tab"        data-parent="discovery" onclick="switchParent('discovery',this)">🔍 Discovery</div>
+  <div class="nav-tab"        data-parent="discovery" onclick="switchParent('discovery',this)">🗺 Command Center</div>
   <div class="nav-tab"        data-parent="clients"   onclick="switchParent('clients',this)">📞 Clients</div>
   <div class="nav-tab"        data-parent="health"    onclick="switchParent('health',this)" id="nav-health-top">🩺 Health<span id="nav-health-badge" style="display:none;margin-left:4px;background:var(--red);color:#fff;border-radius:10px;font-size:9px;font-weight:700;padding:1px 5px;vertical-align:middle"></span><span id="nav-exceptions-badge" style="display:none;margin-left:4px;background:var(--red);color:#fff;border-radius:10px;font-size:9px;font-weight:700;padding:1px 5px;vertical-align:middle"></span></div>
   <div class="nav-tab"        data-parent="tools"     onclick="switchParent('tools',this)">⚙ Tools <span class="tag" style="font-size:9px;padding:1px 5px;vertical-align:middle">Stub</span></div>
@@ -962,7 +977,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <div class="sub-tab"        data-parent="pipeline" data-page="sprint"        onclick="switchSubPage('pipeline','sprint',this)"   id="nav-sprint">⚡ Sprint</div>
   <div class="sub-tab"        data-parent="pipeline" data-page="conversations" onclick="switchSubPage('pipeline','conversations',this)" id="nav-conversations">💬 Conversations</div>
   <!-- Discovery sub-tabs -->
-  <div class="sub-tab" data-parent="discovery" data-page="command-center" onclick="switchSubPage('discovery','command-center',this)" id="nav-map" style="display:none">⚡ Command Center</div>
+  <div class="sub-tab" data-parent="discovery" data-page="command-center" onclick="switchSubPage('discovery','command-center',this)" id="nav-map" style="display:none">🗺 Map + Territory</div>
   <div class="sub-tab" data-parent="discovery" data-page="searches" onclick="switchSubPage('discovery','searches',this)" style="display:none">🔍 History</div>
   <!-- Clients sub-tabs -->
   <div class="sub-tab" data-parent="clients" data-page="mc-clients" onclick="switchSubPage('clients','mc-clients',this)" style="display:none">📋 Clients</div>
@@ -5279,13 +5294,16 @@ function _runPageHooks(name) {
       _mapInit();
       _mapPopulateIndustries();
       _mapLoadTerritoryOverlay();
-      setTimeout(() => { if (_mapInstance) { _mapInstance.invalidateSize(true); _mapUpdateZoomHint(); } }, 50);
-      setTimeout(() => { if (_mapInstance) _mapInstance.invalidateSize(true); }, 250);
-      setTimeout(() => { if (_mapInstance) _mapInstance.invalidateSize(true); }, 600);
+      // Aggressive invalidateSize sequence — container needs to be fully laid out
+      const _inv = () => { if (_mapInstance) _mapInstance.invalidateSize(true); };
+      setTimeout(_inv, 30);
+      setTimeout(_inv, 100);
+      setTimeout(_inv, 300);
+      setTimeout(_inv, 700);
+      setTimeout(() => { _inv(); if (_mapInstance) _mapUpdateZoomHint(); }, 1200);
     });
     if (name === 'command-center') {
-      // Also load territory panel
-      setTimeout(() => tpLoad(), 100);
+      setTimeout(() => tpLoad(), 150);
     }
   }
 }
@@ -5460,21 +5478,27 @@ function tpSetFilter(f, el) {
 }
 
 // Pass 67: display lat/lng area keys as readable "Area (lat, lng)" labels
-function _tpCityDisplay(city, state) {
-  // Detect lat,lng format from map area searches
-  const latLngMatch = city && city.match(/^(-?\d+\.\d+),(-?\d+\.\d+)/);
+function _tpCityDisplay(c) {
+  // c is the full city data object from _tpData
+  const city  = c.city  || '';
+  const state = c.state || '';
+  const displayName = c.display_name || '';
+
+  const latLngMatch = city.match(/^(-?\d+\.\d+),(-?\d+\.\d+)/);
   if (latLngMatch) {
-    const lat = parseFloat(latLngMatch[1]);
-    const lng = parseFloat(latLngMatch[2]);
-    // Try to get a human label from nearby territory overlay data
-    const shortLat = lat.toFixed(2);
-    const shortLng = lng.toFixed(2);
+    // Use resolved display_name if available, otherwise show coords
+    if (displayName && !displayName.match(/^-?\d/)) {
+      return '<span style="font-weight:700;color:var(--text)">' + escHtml(displayName) + '</span>'
+        + '<span style="font-family:var(--mono);font-size:9px;color:var(--dim);margin-left:5px">area</span>';
+    }
+    const lat = parseFloat(latLngMatch[1]).toFixed(2);
+    const lng = parseFloat(latLngMatch[2]).toFixed(2);
     return '<span style="font-weight:700;color:var(--text)">📍 Map Area</span>'
       + '<span style="font-family:var(--mono);font-size:10px;color:var(--dim);margin-left:6px">'
-      + shortLat + ', ' + shortLng
-      + '</span>';
+      + lat + ', ' + lng + '</span>';
   }
-  return escHtml(city) + (state ? ', ' + escHtml(state) : '');
+  return '<span style="font-weight:700;color:var(--text)">' + escHtml(city) + '</span>'
+    + (state && state.toUpperCase() !== 'AREA' ? '<span style="color:var(--muted);font-size:11px;margin-left:4px">' + escHtml(state) + '</span>' : '');
 }
 
 function tpRender() {
@@ -5540,7 +5564,7 @@ function _tpCityCard(c) {
   return '<div class="' + cardCls + openCls + '" id="tp-card-' + key.replace(/[^a-z0-9]/g, '-') + '">'
     + '<div class="tp-card-hdr" data-tp-key="' + escHtml(key) + '" onclick="tpToggle(this.dataset.tpKey)">'
     + '<div style="display:flex;flex-direction:column;gap:3px">'
-    + '<div class="tp-city-name">' + _tpCityDisplay(c.city, c.state) + ' ' + statusHtml + '</div>'
+    + '<div class="tp-city-name">' + _tpCityDisplay(c) + ' ' + statusHtml + '</div>'
     + '<div class="tp-city-meta">' + (c.leads_found||0) + ' leads \u00B7 Last: ' + _tpFmt(c.last_checked_at) + ' \u00B7 Next: ' + _tpFmt(c.next_check_at) + ' \u00B7 ' + (c.tier||'mid') + '</div>'
     + nextHint
     + '</div>'
@@ -5573,6 +5597,101 @@ function _tpIndRow(city, r) {
     + '<td><div class="tp-ind-acts" style="justify-content:flex-end">' + runBtn
     + '<button class="tp-btn tp-btn-skip" onclick="tpSkipIndustry(' + cq + ',' + sq + ',' + iq + ')">Skip</button>'
     + exhBtn + '</div></td></tr>';
+}
+
+// ── Industry lead drill-down ──────────────────────────────────────
+// Click an industry row → fetch leads for that city+industry,
+// render inline below the row. Click again to collapse.
+const _tpLeadOpen = new Map(); // key → bool
+
+async function tpToggleLeads(city, state, industry, trEl) {
+  const key = (city + '|' + state + '|' + industry).toLowerCase();
+  const existing = trEl.nextElementSibling;
+  const isOpen = existing && existing.classList.contains('tp-ind-leads-row');
+
+  if (isOpen) {
+    existing.remove();
+    _tpLeadOpen.delete(key);
+    // Reset arrow
+    const arrow = trEl.querySelector('.tp-ind-name span');
+    if (arrow) arrow.textContent = '▸';
+    return;
+  }
+
+  // Show loading row
+  const loadRow = document.createElement('tr');
+  loadRow.className = 'tp-ind-leads-row';
+  loadRow.innerHTML = '<td colspan="5" class="tp-ind-leads"><div style="padding:8px 12px;font-size:11px;color:var(--muted)">Loading leads…</div></td>';
+  trEl.parentNode.insertBefore(loadRow, trEl.nextSibling);
+
+  // Flip arrow
+  const arrow = trEl.querySelector('.tp-ind-name span');
+  if (arrow) arrow.textContent = '▾';
+
+  try {
+    const res = await api('/api/territory/leads', { city, state, industry });
+    loadRow.remove();
+
+    const leads = res.leads || [];
+    const detailRow = document.createElement('tr');
+    detailRow.className = 'tp-ind-leads-row';
+
+    if (!leads.length) {
+      detailRow.innerHTML = '<td colspan="5" class="tp-ind-leads">'
+        + '<div class="tp-ind-leads-hdr"><span>No leads found for ' + escHtml(industry) + ' in ' + escHtml(city) + '</span></div>'
+        + '</td>';
+    } else {
+      const sent   = leads.filter(l => l.sent_at).length;
+      const replied = leads.filter(l => l.replied === 'true').length;
+      const approved = leads.filter(l => l.approved === 'true' && !l.sent_at).length;
+      const draft  = leads.filter(l => !l.sent_at && l.approved !== 'true').length;
+
+      let html = '<td colspan="5" class="tp-ind-leads">'
+        + '<div class="tp-ind-leads-hdr">'
+        + '<span>' + leads.length + ' lead' + (leads.length === 1 ? '' : 's') + '</span>'
+        + '<span style="display:flex;gap:8px">'
+        + (replied  ? '<span style="color:var(--green)">' + replied + ' replied</span>' : '')
+        + (sent     ? '<span style="color:var(--muted)">' + sent + ' sent</span>' : '')
+        + (approved ? '<span style="color:var(--blue)">'  + approved + ' approved</span>' : '')
+        + (draft    ? '<span style="color:var(--dim)">'   + draft + ' draft</span>' : '')
+        + '</span></div>';
+
+      leads.slice(0, 20).forEach(l => {
+        const badge = l.replied === 'true'
+          ? '<span class="tp-lead-badge tp-lead-replied">Replied</span>'
+          : l.sent_at
+          ? '<span class="tp-lead-badge tp-lead-sent">Sent</span>'
+          : l.approved === 'true'
+          ? '<span class="tp-lead-badge tp-lead-approved">Approved</span>'
+          : '<span class="tp-lead-badge tp-lead-draft">Draft</span>';
+
+        const gi = allRows.findIndex(r =>
+          (r.business_name || '').toLowerCase() === (l.business_name || '').toLowerCase() &&
+          (r.to_email || '') === (l.to_email || '')
+        );
+
+        html += '<div class="tp-lead-row" '
+          + (gi >= 0 ? 'onclick="qlfJump(' + gi + ')" title="Open in panel"' : '') + '>'
+          + '<span class="tp-lead-name">' + escHtml(l.business_name || '—') + '</span>'
+          + '<span class="tp-lead-email">' + escHtml(l.to_email || 'no email') + '</span>'
+          + badge
+          + '</div>';
+      });
+
+      if (leads.length > 20) {
+        html += '<div style="padding:5px 12px;font-size:10px;color:var(--dim)">+ ' + (leads.length - 20) + ' more — use search to see all</div>';
+      }
+
+      html += '</td>';
+      detailRow.innerHTML = html;
+    }
+
+    trEl.parentNode.insertBefore(detailRow, trEl.nextSibling);
+    _tpLeadOpen.set(key, true);
+
+  } catch(e) {
+    loadRow.innerHTML = '<td colspan="5" class="tp-ind-leads"><div style="padding:8px 12px;font-size:11px;color:var(--red)">Failed to load leads</div></td>';
+  }
 }
 
 function tpToggle(key) {

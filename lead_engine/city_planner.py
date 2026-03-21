@@ -94,6 +94,34 @@ class CityPlanner:
             ind["status"] = "checked"
         self._save()
 
+    def _display_name(self, entry: Dict) -> str:
+        """Return a human-readable city name. For AREA entries, reverse-geocode once and cache."""
+        city = entry.get("city", "")
+        state = entry.get("state", "")
+        if state.upper() != "AREA":
+            return city
+        # Already cached?
+        if entry.get("display_name"):
+            return entry["display_name"]
+        # Try reverse geocode
+        lat_str, lng_str = city.split(",", 1) if "," in city else (None, None)
+        try:
+            lat = float(lat_str); lng = float(lng_str)
+            import urllib.request, json as _json, time as _time
+            url = (f"https://nominatim.openstreetmap.org/reverse"
+                   f"?lat={lat}&lon={lng}&zoom=10&format=json")
+            req = urllib.request.Request(url, headers={"User-Agent": "Copperline/1.0"})
+            with urllib.request.urlopen(req, timeout=4) as r:
+                data = _json.loads(r.read())
+            addr = data.get("address", {})
+            name = (addr.get("city") or addr.get("town") or addr.get("village")
+                    or addr.get("county") or data.get("display_name", city).split(",")[0])
+            entry["display_name"] = name
+            self._save()
+            return name
+        except Exception:
+            return city
+
     def get_industry_matrix(self, industries: List[str]) -> List[Dict]:
         rows = []
         for e in self._data:
@@ -121,6 +149,7 @@ class CityPlanner:
             rows.append({
                 "city": e.get("city", ""),
                 "state": e.get("state", ""),
+                "display_name": self._display_name(e),
                 "tier": e.get("tier", "mid"),
                 "last_checked_at": e.get("last_checked_at"),
                 "next_check_at": e.get("next_check_at"),
