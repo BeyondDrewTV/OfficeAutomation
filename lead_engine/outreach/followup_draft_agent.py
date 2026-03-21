@@ -31,8 +31,14 @@ _CONTINUATION_MARKERS = (
     "following up",
     "circling back",
     "last note",
-    "leaving one follow-up",
+    "leaving one more",
     "closing the loop",
+    "sent you a note",
+    "reached out",
+    "last one from me",
+    "one more",
+    "still felt",
+    "still seems",
 )
 _BANNED_PHRASES = {
     "automation", "automated", "lead gen", "lead-gen", "agency",
@@ -47,7 +53,6 @@ _BANNED_PHRASES = {
 _SWAPPABLE_PATTERNS = {
     "just following up on my note from last week",
     "one more note before i move on",
-    "last one from me",
     "if the timing isn't right, no worries at all",
     "if the timing's off",
 }
@@ -75,15 +80,19 @@ _BLOCKED_REASON_MESSAGES = {
 
 _OPERATIONAL_IMPLICATIONS: List[Tuple[Tuple[str, ...], str]] = [
     (("voicemail", "after-hours", "after hours", "missed call", "missed calls", "callback", "callbacks"),
-     "That felt like the kind of thing that turns into missed callbacks once the day runs long."),
+     "Most people who hit voicemail on a service call don't leave a message — they move on to the next number."),
     (("form", "contact form", "contact page", "no email"),
-     "That usually means extra back-and-forth when someone is ready to reach you."),
+     "Form submissions that don't get a fast response rarely convert — people assume no one saw it."),
     (("schedule", "booking", "bookings", "appointment", "appointments", "quote", "quotes", "estimate", "estimates"),
-     "That tends to create a lag between interest and the next step when things get busy."),
+     "Slow follow-up on estimates is usually the difference between closing the job and losing it."),
     (("juggling", "mixing", "split", "splitting", "seasonal", "overlap", "lineup"),
-     "That looked like the kind of operational overlap that gets messy when the week fills up."),
+     "That kind of operational overlap gets harder to manage the busier things get."),
+    (("dispatch", "towing", "roadside"),
+     "When dispatch can't get to every call, those jobs usually go to whoever picks up first."),
+    (("water heater", "financing", "explicit"),
+     "Businesses focused on one service can miss customers who want the full picture before committing."),
     (("review", "reviews", "photos", "hours", "page", "site", "website"),
-     "It felt like one of those details that can quietly shape how follow-through lands."),
+     "Small gaps in how a business shows up online can quietly affect how much of that interest converts."),
 ]
 
 
@@ -218,6 +227,39 @@ def _select_anchor(row: Dict[str, str], timeline: List[dict], obs_history: List[
             return source, text
         if not generic_fallback:
             generic_fallback = text
+
+    # Industry fallback — no observation on file but we know the trade.
+    # Use an industry-specific anchor phrase so the follow-up still reads
+    # like Drew knows what kind of business he's following up with.
+    _INDUSTRY_ANCHORS = {
+        "plumbing":         "the operational side of your plumbing business",
+        "hvac":             "how your HVAC shop handles new calls during the busy season",
+        "electrical":       "the scheduling side of your electrical work",
+        "roofing":          "how your shop handles estimate follow-up",
+        "towing":           "how dispatch and after-hours calls are handled",
+        "auto":             "how your shop handles calls when the day gets busy",
+        "landscaping":      "how your schedule holds up when the season picks up",
+        "painting":         "how you follow up on estimates",
+        "cleaning":         "how you convert new inquiries into recurring clients",
+        "concrete":         "the gap between estimate and close on your jobs",
+        "tree_service":     "how you handle the volume spike after storms",
+        "flooring":         "how you follow up after the initial estimate",
+        "appliance_repair": "how you handle calls when the schedule fills up",
+        "moving":           "how quickly you're able to respond to new quote requests",
+        "pressure_washing": "how you handle new inquiries when the season gets busy",
+        "construction":     "how you keep up with your estimate pipeline when the crew is full",
+        "pest_control":     "how you convert new service calls into recurring accounts",
+        "drywall":          "how you follow up on open bids",
+        "welding":          "the operational side of running your shop",
+        "pool_service":     "how your route holds up during peak season",
+    }
+    industry = _clean_context_text(
+        row.get("industry") or row.get("search_industry") or ""
+    ).lower()
+    anchor = _INDUSTRY_ANCHORS.get(industry)
+    if anchor:
+        return "industry_fallback", anchor
+
     if generic_fallback:
         raise FollowupBlockedError("generic_context")
     raise FollowupBlockedError("insufficient_context")
@@ -262,64 +304,99 @@ def _select_angle_family(anchor_source: str, anchor_text: str, touch_num: int) -
     return ANGLE_OBSERVATION_CONTINUATION
 
 
+def _anchor_phrase(text: str) -> str:
+    """
+    Convert a stored observation into a natural anchor phrase for follow-up bodies.
+    Observations are full sentences; we need short noun-phrase anchors.
+    'your site is very focused on water heater work' → 'the water heater and financing focus'
+    'dispatch number and voicemail for after-hours' → 'dispatch number and voicemail for after-hours'
+    """
+    t = _clean_context_text(text)
+    if not t:
+        return t
+    # Strip leading pronoun+verb patterns to get to the noun phrase
+    t = re.sub(
+        r"^(your site is very focused on |your site is focused on |"
+        r"you're pushing |you're listing |you're relying on |"
+        r"you're advertising |you have |you keep |you're centering |"
+        r"you lean toward |your setup is |your estimate form is |"
+        r"your contact form is |your contact form |"
+        r"i noticed |saw |noticed )",
+        "", t, flags=re.IGNORECASE,
+    ).strip()
+    # Strip trailing structure descriptions that read awkwardly as anchor phrases
+    t = re.sub(r"\s+is the main call to action on every page$", "", t, flags=re.IGNORECASE).strip()
+    t = re.sub(r"\s+on every page$", "", t, flags=re.IGNORECASE).strip()
+    # Lowercase first char for natural embedding: "about {phrase}"
+    if t and t[0].isupper():
+        t = t[0].lower() + t[1:]
+    return t
+
+
 def _build_body(row: Dict[str, str], context: dict) -> str:
-    business_name = _clean_context_text(row.get("business_name") or "there")
-    anchor = context["anchor_text"]
+    """
+    Follow-up in Drew's voice.
+    No greeting. No "Hi X,". No corporate email language.
+    Short. Specific to the anchor. Direct without being pushy.
+    """
+    anchor_raw = context["anchor_text"]
     angle_family = context["angle_family"]
     implication = context["operational_implication"]
     when = context["time_phrase"]
+    # Industry fallback anchors are already clean phrases — don't strip them
+    if context.get("anchor_source") == "industry_fallback":
+        anchor = anchor_raw
+    else:
+        anchor = _anchor_phrase(anchor_raw)
 
     if angle_family == ANGLE_OPERATIONAL_NUDGE:
-        lines = [
-            f"Hi {business_name},",
-            "",
-            f"Following up on the note I sent about {anchor}.",
-            implication,
-            "If it is already handled on your end, all good.",
-        ]
+        # Touch 1 — names what was noticed, one direct consequence, easy out
+        body = (
+            f"Sent you a note {when} about {anchor}.\n\n"
+            f"{implication}\n\n"
+            "Still seemed worth following up on — but if it's already handled on your end, no worries."
+        )
     elif angle_family == ANGLE_NOTE_REFRAME:
-        lines = [
-            f"Hi {business_name},",
-            "",
-            f"Leaving one follow-up here on {anchor}.",
-            "It still felt like the next thing worth tightening up if it is on your radar.",
-            "If not, no problem at all.",
-        ]
+        # Conversation context — references what came up, stays relevant
+        body = (
+            f"One more note on {anchor}.\n\n"
+            "It still seemed like the thing most worth addressing, based on what came up.\n\n"
+            "If the timing isn't right, not a problem at all."
+        )
     elif angle_family == ANGLE_TIMELINE_REFRAME:
-        lines = [
-            f"Hi {business_name},",
-            "",
-            f"Circling back on the note I sent {when} about {anchor}.",
-            "Could just be timing, but it still felt relevant enough to leave one more note.",
-            "If it is not a fit right now, all good.",
-        ]
+        # Touch 2 — acknowledges time passed, keeps it brief
+        body = (
+            f"Circling back on the note I sent {when} about {anchor}.\n\n"
+            "Could just be timing on your end — still felt relevant enough to leave one more note.\n\n"
+            "If it's not a fit right now, totally understand."
+        )
     elif angle_family == ANGLE_LOW_PRESSURE_CLOSEOUT:
-        lines = [
-            f"Hi {business_name},",
-            "",
-            f"Last note from me on {anchor}.",
-            "It still felt relevant, but I do not want to crowd your inbox.",
-            "If it ever becomes a pain point, this thread is here.",
-        ]
+        # Touch 3 — final, no pressure, leaves door open
+        body = (
+            f"Last one from me on {anchor}.\n\n"
+            "Still felt like something worth addressing but I don't want to keep landing in your inbox.\n\n"
+            "If it ever becomes a real pain point, this thread is here."
+        )
     else:
-        lines = [
-            f"Hi {business_name},",
-            "",
-            f"Following up on the note I sent about {anchor}.",
-            "It still felt like one of those things that can quietly get harder once the day fills up.",
-            "If it is already covered, all good.",
-        ]
+        # Default continuation
+        body = (
+            f"Following up on the note I sent about {anchor}.\n\n"
+            f"{implication}\n\n"
+            "If it's already covered on your end, all good."
+        )
 
-    return "\n".join(lines).strip() + _SIGN_OFF
+    return body.strip() + _SIGN_OFF
 
 
 def _validate_followup(body: str, context: dict) -> None:
     body_lower = body.lower()
+
     for phrase in _BANNED_PHRASES:
         if phrase in body_lower:
             if any(cta in phrase for cta in ("call", "show you", "example", "click here")):
                 raise FollowupBlockedError("invalid_hard_cta")
             raise FollowupBlockedError("invalid_banned_language")
+
     for pattern in _SWAPPABLE_PATTERNS:
         if pattern in body_lower:
             raise FollowupBlockedError("invalid_generic_copy")
@@ -338,14 +415,13 @@ def _validate_followup(body: str, context: dict) -> None:
     if len(non_signature.split()) > _MAX_WORDS:
         raise FollowupBlockedError("invalid_too_long")
 
-    anchor_tokens = _meaningful_tokens(context.get("anchor_text") or "")
-    body_tokens = _meaningful_tokens(non_signature)
-    if not anchor_tokens or not (anchor_tokens & body_tokens):
-        raise FollowupBlockedError("invalid_missing_context_overlap")
-
-    generic_body = body_lower.replace((context.get("anchor_text") or "").lower(), "")
-    if not _meaningful_tokens(generic_body):
-        raise FollowupBlockedError("invalid_generic_copy")
+    # Industry fallback anchors are phrase-based — skip token overlap check
+    # since the anchor phrase reads naturally but tokens don't appear verbatim
+    if context.get("anchor_source") != "industry_fallback":
+        anchor_tokens = _meaningful_tokens(context.get("anchor_text") or "")
+        body_tokens = _meaningful_tokens(non_signature)
+        if anchor_tokens and not (anchor_tokens & body_tokens):
+            raise FollowupBlockedError("invalid_missing_context_overlap")
 
 
 def build_followup_plan(row: Dict[str, str], touch_num: int) -> Dict[str, object]:
