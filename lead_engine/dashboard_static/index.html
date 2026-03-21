@@ -724,7 +724,28 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .mrp-group-collapsed .mrp-item{display:none}
 .mrp-group-toggle{cursor:pointer;user-select:none;font-size:10px;color:var(--dim)}
 
-/* ── Pass 67: Map page full-width layout ─────────────────────────── */
+/* ── Pass 75: Command Center split layout ─────────────────────────── */
+.cc-wrap{display:flex;width:100%;height:calc(100vh - 118px);min-height:560px;overflow:hidden}
+.cc-map-pane{flex:1;min-width:0;display:flex;flex-direction:column;padding:12px 8px 0 16px;box-sizing:border-box}
+.cc-tp-pane{width:380px;flex-shrink:0;display:flex;flex-direction:column;border-left:1px solid var(--border);background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.97));overflow:hidden}
+.cc-tp-header{padding:10px 14px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
+.cc-tp-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
+.cc-tp-addrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.cc-tp-stats{display:flex;gap:12px;padding:6px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.cc-tp-stat{font-size:11px;color:var(--muted)}.cc-tp-stat strong{color:var(--text);font-weight:600}
+.cc-tp-filters{display:flex;gap:6px;padding:6px 14px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;align-items:center}
+.cc-tp-body{flex:1;overflow-y:auto;padding:8px 10px 14px}
+.cc-tp-body .tp-card{margin-bottom:8px}
+/* Highlight territory card when map selects it */
+.tp-card.cc-selected{border-color:var(--copper)!important;box-shadow:0 0 0 1px var(--copper),0 4px 16px rgba(184,115,51,.2)!important}
+/* Map pane fills the split */
+.cc-map-pane #map-layout{height:calc(100vh - 230px);min-height:480px}
+.cc-map-pane .map-page-wrap{padding:0}
+.cc-map-pane .cmd-bar{border-radius:var(--r) var(--r) 0 0}
+
+/* ── Pass 75: Territory indicator on map click ───────────────────── */
+.cc-city-flash{animation:cc-flash .6s ease}
+@keyframes cc-flash{0%{background:rgba(184,115,51,.35)}100%{background:transparent}}
 .map-page-wrap{width:100%;padding:12px 16px 0;box-sizing:border-box}
 #map-layout{display:flex;gap:0;align-items:stretch;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;height:calc(100vh - 260px);min-height:500px;box-shadow:var(--card-shadow)}
 #map-container{flex:1;height:100%;min-height:500px;min-width:0;overflow:hidden}
@@ -924,8 +945,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <div class="sub-tab"        data-parent="pipeline" data-page="sprint"        onclick="switchSubPage('pipeline','sprint',this)"   id="nav-sprint">⚡ Sprint</div>
   <div class="sub-tab"        data-parent="pipeline" data-page="conversations" onclick="switchSubPage('pipeline','conversations',this)" id="nav-conversations">💬 Conversations</div>
   <!-- Discovery sub-tabs -->
-  <div class="sub-tab" data-parent="discovery" data-page="map"      onclick="switchSubPage('discovery','map',this)"      id="nav-map" style="display:none">🗺️ Map Search</div>
-  <div class="sub-tab" data-parent="discovery" data-page="cities"   onclick="switchSubPage('discovery','cities',this)"   style="display:none">🗺 Territory</div>
+  <div class="sub-tab" data-parent="discovery" data-page="command-center" onclick="switchSubPage('discovery','command-center',this)" id="nav-map" style="display:none">⚡ Command Center</div>
   <div class="sub-tab" data-parent="discovery" data-page="searches" onclick="switchSubPage('discovery','searches',this)" style="display:none">🔍 History</div>
   <!-- Clients sub-tabs -->
   <div class="sub-tab" data-parent="clients" data-page="mc-clients" onclick="switchSubPage('clients','mc-clients',this)" style="display:none">📋 Clients</div>
@@ -1441,8 +1461,171 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 </div>
 </div>
 
+<!-- ══════════════ PAGE: COMMAND CENTER (Map + Territory combined) ══════════════ -->
+<div class="page" id="page-command-center">
+<div class="cc-wrap">
+
+  <!-- LEFT: Map pane — full map experience -->
+  <div class="cc-map-pane">
+    <div class="map-page-wrap" style="flex:1;display:flex;flex-direction:column">
+      <!-- Command bar -->
+      <div class="cmd-bar" id="cmd-bar">
+        <div class="cmd-territory" id="cmd-territory">
+          <span class="cmd-territory-icon">◈</span>
+          <span class="cmd-territory-name" id="cmd-territory-name">Click map to select territory</span>
+          <span class="cmd-territory-meta" id="cmd-territory-meta"></span>
+          <button class="cmd-territory-clear" id="cmd-territory-clear" onclick="bndClearBoundary()" style="display:none">✕</button>
+        </div>
+        <select id="map-industry" class="cmd-industry" onchange="_mapUpdateIndustryControls()"><option value="">Select industry…</option></select>
+        <button id="btnSearchTerritory" class="btn btn-primary" onclick="bndSearchTerritory()" disabled style="font-size:13px;padding:9px 20px">
+          <span class="spin"></span>Search Territory
+        </button>
+        <button id="btnCancelTerritory" class="btn btn-ghost" onclick="bndCancelTerritory()" style="display:none">✕ Cancel</button>
+        <span id="bnd-progress-label" style="font-size:11px;color:var(--muted);display:none"></span>
+        <button class="btn btn-ghost" onclick="mapClearCircle()" style="color:var(--dim);padding:9px 12px" title="Reset">↺</button>
+        <button class="cmd-adv-toggle" onclick="_mapToggleAdvanced()" id="cmd-adv-toggle" title="Advanced controls">⋯</button>
+      </div>
+      <!-- Progress bar -->
+      <div id="cmd-progress-bar" style="height:2px;background:var(--border);border-radius:1px;overflow:hidden;display:none">
+        <div id="cmd-progress-fill" style="height:100%;background:var(--copper);width:0%;transition:width .3s"></div>
+      </div>
+      <!-- Advanced panel -->
+      <div class="cmd-advanced" id="cmd-advanced" style="display:none">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--dim)">Advanced</span>
+          <input id="map-limit" class="d-input d-num" type="number" value="20" min="1" max="20" style="width:60px">
+          <button id="btnMapSearch" class="btn btn-ghost" onclick="mapSearch()" disabled style="font-size:11px">⚡ Search Here</button>
+          <button id="btnSearchVisible" class="btn btn-ghost" onclick="mapSearchVisible()" disabled style="font-size:11px">⊞ Visible Area</button>
+          <button id="btnExhaust" class="btn btn-ghost" onclick="mapSearchExhaust()" disabled style="font-size:11px">♻ Exhaust</button>
+          <button id="btnCancelVisible" class="btn btn-ghost" onclick="_mapCancelVisible()" style="display:none;font-size:11px">✕ Cancel</button>
+          <button id="btnClearCoverage" class="btn btn-ghost" onclick="_mapClearCoverage()" style="display:none;font-size:11px">◌ Clear Coverage</button>
+          <span id="map-radius-label" style="font-size:10px;color:var(--dim)"></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:7px;flex-wrap:wrap">
+          <button id="btnMapTerritoryToggle" class="btn btn-ghost map-territory-btn active" onclick="mapToggleTerritoryOverlay()" style="font-size:11px">◫ Overlay</button>
+          <button id="btnMapTerritoryNext" class="btn btn-ghost map-territory-btn" onclick="mapToggleTerritoryNextOnly()" style="font-size:11px">★ Next Areas</button>
+          <button id="btnMapTerritorySaturation" class="btn btn-ghost map-territory-btn active" onclick="mapToggleIndustrySaturation()" style="font-size:11px">◎ Saturation</button>
+          <button id="btnMapTerritoryRefresh" class="btn btn-ghost" onclick="mapReloadTerritoryOverlay()" style="font-size:11px">↻ Refresh</button>
+        </div>
+      </div>
+      <!-- Hidden legacy inputs kept for JS compatibility -->
+      <div id="bnd-bar" style="display:none">
+        <input id="bnd-input" type="text" style="display:none">
+        <div id="bnd-results"></div>
+        <div id="bnd-active-wrap"><span id="bnd-active-name"></span><span id="bnd-active-tiles"></span></div>
+      </div>
+      <div id="map-grid-bar" style="display:none">
+        <span id="map-grid-summary"></span>
+        <button id="btnGridSearch" onclick="mapSearchAreaGrid()" style="display:none"></button>
+        <button id="btnGridCancel" onclick="mapCancelAreaGrid()" style="display:none"></button>
+        <div id="map-grid-industries"></div>
+      </div>
+      <!-- Map + results panel -->
+      <div id="map-layout">
+        <div id="map-container"></div>
+        <div id="map-results-panel">
+          <div class="mrp-hdr">Results <span id="mrp-count"></span></div>
+          <div class="mrp-controls" id="mrp-controls">
+            <select id="mrp-sort" class="mrp-ctrl-select" onchange="_mapRenderPanel()">
+              <option value="score">Sort: Score first</option>
+              <option value="name">Sort: Name A–Z</option>
+              <option value="city">Sort: City A–Z</option>
+            </select>
+            <select id="mrp-group" class="mrp-ctrl-select" onchange="_mapRenderPanel()">
+              <option value="workflow">Group: Workflow</option>
+              <option value="qualification">Group: Qualification</option>
+              <option value="city">Group: City</option>
+              <option value="email">Group: Email status</option>
+              <option value="flat">Group: None</option>
+            </select>
+            <label class="mrp-ctrl-chk"><input type="checkbox" id="mrp-email-only" onchange="_mapRenderPanel()"> Email only</label>
+          </div>
+          <div class="mrp-triage-bar" id="mrp-triage-bar"></div>
+          <div class="mrp-bulk-bar" id="mrp-bulk-bar" style="display:none">
+            <span class="mrp-bulk-lbl">Visible:</span>
+            <span class="mrp-bulk-meta" id="mrp-bulk-meta"></span>
+            <button class="mrp-bulk-btn primary" id="mrp-bulk-prep" onclick="_mrpBulkPrepOutreach()">Prep Outreach</button>
+            <button class="mrp-bulk-btn" id="mrp-bulk-review" onclick="_mrpOpenVisibleReview()">Review Visible</button>
+            <button class="mrp-bulk-btn" style="background:var(--green-bg);color:var(--green);border-color:rgba(62,207,114,.35)" onclick="_mrpBulkApprove()">✓ Approve</button>
+            <button class="mrp-bulk-btn" onclick="_mrpBulkSchedule()">🕐 Schedule</button>
+            <button class="mrp-bulk-btn danger" onclick="_mrpBulkDelete()">✕ Delete</button>
+          </div>
+          <div class="mrp-list" id="mrp-list"></div>
+        </div>
+      </div>
+      <div style="margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div id="map-status" class="map-status"></div>
+        <span id="map-zoom-hint" style="font-size:10px;color:var(--dim);white-space:nowrap;font-family:var(--mono);flex-shrink:0"></span>
+      </div>
+      <div id="map-territory-legend"></div>
+      <div id="map-history">
+        <div class="mh-hdr">
+          <span class="mh-title">Recent Searches</span>
+          <button class="mh-clear" onclick="_mapClearHistory()">Clear history</button>
+        </div>
+        <div class="mh-list" id="mh-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Territory planner panel — compact, scrollable -->
+  <div class="cc-tp-pane">
+    <!-- Header + add city -->
+    <div class="cc-tp-header">
+      <div class="cc-tp-title">Territory Planner</div>
+      <div class="cc-tp-addrow">
+        <div class="city-ac-wrap" style="display:inline-block;position:relative">
+          <input type="text" id="cp-city" class="form-input" style="width:130px;font-size:12px" placeholder="City name"
+                 autocomplete="off" oninput="cityAcInput('cp')" onfocus="cityAcInput('cp')"
+                 onkeydown="cityAcKey(event,'cp')" onblur="cityAcCloseDelay('cp')">
+          <div class="city-ac-list" id="cp-city-ac">
+            <div class="city-ac-filters">
+              <span class="caf active" onclick="cityAcSetFilter('cp','all',this)">All</span>
+              <span class="caf" onclick="cityAcSetFilter('cp','due',this)" style="color:var(--amber)">⚠ Due</span>
+              <span class="caf" onclick="cityAcSetFilter('cp','never',this)">● Never</span>
+              <span class="caf" onclick="cityAcSetFilter('cp','nearby',this)">📍 Nearby</span>
+            </div>
+            <div id="cp-city-ac-items"></div>
+          </div>
+        </div>
+        <input type="text" id="cp-state" class="form-input" style="width:42px;font-size:12px" placeholder="IL" maxlength="2">
+        <button class="btn btn-primary" onclick="tpAddCity()" style="height:30px;font-size:12px;padding:0 10px">＋</button>
+        <input type="text" id="tp-search" class="tp-search" style="width:90px;font-size:11px;margin-left:auto" placeholder="Search…" oninput="tpRender()">
+      </div>
+    </div>
+    <!-- Stats row -->
+    <div class="cc-tp-stats">
+      <span class="cc-tp-stat"><strong id="tp-stat-cities">—</strong> cities</span>
+      <span class="cc-tp-stat"><strong style="color:var(--red)" id="tp-stat-uncovered">—</strong> uncovered</span>
+      <span class="cc-tp-stat"><strong style="color:var(--amber)" id="tp-stat-due">—</strong> due</span>
+      <span class="cc-tp-stat"><strong style="color:var(--green)" id="tp-stat-leads">—</strong> leads</span>
+    </div>
+    <!-- Filter tabs -->
+    <div class="cc-tp-filters">
+      <span class="ftab active" data-tpf="all"    onclick="tpSetFilter('all',this)">All</span>
+      <span class="ftab" data-tpf="due"    onclick="tpSetFilter('due',this)" style="color:var(--amber)">⚠ Due</span>
+      <span class="ftab" data-tpf="active" onclick="tpSetFilter('active',this)">▶ Active</span>
+      <span class="ftab" data-tpf="open"   onclick="tpSetFilter('open',this)">● Gaps</span>
+    </div>
+    <!-- Scrollable cards -->
+    <div class="cc-tp-body" id="tp-cards">
+      <div class="tp-empty"><div class="tp-empty-icon">🗺</div><div>Loading territory…</div></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════ PAGE: CITIES / TERRITORY (legacy — hidden, kept for JS compat) ══════════════ -->
+<div class="page" id="page-cities" style="display:none!important">
+</div>
+
+<!-- ══════════════ PAGE: MAP SEARCH (legacy — hidden, kept for JS compat) ══════════════ -->
+<div class="page" id="page-map" style="display:none!important">
+</div>
+
 <!-- ══════════════ PAGE: CITIES / TERRITORY ══════════════ -->
-<div class="page" id="page-cities">
+
 <div class="mc-wrap">
 
   <!-- Header + summary stats -->
@@ -5028,7 +5211,7 @@ let _currentParent = 'pipeline';
 // Which page each parent defaults to on first click
 const _parentDefaults = {
   pipeline:  'outreach',
-  discovery: 'map',
+  discovery: 'command-center',
   clients:   'mc-clients',
   health:    'health',
   tools:     'tools',
@@ -5072,16 +5255,19 @@ function _runPageHooks(name) {
   if (name === 'conversations') convLoad();
   if (name === 'health')        { healthLoad(); exceptionsLoad(); }
   if (name === 'lead-memory')   loadLeadMemory();  // Pass 44
-  if (name === 'map') {
+  if (name === 'map' || name === 'command-center') {
     requestAnimationFrame(() => {
       _mapInit();
       _mapPopulateIndustries();
       _mapLoadTerritoryOverlay();
-      // Force layout recalculation after tab becomes visible
       setTimeout(() => { if (_mapInstance) { _mapInstance.invalidateSize(true); _mapUpdateZoomHint(); } }, 50);
       setTimeout(() => { if (_mapInstance) _mapInstance.invalidateSize(true); }, 250);
       setTimeout(() => { if (_mapInstance) _mapInstance.invalidateSize(true); }, 600);
     });
+    if (name === 'command-center') {
+      // Also load territory panel
+      setTimeout(() => tpLoad(), 100);
+    }
   }
 }
 
@@ -5158,6 +5344,71 @@ let _tpData       = [];
 let _tpIndustries = [];
 let _tpFilter     = 'all';
 let _tpOpen       = new Set();
+
+// ── Pass 75: Command Center wiring ───────────────────────────────────────────
+// Called when map boundary click identifies a city.
+// Finds or auto-adds the city in the territory panel, opens its card,
+// scrolls to it, and flashes the copper selection highlight.
+async function _ccSyncTerritoryPanel(city, state) {
+  if (!city) return;
+  const cityClean = city.trim();
+  const stateClean = (state || '').trim().toUpperCase();
+
+  // Ensure territory data is loaded
+  if (!_tpData || !_tpData.length) await tpLoad();
+
+  // Find matching city — try exact match first, then partial
+  let match = _tpData.find(c =>
+    c.city.toLowerCase() === cityClean.toLowerCase() &&
+    (!stateClean || c.state.toUpperCase() === stateClean)
+  );
+
+  // Not in territory yet — add it silently
+  if (!match) {
+    if (!stateClean) return; // can't add without state
+    try {
+      await fetch('/api/territory/add_city', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({city: cityClean, state: stateClean})
+      });
+      await tpLoad();
+      match = _tpData.find(c =>
+        c.city.toLowerCase() === cityClean.toLowerCase() &&
+        c.state.toUpperCase() === stateClean
+      );
+    } catch(e) { return; }
+  }
+
+  if (!match) return;
+
+  // Open the card
+  const key = _tpKey(match);
+  _tpOpen.add(key);
+  tpRender();
+
+  // Scroll to the card and flash it
+  requestAnimationFrame(() => {
+    const safeKey = key.replace(/[^a-z0-9]/g, '-');
+    const card = document.getElementById('tp-card-' + safeKey);
+    if (!card) return;
+
+    // Remove cc-selected from any previously selected card
+    document.querySelectorAll('.tp-card.cc-selected').forEach(c => c.classList.remove('cc-selected'));
+    card.classList.add('cc-selected');
+
+    // Scroll the territory panel body to this card
+    const body = document.querySelector('.cc-tp-body');
+    if (body) {
+      const cardTop = card.offsetTop - body.offsetTop;
+      body.scrollTo({ top: cardTop - 20, behavior: 'smooth' });
+    }
+
+    // Flash animation then keep copper border
+    card.classList.add('cc-city-flash');
+    setTimeout(() => card.classList.remove('cc-city-flash'), 700);
+  });
+}
 
 async function tpLoad() {
   try {
@@ -5369,10 +5620,16 @@ function _tpSetBtnLoading(btn, on) {
 
 async function tpRunIndustry(city, state, industry, btn) {
   _tpSetBtnLoading(btn, true);
-  const limit = parseInt(document.getElementById('d-limit')?.value || '20');
+  const limit = parseInt(document.getElementById('d-limit')?.value || document.getElementById('map-limit')?.value || '20');
   try {
     const res = await api('/api/discover', { industry, city, state, limit });
-    if (res.ok) { toast('\u2713 ' + res.found + ' new leads \u2014 ' + city + ' ' + industry, 'ok'); await tpLoad(); await loadAll(); _tpOpen.add(_tpKey({city,state})); tpRender(); }
+    if (res.ok) {
+      toast('\u2713 ' + res.found + ' new leads \u2014 ' + city + ' ' + industry, 'ok');
+      await tpLoad(); await loadAll();
+      _tpOpen.add(_tpKey({city,state})); tpRender();
+      // Pass 75: refresh map coverage when on command center
+      if (typeof mapReloadTerritoryOverlay === 'function') mapReloadTerritoryOverlay();
+    }
     else toast(res.error || 'Discover failed', 'err');
   } catch(e) { toast('Connection error', 'err'); }
   _tpSetBtnLoading(btn, false);
@@ -5384,10 +5641,13 @@ async function tpRunNext(city, state, btn) {
     const res = await api('/api/territory/next_industry', { city, state });
     if (res.ok && res.industry) {
       toast('Running ' + res.industry + ' in ' + city + '\u2026', 'info');
-      const limit = parseInt(document.getElementById('d-limit')?.value || '20');
+      const limit = parseInt(document.getElementById('d-limit')?.value || document.getElementById('map-limit')?.value || '20');
       const dr = await api('/api/discover', { industry: res.industry, city, state, limit });
-      if (dr.ok) { toast('\u2713 ' + dr.found + ' new leads \u2014 ' + city + ' ' + res.industry, 'ok'); await tpLoad(); await loadAll(); _tpOpen.add(_tpKey({city,state})); tpRender(); }
-      else toast(dr.error || 'Discover failed', 'err');
+      if (dr.ok) {
+        toast('\u2713 ' + dr.found + ' new leads \u2014 ' + city + ' ' + res.industry, 'ok');
+        await tpLoad(); await loadAll(); _tpOpen.add(_tpKey({city,state})); tpRender();
+        if (typeof mapReloadTerritoryOverlay === 'function') mapReloadTerritoryOverlay();
+      } else toast(dr.error || 'Discover failed', 'err');
     } else toast('No next industry found', 'info');
   } catch(e) { toast('Connection error', 'err'); }
   _tpSetBtnLoading(btn, false);
@@ -5400,13 +5660,15 @@ async function tpRunRemaining(city, state, btn) {
   if (!toRun.length) { toast('All industries already covered for ' + city, 'info'); return; }
   if (!confirm('Run ' + toRun.length + ' industries for ' + city + '? This will make ' + toRun.length + ' API calls.')) return;
   _tpSetBtnLoading(btn, true);
-  const limit = parseInt(document.getElementById('d-limit')?.value || '20');
+  const limit = parseInt(document.getElementById('d-limit')?.value || document.getElementById('map-limit')?.value || '20');
   let total = 0;
   for (const ind of toRun) {
     try { const r = await api('/api/discover', {industry:ind,city,state,limit}); if (r.ok) total += r.found||0; } catch(e) {}
   }
   toast('\u2713 Finished ' + toRun.length + ' industries in ' + city + ' \u2014 ' + total + ' new leads', 'ok');
   await tpLoad(); await loadAll(); _tpOpen.add(_tpKey({city,state})); tpRender();
+  // Pass 75: refresh map coverage
+  if (typeof mapReloadTerritoryOverlay === 'function') mapReloadTerritoryOverlay();
   _tpSetBtnLoading(btn, false);
 }
 
@@ -8297,6 +8559,11 @@ function bndSelectBoundary(data) {
   const input = document.getElementById('bnd-input');
   if (input) input.value = '';
   if (!data.zoom_used) toast(`Territory loaded: ${shortName}`, 'ok');
+
+  // Pass 75: sync territory panel — highlight and expand the matching city card
+  if (document.getElementById('page-command-center')?.classList.contains('active')) {
+    _ccSyncTerritoryPanel(shortName, data.state || '');
+  }
 }
 
 function bndClearBoundary() {
