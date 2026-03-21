@@ -923,6 +923,38 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 /* Tools stub page */
 .tools-stub{max-width:600px;margin:60px auto;padding:40px;text-align:center;color:var(--muted)}
 .tools-stub h2{font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px}
+/* ── Pass 78: RTS Coverage Glow System ────────────────────────────── */
+/* Lead count floating badges */
+.rts-badge{display:flex;align-items:center;justify-content:center;min-width:22px;height:18px;padding:0 5px;border-radius:9px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;pointer-events:none;backdrop-filter:blur(2px)}
+
+/* Pulse animation for active/selected territory cell */
+@keyframes rts-pulse{0%{opacity:.7;stroke-width:2}50%{opacity:1;stroke-width:3}100%{opacity:.7;stroke-width:2}}
+.rts-core-leads path,.rts-core-contacted path{animation:rts-pulse 2.4s ease-in-out infinite}
+
+/* Active territory selection ring pulse */
+@keyframes rts-ring-pulse{0%{opacity:.9;r:0}60%{opacity:.4}100%{opacity:0;r:60}}
+.rts-active-ring{animation:rts-ring-pulse 1.8s ease-out infinite}
+
+/* Map tile filter — deepen contrast so glows pop */
+.leaflet-tile-pane{filter:brightness(.82) contrast(1.12) saturate(.7)}
+
+/* Region label refinement */
+.map-region-label{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.7);text-shadow:0 1px 4px rgba(0,0,0,.8);pointer-events:none}
+
+/* Tooltip upgrade */
+.county-tooltip{background:rgba(8,10,16,.97);border:1px solid rgba(184,115,51,.3);border-radius:8px;padding:10px 12px;min-width:140px;box-shadow:0 8px 24px rgba(0,0,0,.6)}
+.county-tooltip-row{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:4px;font-size:11px;color:var(--muted)}
+.county-tooltip-val{font-weight:700;color:var(--text);font-family:var(--mono)}
+.county-tooltip-status{display:inline-block;margin-top:7px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:.04em}
+.cts-searched{background:rgba(200,136,74,.15);color:#c8884a}
+.cts-leads{background:rgba(62,207,114,.15);color:#3ecf72}
+.cts-contacted{background:rgba(79,142,247,.15);color:#4f8ef7}
+.cts-exhausted{background:rgba(100,116,139,.15);color:#94a3b8}
+
+/* Map legend upgrade */
+.map-legend{position:absolute;bottom:28px;left:12px;z-index:500;background:rgba(8,10,16,.92);border:1px solid rgba(184,115,51,.2);border-radius:8px;padding:10px 12px;pointer-events:none;backdrop-filter:blur(4px)}
+.map-legend-row{display:flex;align-items:center;gap:8px;margin-top:5px;font-size:11px;color:var(--muted)}
+.map-legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;box-shadow:0 0 6px currentColor}
 .tools-stub p{font-size:13px;line-height:1.7}
 /* ── Global Lead Finder (Ctrl+K) ──────────────────────────────────── */
 .qlf-item{display:flex;align-items:flex-start;gap:12px;padding:10px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);transition:background .1s}
@@ -8495,6 +8527,41 @@ function _cmdBarSetTerritory(data) {
   } else if (data.estimated_tiles) {
     if (meta) meta.textContent = `~${data.estimated_tiles} tiles`;
   }
+
+  // Pass 78: pulse ring at territory center
+  _rtsShowActivePulse(data.center_lat || data.lat, data.center_lng || data.lng);
+}
+
+let _rtsActivePulseLayer = null;
+function _rtsShowActivePulse(lat, lng) {
+  if (_rtsActivePulseLayer) { _rtsActivePulseLayer.remove(); _rtsActivePulseLayer = null; }
+  if (!_mapInstance || !lat || !lng) return;
+  const lat_ = parseFloat(lat), lng_ = parseFloat(lng);
+  if (isNaN(lat_) || isNaN(lng_)) return;
+  // Three expanding rings at different sizes for depth effect
+  const group = L.layerGroup().addTo(_mapInstance);
+  [8000, 5000, 3000].forEach((r, i) => {
+    L.circle([lat_, lng_], {
+      radius: r,
+      color: '#c8884a',
+      weight: 1.5 - i * 0.4,
+      opacity: 0.7 - i * 0.15,
+      fill: false,
+      dashArray: i === 2 ? null : '8 6',
+      interactive: false,
+      className: 'rts-active-ring',
+    }).addTo(group);
+  });
+  // Solid copper center dot
+  L.circle([lat_, lng_], {
+    radius: 400,
+    color: '#c8884a',
+    weight: 0,
+    fillColor: '#c8884a',
+    fillOpacity: 0.55,
+    interactive: false,
+  }).addTo(group);
+  _rtsActivePulseLayer = group;
 }
 
 function _cmdBarClearTerritory() {
@@ -8508,6 +8575,8 @@ function _cmdBarClearTerritory() {
   if (meta) meta.textContent = '';
   if (clr)  clr.style.display = 'none';
   if (btn)  btn.disabled = true;
+  // Pass 78: remove pulse ring
+  if (_rtsActivePulseLayer) { _rtsActivePulseLayer.remove(); _rtsActivePulseLayer = null; }
 }
 
 function _cmdProgressSet(pct) {
@@ -8520,54 +8589,125 @@ function _cmdProgressSet(pct) {
 }
 
 let _mapCoverageFillLayer = null;
+let _mapCoverageBadgeLayer = null;  // Lead count floating badges
+let _mapCoverageGlowLayers = [];    // Individual glow circle layers
+
+// ── Pass 78: RTS Coverage Glow System ────────────────────────────
+// Replaces hard-edged squares with layered radial glows (Stellaris style).
+// Each cell = outer glow ring + inner core + floating lead count badge.
+
+const _RTS_COLORS = {
+  searched:  { core: '#c8884a', glow: '#b86b28', badge: '#c8884a' },
+  leads:     { core: '#3ecf72', glow: '#2ab85a', badge: '#3ecf72' },
+  contacted: { core: '#4f8ef7', glow: '#2d72e8', badge: '#4f8ef7' },
+  exhausted: { core: '#475569', glow: '#334155', badge: '#64748b' },
+};
+
+function _mapClearCoverageGlows() {
+  if (_mapCoverageFillLayer) { _mapCoverageFillLayer.remove(); _mapCoverageFillLayer = null; }
+  if (_mapCoverageBadgeLayer) { _mapCoverageBadgeLayer.remove(); _mapCoverageBadgeLayer = null; }
+  _mapCoverageGlowLayers.forEach(l => { try { l.remove(); } catch(e) {} });
+  _mapCoverageGlowLayers = [];
+}
 
 function _mapDrawCoverageFill(territoryData) {
   if (!_mapInstance) return;
-  if (_mapCoverageFillLayer) { _mapCoverageFillLayer.remove(); _mapCoverageFillLayer = null; }
+  _mapClearCoverageGlows();
   if (!territoryData || !territoryData.cells || !territoryData.cells.length) return;
-  const features = [];
+
+  const glowGroup   = L.layerGroup().addTo(_mapInstance);
+  const badgeGroup  = L.layerGroup().addTo(_mapInstance);
+  _mapCoverageGlowLayers.push(glowGroup, badgeGroup);
+
   territoryData.cells.forEach(cell => {
     if (!cell.center_lat || !cell.center_lng) return;
-    const lat = parseFloat(cell.center_lat);
-    const lng = parseFloat(cell.center_lng);
-    const r   = parseFloat(cell.radius_m || cell.recommended_radius_m || 1000);
-    const latD = r / 111320;
-    const lngD = r / (111320 * Math.cos(lat * Math.PI / 180));
+    const lat   = parseFloat(cell.center_lat);
+    const lng   = parseFloat(cell.center_lng);
+    const r     = parseFloat(cell.radius_m || cell.recommended_radius_m || 1000);
+    const leads = cell.leads_found || 0;
+    const contacted = cell.contacted_count || 0;
+
     let status = 'searched';
-    if (cell.leads_found > 0 && cell.contacted_count > 0) status = 'contacted';
-    else if (cell.leads_found > 0) status = 'leads';
-    if (cell.exhausted) status = 'exhausted';
-    const color = status === 'contacted' ? '#4f8ef7' : status === 'leads' ? '#3ecf72' : status === 'exhausted' ? '#64748b' : '#c8884a';
-    features.push({
-      type: 'Feature',
-      properties: { status, leadsFound: cell.leads_found || 0, contacted: cell.contacted_count || 0, lastRun: cell.last_run_at || '' },
-      geometry: { type: 'Polygon', coordinates: [[[lng-lngD,lat-latD],[lng+lngD,lat-latD],[lng+lngD,lat+latD],[lng-lngD,lat+latD],[lng-lngD,lat-latD]]] }
-    });
-  });
-  if (!features.length) return;
-  _mapCoverageFillLayer = L.geoJSON({ type:'FeatureCollection', features }, {
-    style: f => {
-      const s = f.properties.status;
-      const color = s === 'contacted' ? '#4f8ef7' : s === 'leads' ? '#3ecf72' : s === 'exhausted' ? '#64748b' : '#c8884a';
-      return {
-        color,
-        weight:      s === 'exhausted' ? 1 : 1.5,
-        opacity:     s === 'exhausted' ? 0.25 : 0.55,
-        fillColor:   color,
-        fillOpacity: s === 'exhausted' ? 0.04 : s === 'contacted' ? 0.10 : s === 'leads' ? 0.12 : 0.07,
-        dashArray:   s === 'exhausted' ? '4 4' : null,
-      };
-    },
-    onEachFeature: (feature, layer) => {
-      const p = feature.properties;
-      const sl = p.status === 'contacted' ? 'Contacted' : p.status === 'leads' ? 'Has Leads' : p.status === 'exhausted' ? 'Exhausted' : 'Searched';
-      layer.bindTooltip(
-        `<div class="county-tooltip"><div class="county-tooltip-row"><span>Leads</span><span class="county-tooltip-val">${p.leadsFound}</span></div><div class="county-tooltip-row"><span>Contacted</span><span class="county-tooltip-val">${p.contacted}</span></div><div class="county-tooltip-row"><span>Last run</span><span class="county-tooltip-val">${p.lastRun ? p.lastRun.slice(0,10) : '—'}</span></div><span class="county-tooltip-status cts-${p.status}">${sl}</span></div>`,
-        { className: '', sticky: false, opacity: 1 }
-      );
+    if (leads > 0 && contacted > 0) status = 'contacted';
+    else if (leads > 0)             status = 'leads';
+    if (cell.exhausted)             status = 'exhausted';
+
+    const c = _RTS_COLORS[status];
+
+    // Outer glow ring — wide, very transparent
+    L.circle([lat, lng], {
+      radius: r * 1.6,
+      color: c.glow,
+      weight: 0,
+      fillColor: c.glow,
+      fillOpacity: status === 'exhausted' ? 0.02 : 0.04,
+      interactive: false,
+      className: 'rts-glow-outer',
+    }).addTo(glowGroup);
+
+    // Inner core — tighter, more visible
+    const coreOpts = {
+      radius: r,
+      color: c.core,
+      weight: status === 'exhausted' ? 1 : 1.5,
+      opacity: status === 'exhausted' ? 0.2 : 0.6,
+      fillColor: c.core,
+      fillOpacity: status === 'exhausted' ? 0.03 : status === 'leads' ? 0.14 : 0.08,
+      dashArray: status === 'exhausted' ? '5 5' : null,
+      interactive: true,
+      className: 'rts-core rts-core-' + status,
+    };
+    const core = L.circle([lat, lng], coreOpts).addTo(glowGroup);
+
+    // Tooltip
+    const sl = { searched:'Searched', leads:'Has Leads', contacted:'Contacted', exhausted:'Exhausted' }[status];
+    core.bindTooltip(
+      `<div class="county-tooltip">` +
+      `<div class="county-tooltip-row"><span>Leads</span><span class="county-tooltip-val">${leads}</span></div>` +
+      `<div class="county-tooltip-row"><span>Contacted</span><span class="county-tooltip-val">${contacted}</span></div>` +
+      (cell.last_run_at ? `<div class="county-tooltip-row"><span>Last run</span><span class="county-tooltip-val">${cell.last_run_at.slice(0,10)}</span></div>` : '') +
+      `<span class="county-tooltip-status cts-${status}">${sl}</span></div>`,
+      { className: '', sticky: false, opacity: 1 }
+    );
+
+    // Floating lead count badge — only show when leads > 0
+    if (leads > 0) {
+      const badgeColor = c.badge;
+      const icon = L.divIcon({
+        className: '',
+        html: `<div class="rts-badge" style="background:${badgeColor}20;border:1px solid ${badgeColor}80;color:${badgeColor}">${leads}</div>`,
+        iconSize: [28, 18],
+        iconAnchor: [14, 9],
+      });
+      L.marker([lat, lng], { icon, interactive: false, zIndexOffset: 100 }).addTo(badgeGroup);
     }
+  });
+
+  // Bring glow behind markers but above tile layer
+  glowGroup.eachLayer(l => { if (l._path) l._path.style.pointerEvents = 'none'; });
+}
+
+// Helper: add a single RTS glow circle for live search results
+function _mapAddRtsSearchGlow(lat, lng, radiusM, hasLeads) {
+  if (!_mapInstance) return;
+  const c = hasLeads ? _RTS_COLORS.leads : _RTS_COLORS.searched;
+  // Outer glow
+  const outer = L.circle([lat, lng], {
+    radius: radiusM * 1.5,
+    color: c.glow, weight: 0,
+    fillColor: c.glow, fillOpacity: hasLeads ? 0.06 : 0.035,
+    interactive: false,
   }).addTo(_mapInstance);
-  _mapCoverageFillLayer.bringToBack();
+  // Inner core
+  const inner = L.circle([lat, lng], {
+    radius: radiusM,
+    color: c.core, weight: 1.5, opacity: 0.6,
+    fillColor: c.core, fillOpacity: hasLeads ? 0.13 : 0.07,
+    interactive: false,
+  }).addTo(_mapInstance);
+  _mapCoverageCircles.push(outer, inner);
+  const btn = document.getElementById('btnClearCoverage');
+  if (btn) btn.style.display = '';
 }
 
 function _mapAddLegend() {
@@ -8576,11 +8716,11 @@ function _mapAddLegend() {
   legend.onAdd = () => {
     const div = L.DomUtil.create('div', 'map-legend');
     div.id = 'map-coverage-legend';
-    div.innerHTML = '<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Coverage</div>'
-      + '<div class="map-legend-row"><div class="map-legend-dot" style="background:#c8884a"></div><span class="map-legend-lbl">Searched</span></div>'
-      + '<div class="map-legend-row"><div class="map-legend-dot" style="background:#3ecf72"></div><span class="map-legend-lbl">Has leads</span></div>'
-      + '<div class="map-legend-row"><div class="map-legend-dot" style="background:#4f8ef7"></div><span class="map-legend-lbl">Contacted</span></div>'
-      + '<div class="map-legend-row"><div class="map-legend-dot" style="background:#64748b"></div><span class="map-legend-lbl">Exhausted</span></div>';
+    div.innerHTML = '<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Coverage</div>'
+      + '<div class="map-legend-row"><div class="map-legend-dot" style="background:#c8884a;color:#c8884a"></div><span class="map-legend-lbl">Searched</span></div>'
+      + '<div class="map-legend-row"><div class="map-legend-dot" style="background:#3ecf72;color:#3ecf72"></div><span class="map-legend-lbl">Has leads</span></div>'
+      + '<div class="map-legend-row"><div class="map-legend-dot" style="background:#4f8ef7;color:#4f8ef7"></div><span class="map-legend-lbl">Contacted</span></div>'
+      + '<div class="map-legend-row"><div class="map-legend-dot" style="background:#64748b;color:#64748b"></div><span class="map-legend-lbl">Exhausted</span></div>';
     return div;
   };
   legend.addTo(_mapInstance);
@@ -9972,18 +10112,7 @@ async function mapSearchAreaGrid() {
       }
 
       if (cellHadFresh && _mapInstance) {
-        const cov = L.circle([cell.lat, cell.lng], {
-          radius: MAP_GRID_CELL_RADIUS_M,
-          color: '#4f8ef7',
-          fillColor: '#4f8ef7',
-          fillOpacity: 0.04,
-          weight: 1,
-          dashArray: '4 4',
-          interactive: false,
-        }).addTo(_mapInstance);
-        _mapCoverageCircles.push(cov);
-        const btnCov = document.getElementById('btnClearCoverage');
-        if (btnCov) btnCov.style.display = '';
+        _mapAddRtsSearchGlow(cell.lat, cell.lng, MAP_GRID_CELL_RADIUS_M, true);
       }
 
       if (!_mapGridSweepActive) break;
@@ -10096,16 +10225,9 @@ async function mapSearchVisible() {
         });
         if (fresh.length) _mapAppendResultMarkers(fresh);
         totalFound += res.places_found || 0;
-        // Coverage circle only for tiles that returned results
+        // RTS glow circle for tiles that returned results
         if (_mapInstance && res.places_found > 0) {
-          const cov = L.circle([tile.lat, tile.lng], {
-            radius: 1000,
-            color: '#4f8ef7', fillColor: '#4f8ef7', fillOpacity: 0.04,
-            weight: 1, dashArray: '4 4', interactive: false
-          }).addTo(_mapInstance);
-          _mapCoverageCircles.push(cov);
-          const btnCov = document.getElementById('btnClearCoverage');
-          if (btnCov) btnCov.style.display = '';
+          _mapAddRtsSearchGlow(tile.lat, tile.lng, 1000, true);
         }
       }
     } catch(e) {
@@ -10406,16 +10528,9 @@ async function mapSearch() {
         `Queue total: <strong>${res.queue_total}</strong>`;
       // Place name-only markers for discovered businesses
       if (res.markers && res.markers.length) _mapPlaceResultMarkers(res.markers);
-      // Snapshot this search area as a coverage overlay (session memory only)
+      // RTS glow snapshot for this search area
       if (_mapInstance && _mapCenter && res.places_found > 0) {
-        const cov = L.circle([_mapCenter.lat, _mapCenter.lng], {
-          radius: _mapRadiusM,
-          color: '#4f8ef7', fillColor: '#4f8ef7', fillOpacity: 0.04,
-          weight: 1, dashArray: '4 4', interactive: false
-        }).addTo(_mapInstance);
-        _mapCoverageCircles.push(cov);
-        const btn = document.getElementById('btnClearCoverage');
-        if (btn) btn.style.display = '';
+        _mapAddRtsSearchGlow(_mapCenter.lat, _mapCenter.lng, _mapRadiusM, true);
       }
       // Append to session search history
       const _histLabel = _mapAreaLabel(res.markers || []);
