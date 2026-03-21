@@ -146,6 +146,31 @@ def _is_send_eligible(row: Dict[str, str]) -> bool:
     return approved and no_sent_at and no_message_id and has_recipient and not opted_out
 
 
+def _domain_has_mx(email: str, timeout: float = 3.0) -> bool:
+    """
+    Check whether the email domain has MX records.
+    Returns True if the domain accepts mail, False if not or on any error.
+    Caches results for the session to avoid repeated DNS lookups.
+    """
+    if not email or "@" not in email:
+        return False
+    domain = email.split("@")[-1].strip().lower()
+    if domain in _MX_CACHE:
+        return _MX_CACHE[domain]
+    try:
+        import dns.resolver as _dns
+        resolver = _dns.Resolver()
+        resolver.lifetime = timeout
+        resolver.resolve(domain, "MX")
+        _MX_CACHE[domain] = True
+        return True
+    except Exception:
+        _MX_CACHE[domain] = False
+        return False
+
+_MX_CACHE: dict = {}  # session-level domain → bool cache
+
+
 def _update_prospects_sent_status(pending_csv_path: Path, sent_names: set) -> None:
     if not sent_names:
         return
@@ -192,7 +217,19 @@ def process_pending_emails(pending_csv_path: str | Path, dry_run: bool = True) -
         body     = row.get("body", "")
 
         if dry_run:
-            print(f"[DRY RUN] Would send to {to_email} | {subject.strip()}")
+            # Also check MX in dry run so operator can see what would be blocked
+            if not _domain_has_mx(to_email):
+                print(f"[DRY RUN SKIP] Bad domain (no MX): {to_email}")
+            else:
+                print(f"[DRY RUN] Would send to {to_email} | {subject.strip()}")
+            continue
+
+        # MX check — skip sends to domains with no mail servers
+        if not _domain_has_mx(to_email):
+            row["bad_email"]  = "true"
+            row["bad_email_reason"] = "no_mx_record"
+            failed += 1
+            print(f"[SKIP bad domain] {to_email} — no MX record, marked bad_email")
             continue
 
         try:
