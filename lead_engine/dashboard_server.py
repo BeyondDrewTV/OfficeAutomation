@@ -2297,7 +2297,7 @@ def api_bulk_regenerate():
         draft_email, draft_social_messages,
         ObservationMissingError, DraftInvalidError,
     )
-    from intelligence.observation_candidate_agent import (
+    from outreach.observation_candidate_agent import (
         build_observation_candidate, ObservationCandidateBlockedError,
     )
 
@@ -2334,32 +2334,34 @@ def api_bulk_regenerate():
             # Step 1: get or use existing observation
             obs = (row.get("business_specific_observation") or "").strip()
             if len(obs) < 10:
-                # Try to generate observation candidate
                 prospect_row = _find_matching_prospect(row, prospect_rows)
                 memory_record = _lm.get_record(row)
                 try:
                     candidate = build_observation_candidate(
                         row, memory_record=memory_record, prospect_row=prospect_row,
                     )
-                    obs = candidate.candidate_text.strip()
+                    # Handle both dataclass and dict return shapes
+                    ctext = (
+                        candidate.candidate_text if hasattr(candidate, 'candidate_text')
+                        else candidate.get('candidate_text', '')
+                    )
+                    obs = (ctext or '').strip()
                     if obs:
                         rows[idx]["business_specific_observation"] = obs
                         rows[idx]["obs_source"] = "auto_bulk"
                 except ObservationCandidateBlockedError:
-                    # No observation available — fallback draft will handle it
-                    obs = ""
+                    obs = ""  # Fallback draft will handle it
 
-            # Step 2: regenerate draft
-            prospect_row = _find_matching_prospect(row, prospect_rows)
-            new_email    = draft_email(rows[idx], obs)
-            new_social   = draft_social_messages(rows[idx], obs)
+            # Step 2: regenerate draft (tuple return: subject, body)
+            new_subject, new_body = draft_email(rows[idx], 3, observation=obs or None)
+            new_dm, _, _ = draft_social_messages(rows[idx], new_body, observation=obs or None)
 
-            rows[idx]["subject"]                   = new_email["subject"]
-            rows[idx]["body"]                      = new_email["body"]
-            rows[idx]["facebook_dm_draft"]         = new_social.get("facebook_dm", "")
-            rows[idx]["instagram_dm_draft"]        = new_social.get("instagram_dm", "")
-            rows[idx]["contact_form_message"]      = new_social.get("contact_form_message", "")
-            rows[idx]["social_dm_text"]            = new_social.get("facebook_dm", "")
+            rows[idx]["subject"]                   = new_subject
+            rows[idx]["body"]                      = new_body
+            rows[idx]["facebook_dm_draft"]         = new_dm
+            rows[idx]["instagram_dm_draft"]        = new_dm
+            rows[idx]["contact_form_message"]      = new_dm
+            rows[idx]["social_dm_text"]            = new_dm
             rows[idx]["draft_version"]             = "v18"
             rows[idx]["draft_type"]                = "observation" if obs else "industry_fallback"
             rows[idx]["draft_regenerated_at"]      = __import__("datetime").datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
