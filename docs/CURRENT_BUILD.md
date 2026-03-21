@@ -1,50 +1,54 @@
 # Current Build Pass
 
 ## Active System
-Pass 72 -- Territory Tab Fixes, Stale Warning Fix, Docs Cleanup
+Pass 76 -- Email/Lead Search, Global Lead Finder (Ctrl+K)
 
 ## Status
-Pass 72 complete.
+Pass 76 complete.
 
 ---
 
-## Completed: Pass 72 -- Territory Tab Fixes + Stale Warning Fix
+## Completed: Pass 76 -- Email/Lead Search + Global Lead Finder
 
 Files: `lead_engine/dashboard_static/index.html`
 
-### Territory Tab — buttons now work
-Root cause: `JSON.stringify(city)` inside onclick HTML attributes produced
-`"Rockford"` with double quotes that broke the HTML attribute parser, silently
-preventing all button clicks. Fixed in four places:
-- `_tpCityCard`: cj/sj now use `'"' + escHtml(value) + '"'`
-- `_tpIndRow`: same fix for cj/sj/ij
-- `tpToggle` inject section: same fix
-- Card header toggle: now uses `data-tp-key` attribute + `this.dataset.tpKey`
-  instead of inline JSON string argument
+### Pipeline search now includes email + phone
+The search box in Outreach previously only matched business name, city, subject.
+Now matches: name, email address, city, phone, subject.
+Placeholder updated: "Search name, email, city, phone…"
 
-### Stale warning suppressed for fallback drafts
-`_leadNeedsDraftRefresh` now checks `record._qrow.draft_type === 'industry_fallback'`
-and returns false — fallback drafts are intentionally observation-free and
-should not trigger the "Refresh before send" warning.
+Use case: you see a bounce in Gmail for `tad@marksautoil.com`, type that into
+the pipeline search and the lead surfaces instantly.
 
----
-
-## Recent passes (66–71):
-
-**Pass 71** — Industry fallback drafts (17 trades mapped, no obs = no problem)
-**Pass 70** — Bulk regenerate: `/api/bulk_regenerate` + "Regen Stale" button
-**Pass 69** — v18 voice: proper grammar, direct consequence, confident close,
-              auto-regen row-key fix (object ref → key comparison)
-**Pass 68** — Auto-regen on panel open, panel layout overhaul (body first),
-              22 industries, 404 scan warnings suppressed
-**Pass 67** — Region zoom fix, coverage fill clarity, map full-height,
-              territory display "Map Area", dropdown fix
-**Pass 66** — Command bar, coverage fill layer, hover tooltips, 400 fix
-              (tile radius 800→1000m)
+### Global Lead Finder — Ctrl+K
+Floating quick-find overlay that works from ANY tab in the app.
+- Press Ctrl+K anywhere (or click "🔍 Find Lead" in header)
+- Type email, name, phone, or city — results appear instantly
+- Copper highlight on matching text in results
+- Status badges: Sent / Approved / Replied / Draft
+- Arrow keys to navigate, Enter to open, ESC to close
+- Clicking a result: switches to Pipeline → Outreach, opens review panel
+  on that lead directly. If lead is filtered out, populates search box
+  with email to surface it.
 
 ---
 
-## Previous major passes:
-**Pass 65** — US Sales Regions + Visual Makeover
-**Pass 64** — Click-to-boundary, reverse geocoding, zoom drill-down
-**Pass 63** — Boundary territory selector, simplified toolbar
+## Pass 75 -- Command Center (Map + Territory Combined)
+
+Files: `lead_engine/dashboard_static/index.html`
+
+Replaced two Discovery sub-tabs (Map Search + Territory) with single
+"⚡ Command Center" tab — split-pane layout: map left 60%, territory right 40%.
+
+Bidirectional wiring:
+- Map boundary click → territory panel finds/adds city, opens card,
+  scrolls to it, flashes copper border
+- Territory Run/Run Remaining/Run Next → map coverage overlay refreshes
+
+Pass 74 -- MX validation before send (catches scrape-error domains)
+Pass 73 -- Follow-up voice rewrite (Drew tone, industry fallback, anchor cleaning)
+Pass 72 -- Territory button fix (JSON.stringify quote bug), stale warning fix
+Pass 71 -- Industry fallback drafts (17 trades, no obs = no problem)
+Pass 70 -- Bulk regenerate endpoint + "Regen Stale" toolbar button
+Pass 69 -- v18 voice rewrite (grammar, confident consequence + close)
+Pass 68 -- Auto-regen on panel open, panel layout overhaul, 22 industries

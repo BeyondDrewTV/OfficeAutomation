@@ -9,22 +9,27 @@ v0.3
 Lead Acquisition + Outreach Engine
 
 ## Current Focus
-Discovery command center (map + territory), automated outreach pipeline
+Discovery command center, automated outreach pipeline, daily workflow efficiency
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 72 -- Territory Tab Fixes, Stale Warning Fix, Docs Cleanup
+Pass 76 -- Email/Lead Search, Global Lead Finder (Ctrl+K)
 
-## Previous Completed Passes (recent)
-Pass 71 -- Industry fallback drafts (17 trades, no obs = no problem)
-Pass 70 -- Bulk regenerate endpoint + Regen Stale toolbar button
-Pass 69 -- v18 voice rewrite (grammar, confident consequence + close)
+## Recent Passes
+Pass 76 -- Email search in pipeline + Ctrl+K global lead finder
+Pass 75 -- Command Center: map + territory combined split-pane view
+Pass 74 -- MX validation before send (prevents scrape-error bounces)
+Pass 73 -- Follow-up voice rewrite (Drew tone, industry fallback path)
+Pass 72 -- Territory button fix, stale warning suppressed for fallback drafts
+Pass 71 -- Industry fallback drafts (17 trades mapped, no obs = no block)
+Pass 70 -- Bulk regenerate: /api/bulk_regenerate + Regen Stale button
+Pass 69 -- v18 voice: proper grammar, direct consequence, confident close
 Pass 68 -- Auto-regen on panel open, panel layout overhaul, 22 industries
-Pass 67 -- Region zoom fix, coverage fill, map full-height, territory display
-Pass 66 -- Command bar, coverage fill layer, hover tooltips, 400 fix
-Pass 65 -- US sales regions on map, visual makeover (deeper dark theme)
+Pass 67 -- Region zoom fix, coverage fill clarity, map full-height
+Pass 66 -- Command bar, coverage fill layer, 400 fix (tile radius 1000m)
+Pass 65 -- US sales regions on map, visual makeover (deep dark theme)
 Pass 64 -- Click-to-boundary, reverse geocoding, zoom drill-down
 Pass 63 -- Boundary territory selector, simplified map toolbar
 Pass 62 -- Voice rewrite v17, consultation positioning
@@ -39,30 +44,30 @@ Pass 62 -- Voice rewrite v17, consultation positioning
 
 ## Core Operator Workflow
 
-1. Open Discovery → Map Search
-   - US view shows 6 sales regions
-   - Click region → zooms to state level
-   - Click county/city → copper boundary highlights, circle placed at center
-   - Pick industry → Search Territory tiles entire area automatically
-   - Coverage fill shows searched/leads/contacted/exhausted cells
+1. Open Discovery → ⚡ Command Center
+   - Left: map — click county → copper boundary, Search Territory runs tiled discovery
+   - Right: territory panel — city cards with per-industry status
+   - Map click auto-selects city in territory panel (copper highlight)
+   - Territory run auto-refreshes map coverage overlay
+   - Ctrl+K find-lead works from any tab
 
-2. OR: Discovery → Territory tab
-   - Add city + state manually (or via autocomplete)
-   - City card shows all 15 industries with status
-   - Run Next / Run Remaining / Run individual industry per city
-   - Faster workflow for known target cities
-
-3. Pipeline → Outreach
-   - Opens stale leads → auto-regen fires silently on panel open
-   - Observation agent generates candidate → applies → regenerates draft
-   - If no obs evidence → industry fallback draft (17 trades mapped)
-   - Panel shows email body first, details collapsed below
+2. Pipeline → Outreach
+   - Search by name, email, phone, city in search box
+   - Ctrl+K from anywhere for instant lead lookup by email
+   - Stale leads auto-regen on panel open (obs → draft silently)
+   - No obs available → industry fallback draft (17 trades)
    - Regen Stale button mass-refreshes all stale drafts
 
-4. Approve / Schedule / Send
-   - Approve individual or bulk-approve
-   - Schedule for tomorrow morning
-   - Send via Gmail
+3. Review + Send
+   - Panel: email body first, details collapsed below
+   - Approve / Schedule / Send via Gmail
+   - MX check blocks sends to scrape-error domains
+
+4. Follow-Up
+   - Touch 1: operational nudge (references specific observation)
+   - Touch 2: timeline reframe (acknowledges time passed)
+   - Touch 3: low-pressure closeout
+   - Industry fallback path: no obs = industry-specific anchor phrase
 
 ## DRAFT_VERSION
 Current: v18
@@ -73,7 +78,7 @@ tree_service, cleaning, auto, flooring, concrete, towing, appliance_repair,
 pressure_washing, moving, drywall, welding, pool_service, pest_control,
 locksmith, garage_door
 
-## Territory Industries (15, in priority order)
+## Territory Industries (15, priority order)
 plumbing, hvac, electrical, roofing, construction, landscaping, painting,
 tree_service, cleaning, auto, flooring, concrete, towing, appliance_repair,
 pressure_washing

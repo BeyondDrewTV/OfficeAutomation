@@ -909,6 +909,20 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .tools-stub{max-width:600px;margin:60px auto;padding:40px;text-align:center;color:var(--muted)}
 .tools-stub h2{font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px}
 .tools-stub p{font-size:13px;line-height:1.7}
+/* ── Global Lead Finder (Ctrl+K) ──────────────────────────────────── */
+.qlf-item{display:flex;align-items:flex-start;gap:12px;padding:10px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);transition:background .1s}
+.qlf-item:hover,.qlf-item.qlf-active{background:rgba(184,115,51,.1)}
+.qlf-item-main{flex:1;min-width:0}
+.qlf-item-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qlf-item-email{font-size:11px;color:var(--copper);font-family:var(--mono);margin-top:2px}
+.qlf-item-meta{font-size:11px;color:var(--muted);margin-top:1px}
+.qlf-item-badge{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;flex-shrink:0;margin-top:2px}
+.qlf-badge-sent{background:rgba(62,207,114,.12);color:var(--green)}
+.qlf-badge-approved{background:rgba(79,142,247,.12);color:var(--blue)}
+.qlf-badge-pending{background:rgba(255,255,255,.06);color:var(--muted)}
+.qlf-badge-replied{background:rgba(62,207,114,.2);color:var(--green);font-weight:700}
+.qlf-empty{padding:32px 16px;text-align:center;color:var(--dim);font-size:13px}
+.qlf-match{color:var(--copper);font-weight:700}
 </style>
 </head>
 <body>
@@ -921,6 +935,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   </div>
   <div class="hdr-r">
     <span id="mc-svc-status" class="svc-pill svc-unknown" title="The missed-call automation service has not been configured yet. This does not affect discovery or outreach.">● Missed-Call: Not Configured</span>
+    <button class="btn btn-ghost" onclick="qlfOpen()" title="Search all leads by email, name, phone (Ctrl+K)" style="font-size:12px;display:flex;align-items:center;gap:6px">
+      🔍 Find Lead <kbd style="font-size:9px;color:var(--dim);background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-family:var(--mono)">Ctrl+K</kbd>
+    </button>
     <button class="btn btn-ghost" onclick="loadAll()">↻ Refresh</button>
   </div>
 </header>
@@ -1024,7 +1041,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <div class="ftab ftab-aux" data-filter="no_email" onclick="setFilter('no_email',this)">No Email</div>
       <div class="ftab ftab-aux" data-filter="high_score" onclick="setFilter('high_score',this)">High Score</div>
     </div>
-    <input class="search-box" id="searchBox" type="text" placeholder="Search business…" oninput="renderTable()">
+    <input class="search-box" id="searchBox" type="text" placeholder="Search name, email, city, phone…" oninput="renderTable()">
     <span id="row-count" class="tag" style="font-size:10px"></span>
   </div>
   <div class="toolbar-r">
@@ -2718,7 +2735,9 @@ function applyFiltersAndSort() {
   if (q) rows = rows.filter(r =>
     (r.business_name||'').toLowerCase().includes(q) ||
     (r.city||'').toLowerCase().includes(q) ||
-    (r.subject||'').toLowerCase().includes(q));
+    (r.subject||'').toLowerCase().includes(q) ||
+    (r.to_email||'').toLowerCase().includes(q) ||
+    (r.phone||'').toLowerCase().includes(q));
 
   if (sort === 'opp_desc')   rows.sort((a,b) => (b.opp_score||parseInt(b.opportunity_score)||0) - (a.opp_score||parseInt(a.opportunity_score)||0));
   else if (sort === 'score_desc') rows.sort((a,b) => (parseInt(b.final_priority_score)||0)-(parseInt(a.final_priority_score)||0));
@@ -6883,6 +6902,129 @@ document.addEventListener('keydown', e => {
   if (e.key==='n'||e.key==='N') { e.preventDefault(); panelSkipNext(); return; }
 });
 
+// ── Global Lead Finder ─────────────────────────────────────────────
+// Ctrl+K opens a floating quick-find over any tab.
+// Searches all leads by email, name, phone, city — jumps to panel.
+
+let _qlfIdx = -1;
+
+function qlfOpen() {
+  document.getElementById('qlf-overlay').style.display = '';
+  document.getElementById('qlf-modal').style.display = '';
+  const inp = document.getElementById('qlf-input');
+  inp.value = '';
+  _qlfIdx = -1;
+  document.getElementById('qlf-results').innerHTML = '<div class="qlf-empty">Start typing to search all leads…</div>';
+  document.getElementById('qlf-count').textContent = '';
+  setTimeout(() => inp.focus(), 30);
+}
+
+function qlfClose() {
+  document.getElementById('qlf-overlay').style.display = 'none';
+  document.getElementById('qlf-modal').style.display = 'none';
+}
+
+function _qlfHighlight(text, q) {
+  if (!q || !text) return escHtml(text || '');
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if (idx < 0) return escHtml(text);
+  return escHtml(text.slice(0, idx))
+    + '<span class="qlf-match">' + escHtml(text.slice(idx, idx + q.length)) + '</span>'
+    + escHtml(text.slice(idx + q.length));
+}
+
+function qlfSearch(q) {
+  const container = document.getElementById('qlf-results');
+  const qClean = q.trim().toLowerCase();
+  if (!qClean) {
+    container.innerHTML = '<div class="qlf-empty">Start typing to search all leads…</div>';
+    document.getElementById('qlf-count').textContent = '';
+    _qlfIdx = -1;
+    return;
+  }
+
+  const matches = (allRows || []).filter(r =>
+    (r.to_email    || '').toLowerCase().includes(qClean) ||
+    (r.business_name||'').toLowerCase().includes(qClean) ||
+    (r.phone       || '').toLowerCase().includes(qClean) ||
+    (r.city        || '').toLowerCase().includes(qClean)
+  ).slice(0, 40);
+
+  document.getElementById('qlf-count').textContent = matches.length + ' result' + (matches.length === 1 ? '' : 's');
+
+  if (!matches.length) {
+    container.innerHTML = '<div class="qlf-empty">No leads found for "' + escHtml(q) + '"</div>';
+    _qlfIdx = -1;
+    return;
+  }
+
+  container.innerHTML = matches.map((r, i) => {
+    const badge = r.replied === 'true' ? '<span class="qlf-item-badge qlf-badge-replied">Replied</span>'
+      : r.sent_at  ? '<span class="qlf-item-badge qlf-badge-sent">Sent</span>'
+      : r.approved === 'true' ? '<span class="qlf-item-badge qlf-badge-approved">Approved</span>'
+      : '<span class="qlf-item-badge qlf-badge-pending">Draft</span>';
+    const gi = allRows.indexOf(r);
+    return `<div class="qlf-item" data-gi="${gi}" onclick="qlfJump(${gi})">
+      <div class="qlf-item-main">
+        <div class="qlf-item-name">${_qlfHighlight(r.business_name, q)}</div>
+        <div class="qlf-item-email">${_qlfHighlight(r.to_email || '(no email)', q)}</div>
+        <div class="qlf-item-meta">${escHtml((r.city||'') + (r.state ? ', '+r.state : ''))}</div>
+      </div>
+      ${badge}
+    </div>`;
+  }).join('');
+
+  _qlfIdx = -1;
+}
+
+function qlfKey(e) {
+  const items = document.querySelectorAll('#qlf-results .qlf-item');
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    _qlfIdx = Math.min(_qlfIdx + 1, items.length - 1);
+    _qlfUpdateActive(items);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    _qlfIdx = Math.max(_qlfIdx - 1, 0);
+    _qlfUpdateActive(items);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    const active = _qlfIdx >= 0 ? items[_qlfIdx] : items[0];
+    if (active) { const gi = parseInt(active.dataset.gi); qlfJump(gi); }
+  }
+}
+
+function _qlfUpdateActive(items) {
+  items.forEach((el, i) => el.classList.toggle('qlf-active', i === _qlfIdx));
+  if (_qlfIdx >= 0) items[_qlfIdx].scrollIntoView({ block: 'nearest' });
+}
+
+function qlfJump(gi) {
+  qlfClose();
+  if (!Array.isArray(allRows) || gi < 0 || gi >= allRows.length) return;
+  const row = allRows[gi];
+  // Switch to Pipeline → Outreach, then open the panel
+  switchParent('pipeline', document.querySelector('#top-nav .nav-tab[data-parent="pipeline"]'));
+  switchSubPage('pipeline', 'outreach', document.querySelector('#sub-nav .sub-tab[data-page="outreach"]'));
+  setFilter('all', document.querySelector('.ftab[data-filter="all"]'));
+  setTimeout(() => {
+    // Find the row in the current filtered list and open panel
+    const rows = applyFiltersAndSort ? applyFiltersAndSort() : filteredRows;
+    const fi = (rows || filteredRows || []).indexOf(row);
+    if (fi >= 0) openPanel(fi);
+    else {
+      // Row might be filtered out — search by email to surface it
+      const box = document.getElementById('searchBox');
+      if (box && row.to_email) { box.value = row.to_email; renderTable(); }
+      setTimeout(() => {
+        const fi2 = (filteredRows || []).indexOf(row);
+        if (fi2 >= 0) openPanel(fi2);
+      }, 100);
+    }
+  }, 150);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   _loadPresets();
   loadAll();
@@ -6893,6 +7035,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const sendModal = document.getElementById('send-modal');
   if (sendModal) sendModal.addEventListener('click', e => {
     if (e.target === sendModal) closeModal();
+  });
+
+  // Global Lead Finder — Ctrl+K opens quick-find from any tab
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); qlfOpen(); }
+    if (e.key === 'Escape') qlfClose();
   });
   // Boot nav: show Pipeline sub-tabs, hide all others, Outreach active
   document.querySelectorAll('#sub-nav .sub-tab').forEach(t => {
@@ -10190,6 +10338,23 @@ async function mapSearch() {
       <div id="mrp-modal-save-status" style="font-size:10px;color:var(--muted);margin-top:5px;min-height:14px"></div>
     </div>
     <div class="mrp-modal-ftr" id="mrp-modal-ftr"></div>
+  </div>
+</div>
+
+<!-- ══════════════ GLOBAL LEAD FINDER (Ctrl+K) ══════════════ -->
+<div id="qlf-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;backdrop-filter:blur(3px)" onclick="qlfClose()"></div>
+<div id="qlf-modal" style="display:none;position:fixed;top:18%;left:50%;transform:translateX(-50%);width:560px;max-width:95vw;z-index:9001;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 24px 64px rgba(0,0,0,.6);overflow:hidden">
+  <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)">
+    <span style="font-size:16px;color:var(--muted)">🔍</span>
+    <input id="qlf-input" type="text" placeholder="Search by email, name, phone, city…"
+      style="flex:1;background:transparent;border:none;outline:none;font-size:15px;color:var(--text);font-family:var(--font)"
+      oninput="qlfSearch(this.value)" onkeydown="qlfKey(event)">
+    <kbd style="font-size:10px;color:var(--dim);background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:2px 6px">ESC</kbd>
+  </div>
+  <div id="qlf-results" style="max-height:400px;overflow-y:auto;padding:6px 0"></div>
+  <div id="qlf-footer" style="padding:8px 16px;font-size:11px;color:var(--dim);border-top:1px solid var(--border);display:flex;justify-content:space-between">
+    <span>↑↓ navigate &nbsp;·&nbsp; Enter to open &nbsp;·&nbsp; ESC to close</span>
+    <span id="qlf-count"></span>
   </div>
 </div>
 
