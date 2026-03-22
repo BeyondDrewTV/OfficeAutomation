@@ -1,44 +1,58 @@
-# Current Build Pass
+﻿# Current Build Pass
 
-## Active System
-Pass 82 -- Command Center unified layout (map + queue rail + bottom command bar)
+Last Updated: 2026-03-22
+
+## Active Pass
+Pass 84 -- Territory-to-queue scope sync
 
 ## Status
-Pass 82 complete.
+Pass 84 in progress. JS/CSS/HTML complete, server restart + syntax verification + git commit pending.
+
+## What Pass 84 Builds
+- `_ccTerrScope` module-level scope state
+- `_ccScopeMatchRow(row)` -- city-primary, bbox-secondary match against allRows
+- `ccScopeToTerritory(data)` -- sets scope when map boundary selected
+- `ccClearTerritoryScope()` -- clears scope on boundary clear
+- `_ccRenderScopeSummary()` -- 5-stat strip: Total / Approved / Stale / Replied / No Email
+- `ccCmdApproveScoped()` / `ccCmdRegenScoped()` -- bulk actions scoped to territory
+- Scope bar (copper-accented) above queue rail body
+- Scope pill in bottom command bar
+- Hooks: `bndSelectBoundary` -> `ccScopeToTerritory`, `bndClearBoundary` -> `ccClearTerritoryScope`
+- Scope gate added to `_ccQueueFilterRow`
+
+**File changed:** `lead_engine/dashboard_static/index.html` only.
+**No new endpoints. No protected system changes.**
+
+## Remaining Pass 84 Steps
+1. Finish `ccQueueUpdateStats` scope count refresh
+2. Restart server + hard refresh browser
+3. Verify JS syntax (no console errors)
+4. Git commit
+5. Update CHANGELOG_AI.md
 
 ---
 
-## Completed: Pass 79 -- RTS Coverage Visual Fix
-
-**File:** `lead_engine/dashboard_static/index.html`
-
-### Problem solved
-Pass 78 outer glow halos (radius * 1.6) caused opacity stacking when 30+
-circles overlapped — turned the searched area into a solid amber wash with
-no visual hierarchy. Green leads cells were invisible in the noise.
-
-### Fix
-- Removed outer halo entirely — single circle per cell, no layering
-- Radius reduced to r * 0.85 so adjacent cells have a visible gap
-- Per-status style map:
-  searched:  weight 1.2, opacity 0.45, fillOpacity 0.03 (border-only feel)
-  leads:     weight 2,   opacity 0.85, fillOpacity 0.22 (clearly visible)
-  contacted: weight 2,   opacity 0.85, fillOpacity 0.18
-  exhausted: weight 0.8, opacity 0.2,  fillOpacity 0.02, dashed
-- Render order: searched at bottom, leads/contacted on top
-- mix-blend-mode: screen on rts-core path elements — overlapping circles
-  add light instead of mud (RTS-style territory glow)
-- Same fix applied to _mapAddRtsSearchGlow live search circles
-
-### Kept from Pass 78
-- Floating lead count badges (green number, only when leads > 0)
-- Active territory pulse ring (3 copper rings + center dot on county click)
-- Tile brightness/contrast filter
-- Upgraded tooltips and legend
+## Pass 83 -- CC Layout QA (complete)
+- Page containment: `#page-command-center.active` height-constrained
+- `cc-wrap` height: `100%` (inherits constrained parent)
+- Duplicate `#map-layout` rules consolidated
+- `cc-map-pane` padding reduced; `min-width:500px` added
+- Territory pane: 300px -> 260px; queue rail: 300px -> 280px
+- cmd-bar CC override: padding tightened
+- `map-page-wrap` made flex column in CC context
+- Queue rail: stat numbers 13px -> 16px; copper top accent + title
+- Row padding: 7px -> 6px; cc-qrow-bot margin 3px -> 2px
 
 ---
 
-## Pass 78 -- RTS Map Overhaul (radial glows, badges, pulse ring)
-## Pass 77 -- Command Center polish (real names, drill-down, map init)
-## Pass 76 -- Email/phone search, Ctrl+K global lead finder
-## Pass 75 -- Command Center split-pane (map + territory combined)
+## Pass 82 -- Command Center unified layout (complete)
+- CC is default landing tab
+- Map-dominant layout, right queue rail, persistent bottom command bar
+- ccQueueRender / ccQueueFilter / ccQueueUpdateStats / ccQueueOpenRow
+- ccCmdDiscover wired to Pipeline discovery
+- Full View button preserves Pipeline access
+
+---
+
+## Next Pass
+Pass 85 -- Pipeline tab simplification or redirect to CC as canonical home

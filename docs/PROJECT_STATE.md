@@ -1,6 +1,6 @@
-# Copperline Project State
+﻿# Copperline Project State
 
-Last Updated: 2026-03-21
+Last Updated: 2026-03-22
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,17 @@ v0.3
 Lead Acquisition + Outreach Engine
 
 ## Current Focus
-Discovery command center, automated outreach pipeline, daily workflow efficiency
+Command Center as unified operational surface -- territory-to-queue sync, bulk-action-first workflow
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 82 -- Command Center unified layout
+Pass 84 -- Territory-to-queue scope sync (pre-commit; JS/CSS/HTML in index.html)
 
 ## Recent Passes
+Pass 84 -- Territory-to-queue scope: map selection scopes queue rail; scoped summary strip; ccCmdApproveScoped / ccCmdRegenScoped; bndSelectBoundary + bndClearBoundary hooks
+Pass 83 -- CC layout QA: page containment fixed, map height/fill improved, panel narrowing, cmd bar density, queue rail copper hierarchy
 Pass 82 -- Pipeline merged into Command Center: map-dominant layout, right queue rail, bottom command bar, CC default tab
 Pass 81 -- Add Obs button now shows for fallback drafts; schedule block shows add obs CTA
 Pass 80 -- lead_quality_score added to schema; CARTO voyager tiles; region outline-only w/ hover dash
@@ -30,35 +32,23 @@ Pass 71 -- Industry fallback drafts (17 trades mapped, no obs = no block)
 Pass 70 -- Bulk regenerate: /api/bulk_regenerate + Regen Stale button
 Pass 69 -- v18 voice: proper grammar, direct consequence, confident close
 Pass 68 -- Auto-regen on panel open, panel layout overhaul, 22 industries
-Pass 67 -- Region zoom fix, coverage fill clarity, map full-height
-Pass 66 -- Command bar, coverage fill layer, 400 fix (tile radius 1000m)
-Pass 65 -- US sales regions on map, visual makeover (deep dark theme)
-Pass 64 -- Click-to-boundary, reverse geocoding, zoom drill-down
-Pass 63 -- Boundary territory selector, simplified map toolbar
-Pass 62 -- Voice rewrite v17, consultation positioning
 
-## Protected Systems
-- `run_lead_engine.py`
-- Queue schema (column order and naming)
-- `pending_emails.csv` pipeline
-- Email sender
-- Follow-up scheduler timing/core
-- `safe_autopilot_eligible` logic
+Protected systems are listed in `PROTECTED_SYSTEMS.md`. Do not duplicate that list here.
 
 ## Core Operator Workflow
 
-1. Open Discovery → ⚡ Command Center
-   - Left: map — click county → copper boundary, Search Territory runs tiled discovery
-   - Right: territory panel — city cards with per-industry status
-   - Map click auto-selects city in territory panel (copper highlight)
+1. Open Discovery -> Command Center
+   - Left: map -- click county -> copper boundary, Search Territory runs tiled discovery
+   - Right: territory panel -- city cards with per-industry status
+   - Map click auto-selects city in territory panel + scopes queue rail to matching leads (Pass 84)
    - Territory run auto-refreshes map coverage overlay
    - Ctrl+K find-lead works from any tab
 
-2. Pipeline → Outreach
+2. Pipeline -> Outreach
    - Search by name, email, phone, city in search box
    - Ctrl+K from anywhere for instant lead lookup by email
-   - Stale leads auto-regen on panel open (obs → draft silently)
-   - No obs available → industry fallback draft (17 trades)
+   - Stale leads auto-regen on panel open (obs -> draft silently)
+   - No obs available -> industry fallback draft (22 trades)
    - Regen Stale button mass-refreshes all stale drafts
 
 3. Review + Send

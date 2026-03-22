@@ -1,78 +1,86 @@
-# Copperline AI Entry Point
+﻿# Copperline AI Entry Point
 
 If you are an AI assistant joining this repository, start here.
+Then read `docs/CLAUDE.md` for the concise startup contract.
 
-## Fast AI Startup
+---
 
-Read these 4 files before writing any code:
+## Mandatory Read Order
 
-1. `AI_CONTROL_PANEL.md` - single-file project snapshot
-2. `PROJECT_STATE.md` - current phase, version, last/next pass
-3. `CURRENT_BUILD.md` - approved scope for this session
-4. `PROTECTED_SYSTEMS.md` - what must not be touched
+Read these before writing any code:
 
-These four files contain the complete project state under ~1,000 tokens.
-Do not start implementing until you have read all four.
+1. `docs/CLAUDE.md` -- startup contract, blast-radius rules, verification expectations
+2. `docs/AI_CONTROL_PANEL.md` -- active guardrails, current pass state, key constraints
+3. `docs/PROJECT_STATE.md` -- live implementation truth, current workflow reality
+4. `docs/CURRENT_BUILD.md` -- approved scope for this session
+5. `docs/PROTECTED_SYSTEMS.md` -- what must not be touched
 
-## Full Context (if needed)
+These five files contain the complete project context needed to operate safely.
+Do not start implementing until you have read all five.
 
-- `COPPERLINE_OVERVIEW.md` - full system description and repo layout
-- `DISCOVERY_MAP_VISION.md` - map strategy and design philosophy
-- `CLAUDE_BUILD_RULES.md` - implementation discipline and pass report format
-- `CHANGELOG_AI.md` - complete development history
+---
 
-## What this project is
+## File Roles (one responsibility each)
+
+| File | Sole responsibility |
+|---|---|
+| `CLAUDE.md` | Startup contract / operating rules for AI sessions |
+| `AI_CONTROL_PANEL.md` | Active guardrails / current state snapshot |
+| `PROJECT_STATE.md` | Live implementation truth / current reality |
+| `CURRENT_BUILD.md` | Active build focus / near-term handoff state |
+| `PROTECTED_SYSTEMS.md` | High-caution system boundaries |
+| `AI_DEV_STANDARDS.md` | Durable engineering rules / pass scoping / recommendation format |
+| `CHANGELOG_AI.md` | Append-only pass history (not current-state authority) |
+
+**When file roles conflict:** `PROJECT_STATE.md` is the authority on current reality.
+`PROTECTED_SYSTEMS.md` is the authority on what not to touch.
+`CURRENT_BUILD.md` is the authority on approved scope.
+
+---
+
+## What This Project Is
 
 Copperline is an internal platform for discovering local service businesses,
 sending cold outreach, and converting them into clients for a missed-call
 texting automation service.
 
-The primary development focus is the lead acquisition system, specifically the
-dashboard-driven discovery map and outreach pipeline.
+Current focus: Command Center as unified discovery + outreach operational surface.
+Map drives territory selection. Queue rail shows actionable leads. Command bar runs bulk actions.
 
-Observation-led drafting remains required. Observations may now be either:
-- operator-authored observation text
-- system-generated observation candidates grounded in real available lead context
+---
 
-During hardening, generated observations remain operator-reviewed by default
-before drafting or send workflows proceed.
+## Pass Scoping
 
-## Rules before you write any code
+Pass scoping rules are in `AI_DEV_STANDARDS.md`. Do not duplicate them here.
+The short version: one goal per pass, all sub-changes must serve that goal, testable when complete.
 
-- Do not implement features outside the scope defined in `CURRENT_BUILD.md`.
-- Do not modify protected systems listed in `PROTECTED_SYSTEMS.md`.
-- Prefer additive changes over rewrites.
-- After completing a pass, update `CHANGELOG_AI.md`, `PROJECT_STATE.md`, and `AI_CONTROL_PANEL.md`.
-- Do not assume hidden bulk observation generation, auto-accept, or auto-send
-  exists unless the repo explicitly shows it.
+---
 
-## How to scope a pass
+## Rules Before Writing Any Code
 
-Each pass delivers **one operator outcome** end-to-end.
+- Do not implement features outside the scope defined in `CURRENT_BUILD.md`
+- Do not modify protected systems listed in `PROTECTED_SYSTEMS.md`
+- Prefer additive changes over rewrites
+- Inspect the relevant file before claiming any repo behavior
+- After completing a pass: update `PROJECT_STATE.md`, `CURRENT_BUILD.md`, `AI_CONTROL_PANEL.md`, append to `CHANGELOG_AI.md`
 
-- Multiple tightly related sub-changes are allowed in one pass
-- All sub-changes must serve the same workflow goal
-- Unrelated systems must not be bundled together
-- The pass must be testable when complete
+---
 
-Good scope example - Discovery Coverage Expansion:
-- Grid search tiles + multi-industry sweep + dedupe + history summary + cancel support
-- All sub-changes serve one outcome: systematic neighborhood-level discovery
-
-Bad scope example:
-- Discovery + scheduler UX + message quality + email extraction in one pass
-- These are unrelated systems; they must be separate passes
-
-Passes typically touch 1-6 files. No hard maximum, but larger passes require
-stronger cohesion. A pass that is hard to describe as one outcome is too broad.
-
-## Quick orientation
+## Quick File Reference
 
 | File | Purpose |
 |---|---|
-| `lead_engine/run_lead_engine.py` | Core engine - **protected** |
+| `lead_engine/run_lead_engine.py` | Core engine -- **protected** |
 | `lead_engine/dashboard_static/index.html` | Entire frontend dashboard |
 | `lead_engine/dashboard_server.py` | Flask API server |
 | `lead_engine/data/prospects.csv` | Prospect records |
-| `lead_engine/queue/pending_emails.csv` | Email draft queue |
-| `docs/CHANGELOG_AI.md` | AI development history |
+| `lead_engine/queue/pending_emails.csv` | Email draft queue -- **protected** |
+
+---
+
+## Additional Context (if needed)
+
+- `docs/COPPERLINE_OVERVIEW.md` -- full system description and repo layout
+- `docs/DISCOVERY_MAP_VISION.md` -- map strategy and design philosophy
+- `docs/CLAUDE_BUILD_RULES.md` -- pass report format reference (see also AI_DEV_STANDARDS.md)
+- `docs/CHANGELOG_AI.md` -- complete development history

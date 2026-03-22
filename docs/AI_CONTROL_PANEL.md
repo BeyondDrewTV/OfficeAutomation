@@ -1,43 +1,30 @@
-# Copperline AI Control Panel
+﻿# Copperline AI Control Panel
 
-Last Updated: 2026-03-21
+Last Updated: 2026-03-22
 Repository Version: v0.3
 
----
-
-## Project Phase
-Lead Acquisition Engine
-
-## Current Focus
-Command Center as unified operational surface — map + queue rail + command bar
-
-## Current Build Pass
-Pass 82 -- Command Center unified layout (complete)
-
-## Last Completed Pass
-Pass 82 -- Pipeline merged into Command Center: map-dominant, right queue rail, bottom command bar
-
-## Next Pass
-Pass 83 -- Visual QA: browser test, layout sizing fixes
-
-## Upcoming Passes
-- Pass 83 -- Visual QA: browser test, fix map height / rail overflow / cmd bar on smaller screens
-- Pass 84 -- Territory-to-queue sync: map county click filters rail to that city's leads
-- Pass 85 -- Pipeline tab simplification or redirect to CC as canonical home
+> **Role:** Active operating contract + current AI guardrails.
+> For live implementation truth, see `PROJECT_STATE.md`.
+> For engineering rules, see `AI_DEV_STANDARDS.md`.
+> For protected system boundaries, see `PROTECTED_SYSTEMS.md`.
 
 ---
 
-## Execution Model
+## Current State
 
-Bounded cohesive passes. Each pass delivers one operator outcome end-to-end.
-Unrelated systems must not be bundled. No protected-system drift without explicit approval.
+| Field | Value |
+|---|---|
+| Project Phase | Lead Acquisition Engine |
+| Current Focus | Command Center — territory-to-queue sync, bulk-action-first flow |
+| Last Completed Pass | Pass 84 -- Territory-to-queue scope sync (JS + CSS + HTML, pre-commit) |
+| Pass Before That | Pass 83 -- CC layout QA: page containment, map height, rail hierarchy |
+| Next Pass | Pass 85 -- Pipeline tab simplification or CC redirect |
 
 ---
 
 ## Core Product
 
-Copperline: discover local service businesses, draft outreach, send manually,
-track replies, convert to clients, deploy missed-call texting.
+Copperline: discover local service businesses -> draft outreach -> send manually -> track replies -> convert to clients -> deploy missed-call texting.
 
 ---
 
@@ -56,43 +43,32 @@ track replies, convert to clients, deploy missed-call texting.
 | Dashboard API | `lead_engine/dashboard_server.py` |
 | Durable lead memory + timeline | `lead_engine/lead_memory.py` + `lead_engine/data/lead_memory.json` |
 
-## Protected Systems
+Protected systems are listed in `PROTECTED_SYSTEMS.md`. Do not duplicate that list here.
 
-- `run_lead_engine.py`
-- Queue schema (column order and naming)
-- `pending_emails.csv` pipeline
-- Email sender
-- Follow-up scheduler timing/core send logic
-- `safe_autopilot_eligible` logic
-
-## Governance Distinction
-
-- Protected delivery-core systems remain constrained. Do not loosen sender,
-  queue, scheduling, or orchestration protections casually.
-- Operator-visible intelligence layers may evolve additively when changes are
-  truthful, documented, reversible, and do not introduce hidden send-path or
-  bulk-mutation behavior.
+---
 
 ## Active Constraints
 
-- Discovery must be intentional - no auto-search on pan or zoom
-- No build steps - frontend is a single HTML file with CDN dependencies only
-- Territory overlay uses coarse stored search centers and stored lead coordinates only - no fake neighborhood precision
-- Territory cells are the preferred guidance layer for area selection; the circle remains the working search geometry used by current discovery endpoints
-- Industry saturation view uses only stored search, duplicate, planner, and lead counts per territory cell - no fake polygon completion model
-- Email sending is manual/operator-reviewed - auto-send must not drift into generic nurture behavior
-- Observation-led drafting remains required
-- First-touch drafts must stay observation-led, short, and grounded in real service-business bottlenecks
-- First-touch positioning should sound like one-on-one owner/operator workflow help, not generic consulting or agency copy
-- First-touch subject lines must stay short, calm, owner-readable, and matched to the actual body angle without drifting into clickbait or sales language
-- Generated observations are allowed only when grounded in real available lead context
-- Generated observations remain operator-reviewed by default during hardening
-- Observation evidence refresh is operator-triggered and single-lead only
-- No hidden bulk observation mutation or auto-accept behavior is in scope
-- Territory cells may guide the operator to the next search area, but do not auto-run discovery
-- Discovery failures should surface the real operator-facing API error where available, not a generic connection label
-- Stale first-touch rows still keep the direct refresh path from queue row -> observation field -> regenerate -> next stale row
+These constraints are enforced on all passes. Do not change product behavior that conflicts with these without explicit operator approval and an isolated commit.
+
+- Discovery must be intentional -- no auto-search on pan or zoom
+- No build steps -- frontend is a single HTML file with CDN dependencies only
+- Territory overlay uses coarse stored data only -- no fake neighborhood precision
+- Territory cells guide area selection; circle remains the working search geometry
+- Email sending is manual/operator-reviewed -- auto-send must not drift into nurture behavior
+- Observation-led drafting remains required for first-touch
+- First-touch drafts must stay short, grounded in real service-business bottlenecks
+- Generated observations are operator-reviewed by default during hardening
+- Observation evidence refresh is operator-triggered, single-lead only
+- No hidden bulk observation mutation or auto-accept behavior
 - Suppressed/contacted leads filtered from all discovery entry points by default
+- Discovery failures surface the real API error, not a generic label
+
+---
+
+## Governance Distinction
+
+Protected delivery-core systems remain constrained. Operator-visible intelligence layers may evolve additively when changes are truthful, documented, reversible, and do not introduce hidden send-path or bulk-mutation behavior.
 
 ---
 
@@ -111,11 +87,15 @@ track replies, convert to clients, deploy missed-call texting.
 | EVT_SCHEDULED | Scheduled | api_schedule_email (set) | Live |
 | EVT_UNSCHEDULED | Unscheduled | api_schedule_email (clear) | Live |
 
+---
+
 ## Repo Quick Reference
 
 | Question | File |
 |---|---|
-| What is being built now? | `docs/CURRENT_BUILD.md` |
+| What are we building right now? | `docs/CURRENT_BUILD.md` |
 | What is the project state? | `docs/PROJECT_STATE.md` |
 | What must not be touched? | `docs/PROTECTED_SYSTEMS.md` |
-| Dev history | `docs/CHANGELOG_AI.md` |
+| Engineering + scoping rules? | `docs/AI_DEV_STANDARDS.md` |
+| Dev history? | `docs/CHANGELOG_AI.md` |
+| Startup contract? | `docs/CLAUDE.md` |

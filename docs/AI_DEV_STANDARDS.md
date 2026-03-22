@@ -1,4 +1,4 @@
-# AI Development Standards
+﻿# AI Development Standards
 
 Copperline follows structured AI-assisted development practices.
 These standards govern how every AI session interacts with this repository.
@@ -45,11 +45,11 @@ These standards govern how every AI session interacts with this repository.
    The repository docs must always reflect actual project state, not
    aspirational or stale state. After each pass, update `PROJECT_STATE.md`,
    `CURRENT_BUILD.md`, `CHANGELOG_AI.md`, and `AI_CONTROL_PANEL.md`.
+   Update docs only when the pass materially changes truth -- not for every small pass.
 
 7. **Minimal context loading**
-   AI sessions should be able to orient from 3-4 short files. The documentation
-   system is designed to fit full project context under ~1,000 tokens. Keep
-   docs files concise and current.
+   AI sessions should be able to orient from 3-4 short files. Keep docs
+   concise and current. The recommended read order is in `docs/CLAUDE.md`.
 
 ---
 
@@ -74,7 +74,7 @@ require stronger cohesion justification.
 
 ## What AI Assistants Must Not Do
 
-- Guess project goals - always read the docs first
+- Guess project goals -- always read the docs first
 - Implement features not listed in `CURRENT_BUILD.md`
 - Modify protected systems without operator approval
 - Make large rewrites of working systems
@@ -82,6 +82,25 @@ require stronger cohesion justification.
 - Leave changes uncommitted at the end of a session
 - Make ambiguous commits like "fix bug" or "update files"
 - Present untested behavior as verified
+- Claim repo behavior without reading the relevant file(s)
+- Make "while I'm in here" changes to unrelated areas
+- Update docs for passes that did not materially change truth
+- Treat CHANGELOG_AI.md as a current-state doc -- it is append-only history
+
+---
+
+## Tighter Operating Rules (added Pass 84 docs pass)
+
+These rules narrow interpretation room and reduce drift:
+
+- **One goal per pass.** If a second goal appears mid-pass, stop and report it.
+- **Minimal diff only.** Solve the stated problem. Do not clean up adjacent things.
+- **Inspect before editing.** Confirm exact file ownership and current content before writing.
+- **Diagnose before implementing.** For anything risky, state the root cause first.
+- **Runtime verification required.** For behavior changes: restart server, check console, confirm no regressions.
+- **Stop and report when cause is not confirmed.** Do not speculate. Label findings as FACT / INFERENCE / UNKNOWN.
+- **Protected systems require isolated commits.** Never bundle protected-system changes with feature passes.
+- **Do not claim current state you have not read.** The file is the truth; memory is not.
 
 ---
 
@@ -89,10 +108,10 @@ require stronger cohesion justification.
 
 Before writing any code, an AI session must:
 
-- [ ] Read `AI_CONTROL_PANEL.md`
-- [ ] Read `PROJECT_STATE.md`
-- [ ] Read `CURRENT_BUILD.md`
-- [ ] Confirm the pass scope and operator outcome
+- [ ] Read `docs/CLAUDE.md` (startup contract)
+- [ ] Read `docs/AI_CONTROL_PANEL.md` (active guardrails)
+- [ ] Read `docs/PROJECT_STATE.md` (current reality)
+- [ ] Read `docs/CURRENT_BUILD.md` (approved scope)
 - [ ] Confirm no protected systems are in scope
 
 ---
@@ -101,7 +120,7 @@ Before writing any code, an AI session must:
 
 - Documentation files: `UPPER_SNAKE_CASE.md`
 - Python modules: `lower_snake_case.py`
-- Frontend: single `index.html` - no additional frontend files without approval
+- Frontend: single `index.html` -- no additional frontend files without approval
 - No new directories without pass documentation explaining why
 
 ---
@@ -117,3 +136,38 @@ Increment only when:
 - Deployment infrastructure is introduced
 
 Patch-level changes (UI fixes, clustering, panel additions) do not increment version.
+
+---
+
+## Doc Update Policy
+
+Update `PROJECT_STATE.md` and `AI_CONTROL_PANEL.md` after every completed pass.
+Update `CURRENT_BUILD.md` to reflect the new active build state.
+Append to `CHANGELOG_AI.md` -- never edit prior entries.
+Update `PROTECTED_SYSTEMS.md` only when protection scope changes.
+Update `AI_DEV_STANDARDS.md` only when durable engineering rules change.
+Do not update docs to appear thorough -- update them only when truth changes.
+
+---
+
+## Recommendation Lane
+
+When a pass surfaces a genuine tool, connector, or workflow improvement opportunity
+that is out of scope for the current pass, surface it in this format only.
+Do not act on it without explicit operator approval.
+
+**Format:**
+
+```
+## Tool/Workflow Opportunity
+
+- Observed friction: [what is actually slow or awkward]
+- Suggestion: [specific tool, connector, or workflow change]
+- Why it helps here: [specific to Copperline, not generic]
+- Expected payoff: [concrete operator benefit]
+- Downside/risk: [honest tradeoffs]
+- Priority: now / later / ignore
+- Approval required: yes
+```
+
+Recommendations go at the end of a pass report only. They are not roadmap commitments.
