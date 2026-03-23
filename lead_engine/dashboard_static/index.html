@@ -226,6 +226,7 @@ input[type=checkbox]{accent-color:var(--blue);width:14px;height:14px;cursor:poin
 .nav-tab:hover{color:var(--text)}
 .nav-tab.active{color:var(--copper);border-bottom-color:var(--copper);font-weight:600}
 .page{display:none}.page.active{display:block}
+#page-command-center.active{display:flex;flex-direction:column;height:calc(100vh - 116px);overflow:hidden}
 
 /* ── MC shared layout ─────────────────────────────────────────────── */
 .mc-wrap{max-width:1140px;margin:0 auto;padding:28px}
@@ -725,45 +726,66 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .mrp-group-toggle{cursor:pointer;user-select:none;font-size:10px;color:var(--dim)}
 
 /* ── Pass 75: Command Center split layout ─────────────────────────── */
-.cc-wrap{display:flex;flex-direction:column;width:100%;height:calc(100vh - 118px);min-height:560px;overflow:hidden}
+.cc-wrap{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;overflow:hidden}
 .cc-main-row{display:flex;flex:1;min-height:0;overflow:hidden}
-.cc-map-pane{flex:7;min-width:0;display:flex;flex-direction:column;padding:12px 8px 0 16px;box-sizing:border-box}
-.cc-tp-pane{width:380px;flex-shrink:0;display:flex;flex-direction:column;border-left:1px solid var(--border);background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.97));overflow:hidden}
-.cc-tp-header{padding:10px 14px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
-.cc-tp-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
-.cc-tp-addrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-.cc-tp-stats{display:flex;gap:12px;padding:6px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
-.cc-tp-stat{font-size:11px;color:var(--muted)}.cc-tp-stat strong{color:var(--text);font-weight:600}
-.cc-tp-filters{display:flex;gap:6px;padding:6px 14px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;align-items:center}
-.cc-tp-body{flex:1;overflow-y:auto;padding:8px 10px 60px}
+.cc-map-pane{flex:1;min-width:500px;display:flex;flex-direction:column;padding:4px 6px 0 10px;box-sizing:border-box;min-height:0}
+/* Territory planner — supporting role, not competing */
+.cc-tp-pane{width:260px;flex-shrink:0;display:flex;flex-direction:column;border-left:1px solid var(--border);background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.97));overflow:hidden}
+.cc-tp-header{padding:7px 12px 6px;border-bottom:1px solid var(--border);flex-shrink:0}
+.cc-tp-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:5px}
+.cc-tp-addrow{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.cc-tp-stats{display:flex;gap:10px;padding:4px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.cc-tp-stat{font-size:10px;color:var(--muted)}.cc-tp-stat strong{color:var(--text);font-weight:600}
+.cc-tp-filters{display:flex;gap:4px;padding:4px 12px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;align-items:center}
+.cc-tp-body{flex:1;overflow-y:auto;padding:6px 8px 40px}
 .cc-tp-body .tp-card{margin-bottom:8px}
 /* Highlight territory card when map selects it */
 .tp-card.cc-selected{border-color:var(--copper)!important;box-shadow:0 0 0 1px var(--copper),0 4px 16px rgba(184,115,51,.2)!important}
-/* Map pane fills the split */
-.cc-map-pane #map-layout{height:calc(100vh - 230px);min-height:480px}
-.cc-map-pane .map-page-wrap{padding:0}
-.cc-map-pane .cmd-bar{border-radius:var(--r) var(--r) 0 0}
+/* Map pane fills the split — height accounts for: top nav(44) + sub-nav(34) + cmd-bar(40) + map-cmd-bar(48) + cmd-bar-bottom(44) + padding(20) */
+.cc-map-pane #map-layout{flex:1;min-height:0;height:100%}
+.cc-map-pane .map-page-wrap{padding:0;flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.cc-map-pane #map-status{flex-shrink:0;padding:3px 4px;font-size:10px}
+.cc-map-pane #map-territory-legend,.cc-map-pane #map-history{display:none!important}
+.cc-map-pane .cmd-bar{border-radius:var(--r) var(--r) 0 0;margin-bottom:0;padding:8px 12px}
 
 /* ── Pass 82: Queue rail ──────────────────────────────────────────── */
-.cc-queue-rail{width:360px;flex-shrink:0;display:flex;flex-direction:column;border-left:1px solid var(--border);background:var(--surface);overflow:hidden}
-.cc-qr-header{padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.cc-qr-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
-.cc-qr-search{flex:1;min-width:80px;padding:4px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:11px;outline:none}
+.cc-queue-rail{width:280px;flex-shrink:0;display:flex;flex-direction:column;border-left:1px solid rgba(184,115,51,.22);background:var(--surface);overflow:hidden}
+.cc-qr-header{padding:6px 10px;border-bottom:1px solid var(--border);border-top:2px solid var(--copper);flex-shrink:0;display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.cc-qr-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--copper);white-space:nowrap}
+.cc-qr-search{flex:1;min-width:0;padding:3px 7px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:11px;outline:none}
 .cc-qr-search:focus{border-color:var(--blue)}
-.cc-qr-filters{display:flex;gap:3px;padding:5px 10px;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+.cc-qr-filters{display:flex;gap:3px;padding:4px 8px;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
 .cc-qr-filters::-webkit-scrollbar{display:none}
-.cc-qrf{padding:3px 9px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.12s}
+.cc-qrf{padding:2px 8px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.12s}
 .cc-qrf.active{background:var(--blue-glow);border-color:rgba(79,142,247,.35);color:var(--blue)}
 .cc-qrf:hover:not(.active){color:var(--text);border-color:var(--border-hi)}
 .cc-qr-stats{display:flex;gap:0;border-bottom:1px solid var(--border);flex-shrink:0}
-.cc-qr-stat{flex:1;padding:5px 8px;text-align:center;border-right:1px solid var(--border)}
+.cc-qr-stat{flex:1;padding:5px 4px;text-align:center;border-right:1px solid var(--border)}
 .cc-qr-stat:last-child{border-right:none}
-.cc-qr-stat-n{font-family:var(--mono);font-size:14px;font-weight:600;line-height:1}
-.cc-qr-stat-l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
+.cc-qr-stat-n{font-family:var(--mono);font-size:16px;font-weight:700;line-height:1}
+.cc-qr-stat-l{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:1px}
 .cc-qr-body{flex:1;overflow-y:auto;padding:0}
-.cc-qr-empty{padding:20px 14px;font-size:12px;color:var(--muted);text-align:center}
+.cc-qr-empty{padding:16px 12px;font-size:11px;color:var(--muted);text-align:center}
+/* Pass 84: Territory scope bar */
+.cc-scope-bar{display:flex;align-items:center;gap:6px;padding:5px 10px;border-bottom:1px solid rgba(184,115,51,.25);background:rgba(184,115,51,.07);flex-shrink:0}
+.cc-scope-icon{font-size:11px;color:var(--copper);flex-shrink:0}
+.cc-scope-name{font-size:11px;font-weight:700;color:var(--copper);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-scope-count{font-size:10px;color:var(--dim);font-family:var(--mono);white-space:nowrap;flex-shrink:0}
+.cc-scope-clear{background:none;border:none;color:var(--dim);font-size:13px;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0;transition:color .12s}
+.cc-scope-clear:hover{color:var(--copper)}
+/* Pass 84: Scoped summary strip */
+.cc-scope-summary{display:flex;gap:0;border-bottom:1px solid var(--border);flex-shrink:0}
+.cc-scope-stat{flex:1;padding:4px 4px;text-align:center;border-right:1px solid var(--border)}
+.cc-scope-stat:last-child{border-right:none}
+.cc-scope-stat-n{font-family:var(--mono);font-size:13px;font-weight:700;line-height:1;color:var(--text)}
+.cc-scope-stat-n.copper{color:var(--copper)}
+.cc-scope-stat-n.amber{color:var(--amber)}
+.cc-scope-stat-n.green{color:var(--green)}
+.cc-scope-stat-l{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+/* Pass 84: Scoped cmd bar label */
+.cc-cmd-scope-label{font-size:10px;font-weight:700;color:var(--copper);white-space:nowrap;padding:2px 7px;border-radius:999px;background:rgba(184,115,51,.12);border:1px solid rgba(184,115,51,.25)}
 /* Compact queue row cards */
-.cc-qrow{padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;border-left:2px solid transparent}
+.cc-qrow{padding:6px 10px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;border-left:2px solid transparent}
 .cc-qrow:hover{background:var(--surface2)}
 .cc-qrow.cc-qrow-approved{border-left-color:var(--green)}
 .cc-qrow.cc-qrow-sent{border-left-color:var(--muted);opacity:.5}
@@ -774,7 +796,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cc-qrow-name{font-size:12px;font-weight:600;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cc-qrow-score{font-size:9px;font-family:var(--mono);padding:1px 5px;border-radius:4px;background:var(--surface3);color:var(--muted);flex-shrink:0}
 .cc-qrow-score.high{background:rgba(62,207,114,.12);color:var(--green)}
-.cc-qrow-bot{display:flex;align-items:center;gap:5px;margin-top:3px;flex-wrap:wrap}
+.cc-qrow-bot{display:flex;align-items:center;gap:5px;margin-top:2px;flex-wrap:wrap}
 .cc-qrow-city{font-size:10px;color:var(--dim)}
 .cc-qrow-badge{font-size:9px;padding:1px 6px;border-radius:8px;font-weight:700;flex-shrink:0}
 .cc-qrow-badge.approved{background:rgba(79,142,247,.12);color:var(--blue)}
@@ -785,14 +807,15 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cc-qrow-subj{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 
 /* ── Pass 82: Bottom command bar ─────────────────────────────────── */
-.cc-cmd-bar{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:6px 14px;border-top:1px solid var(--border);background:linear-gradient(0deg,rgba(8,10,15,1),rgba(11,13,18,.96));flex-wrap:wrap}
+.cc-cmd-bar{flex-shrink:0;display:flex;align-items:center;gap:5px;padding:4px 12px;border-top:1px solid var(--border);background:linear-gradient(0deg,rgba(8,10,15,1),rgba(11,13,18,.96));flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.cc-cmd-bar::-webkit-scrollbar{display:none}
 .cc-cmd-sep{width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 2px}
 .cc-cmd-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);white-space:nowrap}
 .cc-cmd-input{padding:4px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:11px;outline:none;min-width:0}
 .cc-cmd-input:focus{border-color:var(--blue)}
 .cc-cmd-select{padding:4px 7px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--muted);font-family:var(--sans);font-size:11px;outline:none;cursor:pointer}
 .cc-cmd-select option{background:var(--surface2)}
-.cc-cmd-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--rs);font-family:var(--sans);font-size:11px;font-weight:600;border:none;cursor:pointer;transition:all .15s;white-space:nowrap}
+.cc-cmd-btn{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:var(--rs);font-family:var(--sans);font-size:11px;font-weight:600;border:none;cursor:pointer;transition:all .15s;white-space:nowrap}
 .cc-cmd-btn-primary{background:linear-gradient(135deg,#4f8ef7,#3a7ae8);color:#fff;border:1px solid rgba(79,142,247,.3)}.cc-cmd-btn-primary:hover{box-shadow:0 3px 12px rgba(79,142,247,.3)}
 .cc-cmd-btn-success{background:linear-gradient(135deg,#3ecf72,#2fb85c);color:#0e1a12;border:1px solid rgba(62,207,114,.2)}.cc-cmd-btn-success:hover{opacity:.9}
 .cc-cmd-btn-ghost{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}.cc-cmd-btn-ghost:hover{color:var(--text);border-color:var(--border-hi)}
@@ -817,11 +840,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .tp-ind-row-clickable{cursor:pointer;user-select:none}
 .tp-ind-row-clickable:hover td{background:rgba(184,115,51,.06)}
 .map-page-wrap{width:100%;padding:12px 16px 0;box-sizing:border-box}
-#map-layout{display:flex;gap:0;align-items:stretch;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;height:calc(100vh - 260px);min-height:500px;box-shadow:var(--card-shadow)}
-#map-container{flex:1;height:100%;min-height:500px;min-width:0;overflow:hidden}
-#map-results-panel{width:340px;flex-shrink:0;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.97));border-left:1px solid var(--border);display:none;flex-direction:column;height:100%}
-#map-layout{display:flex;gap:0;align-items:stretch;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;height:calc(100vh - 230px);min-height:520px;box-shadow:var(--card-shadow)}
-#map-container{flex:1;height:100%;min-height:520px;min-width:0;overflow:hidden}
+/* Pass 83: single canonical #map-layout — CC uses .cc-map-pane override */
+#map-layout{display:flex;gap:0;align-items:stretch;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;height:calc(100vh - 230px);min-height:480px;box-shadow:var(--card-shadow)}
+#map-container{flex:1;height:100%;min-height:480px;min-width:0;overflow:hidden}
 #map-results-panel{width:340px;flex-shrink:0;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.97));border-left:1px solid var(--border);display:none;flex-direction:column;height:100%}
 #map-results-panel.visible{display:flex}
 .mrp-hdr{padding:11px 14px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.07em;flex-shrink:0;background:linear-gradient(180deg,var(--surface2),var(--surface))}
@@ -1741,8 +1762,47 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     </div>
   </div>
 
-</div>
-</div>
+  <!-- ── Pass 82/83: Queue Rail — right column inside cc-main-row ── -->
+  <div class="cc-queue-rail" id="cc-queue-rail">
+    <div class="cc-qr-header">
+      <span class="cc-qr-title">Outreach Queue</span>
+      <input class="cc-qr-search" id="cc-qr-search" type="text" placeholder="Search…" oninput="ccQueueRender()">
+    </div>
+    <div class="cc-qr-stats">
+      <div class="cc-qr-stat"><div class="cc-qr-stat-n blue" id="ccqr-s-approved">—</div><div class="cc-qr-stat-l">Approved</div></div>
+      <div class="cc-qr-stat"><div class="cc-qr-stat-n" style="color:var(--amber)" id="ccqr-s-pending">—</div><div class="cc-qr-stat-l">Pending</div></div>
+      <div class="cc-qr-stat"><div class="cc-qr-stat-n green" id="ccqr-s-sent">—</div><div class="cc-qr-stat-l">Sent</div></div>
+      <div class="cc-qr-stat"><div class="cc-qr-stat-n" style="color:var(--copper)" id="ccqr-s-replied">—</div><div class="cc-qr-stat-l">Replied</div></div>
+    </div>
+    <div class="cc-qr-filters">
+      <span class="cc-qrf active" data-ccqf="active"   onclick="ccQueueFilter('active',this)">⚡ Actionable</span>
+      <span class="cc-qrf"       data-ccqf="approved"  onclick="ccQueueFilter('approved',this)">Approved</span>
+      <span class="cc-qrf"       data-ccqf="pending"   onclick="ccQueueFilter('pending',this)">Pending</span>
+      <span class="cc-qrf"       data-ccqf="stale"     onclick="ccQueueFilter('stale',this)" style="color:var(--amber)">⚠ Stale</span>
+      <span class="cc-qrf"       data-ccqf="replied"   onclick="ccQueueFilter('replied',this)" style="color:var(--copper)">★ Replied</span>
+      <span class="cc-qrf"       data-ccqf="all"       onclick="ccQueueFilter('all',this)">All</span>
+    </div>
+    <!-- Pass 84: Territory scope bar -->
+    <div class="cc-scope-bar" id="cc-scope-bar" style="display:none">
+      <span class="cc-scope-icon">◈</span>
+      <span class="cc-scope-name" id="cc-scope-name">—</span>
+      <span class="cc-scope-count" id="cc-scope-count"></span>
+      <button class="cc-scope-clear" onclick="ccClearTerritoryScope()" title="Clear scope">✕</button>
+    </div>
+    <!-- Pass 84: Scoped territory summary -->
+    <div class="cc-scope-summary" id="cc-scope-summary" style="display:none">
+      <div class="cc-scope-stat"><div class="cc-scope-stat-n copper" id="ccsc-total">—</div><div class="cc-scope-stat-l">Total</div></div>
+      <div class="cc-scope-stat"><div class="cc-scope-stat-n" style="color:var(--blue)" id="ccsc-approved">—</div><div class="cc-scope-stat-l">Appr</div></div>
+      <div class="cc-scope-stat"><div class="cc-scope-stat-n amber" id="ccsc-stale">—</div><div class="cc-scope-stat-l">Stale</div></div>
+      <div class="cc-scope-stat"><div class="cc-scope-stat-n green" id="ccsc-replied">—</div><div class="cc-scope-stat-l">Replied</div></div>
+      <div class="cc-scope-stat"><div class="cc-scope-stat-n" style="color:var(--dim)" id="ccsc-noemail">—</div><div class="cc-scope-stat-l">No Email</div></div>
+    </div>
+        <div class="cc-qr-body" id="cc-qr-body">
+      <div class="cc-qr-empty">Loading queue…</div>
+    </div>
+  </div>
+
+</div><!-- /cc-main-row -->
 
 <!-- ══════════════ PAGE: CITIES / TERRITORY (legacy — hidden, kept for JS compat) ══════════════ -->
 <div class="page" id="page-cities" style="display:none!important">
@@ -1968,36 +2028,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 </div>
 </div>
 
-<!-- /cc-main-row (implicitly closed above by page-map closing) -->
-
-<!-- ── Pass 82: Queue Rail ──────────────────────────────────────── -->
-<div class="cc-queue-rail" id="cc-queue-rail">
-  <!-- Header + search -->
-  <div class="cc-qr-header">
-    <span class="cc-qr-title">Outreach Queue</span>
-    <input class="cc-qr-search" id="cc-qr-search" type="text" placeholder="Search…" oninput="ccQueueRender()">
-  </div>
-  <!-- Stat strip -->
-  <div class="cc-qr-stats">
-    <div class="cc-qr-stat"><div class="cc-qr-stat-n blue" id="ccqr-s-approved">—</div><div class="cc-qr-stat-l">Approved</div></div>
-    <div class="cc-qr-stat"><div class="cc-qr-stat-n" style="color:var(--amber)" id="ccqr-s-pending">—</div><div class="cc-qr-stat-l">Pending</div></div>
-    <div class="cc-qr-stat"><div class="cc-qr-stat-n green" id="ccqr-s-sent">—</div><div class="cc-qr-stat-l">Sent</div></div>
-    <div class="cc-qr-stat"><div class="cc-qr-stat-n" style="color:var(--copper)" id="ccqr-s-replied">—</div><div class="cc-qr-stat-l">Replied</div></div>
-  </div>
-  <!-- Filters -->
-  <div class="cc-qr-filters">
-    <span class="cc-qrf active" data-ccqf="active"    onclick="ccQueueFilter('active',this)">⚡ Actionable</span>
-    <span class="cc-qrf"       data-ccqf="approved"  onclick="ccQueueFilter('approved',this)">Approved</span>
-    <span class="cc-qrf"       data-ccqf="pending"   onclick="ccQueueFilter('pending',this)">Pending</span>
-    <span class="cc-qrf"       data-ccqf="stale"     onclick="ccQueueFilter('stale',this)" style="color:var(--amber)">⚠ Stale</span>
-    <span class="cc-qrf"       data-ccqf="replied"   onclick="ccQueueFilter('replied',this)" style="color:var(--copper)">★ Replied</span>
-    <span class="cc-qrf"       data-ccqf="all"       onclick="ccQueueFilter('all',this)">All</span>
-  </div>
-  <!-- Row list -->
-  <div class="cc-qr-body" id="cc-qr-body">
-    <div class="cc-qr-empty">Loading queue…</div>
-  </div>
-</div>
+<!-- /cc-main-row closed above -->
 
 <!-- ── Pass 82: Bottom Command Bar ───────────────────────────────── -->
 <div class="cc-cmd-bar" id="cc-cmd-bar">
@@ -2008,17 +2039,21 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <input id="cc-cmd-state" class="cc-cmd-input" type="text" placeholder="ST" style="width:36px" maxlength="2" value="IL">
   <button id="cc-cmd-discover" class="cc-cmd-btn cc-cmd-btn-primary" onclick="ccCmdDiscover()"><span class="spin"></span>⚡ Discover + Draft</button>
   <div class="cc-cmd-sep"></div>
-  <!-- Queue actions -->
+  <!-- Pass 84: Scope pill (shown when territory selected) -->
+  <span id="cc-cmd-scope-pill" class="cc-cmd-scope-label" style="display:none" title="Scoped to selected territory">&#9670; <span id="cc-cmd-scope-pill-name"></span></span>
+    <!-- Queue actions -->
   <span class="cc-cmd-label">Queue</span>
   <button class="cc-cmd-btn cc-cmd-btn-ghost" onclick="approveAll()" title="Approve all actionable drafts with email">✓ Approve All</button>
   <button class="cc-cmd-btn cc-cmd-btn-ghost" onclick="bulkRegenStale()" title="Regenerate all stale drafts"><span class="spin"></span>↻ Regen Stale</button>
+  <button class="cc-cmd-btn cc-cmd-btn-ghost" id="cc-cmd-approve-scoped" onclick="ccCmdApproveScoped()" style="display:none" title="Approve eligible leads in this territory">&#10003; Approve Scoped</button>
+  <button class="cc-cmd-btn cc-cmd-btn-ghost" id="cc-cmd-regen-scoped" onclick="ccCmdRegenScoped()" style="display:none" title="Regen stale drafts in this territory"><span class="spin"></span>&#8635; Regen Scoped</button>
   <div class="cc-cmd-sep"></div>
   <!-- Send -->
   <button class="cc-cmd-btn cc-cmd-btn-success" onclick="confirmSend()" title="Send all approved emails"><span class="spin"></span>▶ Send Approved</button>
   <button class="cc-cmd-btn cc-cmd-btn-ghost" onclick="switchParent('pipeline',document.querySelector('[data-parent=pipeline]'))" title="Open full Pipeline view">Full View →</button>
-</div>
-
-<!-- /cc-wrap -->
+</div><!-- /cc-cmd-bar -->
+</div><!-- /cc-wrap -->
+</div><!-- /page-command-center -->
 
 <!-- ══════════════ PAGE: TOOLS (stub) ══════════════ -->
 <div class="page" id="page-tools">
@@ -7313,6 +7348,151 @@ function qlfJump(gi) {
 // Has its own filter state independent of the Pipeline tab.
 // ══════════════════════════════════════════════════════════════════
 
+// ══════════════════════════════════════════════════════════════════
+// Pass 84: Territory-to-queue scope system
+// When operator selects a boundary on the map, the queue rail scopes
+// to leads matching that territory. Uses only existing allRows data.
+// ══════════════════════════════════════════════════════════════════
+
+let _ccTerrScope = null; // null = unscoped | { name, city, bbox }
+
+function _ccScopeMatchRow(row) {
+  if (!_ccTerrScope) return true; // no scope = match all
+  const city = (row.city || '').trim().toLowerCase();
+  const scopeCity = (_ccTerrScope.city || '').trim().toLowerCase();
+  // Primary: city name match
+  if (scopeCity && city === scopeCity) return true;
+  // Secondary: bbox match (when lat/lng present)
+  if (_ccTerrScope.bbox && _ccTerrScope.bbox.length === 4) {
+    const la = parseFloat(row.lat || 0), lo = parseFloat(row.lng || 0);
+    if (la !== 0 || lo !== 0) {
+      const [minLat, maxLat, minLng, maxLng] = _ccTerrScope.bbox.map(parseFloat);
+      if (la >= minLat && la <= maxLat && lo >= minLng && lo <= maxLng) return true;
+    }
+  }
+  return false;
+}
+
+function _ccRenderScopeSummary() {
+  if (!_ccTerrScope || !Array.isArray(allRows)) return;
+  const scoped = allRows.filter(_ccScopeMatchRow);
+  const approved = scoped.filter(r => !r.sent_at && String(r.approved||'').toLowerCase()==='true').length;
+  const stale    = scoped.filter(r => _rowNeedsDraftRefresh(r)).length;
+  const replied  = scoped.filter(r => String(r.replied||'').toLowerCase()==='true').length;
+  const noEmail  = scoped.filter(r => !(r.to_email||'').trim()).length;
+  const el = id => document.getElementById(id);
+  if (el('ccsc-total'))    el('ccsc-total').textContent    = scoped.length;
+  if (el('ccsc-approved')) el('ccsc-approved').textContent = approved;
+  if (el('ccsc-stale'))    el('ccsc-stale').textContent    = stale;
+  if (el('ccsc-replied'))  el('ccsc-replied').textContent  = replied;
+  if (el('ccsc-noemail'))  el('ccsc-noemail').textContent  = noEmail;
+}
+
+function ccScopeToTerritory(data) {
+  if (!data) return;
+  const shortName = data.short_name || (data.display_name || '').split(',')[0] || 'Territory';
+  const city = shortName.split(',')[0].trim();
+  _ccTerrScope = {
+    name: shortName,
+    city: city,
+    bbox: (data.bbox && data.bbox.length === 4) ? data.bbox : null
+  };
+  // Update scope bar
+  const bar     = document.getElementById('cc-scope-bar');
+  const nameEl  = document.getElementById('cc-scope-name');
+  const countEl = document.getElementById('cc-scope-count');
+  const summary = document.getElementById('cc-scope-summary');
+  if (bar)     bar.style.display = '';
+  if (nameEl)  nameEl.textContent = shortName;
+  if (summary) summary.style.display = '';
+  // Count scoped leads for count pill
+  if (Array.isArray(allRows)) {
+    const n = allRows.filter(_ccScopeMatchRow).length;
+    if (countEl) countEl.textContent = n > 0 ? n + ' leads' : 'no leads yet';
+  }
+  // Update cmd bar scope pill
+  const pill = document.getElementById('cc-cmd-scope-pill');
+  const pillName = document.getElementById('cc-cmd-scope-pill-name');
+  const approveScoped = document.getElementById('cc-cmd-approve-scoped');
+  const regenScoped   = document.getElementById('cc-cmd-regen-scoped');
+  const approveAll    = document.getElementById('cc-cmd-approve-all');
+  const regenAll      = document.getElementById('cc-cmd-regen-stale');
+  if (pill)          pill.style.display = '';
+  if (pillName)      pillName.textContent = shortName;
+  if (approveScoped) approveScoped.style.display = '';
+  if (regenScoped)   regenScoped.style.display   = '';
+  if (approveAll)    approveAll.style.display     = 'none';
+  if (regenAll)      regenAll.style.display       = 'none';
+  // Render summary + re-render rail
+  _ccRenderScopeSummary();
+  ccQueueRender();
+}
+
+function ccClearTerritoryScope() {
+  _ccTerrScope = null;
+  const bar     = document.getElementById('cc-scope-bar');
+  const summary = document.getElementById('cc-scope-summary');
+  const pill    = document.getElementById('cc-cmd-scope-pill');
+  const approveScoped = document.getElementById('cc-cmd-approve-scoped');
+  const regenScoped   = document.getElementById('cc-cmd-regen-scoped');
+  const approveAll    = document.getElementById('cc-cmd-approve-all');
+  const regenAll      = document.getElementById('cc-cmd-regen-stale');
+  if (bar)     bar.style.display     = 'none';
+  if (summary) summary.style.display = 'none';
+  if (pill)    pill.style.display    = 'none';
+  if (approveScoped) approveScoped.style.display = 'none';
+  if (regenScoped)   regenScoped.style.display   = 'none';
+  if (approveAll)    approveAll.style.display     = '';
+  if (regenAll)      regenAll.style.display       = '';
+  ccQueueRender();
+}
+
+async function ccCmdApproveScoped() {
+  // Approve eligible unsent scoped leads that have a draft and email
+  if (!_ccTerrScope || !Array.isArray(allRows)) return;
+  const scoped = allRows.filter(r => _ccScopeMatchRow(r) && !r.sent_at && (r.to_email||'').trim() && (r.subject||'').trim() && String(r.approved||'').toLowerCase()!=='true');
+  if (!scoped.length) { toast('No eligible leads to approve in this territory', 'info'); return; }
+  const btn = document.getElementById('cc-cmd-approve-scoped');
+  if (btn) { btn.disabled = true; btn.textContent = 'Approving…'; }
+  let done = 0;
+  for (const row of scoped) {
+    try {
+      await apiJson('/api/approve_row', { business_name: row.business_name, to_email: row.to_email, city: row.city });
+      row.approved = 'true';
+      done++;
+    } catch(e) { /* continue */ }
+  }
+  if (btn) { btn.disabled = false; btn.textContent = '✓ Approve Scoped'; }
+  toast(`Approved ${done} leads in ${_ccTerrScope ? _ccTerrScope.name : 'territory'}`, 'ok');
+  _ccRenderScopeSummary();
+  ccQueueRender();
+  renderTable();
+}
+
+async function ccCmdRegenScoped() {
+  // Regen stale drafts for scoped leads only
+  if (!_ccTerrScope || !Array.isArray(allRows)) return;
+  const stale = allRows.filter(r => _ccScopeMatchRow(r) && _rowNeedsDraftRefresh(r));
+  if (!stale.length) { toast('No stale drafts in this territory', 'info'); return; }
+  const btn = document.getElementById('cc-cmd-regen-scoped');
+  if (btn) { btn.disabled = true; btn.textContent = 'Regenning…'; }
+  let done = 0;
+  for (const row of stale) {
+    try {
+      const obs = (row.business_specific_observation || '').trim();
+      const res = await apiJson('/api/regenerate_draft', { business_name: row.business_name, to_email: row.to_email, city: row.city, observation: obs });
+      if (res.ok) {
+        if (res.subject) row.subject = res.subject;
+        if (res.body)    row.body    = res.body;
+        done++;
+      }
+    } catch(e) { /* continue */ }
+  }
+  if (btn) { btn.disabled = false; btn.textContent = '↻ Regen Scoped'; }
+  toast(`Regenerated ${done} drafts in ${_ccTerrScope ? _ccTerrScope.name : 'territory'}`, 'ok');
+  _ccRenderScopeSummary();
+  ccQueueRender();
+}
 let _ccQueueFilter = 'active';
 
 function ccQueueFilter(f, el) {
@@ -7324,6 +7504,7 @@ function ccQueueFilter(f, el) {
 
 function _ccQueueFilterRow(row) {
   if (!row) return false;
+  if (_ccTerrScope && !_ccScopeMatchRow(row)) return false; // Pass 84: territory scope gate
   const sent     = !!(row.sent_at || '').trim();
   const replied  = String(row.replied || '').toLowerCase() === 'true';
   const approved = String(row.approved || '').toLowerCase() === 'true';
@@ -9253,6 +9434,7 @@ function bndSelectBoundary(data) {
   // Pass 75: sync territory panel — highlight and expand the matching city card
   if (document.getElementById('page-command-center')?.classList.contains('active')) {
     _ccSyncTerritoryPanel(shortName, data.state || '');
+    ccScopeToTerritory(data); // Pass 84: scope queue rail
   }
 }
 
@@ -9265,6 +9447,7 @@ function bndClearBoundary() {
   if (activeWrap) activeWrap.style.display = 'none';
   if (btnSearch) btnSearch.disabled = true;
   _cmdBarClearTerritory(); // Pass 66: reset command bar chip
+  ccClearTerritoryScope();   // Pass 84: clear queue rail scope
 }
 
 function _bndTileBoundary(geojson, bbox, tileRadiusM) {
