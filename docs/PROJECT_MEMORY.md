@@ -16,14 +16,13 @@ them into clients, and deploy a missed-call texting automation service to them.
 
 ## Business Model
 
-The product being sold is a missed-call texting service. When a local service
-business misses a call, the system sends an automatic text to the caller so
-they stay engaged until someone follows up.
+Copperline is the acquisition engine for a one-person workflow consulting practice.
 
-The target clients are independent local operators: plumbers, HVAC companies,
-electricians, locksmiths, garage door companies, restoration contractors.
-These businesses lose revenue every time they miss a call. The product solves
-a real, immediate problem.
+What is being sold: a personalized one-on-one engagement with the business owner or relevant decision-maker. Drew gets on a call, walks through how the operation actually runs, identifies where there are gaps or friction points that could be automated or improved, and builds a custom implementation plan specific to that business. If they want to move forward, Drew implements and maintains it for a monthly fee.
+
+There is no standard product. The missed-call texting service is one possible solution in the toolkit — it may come up if it fits the business's situation — but it is not what the cold outreach is selling. The cold email is a soft ask for a conversation, not a product pitch.
+
+The target clients are independent local service business owners: plumbers, HVAC, electricians, locksmiths, garage door, towing, roofing, landscaping, and similar trades. These businesses have real operational friction and the owner is usually the person handling it all.
 
 ---
 

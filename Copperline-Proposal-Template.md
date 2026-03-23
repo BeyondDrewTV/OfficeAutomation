@@ -1,5 +1,5 @@
-# Copperline — After-Hours Lead Capture
-# Service Proposal
+# Copperline — Workflow Consultation & Implementation
+# Engagement Proposal
 
 **Prepared for:** [Business Name]
 **Date:** [Date]
@@ -7,30 +7,36 @@
 
 ---
 
-## The Problem
+## What This Is
 
-When a customer calls [Business Name] after hours and no one answers,
-they almost never call back. They call the next company on the list.
+A one-on-one consultation to look at how [Business Name] currently operates — specifically the parts that take the most time, create the most friction, or let things slip through the cracks.
 
-That lead is gone — and you never knew it came in.
+From that conversation, Drew builds a custom implementation plan specific to how you run your business. If it makes sense to move forward, Drew builds and maintains the solution for a flat monthly fee.
 
-For [industry] businesses that rely on the phone, this happens more than
-most owners realize. A single missed job at $300–$500 covers the cost of
-this service for months.
+No agency model. No cookie-cutter product. One person, one operation, one plan built around yours.
 
 ---
 
-## What We Set Up
+## How It Works
 
-A dedicated text-back line for your business.
+1. **Discovery conversation** — Drew walks through your operation with you: how calls come in, how jobs get scheduled, how follow-ups happen, where things tend to fall apart
+2. **Custom plan** — based on what actually came up, Drew maps out what could be automated or improved and what that would look like in practice
+3. **Implementation** — if you want to move forward, Drew builds it
+4. **Ongoing maintenance** — Drew manages and maintains whatever is built, month to month
 
-When a customer calls and no one answers:
-1. They hear a short message (10 seconds)
-2. They immediately receive a text from your number
-3. If they reply, you get a notification
-4. The lead is logged automatically
+---
 
-That's it. No app to learn. No account to create. We manage everything.
+## What Could Be Built (Examples)
+
+Depending on what comes up in the conversation, this could include:
+
+- Missed-call text-back so callers get a response even when no one answers
+- Estimate or quote follow-up sequences so jobs don't go cold
+- Inquiry routing so new contacts land in the right place
+- After-hours capture so leads don't disappear overnight
+- Anything else that fits how your operation actually runs
+
+The plan comes from your operation — not a product menu.
 
 ---
 

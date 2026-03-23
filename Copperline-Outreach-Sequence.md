@@ -1,8 +1,13 @@
-# Copperline — After-Hours Lead Capture
+# Copperline — One-on-One Workflow Consulting
 # Cold Outreach Sequence
 
-Product: Missed Call Text-Back for Service Businesses
-Target: Plumbers, HVAC, Electricians, Locksmiths, Garage Door, Towing
+Engagement: Personalized discovery conversation with the business owner or relevant decision-maker.
+Goal: Identify operational bottlenecks that could be automated, build a custom implementation plan, deploy and maintain for a monthly fee.
+Target: Independent local service businesses — plumbers, HVAC, electricians, locksmiths, garage door, towing, roofing, landscaping, and more.
+
+NOTE: The cold email voice is NOT a product pitch. It is a soft ask for a conversation.
+Drew works one-on-one with owners to look at the full operation and build something specific to how they run things.
+The missed-call texting service is one possible solution in the toolkit — not the thing being sold.
 
 Send one email, then two follow-ups. Stop on any reply.
 Space: 5–7 days between each.

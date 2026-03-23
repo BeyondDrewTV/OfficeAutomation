@@ -2,13 +2,15 @@
 
 ## What Copperline Is
 
-Copperline is an internal outbound acquisition engine for a one-person
-automation consultancy. The product being sold is a missed-call texting
-automation service for local service businesses (plumbers, HVAC, roofers,
-electricians, landscapers, etc.).
+## What Copperline Is
 
-The system handles the full acquisition loop: discovery → outreach → follow-up
-→ close → deploy.
+Copperline is the internal outbound acquisition engine for a one-person workflow consulting practice. It is not a product — it is the system Drew built to find, contact, and convert local service business owners into consulting clients.
+
+What is being sold through this pipeline: a personalized one-on-one engagement. Drew gets on a call with the owner or relevant decision-maker, walks through how the business actually operates, identifies the operational gaps or friction points that could be automated or improved, and builds a custom implementation plan. If the owner wants to move forward, Drew builds and maintains whatever makes sense for their specific operation — for a monthly fee.
+
+The cold emails produced by this system are NOT product pitches. They are soft asks for a conversation. The voice is casual, specific to that business, and never mentions products, pricing, or "solutions." The missed-call texting service is one possible deliverable Drew might build for a client — it is not what is being sold.
+
+The system handles the full acquisition loop: discovery → outreach → follow-up → conversation → custom plan → implementation → monthly maintenance.
 
 ---
 
