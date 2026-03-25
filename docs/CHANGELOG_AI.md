@@ -2231,3 +2231,61 @@ sales language, or generic spam patterns.
   subjects are still slightly overrepresented in the current bounded set.
 
 ---
+
+### 2026-03-25 - Pass 85: Offer Packaging + Deployment Readiness (Conversations)
+
+**Goal:** Move Copperline closer to a repeatable revenue engine by adding a
+post-reply operator handoff layer: standardized offer packaging, clear
+conversion stages, and deployment-readiness tracking.
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html`
+- `lead_engine/dashboard_server.py`
+- `lead_engine/lead_memory.py`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**What changed:**
+
+`lead_engine/dashboard_static/index.html`:
+- Expanded Conversations UI with a new operator-visible
+  **Offer + Deployment Readiness** panel.
+- Added fixed package menu (5 standard Copperline offers).
+- Added deterministic best-fit package recommendation (operator-selectable,
+  no auto-accept).
+- Added lifecycle stage lane:
+  `discovered -> drafted -> contacted -> replied -> call booked -> proposal ready -> won -> deployment pending -> live`.
+- Added deployment readiness checklist:
+  intake complete, access collected, copy approved, routing logic defined,
+  testing complete, live.
+- Added save hooks for package, stage, readiness, and offer notes.
+- Added compact stage/package chips in the Conversations list for quick scan.
+
+`lead_engine/dashboard_server.py`:
+- Added normalized delivery profile helpers (defaults, validation, coercion).
+- `GET /api/conversation_queue` now returns `delivery_profile` on replied rows.
+- Added `POST /api/update_delivery_profile`:
+  validates payload and writes to lead memory only (no queue schema mutation).
+
+`lead_engine/lead_memory.py`:
+- Added `get_delivery_profile(row)` and `update_delivery_profile(row, patch)`.
+- Delivery profile persists on each lead record inside durable lead memory.
+
+**Design decisions:**
+- Did not edit protected systems (`run_lead_engine.py`, queue schema,
+  sender module, scheduler core, `safe_autopilot_eligible`).
+- Did not introduce auto-send or hidden queue mutation behavior.
+- Kept discovery + outreach behavior unchanged; pass is additive to
+  Conversations/operator handoff.
+
+**Verification:**
+- Python compile check:
+  `python -m py_compile lead_engine/lead_memory.py lead_engine/dashboard_server.py`
+- JS parse check for dashboard script via Node `vm.Script`
+- Flask test-client checks:
+  - `GET /api/conversation_queue` -> `200`
+  - `POST /api/update_delivery_profile` valid payload -> `200` + normalized profile
+
+---

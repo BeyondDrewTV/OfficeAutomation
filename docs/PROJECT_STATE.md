@@ -1,23 +1,24 @@
 ﻿# Copperline Project State
 
-Last Updated: 2026-03-22
+Last Updated: 2026-03-25
 
 ## Copperline Version
 v0.3
 
 ## Current Phase
-Lead Acquisition + Outreach Engine
+Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Command Center as unified operational surface -- territory-to-queue sync, bulk-action-first workflow
+Operator-visible conversion handoff -- offer packaging + deployment readiness tracking
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 84 -- Territory-to-queue scope sync (pre-commit; JS/CSS/HTML in index.html)
+Pass 85 -- Offer Packaging + Deployment Readiness layer in Conversations (durable lead_memory profile + new operator endpoint + UI panel)
 
 ## Recent Passes
+Pass 85 -- Conversations: fixed offer package menu, best-fit recommendation, lifecycle stage lane (discovered->live), deployment readiness checklist, durable save via lead_memory
 Pass 84 -- Territory-to-queue scope: map selection scopes queue rail; scoped summary strip; ccCmdApproveScoped / ccCmdRegenScoped; bndSelectBoundary + bndClearBoundary hooks
 Pass 83 -- CC layout QA: page containment fixed, map height/fill improved, panel narrowing, cmd bar density, queue rail copper hierarchy
 Pass 82 -- Pipeline merged into Command Center: map-dominant layout, right queue rail, bottom command bar, CC default tab
@@ -61,6 +62,13 @@ Protected systems are listed in `PROTECTED_SYSTEMS.md`. Do not duplicate that li
    - Touch 2: timeline reframe (acknowledges time passed)
    - Touch 3: low-pressure closeout
    - Industry fallback path: no obs = industry-specific anchor phrase
+
+5. Conversation -> Delivery Handoff (Pass 85)
+   - Replied leads open in Conversations with operator notes + next step
+   - Operator assigns one standard offer package (or uses best-fit recommendation)
+   - Operator sets lifecycle stage (discovered -> drafted -> contacted -> replied -> call booked -> proposal ready -> won -> deployment pending -> live)
+   - Operator tracks deployment checklist (intake, access, copy, routing, testing, live)
+   - Metadata persists in durable lead_memory (no queue schema changes)
 
 ## DRAFT_VERSION
 Current: v18

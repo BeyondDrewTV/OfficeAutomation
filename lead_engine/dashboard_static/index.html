@@ -650,6 +650,25 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cv-empty{padding:80px 24px;text-align:center;color:var(--muted)}
 .cv-empty-icon{font-size:40px;margin-bottom:10px;opacity:.35}
 .cv-fire{color:var(--copper);font-size:12px;font-weight:700}
+.cv-item-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.cv-chip{display:inline-flex;align-items:center;padding:1px 7px;border-radius:10px;font-size:9px;font-weight:700;letter-spacing:.03em;background:var(--surface3);color:var(--muted);border:1px solid var(--border)}
+.cv-chip.offer{background:rgba(184,115,51,.13);color:var(--copper);border-color:rgba(184,115,51,.25)}
+.cv-chip.stage{background:rgba(79,142,247,.15);color:var(--blue);border-color:rgba(79,142,247,.28)}
+.cv-offer-block{border:1px solid rgba(79,142,247,.26);background:rgba(79,142,247,.08);border-radius:var(--rs);padding:12px 14px}
+.cv-offer-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.cv-offer-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.cv-offer-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+@media(max-width:700px){.cv-offer-grid{grid-template-columns:1fr}}
+.cv-mini-label{display:block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.cv-select{width:100%;padding:7px 9px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:12px;outline:none}
+.cv-select:focus{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-glow)}
+.cv-readiness-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+@media(max-width:700px){.cv-readiness-list{grid-template-columns:1fr}}
+.cv-rdy-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text);padding:5px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)}
+.cv-rdy-item input{accent-color:var(--blue)}
+.cv-readiness-progress{height:5px;background:var(--surface3);border-radius:999px;margin-top:8px;overflow:hidden}
+.cv-readiness-fill{height:100%;background:var(--blue);transition:width .16s ease}
+.cv-readiness-count{font-size:10px;color:var(--muted);margin-top:6px}
 /* ── Pass 66: Command Bar ─────────────────────────────────────────── */
 .cmd-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:linear-gradient(135deg,rgba(12,14,20,.98),rgba(18,22,32,.95));border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;flex-wrap:wrap;box-shadow:0 4px 24px rgba(0,0,0,.4)}
 .cmd-territory{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;padding:7px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);transition:.15s}
@@ -6641,20 +6660,170 @@ function spOpenReview(idx) {
 // ==================================================================
 // CONVERSATIONS  (cv*)  — Part 6
 // ==================================================================
-let _cvData    = [];
-let _cvActive  = null;
+const COPPERLINE_OFFER_PACKAGES = [
+  { key: 'missed_call_recovery', label: 'Missed Call Recovery' },
+  { key: 'lead_intake_routing', label: 'Lead Intake + Routing' },
+  { key: 'followup_reactivation', label: 'Follow-Up Reactivation' },
+  { key: 'review_request_system', label: 'Review Request System' },
+  { key: 'estimate_job_status_communication', label: 'Estimate / Job Status Communication' },
+];
+const COPPERLINE_CONVERSION_STAGES = [
+  'discovered',
+  'drafted',
+  'contacted',
+  'replied',
+  'call_booked',
+  'proposal_ready',
+  'won',
+  'deployment_pending',
+  'live',
+];
+const COPPERLINE_STAGE_LABELS = {
+  discovered: 'Discovered',
+  drafted: 'Drafted',
+  contacted: 'Contacted',
+  replied: 'Replied',
+  call_booked: 'Call Booked',
+  proposal_ready: 'Proposal Ready',
+  won: 'Won',
+  deployment_pending: 'Deployment Pending',
+  live: 'Live',
+};
+const COPPERLINE_READINESS_CHECKLIST = [
+  { key: 'intake_complete', label: 'Intake complete' },
+  { key: 'vendor_access_collected', label: 'Phone/vendor access collected' },
+  { key: 'copy_approved', label: 'Copy approved' },
+  { key: 'routing_logic_defined', label: 'Routing logic defined' },
+  { key: 'testing_pending', label: 'Testing complete' },
+  { key: 'live', label: 'Live' },
+];
+let _cvData = [];
+let _cvActive = null;
+
+function _cvDefaultDeliveryProfile(row) {
+  const base = {
+    package_key: '',
+    offer_notes: '',
+    stage: (String(row?.replied || '').toLowerCase() === 'true') ? 'replied' : 'discovered',
+    readiness: {},
+    updated_at: '',
+  };
+  COPPERLINE_READINESS_CHECKLIST.forEach((item) => { base.readiness[item.key] = false; });
+  return base;
+}
+
+function _cvNormalizeDeliveryProfile(profile, row) {
+  const normalized = _cvDefaultDeliveryProfile(row);
+  if (!profile || typeof profile !== 'object') return normalized;
+
+  const packageKeys = new Set(COPPERLINE_OFFER_PACKAGES.map((p) => p.key));
+  const stageKeys = new Set(COPPERLINE_CONVERSION_STAGES);
+
+  if (typeof profile.package_key === 'string' && packageKeys.has(profile.package_key)) {
+    normalized.package_key = profile.package_key;
+  }
+  if (typeof profile.offer_notes === 'string') normalized.offer_notes = profile.offer_notes;
+  if (typeof profile.stage === 'string' && stageKeys.has(profile.stage)) normalized.stage = profile.stage;
+  if (typeof profile.updated_at === 'string') normalized.updated_at = profile.updated_at;
+  if (profile.readiness && typeof profile.readiness === 'object') {
+    COPPERLINE_READINESS_CHECKLIST.forEach((item) => {
+      if (item.key in profile.readiness) normalized.readiness[item.key] = !!profile.readiness[item.key];
+    });
+  }
+  return normalized;
+}
+
+function _cvOfferLabel(key) {
+  const pkg = COPPERLINE_OFFER_PACKAGES.find((p) => p.key === key);
+  return pkg ? pkg.label : 'Unassigned';
+}
+
+function _cvStageLabel(stage) {
+  return COPPERLINE_STAGE_LABELS[stage] || 'Discovered';
+}
+
+function _cvReadinessStats(profile) {
+  const readiness = profile?.readiness || {};
+  const total = COPPERLINE_READINESS_CHECKLIST.length;
+  const done = COPPERLINE_READINESS_CHECKLIST.reduce((acc, item) => acc + (readiness[item.key] ? 1 : 0), 0);
+  return { done, total, pct: total ? Math.round((done / total) * 100) : 0 };
+}
+
+function _cvRecommendedOffer(row) {
+  const combined = [
+    row?.industry || '',
+    row?.reply_snippet || '',
+    row?.lead_insight_sentence || '',
+    row?.conversation_notes || '',
+    row?.conversation_next_step || '',
+    row?.business_specific_observation || '',
+  ].join(' ').toLowerCase();
+
+  if (/(missed call|voicemail|after[- ]hours|can'?t answer|call back)/.test(combined)) return 'missed_call_recovery';
+  if (/(intake|dispatch|routing|lead intake|front desk|book(ing)? calls?)/.test(combined)) return 'lead_intake_routing';
+  if (/(follow[- ]?up|reactivat|old lead|stale lead|quote follow[- ]?up)/.test(combined)) return 'followup_reactivation';
+  if (/(review|google review|rating|testimonial)/.test(combined)) return 'review_request_system';
+  if (/(estimate|job status|eta|reschedul|status update|text update)/.test(combined)) return 'estimate_job_status_communication';
+
+  const industry = (row?.industry || '').toLowerCase();
+  if (['plumbing', 'hvac', 'electrical', 'garage_door', 'locksmith', 'roofing'].includes(industry)) return 'missed_call_recovery';
+  return 'lead_intake_routing';
+}
+
+function _cvApplyDeliveryPatch(i, patch) {
+  if (!_cvData[i]) return _cvDefaultDeliveryProfile(null);
+  const current = _cvNormalizeDeliveryProfile(_cvData[i].delivery_profile, _cvData[i]);
+  const next = { ...current, ...patch, readiness: { ...current.readiness } };
+  if (patch.readiness && typeof patch.readiness === 'object') {
+    Object.keys(patch.readiness).forEach((key) => {
+      next.readiness[key] = !!patch.readiness[key];
+    });
+  }
+  _cvData[i].delivery_profile = next;
+  return next;
+}
+
+let _cvSaveTimer = null;
+let _cvDeliverySaveTimer = null;
+
+async function _cvSaveDeliveryNow(idx, i, patch, rerenderPanel) {
+    const res = await api('/api/update_delivery_profile', { index: idx, profile: patch });
+    if (!res?.ok) {
+      toast('Offer/deployment save failed: ' + (res?.error || 'unknown error'), 'err');
+      return;
+    }
+    if (_cvData[i]) _cvData[i].delivery_profile = _cvNormalizeDeliveryProfile(res.delivery_profile, _cvData[i]);
+    _cvRenderList();
+    if (rerenderPanel && _cvData[i]) _cvRenderPanel(_cvData[i], i);
+}
+
+function _cvQueueDeliverySave(idx, i, patch, { rerenderPanel = false, debounce = false } = {}) {
+  if (!debounce) {
+    _cvSaveDeliveryNow(idx, i, patch, rerenderPanel);
+    return;
+  }
+  clearTimeout(_cvDeliverySaveTimer);
+  _cvDeliverySaveTimer = setTimeout(() => {
+    _cvSaveDeliveryNow(idx, i, patch, rerenderPanel);
+  }, 450);
+}
 
 async function convLoad() {
   const list = document.getElementById('cv-list');
   if (list) list.innerHTML = '<div class="cv-empty"><div class="cv-empty-icon">💬</div><p>Loading…</p></div>';
   try {
     _cvData = await api('/api/conversation_queue');
+    _cvData = (_cvData || []).map((row) => ({
+      ...row,
+      delivery_profile: _cvNormalizeDeliveryProfile(row.delivery_profile, row),
+    }));
+    if (_cvActive !== null && _cvActive >= _cvData.length) _cvActive = null;
     _cvRenderList();
-    // Update nav badge
     const nav = document.getElementById('nav-conversations');
     if (nav) nav.textContent = _cvData.length > 0
       ? `💬 Conversations (${_cvData.length})` : '💬 Conversations';
-  } catch(e) {
+    if (_cvActive !== null && _cvData[_cvActive]) _cvRenderPanel(_cvData[_cvActive], _cvActive);
+  } catch (e) {
     if (list) list.innerHTML = '<div class="cv-empty"><p>Failed to load</p></div>';
   }
 }
@@ -6671,12 +6840,19 @@ function _cvRenderList() {
     return;
   }
   list.innerHTML = _cvData.map((r, i) => {
-    const ts    = r.replied_at ? new Date(r.replied_at).toLocaleString() : '';
+    const ts = r.replied_at ? new Date(r.replied_at).toLocaleString() : '';
     const isCur = _cvActive === i;
-    return `<div class="cv-item${isCur?' active':''}" onclick="cvSelect(${i})">
+    const profile = _cvNormalizeDeliveryProfile(r.delivery_profile, r);
+    const stage = _cvStageLabel(profile.stage);
+    const offer = profile.package_key ? _cvOfferLabel(profile.package_key) : 'No package';
+    return `<div class="cv-item${isCur ? ' active' : ''}" onclick="cvSelect(${i})">
       <div class="cv-item-name">${escHtml(r.business_name)}</div>
-      <div class="cv-item-meta">${escHtml(r.city)}, ${escHtml(r.state)}${r.industry ? ' · '+escHtml(r.industry) : ''}</div>
-      ${r.reply_snippet ? `<div class="cv-item-snippet">↩ ${escHtml(r.reply_snippet.substring(0,70))}</div>` : ''}
+      <div class="cv-item-meta">${escHtml(r.city)}, ${escHtml(r.state)}${r.industry ? ' · ' + escHtml(r.industry) : ''}</div>
+      <div class="cv-item-tags">
+        <span class="cv-chip stage">${escHtml(stage)}</span>
+        <span class="cv-chip offer">${escHtml(offer)}</span>
+      </div>
+      ${r.reply_snippet ? `<div class="cv-item-snippet">↩ ${escHtml(r.reply_snippet.substring(0, 70))}</div>` : ''}
       <div class="cv-item-ts">${ts}</div>
     </div>`;
   }).join('');
@@ -6690,11 +6866,24 @@ function cvSelect(i) {
 
 function _cvRenderPanel(r, i) {
   const panel = document.getElementById('cv-panel');
-  if (!panel) return;
-  const idx   = r.index;
-  const ts    = r.replied_at ? new Date(r.replied_at).toLocaleString() : '';
+  if (!panel || !r) return;
+  const idx = r.index;
+  const ts = r.replied_at ? new Date(r.replied_at).toLocaleString() : '';
   const notes = r.conversation_notes || '';
-  const next  = r.conversation_next_step || '';
+  const next = r.conversation_next_step || '';
+  const profile = _cvNormalizeDeliveryProfile(r.delivery_profile, r);
+  const recommendedOffer = _cvRecommendedOffer(r);
+  const readinessStats = _cvReadinessStats(profile);
+
+  const packageOptions = ['<option value="">Select package…</option>']
+    .concat(COPPERLINE_OFFER_PACKAGES.map((pkg) => `<option value="${pkg.key}"${profile.package_key === pkg.key ? ' selected' : ''}>${escHtml(pkg.label)}</option>`))
+    .join('');
+  const stageOptions = COPPERLINE_CONVERSION_STAGES
+    .map((stage) => `<option value="${stage}"${profile.stage === stage ? ' selected' : ''}>${escHtml(_cvStageLabel(stage))}</option>`)
+    .join('');
+  const readinessRows = COPPERLINE_READINESS_CHECKLIST
+    .map((item) => `<label class="cv-rdy-item"><input type="checkbox" id="cv-rdy-${item.key}-${i}" ${profile.readiness[item.key] ? 'checked' : ''} onchange="cvToggleReadiness(${idx},${i},'${item.key}')"> ${escHtml(item.label)}</label>`)
+    .join('');
 
   panel.innerHTML = `
     <div class="cv-panel-hdr">
@@ -6720,6 +6909,36 @@ function _cvRenderPanel(r, i) {
         </div>
       </div>
       ${r.lead_insight_sentence ? `<div class="sq-insight">💡 ${escHtml(r.lead_insight_sentence)}</div>` : ''}
+      <div class="cv-offer-block">
+        <div class="cv-offer-head">
+          <div>
+            <div class="cv-section-label">Offer + Deployment Readiness</div>
+            <div class="cv-offer-sub">Best-fit recommendation: <strong>${escHtml(_cvOfferLabel(recommendedOffer))}</strong></div>
+          </div>
+          <button class="btn btn-ghost" style="font-size:11px" onclick="cvUseRecommendedOffer(${idx},${i},'${recommendedOffer}')">Use Recommendation</button>
+        </div>
+        <div class="cv-offer-grid">
+          <div>
+            <label class="cv-mini-label">Package</label>
+            <select id="cv-package-${i}" class="cv-select" onchange="cvSavePackage(${idx},${i})">${packageOptions}</select>
+          </div>
+          <div>
+            <label class="cv-mini-label">Lifecycle Stage</label>
+            <select id="cv-stage-${i}" class="cv-select" onchange="cvSaveStage(${idx},${i})">${stageOptions}</select>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <label class="cv-mini-label">Offer Notes</label>
+          <textarea id="cv-offer-notes-${i}" class="cv-textarea" style="min-height:70px" placeholder="Scope, constraints, pricing context, or objections…"
+            oninput="cvSaveOfferNotes(${idx},${i})">${escHtml(profile.offer_notes || '')}</textarea>
+        </div>
+        <div style="margin-top:10px">
+          <div class="cv-mini-label">Deployment Readiness</div>
+          <div class="cv-readiness-list">${readinessRows}</div>
+          <div class="cv-readiness-progress"><div class="cv-readiness-fill" style="width:${readinessStats.pct}%"></div></div>
+          <div class="cv-readiness-count">${readinessStats.done}/${readinessStats.total} checklist items complete</div>
+        </div>
+      </div>
       <div>
         <div class="cv-section-label">Conversation Notes</div>
         <textarea id="cv-notes-${i}" class="cv-textarea" placeholder="Add notes about this conversation…"
@@ -6746,19 +6965,53 @@ function _cvRenderPanel(r, i) {
     </div>`;
 }
 
-let _cvSaveTimer = null;
 function cvSaveNotes(idx, i) {
   const val = document.getElementById(`cv-notes-${i}`)?.value || '';
   if (_cvData[i]) _cvData[i].conversation_notes = val;
   clearTimeout(_cvSaveTimer);
-  _cvSaveTimer = setTimeout(() => api('/api/update_conversation', {index: idx, notes: val}), 600);
+  _cvSaveTimer = setTimeout(() => api('/api/update_conversation', { index: idx, notes: val }), 600);
 }
 
 function cvSaveNextStep(idx, i) {
   const val = document.getElementById(`cv-nextstep-${i}`)?.value || '';
   if (_cvData[i]) _cvData[i].conversation_next_step = val;
   clearTimeout(_cvSaveTimer);
-  _cvSaveTimer = setTimeout(() => api('/api/update_conversation', {index: idx, next_step: val}), 600);
+  _cvSaveTimer = setTimeout(() => api('/api/update_conversation', { index: idx, next_step: val }), 600);
+}
+
+function cvUseRecommendedOffer(idx, i, packageKey) {
+  const sel = document.getElementById(`cv-package-${i}`);
+  if (!sel) return;
+  sel.value = packageKey;
+  cvSavePackage(idx, i);
+}
+
+function cvSavePackage(idx, i) {
+  const packageKey = document.getElementById(`cv-package-${i}`)?.value || '';
+  _cvApplyDeliveryPatch(i, { package_key: packageKey });
+  _cvQueueDeliverySave(idx, i, { package_key: packageKey }, { rerenderPanel: false });
+  _cvRenderList();
+}
+
+function cvSaveStage(idx, i) {
+  const stage = document.getElementById(`cv-stage-${i}`)?.value || 'discovered';
+  _cvApplyDeliveryPatch(i, { stage });
+  _cvQueueDeliverySave(idx, i, { stage }, { rerenderPanel: false });
+  _cvRenderList();
+}
+
+function cvSaveOfferNotes(idx, i) {
+  const offerNotes = document.getElementById(`cv-offer-notes-${i}`)?.value || '';
+  _cvApplyDeliveryPatch(i, { offer_notes: offerNotes });
+  _cvQueueDeliverySave(idx, i, { offer_notes: offerNotes }, { rerenderPanel: false, debounce: true });
+}
+
+function cvToggleReadiness(idx, i, key) {
+  const checked = !!document.getElementById(`cv-rdy-${key}-${i}`)?.checked;
+  _cvApplyDeliveryPatch(i, { readiness: { [key]: checked } });
+  _cvQueueDeliverySave(idx, i, { readiness: { [key]: checked } }, { rerenderPanel: false });
+  _cvRenderList();
+  if (_cvData[i]) _cvRenderPanel(_cvData[i], i);
 }
 
 function cvSendQuick(idx, type) {

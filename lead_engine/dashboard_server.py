@@ -1260,11 +1260,84 @@ def api_sprint_next():
     lead["priority_label"]=lead.get("opp_priority",score_priority_label(lead.get("opp_score",0)))
     return jsonify({"ok":True,"lead":lead,"remaining":len(cands)-1})
 
+_DELIVERY_PACKAGE_KEYS = {
+    "missed_call_recovery",
+    "lead_intake_routing",
+    "followup_reactivation",
+    "review_request_system",
+    "estimate_job_status_communication",
+}
+_DELIVERY_STAGES = {
+    "discovered",
+    "drafted",
+    "contacted",
+    "replied",
+    "call_booked",
+    "proposal_ready",
+    "won",
+    "deployment_pending",
+    "live",
+}
+_DELIVERY_READINESS_KEYS = (
+    "intake_complete",
+    "vendor_access_collected",
+    "copy_approved",
+    "routing_logic_defined",
+    "testing_pending",
+    "live",
+)
+
+
+def _delivery_profile_default(row: dict | None = None) -> dict:
+    is_replied = ((row or {}).get("replied") or "").strip().lower() == "true"
+    return {
+        "package_key": "",
+        "offer_notes": "",
+        "stage": "replied" if is_replied else "discovered",
+        "readiness": {k: False for k in _DELIVERY_READINESS_KEYS},
+        "updated_at": "",
+    }
+
+
+def _normalize_delivery_profile(raw_profile: dict | None, row: dict | None = None) -> dict:
+    base = _delivery_profile_default(row)
+    if not isinstance(raw_profile, dict):
+        return base
+
+    package_key = (raw_profile.get("package_key") or "").strip().lower()
+    if package_key in _DELIVERY_PACKAGE_KEYS:
+        base["package_key"] = package_key
+
+    offer_notes = raw_profile.get("offer_notes")
+    if isinstance(offer_notes, str):
+        base["offer_notes"] = offer_notes
+
+    stage = (raw_profile.get("stage") or "").strip().lower()
+    if stage in _DELIVERY_STAGES:
+        base["stage"] = stage
+
+    readiness = raw_profile.get("readiness")
+    if isinstance(readiness, dict):
+        for key in _DELIVERY_READINESS_KEYS:
+            if key in readiness:
+                base["readiness"][key] = bool(readiness.get(key))
+
+    updated_at = raw_profile.get("updated_at")
+    if isinstance(updated_at, str):
+        base["updated_at"] = updated_at
+
+    return base
+
+
 @app.route("/api/conversation_queue")
 def api_conversation_queue():
     rows = _read_pending(); convos = []
     for i,r in enumerate(rows):
-        if (r.get("replied") or "").lower()=="true": _enrich_row(r,i); convos.append(r)
+        if (r.get("replied") or "").lower()=="true":
+            _enrich_row(r,i)
+            mem = _lm.get_delivery_profile(r)
+            r["delivery_profile"] = _normalize_delivery_profile(mem, r)
+            convos.append(r)
     convos.sort(key=lambda r:r.get("replied_at",""),reverse=True); return jsonify(convos)
 
 @app.route("/api/update_conversation", methods=["POST"])
@@ -1283,6 +1356,61 @@ def api_update_conversation():
         except Exception as _e:
             log.warning("lead_memory event failed (note_added): %s", _e)
     return jsonify({"ok":True})
+
+
+@app.route("/api/update_delivery_profile", methods=["POST"])
+def api_update_delivery_profile():
+    d = request.json or {}
+    idx = d.get("index")
+    patch = d.get("profile")
+    rows = _read_pending()
+
+    if idx is None or not isinstance(idx, int) or not (0 <= idx < len(rows)):
+        return jsonify({"ok": False, "error": "Invalid index"}), 400
+    if not isinstance(patch, dict):
+        return jsonify({"ok": False, "error": "profile must be an object"}), 400
+
+    clean_patch: dict = {}
+
+    if "package_key" in patch:
+        package_key = (patch.get("package_key") or "").strip().lower()
+        if package_key and package_key not in _DELIVERY_PACKAGE_KEYS:
+            return jsonify({"ok": False, "error": "Invalid package_key"}), 400
+        clean_patch["package_key"] = package_key
+
+    if "offer_notes" in patch:
+        offer_notes = patch.get("offer_notes")
+        if not isinstance(offer_notes, str):
+            return jsonify({"ok": False, "error": "offer_notes must be a string"}), 400
+        clean_patch["offer_notes"] = offer_notes[:2000]
+
+    if "stage" in patch:
+        stage = (patch.get("stage") or "").strip().lower()
+        if stage and stage not in _DELIVERY_STAGES:
+            return jsonify({"ok": False, "error": "Invalid stage"}), 400
+        clean_patch["stage"] = stage
+
+    if "readiness" in patch:
+        readiness = patch.get("readiness")
+        if not isinstance(readiness, dict):
+            return jsonify({"ok": False, "error": "readiness must be an object"}), 400
+        clean_readiness = {}
+        for key, value in readiness.items():
+            if key not in _DELIVERY_READINESS_KEYS:
+                continue
+            clean_readiness[key] = bool(value)
+        clean_patch["readiness"] = clean_readiness
+
+    if not clean_patch:
+        current = _normalize_delivery_profile(_lm.get_delivery_profile(rows[idx]), rows[idx])
+        return jsonify({"ok": True, "delivery_profile": current})
+
+    record = _lm.update_delivery_profile(rows[idx], clean_patch)
+    if not record:
+        return jsonify({"ok": False, "error": "Failed to update delivery profile"}), 500
+
+    profile = _normalize_delivery_profile(record.get("delivery_profile"), rows[idx])
+    return jsonify({"ok": True, "delivery_profile": profile})
 
 # ── Follow-up status helpers (Pass 22) ───────────────────────────────────────
 # Schedule: touch1=sent_at, touch2=+2d, touch3=+5d, touch4=+10d

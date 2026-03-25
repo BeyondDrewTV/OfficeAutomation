@@ -1,34 +1,43 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-03-22
+Last Updated: 2026-03-25
 
 ## Active Pass
-Pass 84 -- Territory-to-queue scope sync
+Pass 85 -- Offer Packaging + Deployment Readiness layer
 
 ## Status
-Pass 84 in progress. JS/CSS/HTML complete, server restart + syntax verification + git commit pending.
+Pass 85 complete. Frontend + API + durable lead-memory persistence shipped in one cohesive pass.
 
-## What Pass 84 Builds
-- `_ccTerrScope` module-level scope state
-- `_ccScopeMatchRow(row)` -- city-primary, bbox-secondary match against allRows
-- `ccScopeToTerritory(data)` -- sets scope when map boundary selected
-- `ccClearTerritoryScope()` -- clears scope on boundary clear
-- `_ccRenderScopeSummary()` -- 5-stat strip: Total / Approved / Stale / Replied / No Email
-- `ccCmdApproveScoped()` / `ccCmdRegenScoped()` -- bulk actions scoped to territory
-- Scope bar (copper-accented) above queue rail body
-- Scope pill in bottom command bar
-- Hooks: `bndSelectBoundary` -> `ccScopeToTerritory`, `bndClearBoundary` -> `ccClearTerritoryScope`
-- Scope gate added to `_ccQueueFilterRow`
+## What Pass 85 Builds
+- Conversations panel now includes an operator-visible Offer + Deployment Readiness block
+- Fixed package menu (5 standard Copperline offers):
+  - Missed Call Recovery
+  - Lead Intake + Routing
+  - Follow-Up Reactivation
+  - Review Request System
+  - Estimate / Job Status Communication
+- Deterministic best-fit recommendation (operator can accept or override)
+- Lifecycle handoff stage selector:
+  discovered -> drafted -> contacted -> replied -> call booked -> proposal ready -> won -> deployment pending -> live
+- Deployment checklist:
+  intake complete, phone/vendor access collected, copy approved, routing logic defined, testing complete, live
+- New API endpoint: `POST /api/update_delivery_profile` (lead-memory only; no queue mutation)
+- `GET /api/conversation_queue` now returns normalized `delivery_profile` for replied leads
+- Durable storage in `lead_engine/data/lead_memory.json` via new `lead_memory` helper functions
 
-**File changed:** `lead_engine/dashboard_static/index.html` only.
-**No new endpoints. No protected system changes.**
+**Files changed:**
+- `lead_engine/dashboard_static/index.html`
+- `lead_engine/dashboard_server.py`
+- `lead_engine/lead_memory.py`
 
-## Remaining Pass 84 Steps
-1. Finish `ccQueueUpdateStats` scope count refresh
-2. Restart server + hard refresh browser
-3. Verify JS syntax (no console errors)
-4. Git commit
-5. Update CHANGELOG_AI.md
+**Protected-system status:** unchanged. No edits to queue schema, sender core, scheduler core, or run orchestrator.
+
+## Verification Completed
+1. `python -m py_compile lead_engine/lead_memory.py lead_engine/dashboard_server.py`
+2. JS parse check of `lead_engine/dashboard_static/index.html` script block via Node `vm.Script`
+3. Flask test client check:
+   - `GET /api/conversation_queue` returns 200
+   - `POST /api/update_delivery_profile` accepts valid payload and returns normalized profile
 
 ---
 
@@ -55,4 +64,4 @@ Pass 84 in progress. JS/CSS/HTML complete, server restart + syntax verification 
 ---
 
 ## Next Pass
-Pass 85 -- Pipeline tab simplification or redirect to CC as canonical home
+Pass 86 -- Win-to-live delivery board (aggregate view of won/deployment-pending/live leads with readiness rollup)

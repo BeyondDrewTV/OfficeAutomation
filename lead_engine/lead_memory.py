@@ -449,6 +449,89 @@ def get_obs_history(row: dict) -> list:
 
 
 # ---------------------------------------------------------------------------
+# Pass 85: Offer + deployment readiness profile
+# ---------------------------------------------------------------------------
+
+def get_delivery_profile(row: dict) -> dict:
+    """
+    Return saved delivery profile metadata for a lead.
+
+    The returned dict can include:
+      package_key, offer_notes, stage, readiness{...}, updated_at
+
+    Returns {} when not set.
+    """
+    record = get_record(row)
+    if not record:
+        return {}
+    profile = record.get("delivery_profile")
+    return dict(profile) if isinstance(profile, dict) else {}
+
+
+def update_delivery_profile(
+    row: dict,
+    profile_patch: dict,
+    *,
+    operator: str = "operator",
+) -> Optional[dict]:
+    """
+    Merge operator-managed delivery profile fields into durable lead memory.
+
+    This intentionally avoids queue schema changes and protected send-path edits.
+    """
+    if not isinstance(profile_patch, dict):
+        raise ValueError("profile_patch must be a dict")
+
+    key = lead_key(row)
+    ts = _now_iso()
+    name = _norm(row.get("business_name") or row.get("name") or "")
+    city = _norm(row.get("city") or "")
+    website = _norm(row.get("website") or "")
+    phone = _norm(row.get("phone") or "")
+
+    try:
+        with _lock:
+            data = _load()
+            record = data.setdefault(key, {
+                "key": key,
+                "history": [],
+                "business_name": name,
+                "city": city,
+                "website": website,
+                "phone": phone,
+            })
+
+            current = record.get("delivery_profile")
+            if not isinstance(current, dict):
+                current = {}
+            merged = dict(current)
+
+            for field, value in profile_patch.items():
+                if (
+                    isinstance(value, dict)
+                    and isinstance(merged.get(field), dict)
+                ):
+                    nested = dict(merged[field])
+                    nested.update(value)
+                    merged[field] = nested
+                else:
+                    merged[field] = value
+
+            merged["updated_at"] = ts
+            merged["updated_by"] = operator
+            record["delivery_profile"] = merged
+            record["last_updated"] = ts
+            record["business_name"] = name or record.get("business_name", "")
+            record["city"] = city or record.get("city", "")
+            record["website"] = website or record.get("website", "")
+            record["phone"] = phone or record.get("phone", "")
+            _save(data)
+            return record
+    except Exception:
+        return None
+
+
+# ---------------------------------------------------------------------------
 # Observation quality grading — deterministic, no AI required
 # ---------------------------------------------------------------------------
 

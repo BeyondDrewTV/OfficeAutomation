@@ -1,6 +1,6 @@
 ﻿# Copperline AI Control Panel
 
-Last Updated: 2026-03-22
+Last Updated: 2026-03-25
 Repository Version: v0.3
 
 > **Role:** Active operating contract + current AI guardrails.
@@ -14,11 +14,11 @@ Repository Version: v0.3
 
 | Field | Value |
 |---|---|
-| Project Phase | Lead Acquisition Engine |
-| Current Focus | Command Center — territory-to-queue sync, bulk-action-first flow |
-| Last Completed Pass | Pass 84 -- Territory-to-queue scope sync (JS + CSS + HTML, pre-commit) |
-| Pass Before That | Pass 83 -- CC layout QA: page containment, map height, rail hierarchy |
-| Next Pass | Pass 85 -- Pipeline tab simplification or CC redirect |
+| Project Phase | Lead Acquisition + Conversion Delivery Engine |
+| Current Focus | Productized handoff — offer packaging + deployment readiness in Conversations |
+| Last Completed Pass | Pass 85 -- Offer Packaging + Deployment Readiness layer (UI + API + lead_memory persistence) |
+| Pass Before That | Pass 83+84 -- CC layout QA + territory-to-queue scope sync (committed c85801c) |
+| Next Pass | Pass 86 -- Win-to-live delivery board with readiness rollup |
 
 ---
 
