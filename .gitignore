@@ -142,3 +142,4 @@ vite.config.ts.timestamp-*
 lead_engine/logs/
 lead_engine/queue/pending_emails.csv
 lead_engine/data/prospects.csv
+.claude/
