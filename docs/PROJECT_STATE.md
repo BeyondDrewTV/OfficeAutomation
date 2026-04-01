@@ -1,6 +1,6 @@
-﻿# Copperline Project State
+# Copperline Project State
 
-Last Updated: 2026-03-25
+Last Updated: 2026-04-01
 
 ## Copperline Version
 v0.3
@@ -9,16 +9,17 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Operator-visible conversion handoff -- offer packaging + deployment readiness tracking
+Delivery board — operator visibility into won/deployment/live pipeline
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 85 -- Offer Packaging + Deployment Readiness layer in Conversations (durable lead_memory profile + new operator endpoint + UI panel)
+Pass 86 -- Delivery Board: GET /api/delivery_board, POST /api/update_delivery_profile_by_key, board UI with won/deployment_pending/live columns, per-card readiness checklist, stage selector, compact top stats
 
 ## Recent Passes
-Pass 85 -- Conversations: fixed offer package menu, best-fit recommendation, lifecycle stage lane (discovered->live), deployment readiness checklist, durable save via lead_memory
+Pass 86 -- Delivery Board: delivery_board endpoint, update_delivery_profile_by_key endpoint, board page with 3-column kanban (won/deployment_pending/live), readiness checklist per card, stage selector, auto-load on tab switch
+Pass 85 -- Conversations: offer package menu, best-fit recommendation, lifecycle stage lane (discovered->live), deployment readiness checklist, durable save via lead_memory
 Pass 84 -- Territory-to-queue scope: map selection scopes queue rail; scoped summary strip; ccCmdApproveScoped / ccCmdRegenScoped; bndSelectBoundary + bndClearBoundary hooks
 Pass 83 -- CC layout QA: page containment fixed, map height/fill improved, panel narrowing, cmd bar density, queue rail copper hierarchy
 Pass 82 -- Pipeline merged into Command Center: map-dominant layout, right queue rail, bottom command bar, CC default tab
@@ -69,6 +70,16 @@ Protected systems are listed in `PROTECTED_SYSTEMS.md`. Do not duplicate that li
    - Operator sets lifecycle stage (discovered -> drafted -> contacted -> replied -> call booked -> proposal ready -> won -> deployment pending -> live)
    - Operator tracks deployment checklist (intake, access, copy, routing, testing, live)
    - Metadata persists in durable lead_memory (no queue schema changes)
+
+6. Delivery Board (Pass 86)
+   - Dedicated Delivery tab in top nav
+   - 3-column board: Won / Deployment Pending / Live
+   - Each card shows: business name, city, package, readiness progress bar, per-item checklist
+   - Readiness items: intake complete, vendor access, copy approved, routing logic, testing, live
+   - Operator can tick checklist items inline (persists via update_delivery_profile_by_key)
+   - Operator can move stage via dropdown on each card
+   - Top stats strip: won / pending / live / fully ready counts
+   - Board auto-loads when Delivery tab is clicked; manual Refresh button
 
 ## DRAFT_VERSION
 Current: v18
