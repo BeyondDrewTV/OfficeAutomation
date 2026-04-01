@@ -532,6 +532,65 @@ def update_delivery_profile(
 
 
 # ---------------------------------------------------------------------------
+# Pass 86: Key-direct delivery profile update (no queue row required)
+# ---------------------------------------------------------------------------
+
+def update_delivery_profile_by_key(
+    key: str,
+    profile_patch: dict,
+    *,
+    operator: str = "operator",
+) -> Optional[dict]:
+    """
+    Merge delivery profile fields into durable lead memory using the lead_key
+    string directly.  Used by the Pass 86 delivery board where the key is
+    known but a full queue row is not needed.
+
+    Same merge semantics as update_delivery_profile().
+    Returns the updated record, or None if the key does not exist or the
+    write fails (never creates a new record — board operates on known leads).
+    """
+    if not isinstance(key, str) or not key:
+        raise ValueError("key must be a non-empty string")
+    if not isinstance(profile_patch, dict):
+        raise ValueError("profile_patch must be a dict")
+
+    ts = _now_iso()
+
+    try:
+        with _lock:
+            data = _load()
+            record = data.get(key)
+            if record is None:
+                return None  # Key must already exist
+
+            current = record.get("delivery_profile")
+            if not isinstance(current, dict):
+                current = {}
+            merged = dict(current)
+
+            for field, value in profile_patch.items():
+                if (
+                    isinstance(value, dict)
+                    and isinstance(merged.get(field), dict)
+                ):
+                    nested = dict(merged[field])
+                    nested.update(value)
+                    merged[field] = nested
+                else:
+                    merged[field] = value
+
+            merged["updated_at"] = ts
+            merged["updated_by"] = operator
+            record["delivery_profile"] = merged
+            record["last_updated"] = ts
+            _save(data)
+            return record
+    except Exception:
+        return None
+
+
+# ---------------------------------------------------------------------------
 # Observation quality grading — deterministic, no AI required
 # ---------------------------------------------------------------------------
 

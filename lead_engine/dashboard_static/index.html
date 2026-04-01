@@ -1073,6 +1073,33 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .qlf-badge-replied{background:rgba(62,207,114,.2);color:var(--green);font-weight:700}
 .qlf-empty{padding:32px 16px;text-align:center;color:var(--dim);font-size:13px}
 .qlf-match{color:var(--copper);font-weight:700}
+/* ── Pass 86: Delivery Board ─────────────────────────────────────────────── */
+.db-wrap{max-width:1200px;margin:0 auto;padding:28px}
+.db-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.db-hdr h2{font-size:16px;font-weight:600}
+.db-stats{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.db-stat{padding:10px 18px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);min-width:110px}
+.db-stat-n{font-family:var(--mono);font-size:22px;font-weight:600}
+.db-stat-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:2px}
+.db-columns{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
+.db-col{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.db-col-hdr{padding:11px 16px;font-size:12px;font-weight:600;border-bottom:1px solid var(--border);background:var(--surface2);display:flex;align-items:center;gap:8px}
+.db-col-count{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--surface3);border:1px solid var(--border);border-radius:10px;padding:1px 7px;margin-left:auto}
+.db-col-body{padding:8px;display:flex;flex-direction:column;gap:8px;min-height:60px}
+.db-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;cursor:pointer;transition:border-color .15s}
+.db-card:hover{border-color:var(--border-hi)}
+.db-card-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.db-card-meta{font-size:11px;color:var(--muted);margin-bottom:8px}
+.db-card-pkg{font-family:var(--mono);font-size:10px;color:var(--blue);background:var(--blue-glow);border:1px solid rgba(79,142,247,.2);border-radius:var(--rs);padding:2px 7px;display:inline-block;margin-bottom:6px}
+.db-readiness{display:flex;flex-direction:column;gap:3px}
+.db-readiness-bar{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden;margin-bottom:4px}
+.db-readiness-fill{height:100%;background:var(--green);border-radius:2px;transition:width .3s}
+.db-check{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.db-check.done{color:var(--green)}
+.db-check-icon{width:12px;height:12px;border-radius:2px;border:1px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;transition:.12s}
+.db-check.done .db-check-icon{background:var(--green);border-color:var(--green);color:#0e1a12}
+.db-card-stage-sel{margin-top:10px;width:100%;padding:5px 8px;background:var(--surface3);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:11px;font-family:var(--sans);cursor:pointer;outline:none}
+
 </style>
 </head>
 <body>
@@ -1101,6 +1128,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <div class="nav-tab"        data-parent="clients"   onclick="switchParent('clients',this)">📞 Clients</div>
   <div class="nav-tab"        data-parent="health"    onclick="switchParent('health',this)" id="nav-health-top">🩺 Health<span id="nav-health-badge" style="display:none;margin-left:4px;background:var(--red);color:#fff;border-radius:10px;font-size:9px;font-weight:700;padding:1px 5px;vertical-align:middle"></span><span id="nav-exceptions-badge" style="display:none;margin-left:4px;background:var(--red);color:#fff;border-radius:10px;font-size:9px;font-weight:700;padding:1px 5px;vertical-align:middle"></span></div>
   <div class="nav-tab"        data-parent="tools"     onclick="switchParent('tools',this)">⚙ Tools <span class="tag" style="font-size:9px;padding:1px 5px;vertical-align:middle">Stub</span></div>
+  <div class="nav-tab" data-parent="delivery" onclick="switchParent('delivery',this)">&#128230; Delivery</div>
 </nav>
 
 <!-- Sub-tab bar — shown below top nav, content changes per parent -->
@@ -1121,6 +1149,8 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <!-- Tools sub-tabs -->
   <div class="sub-tab" data-parent="tools" data-page="tools"       onclick="switchSubPage('tools','tools',this)">⚙ Tools</div>
   <div class="sub-tab" data-parent="tools" data-page="lead-memory" onclick="switchSubPage('tools','lead-memory',this)">🧠 Lead Memory</div>
+  <!-- Delivery sub-tabs -->
+  <div class="sub-tab" data-parent="delivery" data-page="delivery-board" onclick="switchSubPage('delivery','delivery-board',this)" style="display:none">&#128230; Board</div>
 </nav>
 
 <!-- ══════════════ PAGE: OUTREACH ══════════════ -->
@@ -5526,6 +5556,7 @@ function _runPageHooks(name) {
 }
 
 function switchParent(parent, el) {
+  if (parent === 'delivery') { setTimeout(loadDeliveryBoard, 0); }
   // Update top-nav active state
   document.querySelectorAll('#top-nav .nav-tab').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
@@ -11270,7 +11301,167 @@ async function mapSearch() {
   btn.classList.remove('loading'); btn.disabled = !_mapCenter;
 }
 
+
+// ── Pass 86: Delivery Board ──────────────────────────────────────────────
+const _READINESS_LABELS = {
+  intake_complete:          'Intake complete',
+  vendor_access_collected:  'Vendor access collected',
+  copy_approved:            'Copy approved',
+  routing_logic_defined:    'Routing logic defined',
+  testing_pending:          'Testing / QA pending',
+  live:                     'Marked live',
+};
+const _READINESS_KEYS = Object.keys(_READINESS_LABELS);
+
+async function loadDeliveryBoard() {
+  const btn = document.getElementById('db-refresh-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '...'; }
+  try {
+    const res = await fetch('/api/delivery_board');
+    const data = await res.json();
+    if (!data.ok) { console.error('delivery_board error', data); return; }
+    renderDeliveryBoard(data);
+  } catch(e) {
+    console.error('loadDeliveryBoard failed', e);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '⟳ Refresh'; }
+  }
+}
+
+function renderDeliveryBoard(data) {
+  const { stats, rows } = data;
+
+  // Stats bar
+  const statsEl = document.getElementById('db-stats');
+  const emptyEl = document.getElementById('db-empty');
+  const colsEl  = document.getElementById('db-columns');
+
+  if (statsEl) {
+    statsEl.style.display = 'flex';
+    statsEl.innerHTML = [
+      ['won',       stats.won,                '#c8884a'],
+      ['pending',   stats.deployment_pending, '#4f8ef7'],
+      ['live',      stats.live,               '#3ecf72'],
+      ['ready',     stats.fully_ready,        '#6b7591'],
+    ].map(([lbl, n, color]) =>
+      `<div class="db-stat"><div class="db-stat-n" style="color:${color}">${n}</div><div class="db-stat-l">${lbl}</div></div>`
+    ).join('');
+  }
+
+  if (!rows.length) {
+    if (emptyEl) emptyEl.style.display = 'block';
+    if (colsEl)  colsEl.style.display  = 'none';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+  if (colsEl)  colsEl.style.display  = 'grid';
+
+  ['won', 'deployment_pending', 'live'].forEach(stage => {
+    const body = document.getElementById('db-body-' + stage);
+    const cnt  = document.getElementById('db-cnt-' + stage);
+    const stageRows = rows.filter(r => r.stage === stage);
+    if (cnt) cnt.textContent = stageRows.length;
+    if (!body) return;
+    body.innerHTML = '';
+    stageRows.forEach(row => body.appendChild(buildDbCard(row)));
+  });
+}
+
+function buildDbCard(row) {
+  const card = document.createElement('div');
+  card.className = 'db-card';
+  const pct = row.readiness_pct || 0;
+  const pkgHtml = row.package_key
+    ? `<div class="db-card-pkg">${row.package_key.replace(/_/g,' ')}</div>`
+    : '';
+  const checksHtml = _READINESS_KEYS.map(k => {
+    const done = row.readiness && row.readiness[k];
+    return `<div class="db-check${done?' done':''}" data-key="${k}" data-lead-key="${row.key}">
+      <div class="db-check-icon" onclick="toggleReadiness(event,'${row.key}','${k}')">${done?'✓':''}</div>
+      <span>${_READINESS_LABELS[k]}</span>
+    </div>`;
+  }).join('');
+
+  card.innerHTML = `
+    <div class="db-card-name">${row.business_name || '—'}</div>
+    <div class="db-card-meta">${[row.city, row.package_key?'':null].filter(Boolean).join(' · ') || '&nbsp;'}</div>
+    ${pkgHtml}
+    <div class="db-readiness-bar"><div class="db-readiness-fill" style="width:${pct}%"></div></div>
+    <div class="db-readiness">${checksHtml}</div>
+    <select class="db-card-stage-sel" onchange="moveDbCard(event,'${row.key}')" data-lead-key="${row.key}">
+      <option value="">— Move stage —</option>
+      <option value="won"${row.stage==='won'?' selected':''}>Won</option>
+      <option value="deployment_pending"${row.stage==='deployment_pending'?' selected':''}>Deployment Pending</option>
+      <option value="live"${row.stage==='live'?' selected':''}>Live</option>
+    </select>
+  `;
+  return card;
+}
+
+async function toggleReadiness(evt, leadKey, readinessKey) {
+  evt.stopPropagation();
+  const checkEl = evt.currentTarget.closest('.db-check');
+  const isDone = checkEl && checkEl.classList.contains('done');
+  await updateDeliveryProfileByKey(leadKey, { readiness: { [readinessKey]: !isDone } });
+  loadDeliveryBoard();
+}
+
+async function moveDbCard(evt, leadKey) {
+  const stage = evt.target.value;
+  if (!stage) return;
+  await updateDeliveryProfileByKey(leadKey, { stage });
+  loadDeliveryBoard();
+}
+
+async function updateDeliveryProfileByKey(key, profilePatch) {
+  try {
+    const res = await fetch('/api/update_delivery_profile_by_key', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key, profile: profilePatch }),
+    });
+    const data = await res.json();
+    if (!data.ok) console.error('updateDeliveryProfileByKey error', data);
+    return data;
+  } catch(e) {
+    console.error('updateDeliveryProfileByKey failed', e);
+  }
+}
+
 </script>
+
+
+<!-- ══════════════ PAGE: DELIVERY BOARD (Pass 86) ══════════════ -->
+<div class="page" id="page-delivery-board">
+<div class="db-wrap">
+  <div class="db-hdr">
+    <div>
+      <h2>&#128230; Delivery Board</h2>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Won clients in deployment pipeline — track readiness to go live</div>
+    </div>
+    <button class="btn btn-ghost" onclick="loadDeliveryBoard()" id="db-refresh-btn">&#8635; Refresh</button>
+  </div>
+  <div class="db-stats" id="db-stats" style="display:none"></div>
+  <div id="db-empty" style="display:none;padding:48px 0;text-align:center;color:var(--muted);font-size:13px">
+    No clients in won, deployment pending, or live stages yet.<br>
+    <span style="font-size:11px;margin-top:6px;display:block">Advance a conversation to <strong>won</strong> from the Conversations tab to see them here.</span>
+  </div>
+  <div class="db-columns" id="db-columns" style="display:none">
+    <div class="db-col" id="db-col-won">
+      <div class="db-col-hdr">&#127942; Won <span class="db-col-count" id="db-cnt-won"></span></div>
+      <div class="db-col-body" id="db-body-won"></div>
+    </div>
+    <div class="db-col" id="db-col-deployment_pending">
+      <div class="db-col-hdr">&#9881; Deployment Pending <span class="db-col-count" id="db-cnt-deployment_pending"></span></div>
+      <div class="db-col-body" id="db-body-deployment_pending"></div>
+    </div>
+    <div class="db-col" id="db-col-live">
+      <div class="db-col-hdr">&#128994; Live <span class="db-col-count" id="db-cnt-live"></span></div>
+      <div class="db-col-body" id="db-body-live"></div>
+    </div>
+  </div>
+</div>
+</div>
 
 <!-- Pass 24 — inline preview modal (stays on map page) -->
 <div id="mrp-modal" onclick="if(event.target===this)_mrpModalClose()">

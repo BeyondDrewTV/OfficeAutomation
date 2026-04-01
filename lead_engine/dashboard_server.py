@@ -1,4 +1,4 @@
-"""
+﻿"""
 Copperline — Lead Operations Dashboard
 Run: python lead_engine/dashboard_server.py
 Then open: http://localhost:5000
@@ -1411,6 +1411,234 @@ def api_update_delivery_profile():
 
     profile = _normalize_delivery_profile(record.get("delivery_profile"), rows[idx])
     return jsonify({"ok": True, "delivery_profile": profile})
+
+# ── Pass 86: Delivery Board endpoints ────────────────────────────────────────
+
+_BOARD_STAGES = {"won", "deployment_pending", "live"}
+
+
+@app.route("/api/delivery_board")
+def api_delivery_board():
+    """
+    Return board-ready rows for the delivery board (stages: won, deployment_pending, live).
+    Also returns compact top stats.
+    """
+    all_records = _lm.get_all_records()
+    rows = []
+    for key, record in all_records.items():
+        raw_profile = record.get("delivery_profile")
+        if not isinstance(raw_profile, dict):
+            continue
+        stage = (raw_profile.get("stage") or "").strip().lower()
+        if stage not in _BOARD_STAGES:
+            continue
+        profile = _normalize_delivery_profile(raw_profile)
+        readiness = profile.get("readiness", {})
+        readiness_keys = list(_DELIVERY_READINESS_KEYS)
+        completed = sum(1 for k in readiness_keys if readiness.get(k))
+        total_keys = len(readiness_keys)
+        rows.append({
+            "key":            key,
+            "business_name":  record.get("business_name", ""),
+            "city":           record.get("city", ""),
+            "website":        record.get("website", ""),
+            "phone":          record.get("phone", ""),
+            "stage":          stage,
+            "package_key":    profile.get("package_key", ""),
+            "offer_notes":    profile.get("offer_notes", ""),
+            "readiness":      readiness,
+            "readiness_pct":  round(completed / total_keys * 100) if total_keys else 0,
+            "readiness_done": completed,
+            "readiness_total": total_keys,
+            "updated_at":     profile.get("updated_at", ""),
+            "last_updated":   record.get("last_updated", ""),
+        })
+
+    rows.sort(key=lambda r: r.get("last_updated", ""), reverse=True)
+
+    stats = {
+        "won":                sum(1 for r in rows if r["stage"] == "won"),
+        "deployment_pending": sum(1 for r in rows if r["stage"] == "deployment_pending"),
+        "live":               sum(1 for r in rows if r["stage"] == "live"),
+        "total":              len(rows),
+        "fully_ready":        sum(1 for r in rows if r["readiness_pct"] == 100),
+    }
+
+    return jsonify({"ok": True, "stats": stats, "rows": rows})
+
+
+@app.route("/api/update_delivery_profile_by_key", methods=["POST"])
+def api_update_delivery_profile_by_key():
+    """
+    Update delivery profile fields for a lead identified by lead_key string.
+    Input:  { key, profile: { stage?, package_key?, offer_notes?, readiness? } }
+    Output: { ok, delivery_profile }
+    """
+    d     = request.json or {}
+    key   = (d.get("key") or "").strip()
+    patch = d.get("profile")
+
+    if not key:
+        return jsonify({"ok": False, "error": "key is required"}), 400
+    if not isinstance(patch, dict):
+        return jsonify({"ok": False, "error": "profile must be an object"}), 400
+
+    clean_patch = {}
+
+    if "package_key" in patch:
+        package_key = (patch.get("package_key") or "").strip().lower()
+        if package_key and package_key not in _DELIVERY_PACKAGE_KEYS:
+            return jsonify({"ok": False, "error": "Invalid package_key"}), 400
+        clean_patch["package_key"] = package_key
+
+    if "offer_notes" in patch:
+        offer_notes = patch.get("offer_notes")
+        if not isinstance(offer_notes, str):
+            return jsonify({"ok": False, "error": "offer_notes must be a string"}), 400
+        clean_patch["offer_notes"] = offer_notes[:2000]
+
+    if "stage" in patch:
+        stage = (patch.get("stage") or "").strip().lower()
+        if stage and stage not in _DELIVERY_STAGES:
+            return jsonify({"ok": False, "error": "Invalid stage"}), 400
+        clean_patch["stage"] = stage
+
+    if "readiness" in patch:
+        readiness = patch.get("readiness")
+        if not isinstance(readiness, dict):
+            return jsonify({"ok": False, "error": "readiness must be an object"}), 400
+        clean_readiness = {}
+        for rkey, value in readiness.items():
+            if rkey not in _DELIVERY_READINESS_KEYS:
+                continue
+            clean_readiness[rkey] = bool(value)
+        clean_patch["readiness"] = clean_readiness
+
+    if not clean_patch:
+        return jsonify({"ok": False, "error": "No valid fields in profile patch"}), 400
+
+    record = _lm.update_delivery_profile_by_key(key, clean_patch)
+    if record is None:
+        return jsonify({"ok": False, "error": "Key not found in lead memory"}), 404
+
+    profile = _normalize_delivery_profile(record.get("delivery_profile"))
+    return jsonify({"ok": True, "delivery_profile": profile})
+
+
+# ── Pass 86: Delivery Board endpoints ────────────────────────────────────────
+
+_BOARD_STAGES = {"won", "deployment_pending", "live"}
+
+
+@app.route("/api/delivery_board")
+def api_delivery_board():
+    """
+    Return board-ready rows for the delivery board (stages: won, deployment_pending, live).
+    Also returns compact top stats.
+    """
+    all_records = _lm.get_all_records()
+    rows = []
+    for key, record in all_records.items():
+        raw_profile = record.get("delivery_profile")
+        if not isinstance(raw_profile, dict):
+            continue
+        stage = (raw_profile.get("stage") or "").strip().lower()
+        if stage not in _BOARD_STAGES:
+            continue
+        profile = _normalize_delivery_profile(raw_profile)
+        readiness = profile.get("readiness", {})
+        readiness_keys = list(_DELIVERY_READINESS_KEYS)
+        completed = sum(1 for k in readiness_keys if readiness.get(k))
+        total_keys = len(readiness_keys)
+        rows.append({
+            "key":           key,
+            "business_name": record.get("business_name", ""),
+            "city":          record.get("city", ""),
+            "website":       record.get("website", ""),
+            "phone":         record.get("phone", ""),
+            "stage":         stage,
+            "package_key":   profile.get("package_key", ""),
+            "offer_notes":   profile.get("offer_notes", ""),
+            "readiness":     readiness,
+            "readiness_pct": round(completed / total_keys * 100) if total_keys else 0,
+            "readiness_done": completed,
+            "readiness_total": total_keys,
+            "updated_at":    profile.get("updated_at", ""),
+            "last_updated":  record.get("last_updated", ""),
+        })
+
+    rows.sort(key=lambda r: r.get("last_updated", ""), reverse=True)
+
+    stats = {
+        "won":                sum(1 for r in rows if r["stage"] == "won"),
+        "deployment_pending": sum(1 for r in rows if r["stage"] == "deployment_pending"),
+        "live":               sum(1 for r in rows if r["stage"] == "live"),
+        "total":              len(rows),
+        "fully_ready":        sum(1 for r in rows if r["readiness_pct"] == 100),
+    }
+
+    return jsonify({"ok": True, "stats": stats, "rows": rows})
+
+
+@app.route("/api/update_delivery_profile_by_key", methods=["POST"])
+def api_update_delivery_profile_by_key():
+    """
+    Update delivery profile fields for a lead identified by lead_key string.
+    Used by the delivery board where only the key (not a queue row) is available.
+
+    Input:  { key, profile: { stage?, package_key?, offer_notes?, readiness? } }
+    Output: { ok, delivery_profile }
+    """
+    d     = request.json or {}
+    key   = (d.get("key") or "").strip()
+    patch = d.get("profile")
+
+    if not key:
+        return jsonify({"ok": False, "error": "key is required"}), 400
+    if not isinstance(patch, dict):
+        return jsonify({"ok": False, "error": "profile must be an object"}), 400
+
+    clean_patch: dict = {}
+
+    if "package_key" in patch:
+        package_key = (patch.get("package_key") or "").strip().lower()
+        if package_key and package_key not in _DELIVERY_PACKAGE_KEYS:
+            return jsonify({"ok": False, "error": "Invalid package_key"}), 400
+        clean_patch["package_key"] = package_key
+
+    if "offer_notes" in patch:
+        offer_notes = patch.get("offer_notes")
+        if not isinstance(offer_notes, str):
+            return jsonify({"ok": False, "error": "offer_notes must be a string"}), 400
+        clean_patch["offer_notes"] = offer_notes[:2000]
+
+    if "stage" in patch:
+        stage = (patch.get("stage") or "").strip().lower()
+        if stage and stage not in _DELIVERY_STAGES:
+            return jsonify({"ok": False, "error": "Invalid stage"}), 400
+        clean_patch["stage"] = stage
+
+    if "readiness" in patch:
+        readiness = patch.get("readiness")
+        if not isinstance(readiness, dict):
+            return jsonify({"ok": False, "error": "readiness must be an object"}), 400
+        clean_readiness = {}
+        for rkey, value in readiness.items():
+            if rkey not in _DELIVERY_READINESS_KEYS:
+                continue
+            clean_readiness[rkey] = bool(value)
+        clean_patch["readiness"] = clean_readiness
+
+    if not clean_patch:
+        return jsonify({"ok": False, "error": "No valid fields in profile patch"}), 400
+
+    record = _lm.update_delivery_profile_by_key(key, clean_patch)
+    if record is None:
+        return jsonify({"ok": False, "error": "Key not found in lead memory"}), 404
+
+    profile = _normalize_delivery_profile(record.get("delivery_profile"))
+    return jsonify({"ok": True, "delivery_profile": profile})
+
 
 # ── Follow-up status helpers (Pass 22) ───────────────────────────────────────
 # Schedule: touch1=sent_at, touch2=+2d, touch3=+5d, touch4=+10d
