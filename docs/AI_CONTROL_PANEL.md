@@ -1,6 +1,6 @@
 ﻿# Copperline AI Control Panel
 
-Last Updated: 2026-03-25
+Last Updated: 2026-04-01
 Repository Version: v0.3
 
 > **Role:** Active operating contract + current AI guardrails.
@@ -15,10 +15,10 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | Productized handoff — offer packaging + deployment readiness in Conversations |
-| Last Completed Pass | Pass 85 -- Offer Packaging + Deployment Readiness layer (UI + API + lead_memory persistence) |
-| Pass Before That | Pass 83+84 -- CC layout QA + territory-to-queue scope sync (committed c85801c) |
-| Next Pass | Pass 86 -- Win-to-live delivery board with readiness rollup |
+| Current Focus | First-touch drafting tightened — service-first fixer/operator positioning (v19) |
+| Last Completed Pass | Pass 87 -- First-Touch Service-First Tightening (DRAFT_VERSION v19, fixer/operator enforcement, expanded bans, problem-labeled subjects) |
+| Pass Before That | Pass 86 -- Delivery Board (won/deployment_pending/live kanban, readiness checklist, committed) |
+| Next Pass | TBD |
 
 ---
 
@@ -57,6 +57,9 @@ These constraints are enforced on all passes. Do not change product behavior tha
 - Territory cells guide area selection; circle remains the working search geometry
 - Email sending is manual/operator-reviewed -- auto-send must not drift into nurture behavior
 - Observation-led drafting remains required for first-touch
+- First-touch drafts must follow the 4-part structure: observation → loss/leak → fixer/operator line → reply-first CTA
+- First-touch fixer/operator line must be visible by sentence 2–3 (validated structurally by `validate_draft()`)
+- First-touch subjects must be problem-labeled (e.g. "missed calls", "estimate follow-up") — "quick question" style banned
 - First-touch drafts must stay short, grounded in real service-business bottlenecks
 - Generated observations are operator-reviewed by default during hardening
 - Observation evidence refresh is operator-triggered, single-lead only

@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Delivery board — operator visibility into won/deployment/live pipeline
+First-touch drafting tightened — service-first fixer/operator positioning, earlier value prop, DRAFT_VERSION v19
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 86 -- Delivery Board: GET /api/delivery_board, POST /api/update_delivery_profile_by_key, board UI with won/deployment_pending/live columns, per-card readiness checklist, stage selector, compact top stats
+Pass 87 -- First-Touch Service-First Tightening: DRAFT_VERSION v19, 4-part structure enforced (observation → loss → fixer/operator line → reply CTA), all 17 fallback bodies updated, banned word list expanded (AI/SaaS/opener bans), subject lines problem-labeled, complaint-risk linting added
 
 ## Recent Passes
+Pass 87 -- First-touch tightening: fixer/operator line enforcement, expanded bans, problem-labeled subjects, v19 draft version
 Pass 86 -- Delivery Board: delivery_board endpoint, update_delivery_profile_by_key endpoint, board page with 3-column kanban (won/deployment_pending/live), readiness checklist per card, stage selector, auto-load on tab switch
 Pass 85 -- Conversations: offer package menu, best-fit recommendation, lifecycle stage lane (discovered->live), deployment readiness checklist, durable save via lead_memory
 Pass 84 -- Territory-to-queue scope: map selection scopes queue rail; scoped summary strip; ccCmdApproveScoped / ccCmdRegenScoped; bndSelectBoundary + bndClearBoundary hooks

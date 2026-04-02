@@ -1,12 +1,53 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-03-25
+Last Updated: 2026-04-01
 
 ## Active Pass
-Pass 85 -- Offer Packaging + Deployment Readiness layer
+Pass 87 -- First-Touch Service-First Tightening
 
 ## Status
-Pass 85 complete. Frontend + API + durable lead-memory persistence shipped in one cohesive pass.
+Complete. Drafting rules updated. DRAFT_VERSION bumped to v19.
+
+## What Pass 87 Builds
+
+**Goal:** Tighten first-touch email generation so the value proposition (what Drew fixes) is visible by sentence 2–3. Keep the philosophy. Improve the execution.
+
+**4-part structure now enforced as contract:**
+1. Observation — specific detail about this business
+2. Owner-readable loss / leak — what that probably costs them
+3. Fixer/operator line — clearly states what Drew helps fix (required by validation)
+4. Reply-first CTA — soft question, no hard close
+
+**Changes:**
+- `DRAFT_VERSION`: v18 → v19
+- `_build_offer_sentence()`: Completely rewritten — angle-specific fixer/operator language replaces generic "I work one on one with owners..." across all 5 angles
+- All 17 trade fallback bodies + generic fallbacks updated: sentence 2 now states what Drew fixes, not just "I work one on one"
+- `_BANNED_WORDS` expanded: added "just reaching out", "wanted to introduce myself", "curious if", "would love to chat", "another set of eyes", "ai", "software", "dashboard", "transform", "unlock", "roi", "synergy", "workflow gap", "from the business side"
+- `_SUBJECT_BANNED_PHRASES` expanded: added "quick question", "had a question", "wanted to ask", "just checking", "touching base", "following up"
+- `_FALLBACK_SUBJECTS`: replaced "quick question" style with problem-labeled subjects: "missed calls", "callback backlog", "estimate follow-up", "after-hours leads", "contact form lag", "scheduling friction"
+- `_VAGUE_POSITIONING_PHRASES` expanded: added soft intro phrases
+- `validate_draft()` — three new checks added:
+  - Fixer/operator line required (raises `DraftInvalidError` if missing)
+  - Reply-first CTA required (raises `DraftInvalidError` if missing)
+  - Complaint-risk linting: exclamation overuse, multiple CTAs flagged
+
+**Files changed:**
+- `lead_engine/outreach/email_draft_agent.py`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**Protected-system status:** unchanged. No edits to send path, queue schema, scheduler, Gmail workflow, delivery board, or conversation board.
+
+## Verification Completed
+1. All fallback bodies manually verified: fixer/operator line present by sentence 2
+2. Banned word / subject lists reviewed against new first-touch contract
+3. `validate_draft()` now enforces fixer line + CTA structurally — drafts without them will fail and regenerate
+4. No protected systems touched
+
+## Next Pass
+TBD
 
 ## What Pass 85 Builds
 - Conversations panel now includes an operator-visible Offer + Deployment Readiness block

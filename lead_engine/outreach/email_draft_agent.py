@@ -4,7 +4,7 @@ import hashlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-DRAFT_VERSION = "v18"
+DRAFT_VERSION = "v19"
 
 # ---------------------------------------------------------------------------
 # Industry-keyed fallback drafts (no observation available)
@@ -13,75 +13,76 @@ DRAFT_VERSION = "v18"
 
 _INDUSTRY_FALLBACK_BODIES: Dict[str, List[str]] = {
     "plumbing": [
-        "I work with a lot of plumbing shops and the thing that comes up almost every time is that the phone is the whole business — when it's covered, things run fine, but when it's not, jobs and callbacks just disappear.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
-        "I've been working with service businesses on the gap between getting a call and actually closing the job. For most plumbing shops it's not a volume problem — it's a follow-through problem.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWould it be worth a quick conversation?",
+        "I work with a lot of plumbing shops and the thing that comes up almost every time is that the phone is the whole business — when it's covered, things run fine, but when it's not, jobs and callbacks just disappear.\n\nI help service businesses stop losing work to missed calls and slow callbacks — one on one with owners, built around how they actually run their operation.\n\nWorth a quick call to look at it together?",
+        "I've been working with service businesses on the gap between getting a call and actually closing the job. For most plumbing shops it's not a volume problem — it's a follow-through problem.\n\nI help owners tighten up the callback side so calls that come in actually turn into jobs.\n\nWould it be worth a quick conversation?",
     ],
     "hvac": [
-        "I work with a lot of HVAC owners and the pattern I see most is that the busy season creates a backlog that never fully clears — and by the time things slow down, the leads from the peak are already gone somewhere else.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
-        "I've been working with HVAC shops on the operational side — specifically the part where new calls come in while the crew is already stretched and things start slipping between the cracks.\n\nI work one on one with owners to look at the full picture and build something around how they actually operate.\n\nWould it be worth a quick conversation?",
+        "I work with a lot of HVAC owners and the pattern I see most is that the busy season creates a backlog that never fully clears — and by the time things slow down, the leads from the peak are already gone somewhere else.\n\nI help service businesses stop losing seasonal work to slow follow-up and callback gaps — one on one with owners, built around how they actually operate.\n\nWorth a quick call to look at it together?",
+        "I've been working with HVAC shops on the operational side — specifically the part where new calls come in while the crew is already stretched and things start slipping between the cracks.\n\nI help owners fix the follow-up and intake leaks that cost them work when they're at capacity.\n\nWould it be worth a quick conversation?",
     ],
     "electrical": [
-        "I work with electrical contractors pretty regularly and the thing that comes up most is scheduling — jobs run long, new calls stack up, and by the time someone gets back to an estimate request it's usually too late.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
-        "I've been working with electrical shops on the gap between incoming work and actual capacity. Most of the time it's not a sales problem — it's a coordination problem.\n\nI work one on one with owners to look at the full picture and build something around how they actually operate.\n\nWould it be worth a quick conversation?",
+        "I work with electrical contractors pretty regularly and the thing that comes up most is scheduling — jobs run long, new calls stack up, and by the time someone gets back to an estimate request it's usually too late.\n\nI help service businesses stop losing estimate requests and callbacks to slow follow-up — one on one with owners, specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I've been working with electrical shops on the gap between incoming work and actual capacity. Most of the time it's not a sales problem — it's a coordination problem.\n\nI help owners fix the operational gaps that let good jobs slip away when the crew is already stretched.\n\nWould it be worth a quick conversation?",
     ],
     "roofing": [
-        "I work with roofing contractors and the pattern I see most is that storm season creates a volume problem that the follow-up process wasn't built for — estimates go out and nobody knows which ones are still live.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
-        "I've been working with roofing shops on the estimate follow-up side — most are leaving jobs on the table not because the price is wrong but because the follow-up timing is.\n\nI work one on one with owners to look at the full picture and build something around how they actually operate.\n\nWould it be worth a quick conversation?",
+        "I work with roofing contractors and the pattern I see most is that storm season creates a volume problem that the follow-up process wasn't built for — estimates go out and nobody knows which ones are still live.\n\nI help service businesses tighten estimate follow-up so quotes don't go cold — one on one with owners, built around how they actually run their operation.\n\nWorth a quick call to look at it together?",
+        "I've been working with roofing shops on the estimate follow-up side — most are leaving jobs on the table not because the price is wrong but because the follow-up timing is.\n\nI help owners stop losing jobs to slow follow-up on estimates and callbacks.\n\nWould it be worth a quick conversation?",
     ],
     "towing": [
-        "I work with towing companies and the thing I see most is that dispatch is the whole bottleneck — when it's tight, calls get missed or returned too late and the job goes to whoever picked up.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with towing companies and the thing I see most is that dispatch is the whole bottleneck — when it's tight, calls get missed or returned too late and the job goes to whoever picked up.\n\nI help service businesses stop losing dispatch calls to slow callbacks and missed pickups — one on one with owners, built around how they actually run things.\n\nWorth a quick call to look at it together?",
     ],
     "auto": [
-        "I work with auto shops and the thing that comes up almost every time is that the front desk is doing five things at once — and the calls that don't get answered during a busy afternoon usually don't come back.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with auto shops and the thing that comes up almost every time is that the front desk is doing five things at once — and the calls that don't get answered during a busy afternoon usually don't come back.\n\nI help service businesses stop losing work to missed calls and slow follow-up — working one on one with owners to fix the specific gaps in how they handle incoming work.\n\nWorth a quick call to look at it together?",
     ],
     "landscaping": [
-        "I work with landscaping companies and the pattern I see most is that spring creates more demand than the process was built to handle — estimates pile up, follow-ups slip, and a lot of good jobs just don't close.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with landscaping companies and the pattern I see most is that spring creates more demand than the process was built to handle — estimates pile up, follow-ups slip, and a lot of good jobs just don't close.\n\nI help service businesses tighten estimate follow-up so quotes don't go cold during the busy season — one on one, specific to how they run things.\n\nWorth a quick call to look at it together?",
     ],
     "painting": [
-        "I work with painting contractors and the thing I see most is that the estimate side is solid but the follow-up isn't — most jobs that don't close are ones where no one circled back within a few days.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with painting contractors and the thing I see most is that the estimate side is solid but the follow-up isn't — most jobs that don't close are ones where no one circled back within a few days.\n\nI help owners stop losing jobs to slow follow-up on estimates and callbacks — one on one, built around how they actually operate.\n\nWorth a quick call to look at it together?",
     ],
     "cleaning": [
-        "I work with cleaning businesses and the pattern I see most is that recurring clients are easy to keep but new ones are hard to convert because the inquiry process is slow.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with cleaning businesses and the pattern I see most is that recurring clients are easy to keep but new ones are hard to convert because the inquiry process is slow.\n\nI help service businesses fix the intake leaks that cost them new clients — working one on one with owners to clean up how inquiries get handled.\n\nWorth a quick call to look at it together?",
     ],
     "concrete": [
-        "I work with concrete contractors and the thing I see most is that the estimate-to-job gap is long and most of that time is just waiting — and the jobs that go cold are usually the ones where nobody followed up in the first week.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with concrete contractors and the thing I see most is that the estimate-to-job gap is long and most of that time is just waiting — and the jobs that go cold are usually the ones where nobody followed up in the first week.\n\nI help service businesses tighten estimate follow-up so good jobs don't slip away while the owner is on-site running work.\n\nWorth a quick call to look at it together?",
     ],
     "tree_service": [
-        "I work with tree service companies and the pattern I see most is that storm work creates a volume spike the process wasn't built for — and a lot of good leads just disappear between the estimate and the call back.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with tree service companies and the pattern I see most is that storm work creates a volume spike the process wasn't built for — and a lot of good leads just disappear between the estimate and the call back.\n\nI help service businesses stop losing seasonal work to slow estimate follow-up and callback gaps — one on one, specific to how they operate.\n\nWorth a quick call to look at it together?",
     ],
     "flooring": [
-        "I work with flooring contractors and the thing I see most is that showroom visits don't always turn into jobs — usually because the follow-up after the estimate is inconsistent.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with flooring contractors and the thing I see most is that showroom visits don't always turn into jobs — usually because the follow-up after the estimate is inconsistent.\n\nI help owners tighten up estimate follow-up so the leads they're already getting actually turn into booked jobs.\n\nWorth a quick call to look at it together?",
     ],
     "appliance_repair": [
-        "I work with appliance repair shops and the thing that comes up most is same-day calls — when the schedule is full and the phone still rings, those jobs usually just go to whoever can get there first.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with appliance repair shops and the thing that comes up most is same-day calls — when the schedule is full and the phone still rings, those jobs usually just go to whoever can get there first.\n\nI help service businesses stop losing same-day calls and callbacks to slow response — one on one, built around how they actually handle incoming work.\n\nWorth a quick call to look at it together?",
     ],
     "moving": [
-        "I work with moving companies and the pattern I see most is that quote requests come in and the response time is what decides the job — not the price.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with moving companies and the pattern I see most is that quote requests come in and the response time is what decides the job — not the price.\n\nI help service businesses stop losing quote requests to slow response — working one on one with owners to fix the intake and follow-up gaps that cost them work.\n\nWorth a quick call to look at it together?",
     ],
     "pressure_washing": [
-        "I work with pressure washing businesses and the thing I see most is that spring and summer create more demand than the scheduling process was built for — and a lot of jobs just go to whoever responds first.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with pressure washing businesses and the thing I see most is that spring and summer create more demand than the scheduling process was built for — and a lot of jobs just go to whoever responds first.\n\nI help service businesses stop losing seasonal work to slow response and poor follow-up — one on one, specific to how they operate.\n\nWorth a quick call to look at it together?",
     ],
     "construction": [
-        "I work with general contractors and the pattern I see most is that the estimate pipeline gets backed up when the crew is full — and by the time there's bandwidth to follow up, the homeowner has already moved on.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with general contractors and the pattern I see most is that the estimate pipeline gets backed up when the crew is full — and by the time there's bandwidth to follow up, the homeowner has already moved on.\n\nI help service businesses tighten estimate follow-up so good jobs don't go cold while the owner is stretched running other work.\n\nWorth a quick call to look at it together?",
     ],
     "pest_control": [
-        "I work with pest control companies and the thing I see most is that the scheduling side works fine for recurring accounts but new calls get treated like walk-ins — and a lot of those just go cold.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with pest control companies and the thing I see most is that the scheduling side works fine for recurring accounts but new calls get treated like walk-ins — and a lot of those just go cold.\n\nI help service businesses fix the intake side so new calls actually get routed and followed up — one on one, built around how they run their operation.\n\nWorth a quick call to look at it together?",
     ],
 }
 
 # Generic fallback for any industry not specifically mapped
 _GENERIC_FALLBACK_BODIES: List[str] = [
-    "I work with service business owners pretty regularly and the thing that comes up most is that the operational side — keeping up with new work, following up on estimates, staying on top of incoming calls — is harder to manage than the work itself.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
-    "I've been working with small business owners on the gap between the work they're doing and the work they could be closing. Most of the time it's not a marketing problem — it's a process problem.\n\nI work one on one with owners to look at the full picture and build something around how they actually operate.\n\nWould it be worth a quick conversation?",
-    "I work with owners who are doing the work, running the business, and handling everything in between — and usually the thing that's hardest to stay on top of is the follow-up side.\n\nI work one on one with owners to look at the full operation and build something specific to how they run things.\n\nWorth a quick call to look at it together?",
+    "I work with service business owners pretty regularly and the thing that comes up most is that the operational side — keeping up with new work, following up on estimates, staying on top of incoming calls — is harder to manage than the work itself.\n\nI help owners fix the follow-up and intake leaks that cost them work — one on one, built around how they actually run things.\n\nWorth a quick call to look at it together?",
+    "I've been working with small business owners on the gap between the work they're doing and the work they could be closing. Most of the time it's not a marketing problem — it's a process problem.\n\nI help service businesses stop losing jobs to slow follow-up, missed callbacks, and estimates that go cold — one on one, specific to how they operate.\n\nWould it be worth a quick conversation?",
+    "I work with owners who are doing the work, running the business, and handling everything in between — and usually the thing that's hardest to stay on top of is the follow-up side.\n\nI help service businesses get more out of the leads they already have by fixing the operational gaps that let work slip through.\n\nWorth a quick call to look at it together?",
 ]
 
 _FALLBACK_SUBJECTS: List[str] = [
-    "quick question",
-    "had a question for you",
-    "wanted to ask you something",
-    "a question about your business",
-    "quick question for you",
+    "missed calls",
+    "callback backlog",
+    "estimate follow-up",
+    "after-hours leads",
+    "contact form lag",
+    "scheduling friction",
 ]
 
 
@@ -161,25 +162,37 @@ def detect_industry(business_name: str, provided_industry: str = "") -> str:
 # ---------------------------------------------------------------------------
 
 _BANNED_WORDS = [
+    # Generic SaaS / AI-agency openers
+    "just reaching out", "wanted to introduce myself", "curious if",
+    "would love to chat", "another set of eyes",
+    # Product / tech positioning
+    "ai", "software", "dashboard", "platform", "automation", "automate",
+    "solution", "system integration", "ai-powered", "ai powered",
+    # Business-speak
     "optimize", "revolutionize", "leverage", "synergy", "streamline",
     "game-changer", "game changer", "cutting-edge", "cutting edge",
     "robust", "scalable", "seamlessly", "seamless",
-    "ai-powered", "ai powered", "system integration", "platform",
-    "solution", "lead capture", "lead gen", "automation", "automate",
+    "transform", "unlock", "roi", "maximize efficiency",
+    "streamline operations", "unlock growth", "transform your business",
+    # Lead-gen / sales-y
+    "lead capture", "lead gen",
     "book more", "book appointments", "booked appointments",
     "never miss a lead", "fill your calendar", "autopilot",
     "capture leads", "follow-up system", "follow up system",
     "business growth", "grow your business", "scale your",
     "schedule a call", "book a call", "let's hop on", "hop on a call",
-    "free audit", "free consultation", "streamline operations",
-    "maximize efficiency", "unlock growth", "transform your business",
+    "free audit", "free consultation",
+    # Soft filler
     "happy to", "worth a look", "doesn't have to be complicated",
+    "from the business side", "workflow gap",
 ]
 
 _SUBJECT_BANNED_PHRASES = [
     "ai", "automation", "automate", "solution", "opportunity", "support",
     "checking in", "increase revenue", "grow your business", "urgent",
     "last chance", "free audit", "free consultation",
+    "quick question", "had a question", "wanted to ask", "just checking",
+    "touching base", "following up",
 ]
 
 _VAGUE_POSITIONING_PHRASES = [
@@ -188,6 +201,8 @@ _VAGUE_POSITIONING_PHRASES = [
     "worth comparing notes", "site is pretty explicit about",
     "the mess shows up", "if that is a live issue there",
     "where i'd start", "what i'd look at first", "first place i'd look",
+    "just wanted to", "just reaching out", "wanted to introduce",
+    "curious if you", "would love to", "i'd love to",
 ]
 
 _FORMAL_OPENER_SUBS = [
@@ -313,6 +328,45 @@ def validate_draft(body: str, observation: str) -> None:
         raise DraftInvalidError(
             "Draft does not mention a concrete business problem or gap."
         )
+
+    # Fixer/operator line check — value prop must be visible
+    _FIXER_LINE_SIGNALS = [
+        "i help service businesses", "i help owners", "i help small businesses",
+        "help fix", "help tighten", "help stop losing", "help owners fix",
+        "help owners clean", "fix the operational", "fix the follow",
+        "fix the gaps", "plug the leaks", "stop losing work",
+        "stop losing jobs", "get more out of",
+    ]
+    if not any(s in body_lower for s in _FIXER_LINE_SIGNALS):
+        raise DraftInvalidError(
+            "Draft missing fixer/operator line — value prop must be visible by sentence 3."
+        )
+
+    # Reply-first CTA check
+    _CTA_SIGNALS = [
+        "worth a quick call", "worth a conversation", "would it be worth",
+        "worth getting on", "want to get on", "worth a short conversation",
+        "worth a quick conversation",
+    ]
+    if not any(s in body_lower for s in _CTA_SIGNALS):
+        raise DraftInvalidError(
+            "Draft missing reply-first CTA — must close with a soft question."
+        )
+
+    # Complaint-risk linting
+    exclamation_count = body.count("!")
+    if exclamation_count > 1:
+        raise DraftInvalidError(
+            f"Draft uses too many exclamation marks ({exclamation_count}). Keep tone flat."
+        )
+    link_count = len(re.findall(r"https?://", body))
+    if link_count > 1:
+        raise DraftInvalidError("Draft must not contain multiple links.")
+    cta_phrases = ["worth a quick call", "would it be worth", "worth getting on",
+                   "want to get on", "worth a conversation", "worth a short"]
+    cta_hits = sum(1 for p in cta_phrases if p in body_lower)
+    if cta_hits > 2:
+        raise DraftInvalidError("Draft has multiple CTAs — keep to one reply-first close.")
 
 
 def validate_subject(subject: str) -> None:
@@ -575,15 +629,44 @@ def _build_consequence_sentence(obs: str, angle: str) -> str:
 
 def _build_offer_sentence(obs: str, angle: str, variant: int) -> str:
     """
-    Drew's positioning: one on one, looks at the full picture,
-    builds something specific to how they run things.
-    Confident. No hedging. No product pitch.
+    Drew's positioning: clearly states what he helps fix, then grounds it in
+    one-on-one, specific-to-their-operation work.
+    Fixer/operator line must be visible — no burying the value prop at the end.
     """
-    variants = [
-        "I work one on one with owners to look at the full operation and build something specific to how they run their business.",
-        "I work one on one with owners to find where the gaps are and put something in place that actually fits how they work.",
-        "I work one on one with owners to look at the whole picture and build a system around how they actually operate.",
-    ]
+    o = obs.lower()
+
+    # Angle-specific fixer lines
+    if angle == "callback_recovery":
+        variants = [
+            "I help service businesses stop losing work to missed calls and slow callbacks — working one on one with owners to fix the specific gaps in how they handle incoming work.",
+            "I help owners tighten up the callback side so calls that come in actually turn into jobs — one on one, built around how they actually run things.",
+            "I help service businesses get more out of the calls they're already getting by fixing the follow-up leaks that cost them work.",
+        ]
+    elif angle == "estimate_follow_up":
+        variants = [
+            "I help service businesses tighten estimate follow-up so quotes don't go cold — one on one with owners, built around how they actually run their operation.",
+            "I help owners stop losing jobs to slow follow-up on estimates — working one on one to fix the operational gaps that let good work slip away.",
+            "I help service businesses close more of the estimates they're already sending by fixing the follow-up timing that loses jobs.",
+        ]
+    elif angle == "after_hours_response":
+        variants = [
+            "I help service businesses handle after-hours and overflow inquiries so leads don't go cold before the next business day — one on one, specific to how they operate.",
+            "I help owners fix the after-hours gap so calls and requests that come in outside of business hours don't just disappear.",
+            "I help service businesses stop losing after-hours work by fixing how inquiries get handled when the owner isn't available.",
+        ]
+    elif angle == "inquiry_routing":
+        variants = [
+            "I help service businesses fix the intake side so inquiries that come in actually get routed and followed up — working one on one with owners to plug the leaks.",
+            "I help owners tighten up how new inquiries are handled so leads don't fall through between the form submission and the callback.",
+            "I help service businesses stop losing leads in the gap between when someone reaches out and when someone actually gets back to them.",
+        ]
+    else:
+        variants = [
+            "I help service businesses fix the operational gaps that lose jobs — working one on one with owners to build something specific to how they actually run things.",
+            "I help owners clean up the follow-up and intake leaks that cost them work — one on one, built around their operation.",
+            "I help service businesses get more out of the leads they already have by fixing the gaps in follow-up, callbacks, and estimate handling.",
+        ]
+
     return variants[variant % len(variants)]
 
 

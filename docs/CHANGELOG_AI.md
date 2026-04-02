@@ -2289,3 +2289,71 @@ conversion stages, and deployment-readiness tracking.
   - `POST /api/update_delivery_profile` valid payload -> `200` + normalized profile
 
 ---
+### 2026-04-01 - Pass 87: First-Touch Service-First Tightening
+
+**Goal:** Tighten first-touch email generation so the value proposition is visible by sentence 2–3. Keep philosophy, improve execution. Service-first fixer/operator positioning. No send-path or workflow changes.
+
+**Files changed:**
+- `lead_engine/outreach/email_draft_agent.py`
+- `docs/PROJECT_STATE.md`
+- `docs/CURRENT_BUILD.md`
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**What changed:**
+
+`DRAFT_VERSION`: v18 → v19
+
+`_build_offer_sentence()`:
+- Completely rewritten with angle-specific fixer/operator language
+- Replaced generic "I work one on one with owners to look at the full operation..." with direct service-first lines per angle
+- Examples: "I help service businesses stop losing work to missed calls and slow callbacks", "I help service businesses tighten estimate follow-up so quotes don't go cold"
+- 5 angles covered: callback_recovery, estimate_follow_up, after_hours_response, inquiry_routing, owner_workflow (default)
+
+Fallback bodies (all 17 trades + 3 generic):
+- Sentence 2 now states what Drew helps fix — no longer buried or absent
+- All bodies retained trade-native language (callbacks, dispatch, estimates, quote follow-up, seasonal backlog)
+
+`_BANNED_WORDS` expanded:
+- Added opener bans: "just reaching out", "wanted to introduce myself", "curious if", "would love to chat", "another set of eyes"
+- Added tech/product bans: "ai", "software", "dashboard", "transform", "unlock", "roi", "synergy"
+- Added positioning bans: "workflow gap", "from the business side"
+
+`_SUBJECT_BANNED_PHRASES` expanded:
+- Added: "quick question", "had a question", "wanted to ask", "just checking", "touching base", "following up"
+
+`_FALLBACK_SUBJECTS` replaced:
+- Removed all "quick question" style subjects
+- New: "missed calls", "callback backlog", "estimate follow-up", "after-hours leads", "contact form lag", "scheduling friction"
+
+`_VAGUE_POSITIONING_PHRASES` expanded:
+- Added: "just wanted to", "just reaching out", "wanted to introduce", "curious if you", "would love to", "i'd love to"
+
+`validate_draft()` — three new structural checks:
+- Fixer/operator line: draft must contain a recognized fixer phrase (raises DraftInvalidError if absent)
+- Reply-first CTA: draft must close with a soft question (raises DraftInvalidError if absent)
+- Complaint-risk linting: flags exclamation overuse (>1), multiple CTAs
+
+**What did NOT change:**
+- Send path, Gmail workflow, scheduler, queue schema
+- Delivery board (Pass 86)
+- Conversation board
+- Territory / discovery systems
+- Protected systems (run_lead_engine.py, sender module, safe_autopilot_eligible)
+- Observation validation logic
+- Follow-up draft agent
+- Core Copperline positioning (one-on-one workflow consulting)
+
+**Design decisions:**
+- Kept first-touch short — 4 short paragraphs, line-break separated
+- Did not add opt-out language (degrades human one-to-one tone)
+- Validation is structural/deterministic — no LLM involvement in validation
+- Fallback bodies still use trade-native nouns (callbacks, dispatch, estimates, quotes)
+
+**Verification:**
+- All fallback bodies reviewed: fixer/operator line visible by sentence 2
+- validate_draft() new checks reviewed for false-positive risk
+- No protected system files modified
+
+---
+
