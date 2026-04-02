@@ -1,4 +1,34 @@
-﻿### 2026-04-02 - Pass 93: Command Center UI/UX Hierarchy Polish
+﻿### 2026-04-02 - Pass 94–96 Milestone: Discovery History Recovery + Command Center Cohesion
+
+**Goal:** Fix Discovery History blank sub-tab (pre-existing bug). Smallest correct structural fix only.
+
+**Root cause (FACT):**
+`page-searches` was DOM-nested inside `page-command-center`. When `_activatePage('searches')` removed `.active` from all `.page` elements, `page-command-center` became `display:none`, hiding its child `page-searches` regardless of its own `.active` class. All nav JS was correct — only the DOM position was wrong.
+
+**Fix:**
+- Moved `page-searches` out of `page-command-center` to immediately after `</div><!-- /page-command-center -->`
+- No JS changes required
+- Div balance: 767/767 (unchanged)
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html` — DOM restructure only
+
+**What did NOT change:**
+- No JS, no nav logic, no data layer, no backend, no protected systems
+- History render behavior and `loadSearchHistory()` hook unchanged
+- Command Center, map, territory panel, queue rail all intact
+
+**Verification (live):**
+- Server restarted; hard-refreshed
+- Command Center boots, map loads, territory panel loads, queue rail loads ✓
+- History tab clicked: Search History renders (437 searches, full table) ✓
+- Map+Territory returns cleanly after History ✓
+- Pipeline intact ✓
+- Zero JS console errors ✓
+
+---
+
+### 2026-04-02 - Pass 93: Command Center UI/UX Hierarchy Polish
 
 **Goal:** Improve Copperline's UI/UX hierarchy so it reads as an operator command center, not a generic SaaS dashboard. Borrow structural discipline from grand strategy UI (CK3/Vic3/RimWorld/EU) — stronger panel zoning, denser information, clearer authority signals.
 

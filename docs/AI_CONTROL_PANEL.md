@@ -15,9 +15,9 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | Pass 93 complete — Command Center UI/UX hierarchy polish |
-| Last Completed Pass | Pass 93 -- Command Center UI/UX Hierarchy Polish |
-| Pass Before That | Pass 90–92 milestone -- Truth Sync + Delivery Recovery + Legacy DOM Cleanup |
+| Current Focus | Pass 94–96 milestone complete — Discovery History recovery |
+| Last Completed Pass | Pass 94–96 milestone -- Discovery History Recovery + Command Center Cohesion |
+| Pass Before That | Pass 93 -- Command Center UI/UX Hierarchy Polish |
 | Next Pass | TBD |
 
 ---

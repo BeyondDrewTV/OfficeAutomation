@@ -1856,6 +1856,31 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 
 </div><!-- /cc-main-row -->
 
+<!-- ── Pass 82: Bottom Command Bar ───────────────────────────────── -->
+<div class="cc-cmd-bar" id="cc-cmd-bar">
+  <!-- Discovery group -->
+  <span class="cc-cmd-label">Discover</span>
+  <select id="cc-cmd-industry" class="cc-cmd-select" style="width:120px"><option value="">Industry…</option></select>
+  <input id="cc-cmd-city" class="cc-cmd-input" type="text" placeholder="City" style="width:90px" value="Rockford">
+  <input id="cc-cmd-state" class="cc-cmd-input" type="text" placeholder="ST" style="width:36px" maxlength="2" value="IL">
+  <button id="cc-cmd-discover" class="cc-cmd-btn cc-cmd-btn-primary" onclick="ccCmdDiscover()"><span class="spin"></span>⚡ Discover + Draft</button>
+  <div class="cc-cmd-sep"></div>
+  <!-- Pass 84: Scope pill (shown when territory selected) -->
+  <span id="cc-cmd-scope-pill" class="cc-cmd-scope-label" style="display:none" title="Scoped to selected territory">&#9670; <span id="cc-cmd-scope-pill-name"></span></span>
+    <!-- Queue actions -->
+  <span class="cc-cmd-label">Queue</span>
+  <button class="cc-cmd-btn cc-cmd-btn-ghost" onclick="approveAll()" title="Approve all actionable drafts with email">✓ Approve All</button>
+  <button class="cc-cmd-btn cc-cmd-btn-ghost" onclick="bulkRegenStale()" title="Regenerate all stale drafts"><span class="spin"></span>↻ Regen Stale</button>
+  <button class="cc-cmd-btn cc-cmd-btn-ghost" id="cc-cmd-approve-scoped" onclick="ccCmdApproveScoped()" style="display:none" title="Approve eligible leads in this territory">&#10003; Approve Scoped</button>
+  <button class="cc-cmd-btn cc-cmd-btn-ghost" id="cc-cmd-regen-scoped" onclick="ccCmdRegenScoped()" style="display:none" title="Regen stale drafts in this territory"><span class="spin"></span>&#8635; Regen Scoped</button>
+  <div class="cc-cmd-sep"></div>
+  <!-- Send -->
+  <button class="cc-cmd-btn cc-cmd-btn-success" onclick="confirmSend()" title="Send all approved emails"><span class="spin"></span>▶ Send Approved</button>
+  <button class="cc-cmd-btn cc-cmd-btn-ghost" onclick="switchParent('pipeline',document.querySelector('[data-parent=pipeline]'))" title="Open full Pipeline view">Full View →</button>
+</div><!-- /cc-cmd-bar -->
+</div><!-- /cc-wrap -->
+</div><!-- /page-command-center -->
+
 <!-- ══════════════ PAGE: SEARCHES ══════════════ -->
 <div class="page" id="page-searches">
 <div class="mc-wrap">
@@ -1892,34 +1917,6 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   </div>
 </div>
 </div>
-
-
-<!-- /cc-main-row closed above -->
-
-<!-- ── Pass 82: Bottom Command Bar ───────────────────────────────── -->
-<div class="cc-cmd-bar" id="cc-cmd-bar">
-  <!-- Discovery group -->
-  <span class="cc-cmd-label">Discover</span>
-  <select id="cc-cmd-industry" class="cc-cmd-select" style="width:120px"><option value="">Industry…</option></select>
-  <input id="cc-cmd-city" class="cc-cmd-input" type="text" placeholder="City" style="width:90px" value="Rockford">
-  <input id="cc-cmd-state" class="cc-cmd-input" type="text" placeholder="ST" style="width:36px" maxlength="2" value="IL">
-  <button id="cc-cmd-discover" class="cc-cmd-btn cc-cmd-btn-primary" onclick="ccCmdDiscover()"><span class="spin"></span>⚡ Discover + Draft</button>
-  <div class="cc-cmd-sep"></div>
-  <!-- Pass 84: Scope pill (shown when territory selected) -->
-  <span id="cc-cmd-scope-pill" class="cc-cmd-scope-label" style="display:none" title="Scoped to selected territory">&#9670; <span id="cc-cmd-scope-pill-name"></span></span>
-    <!-- Queue actions -->
-  <span class="cc-cmd-label">Queue</span>
-  <button class="cc-cmd-btn cc-cmd-btn-ghost" onclick="approveAll()" title="Approve all actionable drafts with email">✓ Approve All</button>
-  <button class="cc-cmd-btn cc-cmd-btn-ghost" onclick="bulkRegenStale()" title="Regenerate all stale drafts"><span class="spin"></span>↻ Regen Stale</button>
-  <button class="cc-cmd-btn cc-cmd-btn-ghost" id="cc-cmd-approve-scoped" onclick="ccCmdApproveScoped()" style="display:none" title="Approve eligible leads in this territory">&#10003; Approve Scoped</button>
-  <button class="cc-cmd-btn cc-cmd-btn-ghost" id="cc-cmd-regen-scoped" onclick="ccCmdRegenScoped()" style="display:none" title="Regen stale drafts in this territory"><span class="spin"></span>&#8635; Regen Scoped</button>
-  <div class="cc-cmd-sep"></div>
-  <!-- Send -->
-  <button class="cc-cmd-btn cc-cmd-btn-success" onclick="confirmSend()" title="Send all approved emails"><span class="spin"></span>▶ Send Approved</button>
-  <button class="cc-cmd-btn cc-cmd-btn-ghost" onclick="switchParent('pipeline',document.querySelector('[data-parent=pipeline]'))" title="Open full Pipeline view">Full View →</button>
-</div><!-- /cc-cmd-bar -->
-</div><!-- /cc-wrap -->
-</div><!-- /page-command-center -->
 
 <!-- ══════════════ PAGE: TOOLS (stub) ══════════════ -->
 <div class="page" id="page-tools">

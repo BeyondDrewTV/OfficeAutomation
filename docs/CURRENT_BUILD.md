@@ -3,10 +3,40 @@
 Last Updated: 2026-04-01
 
 ## Active Pass
-Pass 93 -- Command Center UI/UX Hierarchy Polish
+Pass 94–96 milestone -- Discovery History Recovery + Command Center Cohesion
 
 ## Status
-Complete. 14 CSS/HTML changes to index.html. No backend changes. Verified live.
+Complete. DOM-only fix to index.html. No backend changes. Verified live.
+
+## What Pass 94–96 Changed
+
+**Goal:** Fix Discovery History blank sub-tab. Smallest correct structural fix only.
+
+**Root cause:** `page-searches` was nested inside `page-command-center`. Activating the searches page removed `.active` from `page-command-center`, making it `display:none` and hiding its child regardless.
+
+**Fix:**
+- Moved `page-searches` DOM block to after `</div><!-- /page-command-center -->`
+- No JS changes. No nav logic changes.
+- Div balance verified: 767/767
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`, `docs/CURRENT_BUILD.md`, `docs/AI_CONTROL_PANEL.md`, `docs/CHANGELOG_AI.md`
+
+**Protected-system status:** unchanged.
+
+## Verification Completed
+1. Server restarted; hard-refreshed
+2. Command Center boots, map, territory panel, queue rail ✓
+3. History tab: Search History renders (437 searches) ✓
+4. Map+Territory returns after History ✓
+5. Pipeline intact ✓
+6. Zero JS console errors ✓
+
+## Next Pass
+TBD
+
+---
 
 ## What Pass 93 Changed
 

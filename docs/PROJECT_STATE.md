@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-02 (Pass 93)
+Last Updated: 2026-04-02 (Pass 94–96)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Command Center UI/UX hierarchy polish complete — operator command surface framing, panel zone authority, denser information layout
+Discovery History recovery complete — all Discovery sub-tabs functional
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 93 -- Command Center UI/UX Hierarchy Polish: 14 CSS/HTML changes to index.html — copper top-border on territory panel header, brighter panel titles, denser pipeline stat strip, larger queue rail stats, stronger zone borders, delivery column accents, active tab tint, copper cmd-bar accent
+Pass 94–96 milestone -- Discovery History Recovery + Command Center Cohesion: moved page-searches out of page-command-center nesting; History sub-tab now renders correctly
 
 ## Recent Passes
+Pass 94–96 milestone -- Discovery History recovery (DOM fix only)
 Pass 93 -- Command Center UI/UX hierarchy polish (CSS only)
 Pass 90–92 milestone -- Truth sync + Delivery nav fix + legacy DOM cleanup
 Pass 89a -- CC blocking bug fix: discovery nav blank-page, mc-wrap layout compression, boot map init
