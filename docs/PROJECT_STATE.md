@@ -15,9 +15,10 @@ First-touch drafting tightened — service-first fixer/operator positioning, ear
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 90–92 milestone -- Truth Sync + Delivery Recovery + Legacy DOM Cleanup: docs aligned to v20/Pass 89a truth; Delivery top-nav blank-page fixed (_parentDefaults + _parentLastPage now include delivery → delivery-board); three legacy hidden DOM blocks removed from inside cc-wrap (empty page-cities stub, empty page-map stub, hidden mc-wrap territory planner); second hidden page-map block (large duplicate-ID section) removed
+Pass 93 -- Command Center UI/UX Hierarchy Polish: 14 CSS/HTML changes to index.html — copper top-border on territory panel header, brighter panel titles, denser pipeline stat strip, larger queue rail stats, stronger zone borders, delivery column accents, active tab tint, copper cmd-bar accent
 
 ## Recent Passes
+Pass 93 -- Command Center UI/UX hierarchy polish (CSS only)
 Pass 90–92 milestone -- Truth sync + Delivery nav fix + legacy DOM cleanup
 Pass 89a -- CC blocking bug fix: discovery nav blank-page, mc-wrap layout compression, boot map init
 Pass 88 -- Voice rules embedded + em dash enforcement (v20)

@@ -1,4 +1,48 @@
-﻿### 2026-04-02 - Pass 90–92 Milestone: Truth Sync + Delivery Recovery + Legacy DOM Cleanup
+﻿### 2026-04-02 - Pass 93: Command Center UI/UX Hierarchy Polish
+
+**Goal:** Improve Copperline's UI/UX hierarchy so it reads as an operator command center, not a generic SaaS dashboard. Borrow structural discipline from grand strategy UI (CK3/Vic3/RimWorld/EU) — stronger panel zoning, denser information, clearer authority signals.
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html` — CSS/HTML only
+
+**What changed (14 targeted changes):**
+
+1. Copper accent divider bar (below header): `height:2px opacity:.7` → `height:3px opacity:.85` — more structural presence
+2. `.nav-tab.active`: added `background:rgba(200,136,74,.06)` — active tab gets a subtle "lit panel" tint, not just an underline
+3. `.cc-tp-header`: added `border-top:2px solid var(--copper)` — Territory panel now has zone authority matching the queue rail
+4. `.cc-tp-title`: `font-size:10px color:var(--muted)` → `font-size:11px color:var(--text)` — panel header legible, not hidden
+5. `.cc-tp-stat strong`: `font-weight:600` → `font-weight:700 font-size:12px font-family:var(--mono)` — territory stats numbers more dominant
+6. `.cc-tp-pane` border-left: `var(--border)` → `var(--border-hi)` — clearer zone separation between map/territory/queue
+7. `.cc-qr-stat-n`: `font-size:16px` → `font-size:18px` — queue rail stat numbers more readable
+8. `.cc-qr-stat-l`: `font-size:8px margin-top:1px` → `font-size:9px margin-top:2px` — queue rail labels less microscopic
+9. `.stat` (pipeline strip): `padding:16px 24px` → `padding:12px 20px` — denser stat strip, less soft-card sprawl
+10. `.tp-progress-bar`: `width:80px height:6px` → `width:88px height:7px` — progress bars more legible
+11. `.ftab.active`: added `box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)` — filter tab active state has depth
+12. `.cc-cmd-bar` border-top: `var(--border)` → `rgba(184,115,51,.2)` — CC bottom command bar has subtle copper accent
+13. `.db-stat-n`: `font-size:22px font-weight:600` → `font-size:24px font-weight:700` — delivery stat numbers more dominant
+14. Delivery board column accents: `#db-col-won`, `#db-col-deployment_pending`, `#db-col-live` each get a 2px top border (amber/blue/green) for column identity
+
+Copper divider HTML element: `height:2px opacity:.7` → `height:3px opacity:.85`
+
+**What did NOT change:**
+- No new features, no product behavior changes
+- No protected systems touched
+- No backend, queue, scheduler, send path, or autopilot changes
+- Layout widths, flex structure, font families all unchanged
+- No fantasy/game theming — all changes are structural
+
+**Verification (live):**
+- Server restarted; hard-refreshed
+- Command Center: map, territory panel, queue rail all functional ✓
+- Pipeline: stat strip denser, table intact ✓
+- Delivery: empty state correct, active tab tint visible ✓
+- Zero JS console errors ✓
+- cc-tp-header border-top confirmed: 2px solid rgb(200,136,74) via DOM inspect ✓
+- cc-qr-stat-n confirmed: 18px/700/DM Mono via DOM inspect ✓
+
+---
+
+### 2026-04-02 - Pass 90–92 Milestone: Truth Sync + Delivery Recovery + Legacy DOM Cleanup
 
 **Goal:** Align docs to repo truth, fix Delivery top-nav blank-page bug, and remove confirmed-dead legacy DOM blocks from index.html.
 

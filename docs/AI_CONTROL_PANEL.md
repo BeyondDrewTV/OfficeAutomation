@@ -15,9 +15,9 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | Milestone 90–92 complete — truth sync, Delivery nav fix, legacy DOM cleanup |
-| Last Completed Pass | Pass 90–92 milestone -- Truth Sync + Delivery Recovery + Legacy DOM Cleanup |
-| Pass Before That | Pass 89a -- CC Blocking Bug Fix (discovery nav blank-page, mc-wrap layout compression, boot init) |
+| Current Focus | Pass 93 complete — Command Center UI/UX hierarchy polish |
+| Last Completed Pass | Pass 93 -- Command Center UI/UX Hierarchy Polish |
+| Pass Before That | Pass 90–92 milestone -- Truth Sync + Delivery Recovery + Legacy DOM Cleanup |
 | Next Pass | TBD |
 
 ---
