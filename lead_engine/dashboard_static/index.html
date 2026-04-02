@@ -1861,9 +1861,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 <div class="page" id="page-map" style="display:none!important">
 </div>
 
-<!-- ══════════════ PAGE: CITIES / TERRITORY ══════════════ -->
+<!-- ══════════════ PAGE: CITIES / TERRITORY (legacy — superseded by CC right pane) ══════════════ -->
 
-<div class="mc-wrap">
+<div class="mc-wrap" style="display:none">
 
   <!-- Header + summary stats -->
   <div class="tp-header">
@@ -1962,8 +1962,8 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 </div>
 </div>
 
-<!-- ══════════════ PAGE: MAP SEARCH ══════════════ -->
-<div class="page" id="page-map">
+<!-- ══════════════ PAGE: MAP SEARCH (legacy — merged into Command Center) ══════════════ -->
+<div class="page" id="page-map" style="display:none!important">
 <div class="map-page-wrap">
   <!-- Pass 66: Command bar — primary action row only -->
   <div class="cmd-bar" id="cmd-bar">
@@ -5507,7 +5507,7 @@ const _multiPage = {
 // returns to where the operator left off.
 const _parentLastPage = {
   pipeline:  'outreach',
-  discovery: 'map',
+  discovery: 'command-center',
   clients:   'mc-clients',
   health:    'health',
   tools:     'tools',
@@ -7949,6 +7949,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   // Sync command bar industry dropdown after industries load
   setTimeout(_ccSyncIndustryDropdown, 800);
+  // Boot CC: initialize map + territory on first load (HTML active class bypasses _runPageHooks)
+  requestAnimationFrame(() => { _mapInit(); _mapPopulateIndustries(); setTimeout(() => tpLoad(), 150); });
 });
 
 

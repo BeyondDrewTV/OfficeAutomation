@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-01
+Last Updated: 2026-04-01 (Pass 89a)
 
 ## Copperline Version
 v0.3
@@ -15,9 +15,10 @@ First-touch drafting tightened — service-first fixer/operator positioning, ear
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 87 -- First-Touch Service-First Tightening: DRAFT_VERSION v19, 4-part structure enforced (observation → loss → fixer/operator line → reply CTA), all 17 fallback bodies updated, banned word list expanded (AI/SaaS/opener bans), subject lines problem-labeled, complaint-risk linting added
+Pass 89a -- CC Blocking Bug Fix: _parentLastPage.discovery fixed ('map' → 'command-center'); legacy mc-wrap Territory Planner hidden in cc-wrap (was compressing cc-main-row); legacy page-map full section explicitly hidden; boot CC initialization added to DOMContentLoaded
 
 ## Recent Passes
+Pass 89a -- CC blocking bug fix: discovery nav blank-page, mc-wrap layout compression, boot map init
 Pass 87 -- First-touch tightening: fixer/operator line enforcement, expanded bans, problem-labeled subjects, v19 draft version
 Pass 86 -- Delivery Board: delivery_board endpoint, update_delivery_profile_by_key endpoint, board page with 3-column kanban (won/deployment_pending/live), readiness checklist per card, stage selector, auto-load on tab switch
 Pass 85 -- Conversations: offer package menu, best-fit recommendation, lifecycle stage lane (discovered->live), deployment readiness checklist, durable save via lead_memory

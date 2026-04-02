@@ -3,10 +3,10 @@
 Last Updated: 2026-04-01
 
 ## Active Pass
-Pass 87 -- First-Touch Service-First Tightening
+Pass 89a -- Command Center Blocking Bug Fix
 
 ## Status
-Complete. Drafting rules updated. DRAFT_VERSION bumped to v19.
+Complete. Three structural bugs fixed in index.html only. No backend changes.
 
 ## What Pass 87 Builds
 
