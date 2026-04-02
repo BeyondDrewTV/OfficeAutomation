@@ -102,3 +102,4 @@ Protected delivery-core systems remain constrained. Operator-visible intelligenc
 | Engineering + scoping rules? | `docs/AI_DEV_STANDARDS.md` |
 | Dev history? | `docs/CHANGELOG_AI.md` |
 | Startup contract? | `docs/CLAUDE.md` |
+| Email voice rules? | `docs/VOICE_RULES.md` |

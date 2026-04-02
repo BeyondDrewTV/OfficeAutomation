@@ -4,7 +4,42 @@ import hashlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-DRAFT_VERSION = "v19"
+DRAFT_VERSION = "v20"
+
+# ---------------------------------------------------------------------------
+# Copperline Voice Rules
+# Applied to all first-touch and fallback drafts.
+# This is the authoritative voice contract for email_draft_agent.py.
+# Full version lives in docs/VOICE_RULES.md.
+# ---------------------------------------------------------------------------
+
+COPPERLINE_VOICE_RULES = """
+Write like a real person, not a marketing system.
+Keep it professional but conversational.
+Be clear, direct, and natural.
+
+Do:
+- Use plain English
+- Keep sentences fairly short
+- Sound grounded and confident
+- Sound like a human operator who understands the business
+- Be friendly without being fluffy
+- Be specific without sounding scripted
+- Make the email feel one-to-one, not campaign-written
+- Use owner-language: missed calls, callbacks, estimates, follow-up, scheduling
+
+Do not:
+- Use em dashes
+- Use buzzwords: streamlined, optimized, unlock, transform, synergy, or similar
+- Sound like a press release, a SaaS company, or an SDR sequence
+- Sound overly polished, corporate, or performative
+- Use fake warmth: "hope this finds you well", "hope you're doing well"
+- Use filler: "just reaching out", "wanted to introduce myself"
+
+Target feel:
+One capable person reaching out to another about a real business issue they can help fix.
+Not a pitch deck. Not a networking intro. Not an AI-generated cold email.
+"""
 
 # ---------------------------------------------------------------------------
 # Industry-keyed fallback drafts (no observation available)
@@ -203,6 +238,9 @@ _VAGUE_POSITIONING_PHRASES = [
     "where i'd start", "what i'd look at first", "first place i'd look",
     "just wanted to", "just reaching out", "wanted to introduce",
     "curious if you", "would love to", "i'd love to",
+    # Fake warmth — voice rules
+    "hope this finds you", "hope you're doing well", "hope you're well",
+    "hope all is well", "i hope this email finds you",
 ]
 
 _FORMAL_OPENER_SUBS = [
@@ -275,6 +313,12 @@ def _is_generic_observation(obs: str) -> bool:
 def validate_draft(body: str, observation: str) -> None:
     """Deterministic validation. Raises DraftInvalidError with specific reason."""
     body_lower = body.lower()
+
+    # Em dash ban — voice rules
+    if "\u2014" in body:
+        raise DraftInvalidError(
+            "Draft contains an em dash. Use plain punctuation instead."
+        )
 
     hits = [w for w in _BANNED_WORDS if w in body_lower]
     if hits:
@@ -395,6 +439,13 @@ def enforce_human_style(body_text: str) -> str:
     """Light cleanup only. Drew's voice is already direct — don't over-process."""
     if not body_text:
         return body_text
+    # Voice rules: em dashes are not permitted. Replace with comma+space or period.
+    # Pattern: "word — and/but/so" -> "word, and/but/so"
+    body_text = re.sub(r"\s*\u2014\s*(and|but|so|or|nor)\b", r", \1", body_text)
+    # Pattern: "word — Word" (capital after dash = new sentence)
+    body_text = re.sub(r"\s*\u2014\s*([A-Z])", r". \1", body_text)
+    # Remaining em dashes -> comma space
+    body_text = body_text.replace("\u2014", ", ")
     # Kill any formal opener subs that sneak through
     for pattern, replacement in _FORMAL_OPENER_SUBS:
         if pattern in body_text:
@@ -638,32 +689,32 @@ def _build_offer_sentence(obs: str, angle: str, variant: int) -> str:
     # Angle-specific fixer lines
     if angle == "callback_recovery":
         variants = [
-            "I help service businesses stop losing work to missed calls and slow callbacks — working one on one with owners to fix the specific gaps in how they handle incoming work.",
-            "I help owners tighten up the callback side so calls that come in actually turn into jobs — one on one, built around how they actually run things.",
+            "I help service businesses stop losing work to missed calls and slow callbacks. I work one on one with owners to fix the specific gaps in how they handle incoming work.",
+            "I help owners tighten up the callback side so calls that come in actually turn into jobs. One on one, built around how they actually run things.",
             "I help service businesses get more out of the calls they're already getting by fixing the follow-up leaks that cost them work.",
         ]
     elif angle == "estimate_follow_up":
         variants = [
-            "I help service businesses tighten estimate follow-up so quotes don't go cold — one on one with owners, built around how they actually run their operation.",
-            "I help owners stop losing jobs to slow follow-up on estimates — working one on one to fix the operational gaps that let good work slip away.",
+            "I help service businesses tighten estimate follow-up so quotes don't go cold. I work one on one with owners, built around how they actually run their operation.",
+            "I help owners stop losing jobs to slow follow-up on estimates. I work one on one to fix the operational gaps that let good work slip away.",
             "I help service businesses close more of the estimates they're already sending by fixing the follow-up timing that loses jobs.",
         ]
     elif angle == "after_hours_response":
         variants = [
-            "I help service businesses handle after-hours and overflow inquiries so leads don't go cold before the next business day — one on one, specific to how they operate.",
+            "I help service businesses handle after-hours and overflow inquiries so leads don't go cold before the next business day. One on one, specific to how they operate.",
             "I help owners fix the after-hours gap so calls and requests that come in outside of business hours don't just disappear.",
             "I help service businesses stop losing after-hours work by fixing how inquiries get handled when the owner isn't available.",
         ]
     elif angle == "inquiry_routing":
         variants = [
-            "I help service businesses fix the intake side so inquiries that come in actually get routed and followed up — working one on one with owners to plug the leaks.",
+            "I help service businesses fix the intake side so inquiries that come in actually get routed and followed up. I work one on one with owners to plug the leaks.",
             "I help owners tighten up how new inquiries are handled so leads don't fall through between the form submission and the callback.",
             "I help service businesses stop losing leads in the gap between when someone reaches out and when someone actually gets back to them.",
         ]
     else:
         variants = [
-            "I help service businesses fix the operational gaps that lose jobs — working one on one with owners to build something specific to how they actually run things.",
-            "I help owners clean up the follow-up and intake leaks that cost them work — one on one, built around their operation.",
+            "I help service businesses fix the operational gaps that lose jobs. I work one on one with owners to build something specific to how they actually run things.",
+            "I help owners clean up the follow-up and intake leaks that cost them work. One on one, built around their operation.",
             "I help service businesses get more out of the leads they already have by fixing the gaps in follow-up, callbacks, and estimate handling.",
         ]
 

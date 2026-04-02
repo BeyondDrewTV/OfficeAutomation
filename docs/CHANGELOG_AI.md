@@ -2357,3 +2357,60 @@ Fallback bodies (all 17 trades + 3 generic):
 
 ---
 
+### 2026-04-01 - Pass 88: Voice Rules Added to First-Touch Drafting
+
+**Goal:** Embed Copperline voice rules into first-touch and fallback drafting. Enforce em dash ban mechanically. Document full voice contract in repo.
+
+**Files changed:**
+- `lead_engine/outreach/email_draft_agent.py`
+- `docs/VOICE_RULES.md` (new)
+- `docs/AI_CONTROL_PANEL.md`
+- `docs/CHANGELOG_AI.md`
+
+**What changed:**
+
+`DRAFT_VERSION`: v19 -> v20
+
+`COPPERLINE_VOICE_RULES` constant added at top of agent file:
+- Named constant documenting the voice contract inline
+- References docs/VOICE_RULES.md for full version
+- Applied to all first-touch and fallback drafts
+
+`enforce_human_style()` updated:
+- Em dash (U+2014) auto-conversion added as post-processing step
+- Pattern 1: "word — and/but/so" -> "word, and/but/so"
+- Pattern 2: "word — Capital" -> "word. Capital" (new sentence)
+- Pattern 3: remaining em dashes -> ", "
+- All drafts pass through this function, so all paths covered
+
+`validate_draft()` updated:
+- Em dash hard check added: raises DraftInvalidError if U+2014 survives post-processing
+
+`_VAGUE_POSITIONING_PHRASES` expanded:
+- Added: "hope this finds you", "hope you're doing well", "hope you're well",
+  "hope all is well", "i hope this email finds you"
+
+`docs/VOICE_RULES.md` (new):
+- Short version (inline prompt-ready)
+- Full rules (do/do not lists)
+- Copperline-specific tone guidance
+- Target feel description
+- Mechanical enforcement documentation
+
+`docs/AI_CONTROL_PANEL.md`:
+- Added "Email voice rules? -> docs/VOICE_RULES.md" to Repo Quick Reference
+
+**What did NOT change:**
+- Send path, queue schema, delivery board, conversation board
+- Protected systems
+- Follow-up draft agent
+- Observation validation logic
+- Fallback body strings (em dashes handled in post-processing, not by rewriting strings)
+
+**Design decisions:**
+- Em dash removal via post-processing rather than rewriting all body strings keeps the strings readable in source
+- voice rules embedded as a named constant so they're inspectable at runtime if needed
+- Full rules in docs/VOICE_RULES.md, short version in agent file comment
+
+---
+
