@@ -15,10 +15,12 @@ First-touch drafting tightened — service-first fixer/operator positioning, ear
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 89a -- CC Blocking Bug Fix: _parentLastPage.discovery fixed ('map' → 'command-center'); legacy mc-wrap Territory Planner hidden in cc-wrap (was compressing cc-main-row); legacy page-map full section explicitly hidden; boot CC initialization added to DOMContentLoaded
+Pass 90–92 milestone -- Truth Sync + Delivery Recovery + Legacy DOM Cleanup: docs aligned to v20/Pass 89a truth; Delivery top-nav blank-page fixed (_parentDefaults + _parentLastPage now include delivery → delivery-board); three legacy hidden DOM blocks removed from inside cc-wrap (empty page-cities stub, empty page-map stub, hidden mc-wrap territory planner); second hidden page-map block (large duplicate-ID section) removed
 
 ## Recent Passes
+Pass 90–92 milestone -- Truth sync + Delivery nav fix + legacy DOM cleanup
 Pass 89a -- CC blocking bug fix: discovery nav blank-page, mc-wrap layout compression, boot map init
+Pass 88 -- Voice rules embedded + em dash enforcement (v20)
 Pass 87 -- First-touch tightening: fixer/operator line enforcement, expanded bans, problem-labeled subjects, v19 draft version
 Pass 86 -- Delivery Board: delivery_board endpoint, update_delivery_profile_by_key endpoint, board page with 3-column kanban (won/deployment_pending/live), readiness checklist per card, stage selector, auto-load on tab switch
 Pass 85 -- Conversations: offer package menu, best-fit recommendation, lifecycle stage lane (discovered->live), deployment readiness checklist, durable save via lead_memory
@@ -84,7 +86,7 @@ Protected systems are listed in `PROTECTED_SYSTEMS.md`. Do not duplicate that li
    - Board auto-loads when Delivery tab is clicked; manual Refresh button
 
 ## DRAFT_VERSION
-Current: v18
+Current: v20
 
 ## Industry List (22 total)
 plumbing, hvac, electrical, roofing, construction, landscaping, painting,

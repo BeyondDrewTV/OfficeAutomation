@@ -1,4 +1,41 @@
-﻿### 2026-03-19 - Pass 50a / 51a: Stale Draft Refresh Workflow
+﻿### 2026-04-02 - Pass 90–92 Milestone: Truth Sync + Delivery Recovery + Legacy DOM Cleanup
+
+**Goal:** Align docs to repo truth, fix Delivery top-nav blank-page bug, and remove confirmed-dead legacy DOM blocks from index.html.
+
+**Files changed:**
+- `docs/AI_CONTROL_PANEL.md` — current state updated to reflect Pass 89a as last completed, milestone as current
+- `docs/PROJECT_STATE.md` — DRAFT_VERSION corrected v18 → v20, Pass 88 added to recent passes, last completed pass updated
+- `docs/CURRENT_BUILD.md` — active pass updated, stale "Next Pass: Pass 86" footer removed
+- `docs/CHANGELOG_AI.md` — this entry
+- `lead_engine/dashboard_static/index.html` — Delivery nav fix + legacy DOM removal
+
+**What changed:**
+
+Delivery nav fix:
+- `_parentDefaults` and `_parentLastPage`: added `delivery: 'delivery-board'`
+- Previously `switchParent('delivery')` resolved to `undefined`, causing blank-page on first click
+
+Legacy DOM removal (index.html):
+- Removed: empty `page-cities` stub (verified: only reference is optional-chained `getElementById` that no-ops on null)
+- Removed: empty `page-map` stub (second empty stub, no JS references)
+- Removed: hidden `mc-wrap` legacy territory planner block (tp-*, cp-* IDs; superseded by CC right pane; `display:none` since Pass 82)
+- Removed: hidden `page-map` legacy standalone map block (~115 lines; all IDs — cmd-bar, map-layout, map-container, mrp-*, bnd-*, etc. — were duplicated from live CC section at earlier DOM positions; `display:none!important`)
+
+**What did NOT change:**
+- No backend, queue schema, send path, scheduler, or autopilot changes
+- No live CC behavior changed — map, territory panel, queue rail, command bar all intact
+- No protected systems touched
+
+**Verification (code inspection):**
+- div balance after removal: 767 opens / 767 closes = 0
+- `page-map` refs after removal: 0
+- `delivery-board` present in `_parentDefaults`: confirmed
+- All removed IDs confirmed to exist at earlier DOM positions in live CC section
+- `page-cities` remaining JS reference uses optional chaining (`?.`) — no-ops safely when element absent
+
+---
+
+### 2026-03-19 - Pass 50a / 51a: Stale Draft Refresh Workflow
 
 ### 2026-03-21 - Pass 82: Command Center Unified Layout
 

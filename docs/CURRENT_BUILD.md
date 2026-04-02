@@ -3,10 +3,10 @@
 Last Updated: 2026-04-01
 
 ## Active Pass
-Pass 89a -- Command Center Blocking Bug Fix
+Pass 90–92 milestone -- Truth Sync + Delivery Recovery + Legacy DOM Cleanup
 
 ## Status
-Complete. Three structural bugs fixed in index.html only. No backend changes.
+Complete. Docs synced to repo truth. Delivery nav blank-page fixed. Legacy DOM removed. No backend changes.
 
 ## What Pass 87 Builds
 
@@ -46,8 +46,28 @@ Complete. Three structural bugs fixed in index.html only. No backend changes.
 3. `validate_draft()` now enforces fixer line + CTA structurally — drafts without them will fail and regenerate
 4. No protected systems touched
 
+## What This Milestone Changed
+
+**Goal:** Bring repo into truth alignment. Fix Delivery blank-page. Remove legacy DOM debt.
+
+**Files changed:**
+- `docs/AI_CONTROL_PANEL.md` — updated last completed pass, current focus
+- `docs/PROJECT_STATE.md` — DRAFT_VERSION v18 → v20, last completed pass updated, Pass 88 added to recent passes
+- `docs/CURRENT_BUILD.md` — active pass and status updated; stale "Next Pass: Pass 86" footer removed
+- `docs/CHANGELOG_AI.md` — milestone entry appended
+- `lead_engine/dashboard_static/index.html`:
+  - `_parentDefaults` and `_parentLastPage`: added `delivery: 'delivery-board'`
+  - Removed: empty `page-cities` stub (was "kept for JS compat" — verified not activated by any live nav path)
+  - Removed: empty `page-map` stub (same; empty div, never activated)
+  - Removed: hidden `mc-wrap` legacy territory planner block (tp-*, cp-* IDs duplicated live in CC right pane)
+  - Removed: second hidden `page-map` block (all IDs duplicated in live CC — bnd-*, cmd-*, map-*, mrp-*, btn* etc.)
+
+**Protected-system status:** unchanged. No backend, queue, scheduler, send-path, or autopilot changes.
+
 ## Next Pass
 TBD
+
+---
 
 ## What Pass 85 Builds
 - Conversations panel now includes an operator-visible Offer + Deployment Readiness block
@@ -104,5 +124,3 @@ TBD
 
 ---
 
-## Next Pass
-Pass 86 -- Win-to-live delivery board (aggregate view of won/deployment-pending/live leads with readiness rollup)

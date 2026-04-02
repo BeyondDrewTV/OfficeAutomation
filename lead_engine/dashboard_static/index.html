@@ -1853,78 +1853,6 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 
 </div><!-- /cc-main-row -->
 
-<!-- ══════════════ PAGE: CITIES / TERRITORY (legacy — hidden, kept for JS compat) ══════════════ -->
-<div class="page" id="page-cities" style="display:none!important">
-</div>
-
-<!-- ══════════════ PAGE: MAP SEARCH (legacy — hidden, kept for JS compat) ══════════════ -->
-<div class="page" id="page-map" style="display:none!important">
-</div>
-
-<!-- ══════════════ PAGE: CITIES / TERRITORY (legacy — superseded by CC right pane) ══════════════ -->
-
-<div class="mc-wrap" style="display:none">
-
-  <!-- Header + summary stats -->
-  <div class="tp-header">
-    <div>
-      <h2 style="font-size:16px;font-weight:600">🗺 Territory Planner</h2>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px">City × Industry coverage command center</div>
-    </div>
-    <div class="tp-summary">
-      <div class="tp-stat"><div class="tp-stat-n blue" id="tp-stat-cities">—</div><div class="tp-stat-l">Cities</div></div>
-      <div class="tp-stat"><div class="tp-stat-n" style="color:var(--red)" id="tp-stat-uncovered">—</div><div class="tp-stat-l">Uncovered</div></div>
-      <div class="tp-stat"><div class="tp-stat-n amber" id="tp-stat-due">—</div><div class="tp-stat-l">Due</div></div>
-      <div class="tp-stat"><div class="tp-stat-n green" id="tp-stat-leads">—</div><div class="tp-stat-l">Total Leads</div></div>
-    </div>
-  </div>
-
-  <!-- Add city + filter bar -->
-  <div style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
-    <div>
-      <div class="panel-label" style="margin-bottom:3px">Add City</div>
-      <div class="city-ac-wrap" style="display:inline-block">
-        <input type="text" id="cp-city" class="form-input" style="width:160px" placeholder="City name"
-               autocomplete="off" oninput="cityAcInput('cp')" onfocus="cityAcInput('cp')"
-               onkeydown="cityAcKey(event,'cp')" onblur="cityAcCloseDelay('cp')">
-        <div class="city-ac-list" id="cp-city-ac">
-          <div class="city-ac-filters">
-            <span class="caf active" onclick="cityAcSetFilter('cp','all',this)">All</span>
-            <span class="caf" onclick="cityAcSetFilter('cp','due',this)" style="color:var(--amber)">⚠ Due</span>
-            <span class="caf" onclick="cityAcSetFilter('cp','never',this)">● Never</span>
-            <span class="caf" onclick="cityAcSetFilter('cp','nearby',this)">📍 Nearby</span>
-          </div>
-          <div id="cp-city-ac-items"></div>
-        </div>
-      </div>
-    </div>
-    <div>
-      <div class="panel-label" style="margin-bottom:3px">State</div>
-      <input type="text" id="cp-state" class="form-input" style="width:55px" placeholder="IL" maxlength="2">
-    </div>
-    <button class="btn btn-primary" onclick="tpAddCity()" style="height:34px">＋ Add City</button>
-    <div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
-      <span class="ftab active" data-tpf="all"    onclick="tpSetFilter('all',this)">All</span>
-      <span class="ftab" data-tpf="due"    onclick="tpSetFilter('due',this)" style="color:var(--amber)">⚠ Due</span>
-      <span class="ftab" data-tpf="active" onclick="tpSetFilter('active',this)" style="color:var(--blue)">▶ Active</span>
-      <span class="ftab" data-tpf="open"   onclick="tpSetFilter('open',this)">● Has Gaps</span>
-      <input type="text" id="tp-search" class="tp-search" placeholder="Search city…" oninput="tpRender()">
-    </div>
-  </div>
-
-  <!-- Cards container -->
-  <div class="tp-cards" id="tp-cards">
-    <div class="tp-empty"><div class="tp-empty-icon">🗺</div><div>Loading territory…</div></div>
-  </div>
-
-  <div class="mc-muted" style="margin-top:14px;font-size:11px;line-height:1.7">
-    💡 Each city shows coverage across <strong id="tp-ind-count">10</strong> target industries.
-    Run industries directly from the card — no need to switch to Outreach.
-    Cities sort by most uncovered industries first.
-  </div>
-</div>
-</div>
-
 <!-- ══════════════ PAGE: SEARCHES ══════════════ -->
 <div class="page" id="page-searches">
 <div class="mc-wrap">
@@ -1962,120 +1890,6 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 </div>
 </div>
 
-<!-- ══════════════ PAGE: MAP SEARCH (legacy — merged into Command Center) ══════════════ -->
-<div class="page" id="page-map" style="display:none!important">
-<div class="map-page-wrap">
-  <!-- Pass 66: Command bar — primary action row only -->
-  <div class="cmd-bar" id="cmd-bar">
-
-    <!-- Left: territory status chip (populated by JS on click) -->
-    <div class="cmd-territory" id="cmd-territory">
-      <span class="cmd-territory-icon">◈</span>
-      <span class="cmd-territory-name" id="cmd-territory-name">Click map to select territory</span>
-      <span class="cmd-territory-meta" id="cmd-territory-meta"></span>
-      <button class="cmd-territory-clear" id="cmd-territory-clear" onclick="bndClearBoundary()" style="display:none">✕</button>
-    </div>
-
-    <!-- Center: industry picker -->
-    <select id="map-industry" class="cmd-industry" onchange="_mapUpdateIndustryControls()"><option value="">Select industry…</option></select>
-
-    <!-- Right: primary action -->
-    <button id="btnSearchTerritory" class="btn btn-primary" onclick="bndSearchTerritory()" disabled style="font-size:13px;padding:9px 20px">
-      <span class="spin"></span>Search Territory
-    </button>
-    <button id="btnCancelTerritory" class="btn btn-ghost" onclick="bndCancelTerritory()" style="display:none">✕ Cancel</button>
-    <span id="bnd-progress-label" style="font-size:11px;color:var(--muted);display:none"></span>
-
-    <!-- Reset always available -->
-    <button class="btn btn-ghost" onclick="mapClearCircle()" style="color:var(--dim);padding:9px 12px" title="Reset — clear selection and all pins">↺</button>
-
-    <!-- Advanced toggle -->
-    <button class="cmd-adv-toggle" onclick="_mapToggleAdvanced()" id="cmd-adv-toggle" title="Advanced controls">⋯</button>
-  </div>
-
-  <!-- Progress bar under command bar -->
-  <div id="cmd-progress-bar" style="height:2px;background:var(--border);border-radius:1px;overflow:hidden;display:none">
-    <div id="cmd-progress-fill" style="height:100%;background:var(--copper);width:0%;transition:width .3s"></div>
-  </div>
-
-  <!-- Advanced panel (hidden by default) -->
-  <div class="cmd-advanced" id="cmd-advanced" style="display:none">
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--dim)">Advanced</span>
-      <input id="map-limit" class="d-input d-num" type="number" value="20" min="1" max="20" title="Max results per cell (1–20)" style="width:60px">
-      <button id="btnMapSearch" class="btn btn-ghost" onclick="mapSearch()" disabled style="font-size:11px">⚡ Search Here</button>
-      <button id="btnSearchVisible" class="btn btn-ghost" onclick="mapSearchVisible()" disabled style="font-size:11px">⊞ Visible Area</button>
-      <button id="btnExhaust" class="btn btn-ghost" onclick="mapSearchExhaust()" disabled style="font-size:11px">♻ Exhaust</button>
-      <button id="btnCancelVisible" class="btn btn-ghost" onclick="_mapCancelVisible()" style="display:none;font-size:11px">✕ Cancel</button>
-      <button id="btnClearCoverage" class="btn btn-ghost" onclick="_mapClearCoverage()" style="display:none;font-size:11px">◌ Clear Coverage</button>
-      <span id="map-radius-label" style="font-size:10px;color:var(--dim)"></span>
-    </div>
-    <div style="display:flex;align-items:center;gap:6px;margin-top:7px;flex-wrap:wrap">
-      <button id="btnMapTerritoryToggle" class="btn btn-ghost map-territory-btn active" onclick="mapToggleTerritoryOverlay()" style="font-size:11px">◫ Overlay</button>
-      <button id="btnMapTerritoryNext" class="btn btn-ghost map-territory-btn" onclick="mapToggleTerritoryNextOnly()" style="font-size:11px">★ Next Areas</button>
-      <button id="btnMapTerritorySaturation" class="btn btn-ghost map-territory-btn active" onclick="mapToggleIndustrySaturation()" style="font-size:11px">◎ Saturation</button>
-      <button id="btnMapTerritoryRefresh" class="btn btn-ghost" onclick="mapReloadTerritoryOverlay()" style="font-size:11px">↻ Refresh</button>
-    </div>
-  </div>
-
-  <!-- hidden inputs kept for JS compatibility -->
-  <div id="bnd-bar" style="display:none">
-    <input id="bnd-input" type="text" style="display:none">
-    <div id="bnd-results"></div>
-    <div id="bnd-active-wrap"><span id="bnd-active-name"></span><span id="bnd-active-tiles"></span></div>
-  </div>
-  <div id="map-grid-bar" style="display:none">
-    <span id="map-grid-summary"></span>
-    <button id="btnGridSearch" onclick="mapSearchAreaGrid()" style="display:none"></button>
-    <button id="btnGridCancel" onclick="mapCancelAreaGrid()" style="display:none"></button>
-    <div id="map-grid-industries"></div>
-  </div>
-  <div id="map-layout">
-    <div id="map-container"></div>
-        <div id="map-results-panel">
-          <div class="mrp-hdr">Results <span id="mrp-count"></span></div>
-          <div class="mrp-controls" id="mrp-controls">
-            <select id="mrp-sort" class="mrp-ctrl-select" onchange="_mapRenderPanel()">
-              <option value="score">Sort: Score first</option>
-              <option value="name">Sort: Name A–Z</option>
-              <option value="city">Sort: City A–Z</option>
-            </select>
-            <select id="mrp-group" class="mrp-ctrl-select" onchange="_mapRenderPanel()">
-              <option value="workflow">Group: Workflow</option>
-              <option value="qualification">Group: Qualification</option>
-              <option value="city">Group: City</option>
-              <option value="email">Group: Email status</option>
-              <option value="flat">Group: None</option>
-            </select>
-            <label class="mrp-ctrl-chk"><input type="checkbox" id="mrp-email-only" onchange="_mapRenderPanel()"> Email only</label>
-          </div>
-          <div class="mrp-triage-bar" id="mrp-triage-bar"></div>
-          <div class="mrp-bulk-bar" id="mrp-bulk-bar" style="display:none">
-            <span class="mrp-bulk-lbl">Visible:</span>
-            <span class="mrp-bulk-meta" id="mrp-bulk-meta"></span>
-            <button class="mrp-bulk-btn primary" id="mrp-bulk-prep" onclick="_mrpBulkPrepOutreach()" title="Approve outreach-ready visible leads and open them in review">Prep Outreach</button>
-            <button class="mrp-bulk-btn" id="mrp-bulk-review" onclick="_mrpOpenVisibleReview()" title="Open the current visible discovery subset in the outreach review panel">Review Visible</button>
-            <button class="mrp-bulk-btn" style="background:var(--green-bg);color:var(--green);border-color:rgba(62,207,114,.35)" onclick="_mrpBulkApprove()" title="Approve all visible results that are in queue">✓ Approve</button>
-            <button class="mrp-bulk-btn" onclick="_mrpBulkSchedule()" title="Schedule all visible approved results for tomorrow">🕐 Schedule</button>
-            <button class="mrp-bulk-btn danger" onclick="_mrpBulkDelete()" title="Delete all visible results from queue">✕ Delete</button>
-          </div>
-          <div class="mrp-list" id="mrp-list"></div>
-        </div>
-      </div>
-      <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:12px">
-        <div id="map-status" class="map-status"></div>
-        <span id="map-zoom-hint" style="font-size:10px;color:var(--dim);white-space:nowrap;font-family:var(--mono);flex-shrink:0"></span>
-      </div>
-      <div id="map-territory-legend"></div>
-      <div id="map-history">
-        <div class="mh-hdr">
-          <span class="mh-title">Recent Searches</span>
-          <button class="mh-clear" onclick="_mapClearHistory()">Clear history</button>
-        </div>
-        <div class="mh-list" id="mh-list"></div>
-      </div>
-</div>
-</div>
 
 <!-- /cc-main-row closed above -->
 
@@ -5496,6 +5310,7 @@ const _parentDefaults = {
   clients:   'mc-clients',
   health:    'health',
   tools:     'tools',
+  delivery:  'delivery-board',
 };
 
 // Which pages show together (health shows both page-health AND page-exceptions)
@@ -5511,6 +5326,7 @@ const _parentLastPage = {
   clients:   'mc-clients',
   health:    'health',
   tools:     'tools',
+  delivery:  'delivery-board',
 };
 
 function _activatePage(name) {

@@ -15,9 +15,9 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | First-touch drafting tightened — service-first fixer/operator positioning (v19) |
-| Last Completed Pass | Pass 87 -- First-Touch Service-First Tightening (DRAFT_VERSION v19, fixer/operator enforcement, expanded bans, problem-labeled subjects) |
-| Pass Before That | Pass 86 -- Delivery Board (won/deployment_pending/live kanban, readiness checklist, committed) |
+| Current Focus | Milestone 90–92 complete — truth sync, Delivery nav fix, legacy DOM cleanup |
+| Last Completed Pass | Pass 90–92 milestone -- Truth Sync + Delivery Recovery + Legacy DOM Cleanup |
+| Pass Before That | Pass 89a -- CC Blocking Bug Fix (discovery nav blank-page, mc-wrap layout compression, boot init) |
 | Next Pass | TBD |
 
 ---
@@ -103,3 +103,4 @@ Protected delivery-core systems remain constrained. Operator-visible intelligenc
 | Dev history? | `docs/CHANGELOG_AI.md` |
 | Startup contract? | `docs/CLAUDE.md` |
 | Email voice rules? | `docs/VOICE_RULES.md` |
+| Audit report (Pass 90–92 context)? | See `docs/CHANGELOG_AI.md` |
