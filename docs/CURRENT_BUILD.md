@@ -8,45 +8,45 @@ Pass 93 -- Command Center UI/UX Hierarchy Polish
 ## Status
 Complete. 14 CSS/HTML changes to index.html. No backend changes. Verified live.
 
-## What Pass 87 Builds
+## What Pass 93 Changed
 
-**Goal:** Tighten first-touch email generation so the value proposition (what Drew fixes) is visible by sentence 2–3. Keep the philosophy. Improve the execution.
+**Goal:** Improve Command Center UI/UX hierarchy — stronger panel zone framing, denser information layout, clearer operator command surface. No new features.
 
-**4-part structure now enforced as contract:**
-1. Observation — specific detail about this business
-2. Owner-readable loss / leak — what that probably costs them
-3. Fixer/operator line — clearly states what Drew helps fix (required by validation)
-4. Reply-first CTA — soft question, no hard close
-
-**Changes:**
-- `DRAFT_VERSION`: v18 → v19
-- `_build_offer_sentence()`: Completely rewritten — angle-specific fixer/operator language replaces generic "I work one on one with owners..." across all 5 angles
-- All 17 trade fallback bodies + generic fallbacks updated: sentence 2 now states what Drew fixes, not just "I work one on one"
-- `_BANNED_WORDS` expanded: added "just reaching out", "wanted to introduce myself", "curious if", "would love to chat", "another set of eyes", "ai", "software", "dashboard", "transform", "unlock", "roi", "synergy", "workflow gap", "from the business side"
-- `_SUBJECT_BANNED_PHRASES` expanded: added "quick question", "had a question", "wanted to ask", "just checking", "touching base", "following up"
-- `_FALLBACK_SUBJECTS`: replaced "quick question" style with problem-labeled subjects: "missed calls", "callback backlog", "estimate follow-up", "after-hours leads", "contact form lag", "scheduling friction"
-- `_VAGUE_POSITIONING_PHRASES` expanded: added soft intro phrases
-- `validate_draft()` — three new checks added:
-  - Fixer/operator line required (raises `DraftInvalidError` if missing)
-  - Reply-first CTA required (raises `DraftInvalidError` if missing)
-  - Complaint-risk linting: exclamation overuse, multiple CTAs flagged
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- Copper divider bar: `2px / opacity:.7` → `3px / opacity:.85`
+- `.nav-tab.active`: + copper background tint (`rgba(200,136,74,.06)`)
+- `.cc-tp-header`: + `border-top:2px solid var(--copper)` — territory panel zone authority
+- `.cc-tp-title`: `10px / muted` → `11px / var(--text)` — panel header legible
+- `.cc-tp-stat strong`: `600` → `700 / 12px / mono` — territory stats numbers dominant
+- `.cc-tp-pane` border-left: `var(--border)` → `var(--border-hi)` — clearer zone separation
+- `.cc-qr-stat-n`: `16px` → `18px`; `.cc-qr-stat-l`: `8px` → `9px`
+- `.stat` pipeline padding: `16px 24px` → `12px 20px` — denser stat strip
+- `.tp-progress-bar`: `80px / 6px` → `88px / 7px`
+- `.ftab.active`: + inset shadow for depth
+- `.cc-cmd-bar` border-top: copper tint (`rgba(184,115,51,.2)`)
+- `.db-stat-n`: `22px / 600` → `24px / 700`
+- Delivery board column top accents: `#db-col-won` amber, `#db-col-deployment_pending` blue, `#db-col-live` green
 
 **Files changed:**
-- `lead_engine/outreach/email_draft_agent.py`
-- `docs/PROJECT_STATE.md`
-- `docs/CURRENT_BUILD.md`
-- `docs/AI_CONTROL_PANEL.md`
-- `docs/CHANGELOG_AI.md`
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`, `docs/CURRENT_BUILD.md`, `docs/AI_CONTROL_PANEL.md`, `docs/CHANGELOG_AI.md`
 
-**Protected-system status:** unchanged. No edits to send path, queue schema, scheduler, Gmail workflow, delivery board, or conversation board.
+**Protected-system status:** unchanged. No backend, queue, scheduler, send-path, or autopilot changes.
 
 ## Verification Completed
-1. All fallback bodies manually verified: fixer/operator line present by sentence 2
-2. Banned word / subject lists reviewed against new first-touch contract
-3. `validate_draft()` now enforces fixer line + CTA structurally — drafts without them will fail and regenerate
-4. No protected systems touched
+1. Server restarted; hard-refreshed
+2. CC boots, map loads, territory panel loads, queue rail loads ✓
+3. Pipeline stat strip denser, table intact ✓
+4. Delivery empty state correct, active tab tint visible ✓
+5. Zero JS console errors ✓
+6. DOM inspect: `cc-tp-header` border-top `2px solid copper` ✓; queue stat `18px/700/DM Mono` ✓
 
-## What This Milestone Changed
+## Next Pass
+TBD
+
+---
+
+## What This Milestone Changed (Pass 90–92)
 
 **Goal:** Bring repo into truth alignment. Fix Delivery blank-page. Remove legacy DOM debt.
 
