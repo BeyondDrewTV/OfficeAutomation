@@ -15,10 +15,10 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | Pass 103–105 in progress — Bulk-First Pipeline + Exception Queue |
-| Last Completed Pass | Pass 100–102 -- Discovery Workflow Cohesion + Run Feedback |
-| Pass Before That | Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop |
-| Next Pass | Pass 106–108 -- Pipeline Surface Unification (Outreach/Social/Sprint as modes) |
+| Current Focus | Pass 106–111 in progress — Unified Operator Workbench + Review Drawer Recovery |
+| Last Completed Pass | Pass 103–105 -- Bulk-First Pipeline + Exception Queue |
+| Pass Before That | Pass 100–102 -- Discovery Workflow Cohesion + Run Feedback |
+| Next Pass | TBD after 106–111 |
 
 ---
 

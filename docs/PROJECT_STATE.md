@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-02 (Pass 100–102)
+Last Updated: 2026-04-03 (Pass 103–105)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Pass 103–105 in progress — Bulk-First Pipeline + Exception Queue
+Pass 106–111 in progress — Unified Operator Workbench + Review Drawer Recovery
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 100–102 -- Discovery Workflow Cohesion + Run Feedback: history always refreshes after discover; _shRerun race fixed; CC button async with loading state; grid sweep progress bar; exhaustive scan indeterminate animation; Cancel Sweep button; inline post-run results panel (_cdrShow); territory overlay dash patterns
+Pass 103–105 -- Bulk-First Pipeline + Exception Queue: Actionable view now classifies rows into cohort-based grouped sections (Ready to Approve / Needs Observation / Stale Draft / No Email Path); _pipelineCohort() classifies each row; _cohortHeaderHtml() renders section headers with counts + scoped CTAs; _cohortBulkApprove() bulk-approves ready rows; renderTable() stable-sorts by cohort in active filter; all other filters unchanged
 
 ## Recent Passes
+Pass 103–105 milestone -- Bulk-First Pipeline + Exception Queue (frontend only)
 Pass 100–102 milestone -- Discovery Workflow Cohesion + Run Feedback (frontend only)
 Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop (frontend only)
 Pass 94–96 milestone -- Discovery History recovery (DOM fix only)

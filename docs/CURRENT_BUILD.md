@@ -3,10 +3,27 @@
 Last Updated: 2026-04-01
 
 ## Active Pass
-Pass 103–105 -- Bulk-First Pipeline + Exception Queue
+Pass 106–111 -- Unified Operator Workbench + Review Drawer Recovery
 
 ## Status
 In progress.
+
+## What Pass 103–105 Changed
+
+**Goal:** Make Actionable view bulk-first with cohort-based grouping.
+
+**Changes:**
+- `_pipelineCohort(row)`: classifies each actionable row into bulk_safe | needs_obs | stale | no_email
+- `_cohortHeaderHtml(key, count)`: renders section header with count + scoped CTA per cohort
+- `_cohortBulkApprove()`: approves all bulk_safe rows in one pass (no drawer required)
+- `renderTable()`: when filter is 'active', stable-sorts filteredRows by cohort order then injects cohort header rows between groups
+- CSS: `.cohort-hdr` row styling
+- Shipped cohorts: Ready to Approve (✓ Approve All Ready), Needs Observation, Stale Draft (↻ Regen All Stale), No Email Path (→ Social Queue)
+- All other filters, bulk actions, drawer, and send gates unchanged
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged.
 
 ## What Pass 97–99 Changed
 
