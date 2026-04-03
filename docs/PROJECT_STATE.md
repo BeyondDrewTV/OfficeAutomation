@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-02 (Pass 94–96)
+Last Updated: 2026-04-02 (Pass 100–102)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-History-to-action loop complete — Search History is now an action surface connected to Command Center
+Pass 103–105 in progress — Bulk-First Pipeline + Exception Queue
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop: _shRerun fixed to navigate to CC; _shLoadCC added; Load button added to history rows; City+ST merged into Location column
+Pass 100–102 -- Discovery Workflow Cohesion + Run Feedback: history always refreshes after discover; _shRerun race fixed; CC button async with loading state; grid sweep progress bar; exhaustive scan indeterminate animation; Cancel Sweep button; inline post-run results panel (_cdrShow); territory overlay dash patterns
 
 ## Recent Passes
+Pass 100–102 milestone -- Discovery Workflow Cohesion + Run Feedback (frontend only)
 Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop (frontend only)
 Pass 94–96 milestone -- Discovery History recovery (DOM fix only)
 Pass 93 -- Command Center UI/UX hierarchy polish (CSS only)

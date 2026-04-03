@@ -98,6 +98,10 @@ thead th{background:var(--surface);color:var(--muted);font-size:10px;font-weight
 tbody tr{border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer}
 tbody tr:hover{background:rgba(255,255,255,.025)}
 tbody tr.row-sent{opacity:.45}
+/* Pass 103-105: Bulk-first cohort headers */
+tbody tr.cohort-hdr{cursor:default;border-top:none}
+tbody tr.cohort-hdr:hover{background:transparent}
+tbody tr.cohort-hdr td{padding:8px 16px 4px;background:var(--surface2)}
 tbody td{padding:10px 14px;vertical-align:middle}
 .td-chk{width:32px;text-align:center}
 .td-biz{min-width:180px;max-width:240px}
@@ -2799,6 +2803,51 @@ function isRowBulkSelectable(row) {
   return isRowActionable(row) || isRowScheduled(row);
 }
 
+// ── Pass 103-105: Bulk-first cohort classification ────────────────────────────
+function _pipelineCohort(row) {
+  const hasEmail = !!(row.to_email && row.to_email.includes('@'));
+  const isStale  = !row.sent_at && !!(row.draft_version) && row.draft_version !== status_draft_version;
+  const hasObs   = !!(row.business_specific_observation || '').trim();
+  const isFallback = row.draft_type === 'industry_fallback';
+  if (!hasEmail)            return 'no_email';
+  if (isStale)              return 'stale';
+  if (!hasObs && !isFallback) return 'needs_obs';
+  return 'bulk_safe';
+}
+
+function _cohortHeaderHtml(key, count) {
+  const approveCta = `<button class="act act-approve" onclick="event.stopPropagation();_cohortBulkApprove()" style="font-size:11px;padding:3px 10px">✓ Approve All Ready (${count})</button>`;
+  const regenCta   = `<button class="act" onclick="event.stopPropagation();bulkRegenStale()" style="font-size:11px;padding:3px 10px;background:rgba(79,142,247,.12);color:var(--blue);border:none">↻ Regen All Stale (${count})</button>`;
+  const socialCta  = `<button class="act" onclick="event.stopPropagation();switchSubPage('pipeline','social',document.querySelector('[data-page=social]'))" style="font-size:11px;padding:3px 10px;background:rgba(100,116,139,.12);color:var(--dim);border:none">→ Social Queue</button>`;
+  const meta = {
+    bulk_safe: { label: 'Ready to Approve', color: 'var(--green)',  icon: '✓', cta: approveCta },
+    needs_obs: { label: 'Needs Observation', color: 'var(--amber)', icon: '◎', cta: `<span style="font-size:11px;color:var(--dim)">open each row to add observation</span>` },
+    stale:     { label: 'Stale Draft',       color: 'var(--blue)',  icon: '↻', cta: regenCta },
+    no_email:  { label: 'No Email Path',     color: 'var(--dim)',   icon: '–', cta: socialCta },
+  };
+  const m = meta[key] || { label: key, color: 'var(--dim)', icon: '?', cta: '' };
+  return `<tr class="cohort-hdr"><td colspan="8" style="border-top:2px solid ${m.color}">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:11px;font-weight:700;color:${m.color};text-transform:uppercase;letter-spacing:.07em">${m.icon} ${m.label} <span style="font-weight:400;color:var(--dim);text-transform:none">(${count})</span></span>
+      <div onclick="event.stopPropagation()">${m.cta}</div>
+    </div>
+  </td></tr>`;
+}
+
+async function _cohortBulkApprove() {
+  const rows = filteredRows.filter(r => _pipelineCohort(r) === 'bulk_safe' && r.approved !== 'true');
+  if (!rows.length) { toast('All ready rows already approved', 'ok'); return; }
+  let done = 0;
+  for (const row of rows) {
+    const gi = allRows.indexOf(row);
+    if (gi < 0) continue;
+    const res = await api('/api/approve_row', { global_idx: gi });
+    if (res.ok) { allRows[gi] = { ...allRows[gi], ...res.row }; done++; }
+  }
+  renderTable();
+  toast(`Approved ${done} ready lead${done === 1 ? '' : 's'}`, 'ok');
+}
+
 function applyFiltersAndSort() {
   let rows = [...allRows];
   const q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
@@ -2999,7 +3048,20 @@ function renderTable() {
   if (!filteredRows.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
 
+  // Pass 103-105: in Actionable view, stable-sort by cohort then render grouped
+  let _lastCohort = null, _cohortSizes = {};
+  if (currentFilter === 'active') {
+    filteredRows.forEach(r => { const c = _pipelineCohort(r); _cohortSizes[c] = (_cohortSizes[c]||0)+1; });
+    const _co = { bulk_safe:0, needs_obs:1, stale:2, no_email:3 };
+    filteredRows.sort((a, b) => (_co[_pipelineCohort(a)]??99) - (_co[_pipelineCohort(b)]??99));
+  }
+
   tbody.innerHTML = filteredRows.map((row, fi) => {
+    let _cohortHeader = '';
+    if (currentFilter === 'active') {
+      const _c = _pipelineCohort(row);
+      if (_c !== _lastCohort) { _cohortHeader = _cohortHeaderHtml(_c, _cohortSizes[_c]); _lastCohort = _c; }
+    }
     const gi = allRows.indexOf(row);
     const sc = parseInt(row.final_priority_score) || 3;
     const sentClass = row.sent_at ? 'row-sent' : '';
@@ -3026,7 +3088,7 @@ function renderTable() {
         ? `<button class="act act-unapprove" onclick="event.stopPropagation();unapproveRow(${gi})">Undo</button>`
         : `<button class="act act-approve" onclick="event.stopPropagation();approveRow(${gi})">Approve</button>`;
 
-    return `<tr class="${sentClass} ${repliedClass} ${scheduledClass}" onclick="openPanel(${fi})">
+    return _cohortHeader + `<tr class="${sentClass} ${repliedClass} ${scheduledClass}" onclick="openPanel(${fi})">
       <td class="td-chk" onclick="event.stopPropagation()">
         ${bulkSelectable ? `<input type="checkbox" class="row-chk" data-gi="${gi}" onchange="updateBulkBar()">` : `<span style="color:var(--dim);font-size:10px">—</span>`}
       </td>

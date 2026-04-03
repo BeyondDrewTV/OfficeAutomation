@@ -15,10 +15,10 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | Pass 97–99 milestone complete — History-to-Action Loop |
-| Last Completed Pass | Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop |
-| Pass Before That | Pass 94–96 milestone -- Discovery History Recovery + Command Center Cohesion |
-| Next Pass | TBD |
+| Current Focus | Pass 103–105 in progress — Bulk-First Pipeline + Exception Queue |
+| Last Completed Pass | Pass 100–102 -- Discovery Workflow Cohesion + Run Feedback |
+| Pass Before That | Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop |
+| Next Pass | Pass 106–108 -- Pipeline Surface Unification (Outreach/Social/Sprint as modes) |
 
 ---
 

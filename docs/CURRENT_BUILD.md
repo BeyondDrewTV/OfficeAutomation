@@ -3,10 +3,10 @@
 Last Updated: 2026-04-01
 
 ## Active Pass
-Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop
+Pass 103–105 -- Bulk-First Pipeline + Exception Queue
 
 ## Status
-Complete. Frontend-only changes to index.html. No backend changes. Verified live.
+In progress.
 
 ## What Pass 97–99 Changed
 
