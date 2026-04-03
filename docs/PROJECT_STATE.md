@@ -103,3 +103,25 @@ tree_service, cleaning, auto, flooring, concrete, towing, appliance_repair,
 pressure_washing
 
 [2026-04-02] Session: Pass 100-102 — Discovery Workflow Cohesion + Run Feedback. History always refreshes after discover runs; _shRerun race fixed with polling check; last-updated timestamp added. CC Discover button async with loading state; grid sweep wired to progress bar; exhaustive scan gets indeterminate animation; visible Cancel Sweep button; map-status styled during active runs. Post-run drilldown panel (_cdrShow) appears inline after CC discover with lead summary. Territory overlay dash patterns; searched circle opacity reduced; legend labels legible. Next: commit Pass 100-102, then start Pass 103-105 (Bulk-First Pipeline + Exception Queue).
+
+---
+**Pass 100–102 — 2026-04-02 — Discovery workflow cohesion + run feedback**
+
+What was done:
+- `discoverLeads()`: removed conditional history refresh — `loadSearchHistory()` now always fires after any discover run regardless of active tab
+- `_shRerun()`: replaced fixed 200ms setTimeout with a polling readiness check (`_attempt`, up to 650ms) that verifies CC form values are populated before firing `ccCmdDiscover()`
+- Added `_shLastRefreshTime` + `_shRenderTimestamp()`: "Updated just now / Xs ago" timestamp in History header, auto-increments via `setInterval` every 10s
+- `ccCmdDiscover()`: refactored to `async` with CC button loading state (`.loading` class + `disabled`) via try/finally
+- Grid sweep: wired `_cmdProgressSet()` at each `callsDone++` for real progress bar fill; reset in finally
+- Exhaustive scan: indeterminate animated progress bar via `#cmd-progress-fill.indeterminate` keyframe; `.running` class on `#map-status`; cleared in finally
+- Added `#btnCancelGridVisible` (✕ Cancel Sweep) adjacent to `#map-status`; toggled by `_mapSetGridRunUi()`
+- Added `_cdrShow()` + `#cc-discover-results`: lightweight inline post-run summary panel (business, website, status, score — max 20 rows, dismissible, no actions)
+- Territory rect dash patterns: `worked` (4 3), `saturated` (6 3), `quiet` (3 5); `next` cells weight 2.5 solid
+- Coverage circle `searched`: opacity 0.45→0.3, dashArray `4 4`
+- Legend labels: `var(--text)`, dot 9px→11px with border-radius
+
+Files touched: `lead_engine/dashboard_static/index.html`, `docs/PROJECT_STATE.md`
+
+State after this pass: History updates immediately after every discover run; CC button shows loading state; grid sweeps show real progress fill; exhaustive scans show indeterminate animation; Cancel Sweep always visible during sweeps; lightweight results panel appears inline after CC discover; territory overlay cells differentiated by dash pattern.
+
+Next: Pass 103–105 — Bulk-First Pipeline + Exception Queue
