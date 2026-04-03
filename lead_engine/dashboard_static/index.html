@@ -839,6 +839,11 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cc-cmd-btn-success{background:linear-gradient(135deg,#3ecf72,#2fb85c);color:#0e1a12;border:1px solid rgba(62,207,114,.2)}.cc-cmd-btn-success:hover{opacity:.9}
 .cc-cmd-btn-ghost{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}.cc-cmd-btn-ghost:hover{color:var(--text);border-color:var(--border-hi)}
 .cc-cmd-btn:disabled{opacity:.38;cursor:not-allowed}
+.cc-cmd-btn.loading{opacity:.75;cursor:wait}
+.cc-cmd-btn.loading .spin{display:inline-block}
+.map-status.running{color:var(--text);font-weight:600;background:rgba(184,115,51,.08);border:1px solid rgba(184,115,51,.2);border-radius:4px;padding:3px 8px}
+#cmd-progress-fill.indeterminate{width:40%!important;animation:progress-slide 1.4s ease-in-out infinite}
+@keyframes progress-slide{0%{transform:translateX(-150%)}100%{transform:translateX(350%)}}
 
 /* ── Pass 75: Territory indicator on map click ───────────────────── */
 .cc-city-flash{animation:cc-flash .6s ease}
@@ -1056,8 +1061,8 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 
 /* Map legend upgrade */
 .map-legend{position:absolute;bottom:28px;left:12px;z-index:500;background:rgba(8,10,16,.92);border:1px solid rgba(184,115,51,.2);border-radius:8px;padding:10px 12px;pointer-events:none;backdrop-filter:blur(4px)}
-.map-legend-row{display:flex;align-items:center;gap:8px;margin-top:5px;font-size:11px;color:var(--muted)}
-.map-legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;box-shadow:0 0 6px currentColor}
+.map-legend-row{display:flex;align-items:center;gap:8px;margin-top:5px;font-size:11px;color:var(--text)}
+.map-legend-dot{width:11px;height:11px;border-radius:3px;flex-shrink:0;box-shadow:0 0 5px currentColor}
 .tools-stub p{font-size:13px;line-height:1.7}
 /* ── Global Lead Finder (Ctrl+K) ──────────────────────────────────── */
 .qlf-item{display:flex;align-items:flex-start;gap:12px;padding:10px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);transition:background .1s}
@@ -1755,7 +1760,10 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
         </div>
       </div>
       <div style="margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:12px">
-        <div id="map-status" class="map-status"></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div id="map-status" class="map-status"></div>
+          <button id="btnCancelGridVisible" class="btn btn-ghost" onclick="mapCancelAreaGrid()" style="display:none;font-size:11px;padding:4px 10px;color:var(--amber);border-color:rgba(245,166,35,.3)">✕ Cancel Sweep</button>
+        </div>
         <span id="map-zoom-hint" style="font-size:10px;color:var(--dim);white-space:nowrap;font-family:var(--mono);flex-shrink:0"></span>
       </div>
       <div id="map-territory-legend"></div>
@@ -1856,6 +1864,28 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 
 </div><!-- /cc-main-row -->
 
+<!-- Pass 102: Post-run drilldown summary panel -->
+<div id="cc-discover-results" style="display:none;flex-shrink:0;max-height:280px;overflow-y:auto;background:var(--surface);border-top:1px solid rgba(184,115,51,.25);border-bottom:1px solid var(--border)">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px 4px;position:sticky;top:0;background:var(--surface);z-index:1;border-bottom:1px solid var(--border)">
+    <span style="font-size:11px;font-weight:700;color:var(--copper);text-transform:uppercase;letter-spacing:.07em">⚡ Last Run — <span id="cdr-summary"></span></span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a href="#" onclick="switchParent('pipeline',document.querySelector('[data-parent=pipeline]'));return false;" style="font-size:11px;color:var(--blue);text-decoration:none">View all in Pipeline →</a>
+      <button onclick="document.getElementById('cc-discover-results').style.display='none'" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;padding:0 2px" title="Dismiss">✕</button>
+    </div>
+  </div>
+  <table style="width:100%;border-collapse:collapse;font-size:12px">
+    <thead>
+      <tr style="background:var(--surface2)">
+        <th style="padding:5px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.05em">Business</th>
+        <th style="padding:5px 14px;text-align:left;font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.05em">Website</th>
+        <th style="padding:5px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.05em">Status</th>
+        <th style="padding:5px 14px;text-align:center;font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.05em">Score</th>
+      </tr>
+    </thead>
+    <tbody id="cdr-tbody"></tbody>
+  </table>
+</div>
+
 <!-- ── Pass 82: Bottom Command Bar ───────────────────────────────── -->
 <div class="cc-cmd-bar" id="cc-cmd-bar">
   <!-- Discovery group -->
@@ -1888,6 +1918,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     <h2>🔍 Search History</h2>
     <div style="display:flex;gap:8px;align-items:center">
       <span class="mc-muted" style="font-size:12px">Every Discover run logged here</span>
+      <span id="sh-last-updated" style="font-size:11px;color:var(--dim);font-family:var(--mono)"></span>
       <button class="btn btn-ghost" onclick="loadSearchHistory()">↻ Refresh</button>
     </div>
   </div>
@@ -4961,8 +4992,10 @@ async function discoverLeads() {
       await loadAll();
       toast(`Found ${res.found} new — ${res.total_queue} total in queue`,'ok');
       document.getElementById('api-key-notice').style.display='none';
-      // Refresh search history if that tab is open
-      if (document.getElementById('page-searches')?.classList.contains('active')) loadSearchHistory();
+      // Always refresh search history and timestamp regardless of active tab
+      loadSearchHistory();
+      _shLastRefreshTime = Date.now();
+      _shRenderTimestamp();
       // Always refresh Cities data (record_discovery is called server-side on every run)
       if (document.getElementById('page-cities')?.classList.contains('active')) tpLoad();
       else { /* pre-fetch silently so Cities tab shows fresh data on next visit */
@@ -6921,7 +6954,25 @@ function _shLoadCC(city, state, industry) {
 
 function _shRerun(city, state, industry) {
   _shLoadCC(city, state, industry);
-  setTimeout(() => ccCmdDiscover(), 200);
+  const _attempt = (tries) => {
+    const cityEl = document.getElementById('cc-cmd-city');
+    const indEl  = document.getElementById('cc-cmd-industry');
+    if (cityEl?.value === city && (indEl?.value === industry || tries <= 0)) {
+      ccCmdDiscover();
+    } else if (tries > 0) {
+      setTimeout(() => _attempt(tries - 1), 100);
+    }
+  };
+  setTimeout(() => _attempt(5), 150);
+}
+
+let _shLastRefreshTime = 0;
+
+function _shRenderTimestamp() {
+  const el = document.getElementById('sh-last-updated');
+  if (!el || !_shLastRefreshTime) return;
+  const ago = Math.round((Date.now() - _shLastRefreshTime) / 1000);
+  el.textContent = ago < 5 ? 'Updated just now' : `Updated ${ago}s ago`;
 }
 
 async function loadSearchHistory() {
@@ -6984,6 +7035,7 @@ async function loadSearchHistory() {
   } catch(e) {
     tbody.innerHTML = `<tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">Error loading history: ${e}</td></tr>`;
   }
+  _shRenderTimestamp();
 }
 
 // ── MC helpers ────────────────────────────────────────────────────────────────
@@ -7721,15 +7773,65 @@ function ccQueueOpenRow(gi) {
   }
 }
 
-function ccCmdDiscover() {
-  // Mirror Pipeline discover: sync inputs then call discoverLeads()
+async function ccCmdDiscover() {
+  const btn   = document.getElementById('cc-cmd-discover');
   const city  = (document.getElementById('cc-cmd-city')?.value  || '').trim();
   const state = (document.getElementById('cc-cmd-state')?.value || '').trim();
   const ind   = document.getElementById('cc-cmd-industry')?.value || '';
-  if (city)  { const el = document.getElementById('d-city');  if (el) el.value = city; }
-  if (state) { const el = document.getElementById('d-state'); if (el) el.value = state; }
+  if (!city || !state || !ind) { toast('Fill in industry, city, and state', 'err'); return; }
+  if (city)  { const el = document.getElementById('d-city');     if (el) el.value = city; }
+  if (state) { const el = document.getElementById('d-state');    if (el) el.value = state; }
   if (ind)   { const el = document.getElementById('d-industry'); if (el) el.value = ind; }
-  discoverLeads();
+  if (btn) { btn.classList.add('loading'); btn.disabled = true; }
+  try {
+    await discoverLeads();
+    await _cdrShow(city, state, ind);
+  } finally {
+    if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
+  }
+}
+
+async function _cdrShow(city, state, industry) {
+  const panel  = document.getElementById('cc-discover-results');
+  const tbody  = document.getElementById('cdr-tbody');
+  const summary = document.getElementById('cdr-summary');
+  if (!panel || !tbody) return;
+  panel.style.display = '';
+  tbody.innerHTML = '<tr><td colspan="4" style="padding:16px;text-align:center;color:var(--dim)">Loading results…</td></tr>';
+  if (summary) summary.textContent = `${industry} in ${city}, ${state}`;
+  try {
+    const res = await api('/api/territory/leads', { city, state, industry });
+    if (!res.ok || !res.leads?.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="padding:12px 14px;color:var(--dim)">No leads found for this location in the queue yet.</td></tr>';
+      return;
+    }
+    const leads = res.leads.slice(0, 20);
+    if (summary) summary.textContent = `${industry} in ${city}, ${state} — ${res.total} lead${res.total === 1 ? '' : 's'}`;
+    tbody.innerHTML = leads.map(lead => {
+      const replied  = lead.replied  === 'true' || lead.replied  === true;
+      const sent     = !!lead.sent_at;
+      const approved = lead.approved === 'true' || lead.approved === true;
+      const statusBadge = replied  ? '<span style="color:var(--green);font-weight:600">Replied</span>'
+                        : sent     ? '<span style="color:var(--blue)">Sent</span>'
+                        : approved ? '<span style="color:var(--amber)">Approved</span>'
+                                   : '<span style="color:var(--dim)">Pending</span>';
+      const score = lead.priority_score != null
+        ? `<span style="font-family:var(--mono);color:${lead.priority_score>=70?'var(--green)':lead.priority_score>=40?'var(--amber)':'var(--dim)'}">${lead.priority_score}</span>`
+        : '<span style="color:var(--dim)">—</span>';
+      const host = lead.website ? lead.website.replace(/^https?:\/\//,'').split('/')[0] : '';
+      const site = host
+        ? `<a href="${escHtml(lead.website)}" target="_blank" rel="noopener" style="color:var(--blue);text-decoration:none;font-family:var(--mono);font-size:11px">${escHtml(host)}</a>`
+        : '<span style="color:var(--dim)">—</span>';
+      return `<tr style="border-top:1px solid var(--border)">
+        <td style="padding:6px 14px;font-weight:500;color:var(--text)">${escHtml(lead.business_name||'—')}</td>
+        <td style="padding:6px 14px">${site}</td>
+        <td style="padding:6px 14px;text-align:center">${statusBadge}</td>
+        <td style="padding:6px 14px;text-align:center">${score}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="4" style="padding:12px 14px;color:var(--red)">Error loading results: ${escHtml(String(e))}</td></tr>`;
+  }
 }
 
 function _ccSyncIndustryDropdown() {
@@ -7750,6 +7852,7 @@ document.addEventListener('DOMContentLoaded', () => {
   mcCheckHealth();
   setInterval(mcCheckHealth, 30000);
   setInterval(() => checkReplies(true), 300000);
+  setInterval(_shRenderTimestamp, 10000);
   const sendModal = document.getElementById('send-modal');
   if (sendModal) sendModal.addEventListener('click', e => {
     if (e.target === sendModal) closeModal();
@@ -9217,7 +9320,7 @@ function _mapDrawCoverageFill(territoryData) {
     // Searched: border only, nearly invisible fill so clusters don't wash
     // Leads/contacted: visible fill that pops against dark map
     const styleMap = {
-      searched:  { weight: 1.2, opacity: 0.45, fillOpacity: 0.03, dashArray: null },
+      searched:  { weight: 1,   opacity: 0.3,  fillOpacity: 0.02, dashArray: '4 4' },
       leads:     { weight: 2,   opacity: 0.85, fillOpacity: 0.22, dashArray: null },
       contacted: { weight: 2,   opacity: 0.85, fillOpacity: 0.18, dashArray: null },
       exhausted: { weight: 0.8, opacity: 0.2,  fillOpacity: 0.02, dashArray: '5 5' },
@@ -9884,6 +9987,7 @@ function _mapTerritoryTone(stats) {
       label: 'Duplicate-heavy / oversaturated',
       color: '#f59e0b',
       fillOpacity: 0.14,
+      dashArray: '6 3',
       note: 'This area has been searched repeatedly with thin or duplicate-heavy yield.',
     };
   }
@@ -9893,6 +9997,7 @@ function _mapTerritoryTone(stats) {
       label: 'Worked area',
       color: '#4f8ef7',
       fillOpacity: Math.min(0.22, 0.08 + (stats.foundCount * 0.015)),
+      dashArray: '4 3',
       note: 'This area already has meaningful search or discovery coverage.',
     };
   }
@@ -9900,7 +10005,8 @@ function _mapTerritoryTone(stats) {
     key: 'quiet',
     label: 'Light signal',
     color: '#6b7280',
-    fillOpacity: 0.08,
+    fillOpacity: 0.06,
+    dashArray: '3 5',
     note: 'Only light signal is stored here so far.',
   };
 }
@@ -10108,9 +10214,11 @@ function _mapRenderTerritoryOverlay() {
       [[cell.min_lat, cell.min_lng], [cell.max_lat, cell.max_lng]],
       {
         color: tone.color,
-        weight: tone.key === 'next' ? 2 : 1,
+        weight: tone.key === 'next' ? 2.5 : 0.8,
+        opacity: tone.key === 'next' ? 0.9 : 0.5,
         fillColor: tone.color,
         fillOpacity: tone.fillOpacity,
+        dashArray: tone.dashArray || null,
         interactive: false,
       }
     ).addTo(layer);
@@ -10574,6 +10682,10 @@ function _mapSetGridRunUi(active) {
     if (!active) btnRun.classList.remove('loading');
   }
   if (btnCancel) btnCancel.style.display = active ? '' : 'none';
+  const btnCancelVisible = document.getElementById('btnCancelGridVisible');
+  if (btnCancelVisible) btnCancelVisible.style.display = active ? '' : 'none';
+  const statusEl2 = document.getElementById('map-status');
+  if (statusEl2) statusEl2.classList.toggle('running', active);
   if (btnMap) btnMap.disabled = active || !_mapCenter;
   if (btnVisible) btnVisible.disabled = active || !(document.getElementById('map-industry')?.value);
   if (btnExhaust) btnExhaust.disabled = active || !(document.getElementById('map-industry')?.value) || !_mapCenter;
@@ -10677,6 +10789,7 @@ async function mapSearchAreaGrid() {
         }
 
         callsDone++;
+        _cmdProgressSet(Math.round((callsDone / plan.totalCalls) * 100));
         if (_mapGridSweepActive && !(cellIdx === plan.cells.length - 1 && industryIdx === industries.length - 1)) {
           await new Promise(r => setTimeout(r, 1200));
         }
@@ -10692,6 +10805,7 @@ async function mapSearchAreaGrid() {
     const cancelled = !_mapGridSweepActive;
     _mapGridSweepActive = false;
     _mapSetGridRunUi(false);
+    _cmdProgressSet(0);
     _mapUpdateIndustryControls();
 
     _mapSearchHistory.unshift({
@@ -10878,6 +10992,10 @@ async function mapSearchExhaust() {
   if (btnMap) btnMap.disabled = true;
   if (btnSV)  btnSV.disabled  = true;
   if (btnCanc) { btnCanc.style.display = ''; btnCanc.title = 'Cancel after current scan batch finishes'; }
+  if (statusEl) statusEl.classList.add('running');
+  const _progressFill = document.getElementById('cmd-progress-fill');
+  if (_progressFill) _progressFill.classList.add('indeterminate');
+  _cmdProgressSet(5);
 
   // Animated progress text — updates every 4s since the HTTP is one blocking call
   const statusMessages = [
@@ -10950,6 +11068,9 @@ async function mapSearchExhaust() {
     if (btnMap) btnMap.disabled = !_mapCenter;
     if (btnSV)  btnSV.disabled  = !industry;
     if (btnCanc) btnCanc.style.display = 'none';
+    if (statusEl) statusEl.classList.remove('running');
+    if (_progressFill) _progressFill.classList.remove('indeterminate');
+    _cmdProgressSet(0);
   }
 }
 

@@ -101,3 +101,5 @@ locksmith, garage_door
 plumbing, hvac, electrical, roofing, construction, landscaping, painting,
 tree_service, cleaning, auto, flooring, concrete, towing, appliance_repair,
 pressure_washing
+
+[2026-04-02] Session: Pass 100-102 — Discovery Workflow Cohesion + Run Feedback. History always refreshes after discover runs; _shRerun race fixed with polling check; last-updated timestamp added. CC Discover button async with loading state; grid sweep wired to progress bar; exhaustive scan gets indeterminate animation; visible Cancel Sweep button; map-status styled during active runs. Post-run drilldown panel (_cdrShow) appears inline after CC discover with lead summary. Territory overlay dash patterns; searched circle opacity reduced; legend labels legible. Next: commit Pass 100-102, then start Pass 103-105 (Bulk-First Pipeline + Exception Queue).
