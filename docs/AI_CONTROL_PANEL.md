@@ -15,10 +15,10 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | Pass 106–111 in progress — Unified Operator Workbench + Review Drawer Recovery |
-| Last Completed Pass | Pass 103–105 -- Bulk-First Pipeline + Exception Queue |
-| Pass Before That | Pass 100–102 -- Discovery Workflow Cohesion + Run Feedback |
-| Next Pass | TBD after 106–111 |
+| Current Focus | TBD |
+| Last Completed Pass | Pass 106–111 -- Unified Operator Workbench + Review Drawer Recovery |
+| Pass Before That | Pass 103–105 -- Bulk-First Pipeline + Exception Queue |
+| Next Pass | TBD |
 
 ---
 

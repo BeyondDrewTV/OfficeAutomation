@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-03 (Pass 103–105)
+Last Updated: 2026-04-03 (Pass 106–111)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Pass 106–111 in progress — Unified Operator Workbench + Review Drawer Recovery
+TBD
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 103–105 -- Bulk-First Pipeline + Exception Queue: Actionable view now classifies rows into cohort-based grouped sections (Ready to Approve / Needs Observation / Stale Draft / No Email Path); _pipelineCohort() classifies each row; _cohortHeaderHtml() renders section headers with counts + scoped CTAs; _cohortBulkApprove() bulk-approves ready rows; renderTable() stable-sorts by cohort in active filter; all other filters unchanged
+Pass 106–111 -- Unified Operator Workbench + Review Drawer Recovery: Social/Sprint tabs hidden from nav; Outreach renamed to Queue; mode bar (Email Queue / Social DMs / Focus Mode) replaces tab fragmentation; back-to-queue navigation on Social and Sprint pages; drawer blocker banner shows cohort-specific guidance for exception rows (needs_obs / stale / no_email) and auto-sets panel intent
 
 ## Recent Passes
+Pass 106–111 milestone -- Unified Operator Workbench + Review Drawer Recovery (frontend only)
 Pass 103–105 milestone -- Bulk-First Pipeline + Exception Queue (frontend only)
 Pass 100–102 milestone -- Discovery Workflow Cohesion + Run Feedback (frontend only)
 Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop (frontend only)

@@ -3,10 +3,27 @@
 Last Updated: 2026-04-01
 
 ## Active Pass
-Pass 106–111 -- Unified Operator Workbench + Review Drawer Recovery
+None — last pass complete.
 
 ## Status
-In progress.
+Pass 106–111 complete.
+
+## What Pass 106–111 Changed
+
+**Goal:** Unify Social/Sprint/Outreach into one workbench surface; make the drawer exception-aware.
+
+**Changes:**
+- Social and Sprint nav tabs hidden (`display:none`); Outreach tab renamed to "Queue"
+- Mode bar at top of page-outreach: Email Queue / Social DMs / Focus Mode buttons
+- `_setWorkbenchMode(mode)`: switches sub-page via `switchSubPage()`, toggles active button
+- "← Back to Queue" button on page-social and page-sprint
+- `#panel-blocker` div in drawer: shows cohort-specific blocker banner for exception rows
+- Blocker logic in `fillPanel()`: `needs_obs` → amber "Missing observation" + auto-sets panelOpenIntent; `stale` → blue "Stale draft"; `no_email` → dim "No email path"; `bulk_safe` → hidden
+- CSS: `.wb-mode-bar`, `.wb-mode-btn`, `.panel-blocker`, `.wb-back-btn`
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged.
 
 ## What Pass 103–105 Changed
 

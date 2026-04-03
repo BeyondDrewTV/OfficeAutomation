@@ -1,4 +1,27 @@
-﻿### 2026-04-02 - Pass 97–99 Milestone: Discovery Throughput + History-to-Action Loop
+﻿### 2026-04-03 - Pass 106–111: Unified Operator Workbench + Review Drawer Recovery
+
+**Goal:** Reduce surface fragmentation — Social/Sprint/Outreach become modes of one workbench. Drawer becomes exception-aware with blocker banners.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- Social and Sprint nav tabs hidden (`display:none`); Outreach renamed to "Queue"
+- Mode bar with 3 buttons (Email Queue / Social DMs / Focus Mode) at top of page-outreach
+- `_setWorkbenchMode(mode)` switches sub-pages and toggles active button state
+- "← Back to Queue" navigation on page-social and page-sprint
+- `#panel-blocker` div in drawer body shows cohort-specific guidance for exception rows
+- Blocker logic in `fillPanel()`: needs_obs → amber banner + auto-set panelOpenIntent; stale → blue; no_email → dim; bulk_safe → hidden
+- CSS: `.wb-mode-bar`, `.wb-mode-btn`, `.panel-blocker`, `.wb-back-btn`
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html` — JS + HTML + CSS
+
+**What did NOT change:**
+- No backend, no API, no protected systems
+- Pipeline cohort logic (`_pipelineCohort`, `_cohortBulkApprove`, `renderTable` cohort sorting) unchanged
+- Data layer, queue schema, send path, suppression — unchanged
+
+---
+
+### 2026-04-02 - Pass 97–99 Milestone: Discovery Throughput + History-to-Action Loop
 
 **Goal:** Turn Search History into a real action surface and close the friction between past discovery runs and live Command Center workflow.
 
