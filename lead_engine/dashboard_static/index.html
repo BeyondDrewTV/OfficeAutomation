@@ -102,6 +102,11 @@ tbody tr.row-sent{opacity:.45}
 tbody tr.cohort-hdr{cursor:default;border-top:none}
 tbody tr.cohort-hdr:hover{background:transparent}
 tbody tr.cohort-hdr td{padding:8px 16px 4px;background:var(--surface2)}
+/* Pass 112-117: Per-row cohort pills */
+.cohort-pill{font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.05em;margin-top:3px;display:inline-block}
+.cp-needs-obs{background:rgba(245,166,35,.12);color:var(--amber)}
+.cp-stale{background:rgba(79,142,247,.12);color:var(--blue)}
+.cp-no-email{background:rgba(100,116,139,.12);color:var(--dim)}
 /* Pass 106-111: Workbench mode bar + drawer blocker */
 .wb-mode-bar{display:flex;gap:4px;padding:4px 0 8px;border-bottom:1px solid var(--border);margin-bottom:8px}
 .wb-mode-btn{font-size:11px;font-weight:600;padding:4px 12px;border-radius:var(--rs);cursor:pointer;background:var(--surface2);color:var(--muted);border:1px solid var(--border);transition:all .15s}
@@ -2840,7 +2845,7 @@ function _cohortHeaderHtml(key, count) {
   const socialCta  = `<button class="act" onclick="event.stopPropagation();switchSubPage('pipeline','social',document.querySelector('[data-page=social]'))" style="font-size:11px;padding:3px 10px;background:rgba(100,116,139,.12);color:var(--dim);border:none">→ Social Queue</button>`;
   const meta = {
     bulk_safe: { label: 'Ready to Approve', color: 'var(--green)',  icon: '✓', cta: approveCta },
-    needs_obs: { label: 'Needs Observation', color: 'var(--amber)', icon: '◎', cta: `<span style="font-size:11px;color:var(--dim)">open each row to add observation</span>` },
+    needs_obs: { label: 'Needs Observation', color: 'var(--amber)', icon: '◎', cta: `<button class="act" onclick="event.stopPropagation();_cohortStartSession('needs_obs')" style="font-size:11px;padding:3px 10px;background:rgba(245,166,35,.12);color:var(--amber);border:none">→ Start Obs Review (${count})</button>` },
     stale:     { label: 'Stale Draft',       color: 'var(--blue)',  icon: '↻', cta: regenCta },
     no_email:  { label: 'No Email Path',     color: 'var(--dim)',   icon: '–', cta: socialCta },
   };
@@ -2851,6 +2856,15 @@ function _cohortHeaderHtml(key, count) {
       <div onclick="event.stopPropagation()">${m.cta}</div>
     </div>
   </td></tr>`;
+}
+
+// ── Pass 112-117: Cohort-scoped panel session opener ─────────────────────────
+function _cohortStartSession(cohortKey) {
+  const rows = filteredRows.filter(r => _pipelineCohort(r) === cohortKey);
+  if (!rows.length) { toast('No rows in this cohort', 'info'); return; }
+  if (cohortKey === 'needs_obs') panelOpenIntent = 'refresh';
+  const label = cohortKey === 'needs_obs' ? 'Obs Review' : cohortKey === 'stale' ? 'Stale Review' : 'Review';
+  openPanel(0, rows, label);
 }
 
 // ── Pass 106-111: Workbench mode switching ────────────────────────────────────
@@ -3016,7 +3030,7 @@ function _queueTimelineNoteHtml() {
   if (currentFilter === 'active') {
     return {
       tone: 'ready',
-      html: `<strong>Actionable queue:</strong> work you can handle right now. Future-scheduled rows stay out of this view until their scheduled time arrives.`,
+      html: `<strong>Actionable queue</strong> — grouped by status: ✓ Ready to Approve first, then ◎ Needs Observation, ↻ Stale Draft, – No Email Path. Bulk-ready rows approve in one click. Each section shows the next action.`,
     };
   }
   if (currentFilter === 'pending') {
@@ -3108,6 +3122,12 @@ function renderTable() {
     const bulkSelectable = isRowBulkSelectable(row);
     const needsRefresh = _rowNeedsDraftRefresh(row);
     const refreshLabel = (row.business_specific_observation || '').trim() ? 'Refresh' : 'Add Obs';
+    // Pass 112-117: per-row cohort pill — visible in all filter views, not just active
+    const _rowCohort = !row.sent_at ? _pipelineCohort(row) : 'bulk_safe';
+    const cohortPill = _rowCohort === 'needs_obs' ? `<span class="cohort-pill cp-needs-obs">◎ obs needed</span>`
+      : _rowCohort === 'stale'    ? `<span class="cohort-pill cp-stale">↻ stale</span>`
+      : _rowCohort === 'no_email' ? `<span class="cohort-pill cp-no-email">– no email</span>`
+      : '';
     const approveBtn = row.sent_at
       ? `<span style="color:var(--dim);font-size:10px">sent</span>`
       : row.approved === 'true'
@@ -3119,7 +3139,7 @@ function renderTable() {
         ${bulkSelectable ? `<input type="checkbox" class="row-chk" data-gi="${gi}" onchange="updateBulkBar()">` : `<span style="color:var(--dim);font-size:10px">—</span>`}
       </td>
       <td class="td-biz">
-        <span class="biz-name">${escHtml(row.business_name)}</span>
+        <span class="biz-name">${escHtml(row.business_name)}</span>${cohortPill ? ' ' + cohortPill : ''}
         <div class="biz-meta">${escHtml(row.city)}, ${escHtml(row.state)}</div>
         <div class="biz-meta" style="display:flex;gap:8px">${phoneHtml}${siteLink}</div>
       </td>
