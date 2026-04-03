@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Discovery History recovery complete — all Discovery sub-tabs functional
+History-to-action loop complete — Search History is now an action surface connected to Command Center
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 94–96 milestone -- Discovery History Recovery + Command Center Cohesion: moved page-searches out of page-command-center nesting; History sub-tab now renders correctly
+Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop: _shRerun fixed to navigate to CC; _shLoadCC added; Load button added to history rows; City+ST merged into Location column
 
 ## Recent Passes
+Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop (frontend only)
 Pass 94–96 milestone -- Discovery History recovery (DOM fix only)
 Pass 93 -- Command Center UI/UX hierarchy polish (CSS only)
 Pass 90–92 milestone -- Truth sync + Delivery nav fix + legacy DOM cleanup

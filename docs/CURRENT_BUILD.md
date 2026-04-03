@@ -3,10 +3,36 @@
 Last Updated: 2026-04-01
 
 ## Active Pass
-Pass 94–96 milestone -- Discovery History Recovery + Command Center Cohesion
+Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop
 
 ## Status
-Complete. DOM-only fix to index.html. No backend changes. Verified live.
+Complete. Frontend-only changes to index.html. No backend changes. Verified live.
+
+## What Pass 97–99 Changed
+
+**Goal:** Turn Search History into a real action surface. Fix re-run destination. Add load-without-rerun. Reduce column scan noise.
+
+**Root cause fixed:** `_shRerun()` navigated to Outreach — wrong surface since CC became canonical in Pass 82.
+
+**Changes:**
+- Added `_shLoadCC(city, state, industry)`: fills CC command bar inputs, navigates to `command-center`. No search fires.
+- Rewrote `_shRerun()`: calls `_shLoadCC()` then `ccCmdDiscover()` after 200ms delay. Lands on CC, not Outreach.
+- Added "→ Load" button on each history row (calls `_shLoadCC`).
+- Merged City + ST columns into "Location" (6 cols). Updated thead and all 4 colspan instances.
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html`
+- `docs/PROJECT_STATE.md`, `docs/CURRENT_BUILD.md`, `docs/AI_CONTROL_PANEL.md`, `docs/CHANGELOG_AI.md`
+
+**Protected-system status:** unchanged.
+
+## Verification Completed
+Pending live server verification — see live check below.
+
+## Next Pass
+TBD
+
+---
 
 ## What Pass 94–96 Changed
 
@@ -25,16 +51,13 @@ Complete. DOM-only fix to index.html. No backend changes. Verified live.
 
 **Protected-system status:** unchanged.
 
-## Verification Completed
+## Verification Completed (Pass 94–96)
 1. Server restarted; hard-refreshed
 2. Command Center boots, map, territory panel, queue rail ✓
 3. History tab: Search History renders (437 searches) ✓
 4. Map+Territory returns after History ✓
 5. Pipeline intact ✓
 6. Zero JS console errors ✓
-
-## Next Pass
-TBD
 
 ---
 

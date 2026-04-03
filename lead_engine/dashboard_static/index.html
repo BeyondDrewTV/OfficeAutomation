@@ -1897,16 +1897,15 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <thead>
         <tr>
           <th>Date / Time</th>
-          <th>City</th>
-          <th>ST</th>
+          <th>Location</th>
           <th>Industry</th>
           <th style="text-align:center">Found</th>
           <th style="text-align:center">Result</th>
-          <th style="text-align:center">Action</th>
+          <th style="text-align:center">Actions</th>
         </tr>
       </thead>
       <tbody id="search-history-tbody">
-        <tr><td colspan="7" class="mc-muted" style="text-align:center;padding:24px">Loading…</td></tr>
+        <tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">Loading…</td></tr>
       </tbody>
     </table>
   </div>
@@ -6907,33 +6906,34 @@ function cvOpenInOutreach(idx) {
 
 
 // ── Search History ────────────────────────────────────────────────────────────
-function _shRerun(city, state, industry) {
-  // Pre-fill the discover bar on the Outreach page and fire the search
-  const cityEl     = document.getElementById('d-city');
-  const stateEl    = document.getElementById('d-state');
-  const industryEl = document.getElementById('d-industry');
-  if (cityEl)     cityEl.value     = city;
-  if (stateEl)    stateEl.value    = state;
-  if (industryEl) {
-    // Try to select the matching option; fall through if not found
-    const opt = Array.from(industryEl.options).find(o => o.value === industry);
-    if (opt) industryEl.value = industry;
+function _shLoadCC(city, state, industry) {
+  const ccCity = document.getElementById('cc-cmd-city');
+  const ccState = document.getElementById('cc-cmd-state');
+  const ccInd = document.getElementById('cc-cmd-industry');
+  if (ccCity)  ccCity.value  = city;
+  if (ccState) ccState.value = state;
+  if (ccInd) {
+    const opt = Array.from(ccInd.options).find(o => o.value === industry);
+    if (opt) ccInd.value = industry;
   }
-  switchPage('outreach', document.querySelector('[data-page=outreach]'));
-  // Brief delay so the page switch renders before the API call fires
-  setTimeout(() => discoverLeads(), 120);
+  switchPage('command-center', document.querySelector('[data-page=command-center]'));
+}
+
+function _shRerun(city, state, industry) {
+  _shLoadCC(city, state, industry);
+  setTimeout(() => ccCmdDiscover(), 200);
 }
 
 async function loadSearchHistory() {
   const wrap  = document.getElementById('search-history-wrap');
   const tbody = document.getElementById('search-history-tbody');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="7" class="mc-muted" style="text-align:center;padding:24px">Loading…</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">Loading…</td></tr>';
   try {
     const rows = await api('/api/search_history');
     if (!rows.length) {
       if (wrap) wrap.querySelector('#sh-summary')?.remove();
-      tbody.innerHTML = '<tr><td colspan="7" class="mc-muted" style="text-align:center;padding:24px">No searches yet — run Discover + Draft to get started.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">No searches yet — run Discover + Draft to get started.</td></tr>';
       return;
     }
 
@@ -6969,17 +6969,20 @@ async function loadSearchHistory() {
       const rerunTitle  = `Re-run: ${r.industry} in ${r.city}, ${r.state}`;
       return `<tr style="${rowBg}">
         <td class="mc-muted" style="font-size:11px;white-space:nowrap">${escHtml(r.ts)}</td>
-        <td style="font-weight:500">${escHtml(r.city)}</td>
-        <td class="mc-mono">${escHtml(r.state)}</td>
+        <td style="font-weight:500">${escHtml(r.city)}, <span class="mc-mono">${escHtml(r.state)}</span></td>
         <td><span class="tag-industry">${escHtml(r.industry)}</span></td>
         <td style="text-align:center;${foundCls}">${r.found ?? 0}</td>
         <td style="text-align:center;${statusCls};font-size:12px;font-weight:600">${statusLabel}${r.error ? `<div style="font-size:10px;color:var(--muted);font-weight:400">${escHtml(r.error)}</div>` : ''}</td>
-        <td><button class="tp-btn tp-btn-run" title="${escHtml(rerunTitle)}"
-          onclick="_shRerun(${JSON.stringify(r.city)},${JSON.stringify(r.state)},${JSON.stringify(r.industry)})">⚡ Re-run</button></td>
+        <td style="display:flex;gap:4px;justify-content:center">
+          <button class="tp-btn" title="Load into Command Center"
+            onclick="_shLoadCC(${JSON.stringify(r.city)},${JSON.stringify(r.state)},${JSON.stringify(r.industry)})">→ Load</button>
+          <button class="tp-btn tp-btn-run" title="${escHtml(rerunTitle)}"
+            onclick="_shRerun(${JSON.stringify(r.city)},${JSON.stringify(r.state)},${JSON.stringify(r.industry)})">⚡ Re-run</button>
+        </td>
       </tr>`;
     }).join('');
   } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="7" class="mc-muted" style="text-align:center;padding:24px">Error loading history: ${e}</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="mc-muted" style="text-align:center;padding:24px">Error loading history: ${e}</td></tr>`;
   }
 }
 

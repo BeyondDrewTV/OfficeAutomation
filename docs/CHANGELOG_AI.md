@@ -1,4 +1,29 @@
-﻿### 2026-04-02 - Pass 94–96 Milestone: Discovery History Recovery + Command Center Cohesion
+﻿### 2026-04-02 - Pass 97–99 Milestone: Discovery Throughput + History-to-Action Loop
+
+**Goal:** Turn Search History into a real action surface and close the friction between past discovery runs and live Command Center workflow.
+
+**Root causes addressed (FACT):**
+- `_shRerun()` navigated to the Outreach page — the wrong surface. CC is the canonical operator surface since Pass 82.
+- No "Load" action existed — no way to restore prior context into CC command bar without re-triggering a search.
+- City and ST rendered as separate columns, adding horizontal scan noise with no benefit.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- Added `_shLoadCC(city, state, industry)`: pre-fills `cc-cmd-city`, `cc-cmd-state`, `cc-cmd-industry`; navigates to `command-center` via `switchPage`. No search fires.
+- Rewrote `_shRerun()`: calls `_shLoadCC()` then fires `ccCmdDiscover()` after 200ms delay. Operator lands on Command Center, results appear in the CC queue rail. Removed Outreach navigation entirely.
+- Added "→ Load" button to every history row (calls `_shLoadCC`).
+- Merged City + ST columns into single "Location" column (`City, ST` format). Updated `<thead>`, all `colspan="7"` → `colspan="6"` (4 instances: static tbody, loading state, empty state, error state).
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html` — JS + HTML table structure
+
+**What did NOT change:**
+- No backend, no API, no protected systems
+- `discoverLeads()`, `ccCmdDiscover()`, `loadSearchHistory()`, nav logic, map, queue rail, pipeline — all untouched
+- Data layer, queue schema, send path, suppression — unchanged
+
+---
+
+### 2026-04-02 - Pass 94–96 Milestone: Discovery History Recovery + Command Center Cohesion
 
 **Goal:** Fix Discovery History blank sub-tab (pre-existing bug). Smallest correct structural fix only.
 

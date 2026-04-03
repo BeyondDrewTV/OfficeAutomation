@@ -15,9 +15,9 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | Pass 94–96 milestone complete — Discovery History recovery |
-| Last Completed Pass | Pass 94–96 milestone -- Discovery History Recovery + Command Center Cohesion |
-| Pass Before That | Pass 93 -- Command Center UI/UX Hierarchy Polish |
+| Current Focus | Pass 97–99 milestone complete — History-to-Action Loop |
+| Last Completed Pass | Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop |
+| Pass Before That | Pass 94–96 milestone -- Discovery History Recovery + Command Center Cohesion |
 | Next Pass | TBD |
 
 ---
