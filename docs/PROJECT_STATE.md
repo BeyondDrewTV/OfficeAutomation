@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-03 (Pass 112–117)
+Last Updated: 2026-04-03 (Pass 118–123)
 
 ## Copperline Version
 v0.3
@@ -15,9 +15,10 @@ TBD — Pass 112–117 complete
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 112–117 -- Queue Becomes the Real Operating System: needs_obs cohort CTA replaced with actionable "Start Obs Review" button wired to new _cohortStartSession() which opens a panel session scoped to the cohort with obs intent pre-set; per-row cohort pills (◎ obs needed / ↻ stale / – no email) added to td-biz, visible in all filter views; active filter timeline note now describes the cohort system; drawer stays deep-resolution only
+Pass 118–123 -- Queue-Native Exception Recovery + Legacy Surface Demotion: stale cohort now has both bulk regen and a scoped Review Stale session; no_email cohort now has both a scoped Review No-Email session and direct Social DMs route; mode bar visually demotes Social DMs and Focus Mode as secondary tools behind a separator; Email Queue reads clearly as the primary operator surface
 
 ## Recent Passes
+Pass 118–123 milestone -- Queue-Native Exception Recovery + Legacy Surface Demotion (frontend only)
 Pass 112–117 milestone -- Queue Becomes the Real Operating System (frontend only)
 Pass 106–111 milestone -- Unified Operator Workbench + Review Drawer Recovery (frontend only)
 Pass 103–105 milestone -- Bulk-First Pipeline + Exception Queue (frontend only)

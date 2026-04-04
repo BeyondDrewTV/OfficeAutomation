@@ -1,4 +1,23 @@
-﻿### 2026-04-03 - Pass 112–117: Queue Becomes the Real Operating System
+﻿### 2026-04-03 - Pass 118–123: Queue-Native Exception Recovery + Legacy Surface Demotion
+
+**Goal:** All four exception cohorts now have Queue-native recovery paths. Legacy surfaces are visually secondary, not equal.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- Stale cohort CTA: now dual — `↻ Regen All (N)` + `→ Review Stale` (scoped session via `_cohortStartSession('stale')`)
+- No-email cohort CTA: now dual — `→ Review No-Email (N)` (scoped session) + `📲 Social DMs →` (mode switch, not page-nav)
+- Mode bar: separator (`wb-mode-sep`) between Email Queue and legacy tools; Social DMs + Focus Mode get `wb-mode-tool` class (opacity .7, smaller font) — Email Queue reads as primary surface
+- CSS: `.wb-mode-sep`, `.wb-mode-tool`, `.wb-mode-tool.active`
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html` — CSS + HTML + JS (cohort CTAs)
+
+**What did NOT change:**
+- `_cohortStartSession` itself (already generic, no changes needed)
+- Cohort logic, pipeline, send gates, backend — unchanged
+
+---
+
+### 2026-04-03 - Pass 112–117: Queue Becomes the Real Operating System
 
 **Goal:** Make Queue the true operator work surface — exception state visible inline, needs_obs cohort actionable without opening drawer.
 

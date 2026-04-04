@@ -16,8 +16,8 @@ Repository Version: v0.3
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
 | Current Focus | TBD |
-| Last Completed Pass | Pass 112–117 -- Queue Becomes the Real Operating System |
-| Pass Before That | Pass 106–111 -- Unified Operator Workbench + Review Drawer Recovery |
+| Last Completed Pass | Pass 118–123 -- Queue-Native Exception Recovery + Legacy Surface Demotion |
+| Pass Before That | Pass 112–117 -- Queue Becomes the Real Operating System |
 | Next Pass | TBD |
 
 ---

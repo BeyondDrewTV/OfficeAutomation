@@ -6,7 +6,21 @@ Last Updated: 2026-04-01
 None — last pass complete.
 
 ## Status
-Pass 112–117 complete.
+Pass 118–123 complete.
+
+## What Pass 118–123 Changed
+
+**Goal:** All cohort exception paths Queue-native. Legacy surfaces visually demoted.
+
+**Changes:**
+- Stale CTA: dual buttons — bulk regen + scoped `→ Review Stale` session
+- No-email CTA: dual buttons — scoped `→ Review No-Email` session + `📲 Social DMs →` mode switch
+- Mode bar: `<span class="wb-mode-sep">` separator inserted between Email Queue and secondary tools; Social DMs + Focus Mode get `.wb-mode-tool` (0.7 opacity, 10px font) — demotion without deletion
+- CSS: `.wb-mode-sep`, `.wb-mode-tool`, `.wb-mode-tool.active`, `.wb-mode-tool:hover`
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged.
 
 ## What Pass 112–117 Changed
 
