@@ -102,6 +102,11 @@ tbody tr.row-sent{opacity:.45}
 tbody tr.cohort-hdr{cursor:default;border-top:none}
 tbody tr.cohort-hdr:hover{background:transparent}
 tbody tr.cohort-hdr td{padding:8px 16px 4px;background:var(--surface2)}
+/* Pass 118-123: Mode bar visual hierarchy */
+.wb-mode-sep{width:1px;background:var(--border);margin:2px 6px;align-self:stretch}
+.wb-mode-tool{font-size:10px;opacity:.7}
+.wb-mode-tool:hover{opacity:1}
+.wb-mode-tool.active{opacity:1}
 /* Pass 112-117: Per-row cohort pills */
 .cohort-pill{font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.05em;margin-top:3px;display:inline-block}
 .cp-needs-obs{background:rgba(245,166,35,.12);color:var(--amber)}
@@ -1183,8 +1188,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 
 <div class="wb-mode-bar">
   <button class="wb-mode-btn active" data-mode="outreach" onclick="_setWorkbenchMode('outreach')">📤 Email Queue</button>
-  <button class="wb-mode-btn" data-mode="social" onclick="_setWorkbenchMode('social')">📲 Social DMs</button>
-  <button class="wb-mode-btn" data-mode="sprint" onclick="_setWorkbenchMode('sprint')">⚡ Focus Mode</button>
+  <span class="wb-mode-sep"></span>
+  <button class="wb-mode-btn wb-mode-tool" data-mode="social" onclick="_setWorkbenchMode('social')">📲 Social DMs</button>
+  <button class="wb-mode-btn wb-mode-tool" data-mode="sprint" onclick="_setWorkbenchMode('sprint')">⚡ Focus Mode</button>
 </div>
 
 <div class="stats">
@@ -2841,8 +2847,8 @@ function _pipelineCohort(row) {
 
 function _cohortHeaderHtml(key, count) {
   const approveCta = `<button class="act act-approve" onclick="event.stopPropagation();_cohortBulkApprove()" style="font-size:11px;padding:3px 10px">✓ Approve All Ready (${count})</button>`;
-  const regenCta   = `<button class="act" onclick="event.stopPropagation();bulkRegenStale()" style="font-size:11px;padding:3px 10px;background:rgba(79,142,247,.12);color:var(--blue);border:none">↻ Regen All Stale (${count})</button>`;
-  const socialCta  = `<button class="act" onclick="event.stopPropagation();switchSubPage('pipeline','social',document.querySelector('[data-page=social]'))" style="font-size:11px;padding:3px 10px;background:rgba(100,116,139,.12);color:var(--dim);border:none">→ Social Queue</button>`;
+  const regenCta   = `<div style="display:flex;gap:6px;align-items:center"><button class="act" onclick="event.stopPropagation();bulkRegenStale()" style="font-size:11px;padding:3px 10px;background:rgba(79,142,247,.12);color:var(--blue);border:none">↻ Regen All (${count})</button><button class="act" onclick="event.stopPropagation();_cohortStartSession('stale')" style="font-size:11px;padding:3px 10px;background:rgba(79,142,247,.08);color:var(--blue);border:1px solid rgba(79,142,247,.2)">→ Review Stale</button></div>`;
+  const socialCta  = `<div style="display:flex;gap:6px;align-items:center"><button class="act" onclick="event.stopPropagation();_cohortStartSession('no_email')" style="font-size:11px;padding:3px 10px;background:rgba(100,116,139,.12);color:var(--dim);border:none">→ Review No-Email (${count})</button><button class="act" onclick="event.stopPropagation();_setWorkbenchMode('social')" style="font-size:11px;padding:3px 10px;background:rgba(100,116,139,.08);color:var(--dim);border:1px solid rgba(100,116,139,.2)">📲 Social DMs →</button></div>`;
   const meta = {
     bulk_safe: { label: 'Ready to Approve', color: 'var(--green)',  icon: '✓', cta: approveCta },
     needs_obs: { label: 'Needs Observation', color: 'var(--amber)', icon: '◎', cta: `<button class="act" onclick="event.stopPropagation();_cohortStartSession('needs_obs')" style="font-size:11px;padding:3px 10px;background:rgba(245,166,35,.12);color:var(--amber);border:none">→ Start Obs Review (${count})</button>` },
