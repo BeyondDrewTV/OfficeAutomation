@@ -6,7 +6,22 @@ Last Updated: 2026-04-01
 None — last pass complete.
 
 ## Status
-Pass 106–111 complete.
+Pass 112–117 complete.
+
+## What Pass 112–117 Changed
+
+**Goal:** Make Queue the real operating system — exception rows self-explanatory inline, needs_obs cohort actionable without drawer.
+
+**Changes:**
+- CSS: `.cohort-pill`, `.cp-needs-obs`, `.cp-stale`, `.cp-no-email` — per-row state badge styles
+- `needs_obs` cohort CTA replaced: dim "open each row" text → `→ Start Obs Review (N)` button wired to `_cohortStartSession('needs_obs')`
+- New `_cohortStartSession(cohortKey)`: filters `filteredRows` to the cohort, sets `panelOpenIntent='refresh'` for needs_obs, opens a scoped panel session via `openPanel(0, rows, label)`
+- Per-row cohort pill computed in `renderTable`: `_rowCohort = !row.sent_at ? _pipelineCohort(row) : 'bulk_safe'`; injected into `td-biz` next to business name — visible in ALL filter views (active, pending, all, stale, etc.)
+- Active filter timeline note updated: now explains cohort structure instead of generic "work you can handle right now"
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged.
 
 ## What Pass 106–111 Changed
 

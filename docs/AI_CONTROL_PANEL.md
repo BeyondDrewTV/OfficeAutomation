@@ -16,8 +16,8 @@ Repository Version: v0.3
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
 | Current Focus | TBD |
-| Last Completed Pass | Pass 106–111 -- Unified Operator Workbench + Review Drawer Recovery |
-| Pass Before That | Pass 103–105 -- Bulk-First Pipeline + Exception Queue |
+| Last Completed Pass | Pass 112–117 -- Queue Becomes the Real Operating System |
+| Pass Before That | Pass 106–111 -- Unified Operator Workbench + Review Drawer Recovery |
 | Next Pass | TBD |
 
 ---

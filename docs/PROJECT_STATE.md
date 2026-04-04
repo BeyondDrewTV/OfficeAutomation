@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-03 (Pass 106–111)
+Last Updated: 2026-04-03 (Pass 112–117)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-TBD
+TBD — Pass 112–117 complete
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 106–111 -- Unified Operator Workbench + Review Drawer Recovery: Social/Sprint tabs hidden from nav; Outreach renamed to Queue; mode bar (Email Queue / Social DMs / Focus Mode) replaces tab fragmentation; back-to-queue navigation on Social and Sprint pages; drawer blocker banner shows cohort-specific guidance for exception rows (needs_obs / stale / no_email) and auto-sets panel intent
+Pass 112–117 -- Queue Becomes the Real Operating System: needs_obs cohort CTA replaced with actionable "Start Obs Review" button wired to new _cohortStartSession() which opens a panel session scoped to the cohort with obs intent pre-set; per-row cohort pills (◎ obs needed / ↻ stale / – no email) added to td-biz, visible in all filter views; active filter timeline note now describes the cohort system; drawer stays deep-resolution only
 
 ## Recent Passes
+Pass 112–117 milestone -- Queue Becomes the Real Operating System (frontend only)
 Pass 106–111 milestone -- Unified Operator Workbench + Review Drawer Recovery (frontend only)
 Pass 103–105 milestone -- Bulk-First Pipeline + Exception Queue (frontend only)
 Pass 100–102 milestone -- Discovery Workflow Cohesion + Run Feedback (frontend only)

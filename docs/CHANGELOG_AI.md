@@ -1,4 +1,24 @@
-﻿### 2026-04-03 - Pass 106–111: Unified Operator Workbench + Review Drawer Recovery
+﻿### 2026-04-03 - Pass 112–117: Queue Becomes the Real Operating System
+
+**Goal:** Make Queue the true operator work surface — exception state visible inline, needs_obs cohort actionable without opening drawer.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- `needs_obs` cohort CTA: replaced dim "open each row" span with `→ Start Obs Review (N)` button wired to new `_cohortStartSession()`
+- New `_cohortStartSession(cohortKey)`: filters `filteredRows` to cohort, sets `panelOpenIntent='refresh'` for needs_obs, opens scoped panel session via `openPanel(0, rows, label)` — operator can nav prev/next within just that cohort
+- Per-row cohort pills: `_rowCohort` computed per row in `renderTable`; badge injected into `td-biz` (next to biz name) for all non-sent, non-bulk-safe rows — visible in ALL filter views, not just active
+- CSS: `.cohort-pill`, `.cp-needs-obs` (amber), `.cp-stale` (blue), `.cp-no-email` (dim)
+- Active filter timeline note: now describes cohort structure instead of generic text
+
+**Files changed:**
+- `lead_engine/dashboard_static/index.html` — JS + CSS
+
+**What did NOT change:**
+- Cohort logic (`_pipelineCohort`), bulk actions, drawer internals, send gates, backend — all unchanged
+- No protected system touches
+
+---
+
+### 2026-04-03 - Pass 106–111: Unified Operator Workbench + Review Drawer Recovery
 
 **Goal:** Reduce surface fragmentation — Social/Sprint/Outreach become modes of one workbench. Drawer becomes exception-aware with blocker banners.
 
