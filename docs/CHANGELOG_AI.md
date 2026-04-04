@@ -1,4 +1,25 @@
-﻿### 2026-04-04 - Pass 136–141: Inline Exception Repair + Session Persistence
+﻿### 2026-04-04 - Pass 142–147: Session Outcomes + Queue-Owned Recovery
+
+**Goal:** Queue owns the recovery outcome, not just the repair action. Operators see what happened after exception work — graduation counts mid-session and in done-state.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- `_queueSession`: added `outcomes: { repaired: 0, blocked: 0 }` field — initialized in `_qsStart`, preserved through session lifecycle
+- `_qsRepairedKeys`: new module-level `Set()` — reset on `_qsStart`, populated by `_qsRecordOutcome`
+- `_qsRecordOutcome(key, type)`: new helper — increments `qs.outcomes[type]`, adds key to `_qsRepairedKeys` when repaired, calls `_renderQueueSessionBanner()`
+- `_rowSaveObsAndRegen`: post-mutation calls `_pipelineCohort(row)` to evaluate graduation; calls `_qsRecordOutcome` and shows "✓ [name] → Ready to Approve" toast if bulk_safe, 'blocked' + informational toast otherwise
+- `_rowDirectRegen`: same pattern — post-mutation cohort check, graduation toast "✓ [name] → Ready to Approve", outcome recording
+- `_renderQueueSessionBanner` active state: appends " · N repaired" to meta line when `qs.outcomes.repaired > 0`
+- `_renderQueueSessionBanner` done state: shows "N repaired · M blocked" summary instead of generic row count when outcomes were recorded
+- `renderTable` cohort pill: checks `_qsRepairedKeys.has(_panelMakeKey(row))` for bulk_safe rows — renders `<span class="cohort-pill cp-repaired">✓ repaired</span>` (green accent) when matched
+- CSS: `.cp-repaired` — green pill style consistent with cohort pill system
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, `docs/`
+
+**Verified:** No protected systems touched. Frontend-only. No queue schema changes.
+
+---
+
+### 2026-04-04 - Pass 136–141: Inline Exception Repair + Session Persistence
 
 **Goal:** Queue sessions survive normal operator movement. Exception repair increases inline. Session position stays accurate through all paths.
 

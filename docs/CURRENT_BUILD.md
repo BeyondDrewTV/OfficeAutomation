@@ -1,12 +1,34 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-04-04
+Last Updated: 2026-04-04 (Pass 142–147)
 
 ## Active Pass
-Pass 136–141 — Inline Exception Repair + Session Persistence
+Pass 142–147 — Session Outcomes + Queue-Owned Recovery
 
 ## Status
-Pass 136–141 complete.
+Pass 142–147 complete.
+
+## What Pass 142–147 Changed
+
+**Goal:** Queue owns the recovery outcome, not just the repair action. Operators see what happened after exceptions are worked — how many rows graduated, how many are still blocked — both mid-session and in the done-state summary.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+
+- **Pass 142 — Outcome tracking foundation:** `_queueSession` now includes `outcomes: { repaired: 0, blocked: 0 }`. `_qsRepairedKeys = new Set()` (module-level) resets on each `_qsStart`. New `_qsRecordOutcome(key, type)` helper increments the counter, adds the key to `_qsRepairedKeys` when type is 'repaired', and refreshes the banner.
+
+- **Pass 143 — `_rowSaveObsAndRegen` graduation toast:** After obs save + regen, computes `_pipelineCohort(row)` on the mutated row. If now `bulk_safe` → calls `_qsRecordOutcome(key, 'repaired')` and toasts "✓ [name] → Ready to Approve". Otherwise → 'blocked' outcome and retains informational toast.
+
+- **Pass 144 — `_rowDirectRegen` graduation toast:** Same pattern — after draft fields are updated, re-evaluates cohort. Stale rows with an observation always graduate to `bulk_safe` after regen, so this path consistently shows "✓ [name] → Ready to Approve".
+
+- **Pass 145 — Done-state banner outcome summary:** `_renderQueueSessionBanner` done-state now reads `qs.outcomes`. If any outcomes were recorded, shows "N repaired · M blocked" instead of generic "N rows in set". If no outcomes (e.g., session ended by navigation only), falls back to row count.
+
+- **Pass 146 — Active-session banner live tally:** Mid-session banner appends " · N repaired" to the meta line whenever `qs.outcomes.repaired > 0`. Operator sees repair progress without opening any drawer.
+
+- **Pass 147 — Repaired cohort pill:** `renderTable` cohort pill block checks `_qsRepairedKeys.has(_panelMakeKey(row))` for rows that are now `bulk_safe`. If matched, renders `<span class="cohort-pill cp-repaired">✓ repaired</span>` (green accent). CSS: `.cp-repaired { background:rgba(52,199,89,.12); color:var(--green); border:1px solid rgba(52,199,89,.2) }`.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged.
 
 ## What Pass 136–141 Changed
 

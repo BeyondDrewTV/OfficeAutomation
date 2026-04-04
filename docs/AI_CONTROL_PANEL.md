@@ -1,6 +1,6 @@
 ﻿# Copperline AI Control Panel
 
-Last Updated: 2026-04-04 (Pass 136–141)
+Last Updated: 2026-04-04 (Pass 142–147)
 Repository Version: v0.3
 
 > **Role:** Active operating contract + current AI guardrails.
@@ -15,9 +15,9 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | Pass 136–141 — Inline Exception Repair + Session Persistence |
-| Last Completed Pass | Pass 136–141 — Inline Exception Repair + Session Persistence |
-| Pass Before That | Pass 130–135 — Queue Session Throughput + Batch Recovery Discipline |
+| Current Focus | Pass 142–147 — Session Outcomes + Queue-Owned Recovery |
+| Last Completed Pass | Pass 142–147 — Session Outcomes + Queue-Owned Recovery |
+| Pass Before That | Pass 136–141 — Inline Exception Repair + Session Persistence |
 | Next Pass | TBD |
 
 ---
