@@ -112,6 +112,7 @@ tbody tr.cohort-hdr td{padding:8px 16px 4px;background:var(--surface2)}
 .cp-needs-obs{background:rgba(245,166,35,.12);color:var(--amber)}
 .cp-stale{background:rgba(79,142,247,.12);color:var(--blue)}
 .cp-no-email{background:rgba(100,116,139,.12);color:var(--dim)}
+.cp-repaired{background:rgba(52,199,89,.12);color:var(--green);border:1px solid rgba(52,199,89,.2)}
 /* Pass 106-111: Workbench mode bar + drawer blocker */
 .wb-mode-bar{display:flex;gap:4px;padding:4px 0 8px;border-bottom:1px solid var(--border);margin-bottom:8px}
 .wb-mode-btn{font-size:11px;font-weight:600;padding:4px 12px;border-radius:var(--rs);cursor:pointer;background:var(--surface2);color:var(--muted);border:1px solid var(--border);transition:all .15s}
@@ -2128,6 +2129,7 @@ let panelRowKey = '';
 let panelSessionLabel = '';
 let panelOpenIntent = '';
 let _queueSession = null;   // Pass 130-135: { cohortKey, label, rowKeys, pos, done } — persists across panel open/close
+let _qsRepairedKeys = new Set();  // Pass 142-147: keys of rows repaired in current session
 let _panelMousedownOnBackdrop = false; // Pass 37: drag-close guard
 let status_draft_version = '';
 
@@ -2925,8 +2927,12 @@ async function _rowDirectRegen(gi) {
         if (nextPos < _queueSession.rowKeys.length) _qsUpdatePos(nextPos);
         else _qsMarkDone();
       }
+      // Pass 142-147: record graduation outcome — stale + has obs always becomes bulk_safe after regen
+      const _drPostCohort = _pipelineCohort(row);
+      const _drKey = _panelMakeKey(row);
+      _qsRecordOutcome(_drKey, _drPostCohort === 'bulk_safe' ? 'repaired' : 'blocked');
       renderTable();
-      toast(`Draft refreshed — ${row.business_name}`, 'ok');
+      toast(_drPostCohort === 'bulk_safe' ? `✓ ${row.business_name} → Ready to Approve` : `Draft refreshed — ${row.business_name}`, 'ok');
     } else {
       toast('Regen failed: ' + (res.error || 'unknown'), 'err');
     }
@@ -2998,6 +3004,11 @@ async function _rowSaveObsAndRegen(gi) {
       row.draft_version = status_draft_version;
       if (regenRes.dm_draft) row.facebook_dm_draft = row.instagram_dm_draft = row.contact_form_message = row.social_dm_text = regenRes.dm_draft;
     }
+    // Pass 142-147: record graduation outcome — did obs + regen move row to bulk_safe?
+    const _sarPostCohort = _pipelineCohort(row);
+    const _sarKey = _panelMakeKey(row);
+    const _sarGraduated = regenRes.ok && _sarPostCohort === 'bulk_safe';
+    _qsRecordOutcome(_sarKey, _sarGraduated ? 'repaired' : 'blocked');
     // Advance session position past this repaired row, or mark done
     if (_queueSession && !_queueSession.done) {
       const nextPos = _queueSession.pos + 1;
@@ -3007,7 +3018,7 @@ async function _rowSaveObsAndRegen(gi) {
     // Remove inline form and re-render
     document.getElementById(`inline-obs-row-${gi}`)?.remove();
     renderTable();
-    toast(`${row.business_name} — obs saved, draft refreshed`, 'ok');
+    toast(_sarGraduated ? `✓ ${row.business_name} → Ready to Approve` : `${row.business_name} — obs saved, draft refreshed`, 'ok');
   } catch(e) {
     toast('Inline obs error: ' + String(e), 'err');
   }
@@ -3030,7 +3041,8 @@ function _cohortStartSession(cohortKey) {
 // Session persists across drawer open/close so the operator stays oriented at table level.
 
 function _qsStart(cohortKey, rows, label) {
-  _queueSession = { cohortKey, label, rowKeys: _panelSnapshotKeys(rows), pos: 0, done: false };
+  _queueSession = { cohortKey, label, rowKeys: _panelSnapshotKeys(rows), pos: 0, done: false, outcomes: { repaired: 0, blocked: 0 } };
+  _qsRepairedKeys = new Set();
   _renderQueueSessionBanner();
 }
 
@@ -3062,6 +3074,15 @@ function _qsRefreshKeys() {
 function _qsUpdatePos(pos) {
   if (!_queueSession || _queueSession.done) return;
   _queueSession.pos = Math.max(0, pos);
+  _renderQueueSessionBanner();
+}
+
+// Pass 142-147: record a row repair outcome and refresh banner
+function _qsRecordOutcome(key, type) {
+  if (!_queueSession) return;
+  if (!_queueSession.outcomes) _queueSession.outcomes = { repaired: 0, blocked: 0 };
+  if (type === 'repaired') { _queueSession.outcomes.repaired++; _qsRepairedKeys.add(key); }
+  else if (type === 'blocked') { _queueSession.outcomes.blocked++; }
   _renderQueueSessionBanner();
 }
 
@@ -3109,13 +3130,19 @@ function _renderQueueSessionBanner() {
         break;
       }
     }
+    // Pass 142-147: show repair outcome counts in done-state
+    const _doneOutcome = qs.outcomes && (qs.outcomes.repaired || qs.outcomes.blocked)
+      ? `${qs.outcomes.repaired} repaired${qs.outcomes.blocked ? ` · ${qs.outcomes.blocked} blocked` : ''}`
+      : `${total} rows in set`;
     banner.className = 'qsb-done';
-    banner.innerHTML = `<span class="qsb-label">✓ ${escHtml(qs.label)} complete</span><span class="qsb-meta">${total} rows in set</span><div class="qsb-actions">${nextHtml}<button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ Close</button></div>`;
+    banner.innerHTML = `<span class="qsb-label">✓ ${escHtml(qs.label)} complete</span><span class="qsb-meta">${_doneOutcome}</span><div class="qsb-actions">${nextHtml}<button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ Close</button></div>`;
   } else {
     const pos1 = qs.pos + 1;
     const remaining = total - qs.pos;
+    // Pass 142-147: show live repair tally mid-session
+    const _liveOutcome = qs.outcomes && qs.outcomes.repaired ? ` · ${qs.outcomes.repaired} repaired` : '';
     banner.className = '';
-    banner.innerHTML = `<span class="qsb-label">${icon} ${escHtml(qs.label)}</span><span class="qsb-meta">row ${pos1} of ${total} · ${remaining} remaining</span><div class="qsb-actions"><button class="qsb-btn qsb-resume" onclick="_qsResume()">→ Resume</button><button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ End</button></div>`;
+    banner.innerHTML = `<span class="qsb-label">${icon} ${escHtml(qs.label)}</span><span class="qsb-meta">row ${pos1} of ${total} · ${remaining} remaining${_liveOutcome}</span><div class="qsb-actions"><button class="qsb-btn qsb-resume" onclick="_qsResume()">→ Resume</button><button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ End</button></div>`;
   }
 }
 
@@ -3384,6 +3411,8 @@ function renderTable() {
     const cohortPill = _rowCohort === 'needs_obs' ? `<span class="cohort-pill cp-needs-obs">◎ obs needed</span>`
       : _rowCohort === 'stale'    ? `<span class="cohort-pill cp-stale">↻ stale</span>`
       : _rowCohort === 'no_email' ? `<span class="cohort-pill cp-no-email">– no email</span>`
+      // Pass 142-147: graduation pill — row was repaired this session and is now bulk_safe
+      : (_qsRepairedKeys.size && _qsRepairedKeys.has(_panelMakeKey(row))) ? `<span class="cohort-pill cp-repaired">✓ repaired</span>`
       : '';
     // Pass 124-129: Cohort-aware row action block — drawer reserved for deep review only
     const _schedBtn = actionable && !row.send_after ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowSchedule(${gi},${JSON.stringify(row.business_name)})" title="Schedule for tomorrow morning window">🕐</button>` : '';
