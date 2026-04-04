@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-04 (Pass 148–153)
+Last Updated: 2026-04-04 (Pass 154–159)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Pass 148–153 — Queue Graduation Flow + Ready-State Harvest
+Pass 154–159 — Approved Work Harvest + Send Readiness
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 148–153 — Queue Graduation Flow + Ready-State Harvest: _lastRepairedKeys Set persists repaired row keys after session close; _qsEnd copies to _lastRepairedKeys before clearing; _qsStart clears _lastRepairedKeys on new session; _qsApproveRepaired() batch-approves repaired set from active or last session; _qsDismissHarvest() clears harvest state; done-state banner gets "Approve N repaired" primary button; post-session harvest strip appears in banner area while _lastRepairedKeys non-empty; cp-repaired pills persist post-session via _lastRepairedKeys check in renderTable; CSS: .qsb-harvest + .qsb-approve
+Pass 154–159 — Approved Work Harvest + Send Readiness: _lastApprovedCount tracks rows approved in last batch action; _qsApproveRepaired sets it before clearing harvest state; _qsDismissApproved clears it; _renderQueueSessionBanner gains fourth state (qsb-send-ready amber strip) when _lastApprovedCount > 0 and no session/harvest active; state ordering fixed so harvest and send-ready strips are mutually exclusive; stats strip "Approved" stat clickable → approved filter; _queueTimelineNoteHtml approved case shows live send-ready count + guidance; CSS: .qsb-send-ready
 
 ## Recent Passes
+Pass 154–159 milestone -- Approved Work Harvest + Send Readiness (frontend only)
 Pass 148–153 milestone -- Queue Graduation Flow + Ready-State Harvest (frontend only)
 Pass 142–147 milestone -- Session Outcomes + Queue-Owned Recovery (frontend only)
 Pass 136–141 milestone -- Inline Exception Repair + Session Persistence (frontend only)

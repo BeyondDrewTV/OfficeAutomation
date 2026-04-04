@@ -1,12 +1,34 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-04-04 (Pass 148–153)
+Last Updated: 2026-04-04 (Pass 154–159)
 
 ## Active Pass
-Pass 148–153 — Queue Graduation Flow + Ready-State Harvest
+Pass 154–159 — Approved Work Harvest + Send Readiness
 
 ## Status
-Pass 148–153 complete.
+Pass 154–159 complete.
+
+## What Pass 154–159 Changed
+
+**Goal:** Carry freshly approved work into the operator's next real outbound actions — review, schedule, and send readiness — without breaking manual-send discipline.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+
+- **Pass 154 — `_lastApprovedCount` + CSS:** New module-level `let _lastApprovedCount = 0`. Tracks rows approved in last batch action. CSS: `#queue-session-banner.qsb-send-ready` (amber-accent banner variant, distinct from copper active / green done+harvest).
+
+- **Pass 155 — Session lifecycle hooks:** `_qsStart` clears `_lastApprovedCount = 0` on new session. `_qsApproveRepaired()` sets `_lastApprovedCount = approved` immediately before clearing harvest state — count is captured before any reset. New `_qsDismissApproved()` clears `_lastApprovedCount` and refreshes banner.
+
+- **Pass 156 — Send-readiness banner state:** `_renderQueueSessionBanner()` now has five distinct states. Early-exit guard updated to include `!_lastApprovedCount`. Harvest strip condition tightened to `!qs && _lastRepairedKeys.size > 0` (was `!qs`). New fourth state `!qs && _lastApprovedCount > 0` renders amber `qsb-send-ready` strip: label "✓ N approved — ready to schedule or send", "▶ Send Approved (N)" button calling `confirmSend()` (existing confirmation modal — no auto-send), "✕ Dismiss". If all approved rows are already sent, shows "✓ All approved rows sent" in place of send button. States are mutually exclusive: harvest strip takes priority if `_lastRepairedKeys` is non-empty.
+
+- **Pass 157 — Stats strip "Approved" clickable:** `<div class="stat">` wrapping the approved count now has `cursor:pointer`, `onclick="setFilter('approved', ...)"`, and a `title`. Label updated to "Approved ↗" to signal interactivity. Matches the existing pattern of "Replied" and "Stale Copy" clickable stats.
+
+- **Pass 158 — `_queueTimelineNoteHtml` approved filter upgrade:** Computes live `approvedSendReady = allRows.filter(r => r.approved === 'true' && !r.sent_at && r.to_email).length`. Note now reads "Approved — N ready to send" with explicit guidance to schedule with 🕐 or use ▶ Send Approved.
+
+- **Verifier fix — `if (!qs)` → `if (!qs && _lastRepairedKeys.size > 0)`:** Verifier caught that the original `if (!qs)` branch in `_renderQueueSessionBanner()` would intercept the send-ready state before it could render. Fixed by tightening the condition. Without this fix, the send-ready strip would never show.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged. `confirmSend()` routes through the existing modal gate — no auto-send introduced.
 
 ## What Pass 148–153 Changed
 

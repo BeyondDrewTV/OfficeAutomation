@@ -1,4 +1,24 @@
-﻿### 2026-04-04 - Pass 148–153: Queue Graduation Flow + Ready-State Harvest
+﻿### 2026-04-04 - Pass 154–159: Approved Work Harvest + Send Readiness
+
+**Goal:** Carry freshly approved work into the operator's next real outbound actions without breaking manual-send discipline.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- `_lastApprovedCount`: new module-level counter — set in `_qsApproveRepaired()` before harvest state clears; cleared in `_qsStart()` and `_qsDismissApproved()`
+- `_qsDismissApproved()`: new function — clears `_lastApprovedCount`, refreshes banner
+- `_renderQueueSessionBanner()`: fifth state system — harvest strip condition tightened to `!qs && _lastRepairedKeys.size > 0` (fixes pre-existing bug where `if (!qs)` would intercept both harvest and send-ready states); new fourth state `!qs && _lastApprovedCount > 0` renders `.qsb-send-ready` amber strip with "▶ Send Approved (N)" → `confirmSend()` (modal-gated, no auto-send) and "✕ Dismiss"; if `_sendCount === 0`, shows "✓ All approved rows sent"
+- Stats strip: "Approved" stat is now clickable — `onclick="setFilter('approved', ...)"`, `cursor:pointer`, label "Approved ↗"; matches existing Replied + Stale Copy pattern
+- `_queueTimelineNoteHtml()` approved filter: computes live `approvedSendReady` count; note now reads "Approved — N ready to send" with schedule + Send Approved guidance
+- CSS: `#queue-session-banner.qsb-send-ready` (amber-accent, distinct from copper/green banner states)
+
+**Verifier catch:** Original `if (!qs)` harvest strip condition would intercept the send-ready state. Tightened to `if (!qs && _lastRepairedKeys.size > 0)` before ship.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, `docs/`
+
+**Manual-send discipline:** Intact. `confirmSend()` opens existing confirmation modal. No auto-send introduced.
+
+---
+
+### 2026-04-04 - Pass 148–153: Queue Graduation Flow + Ready-State Harvest
 
 **Goal:** Repaired rows land clearly into ready-state and are easy to harvest from Queue. Exception work, graduation, and approval form one continuous flow.
 
