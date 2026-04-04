@@ -1,4 +1,25 @@
-﻿### 2026-04-04 - Pass 142–147: Session Outcomes + Queue-Owned Recovery
+﻿### 2026-04-04 - Pass 148–153: Queue Graduation Flow + Ready-State Harvest
+
+**Goal:** Repaired rows land clearly into ready-state and are easy to harvest from Queue. Exception work, graduation, and approval form one continuous flow.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- `_lastRepairedKeys`: new module-level `Set` — repaired row keys from the last closed session, persists for harvest strip and pills
+- `_qsStart`: clears `_lastRepairedKeys` on new session (clean slate each time)
+- `_qsEnd`: copies `_qsRepairedKeys → _lastRepairedKeys` before clearing — repaired keys survive session close
+- `_qsApproveRepaired()`: new async function — batch-approves rows by key from active or last session; bypasses `_qsEnd` to prevent re-snapshot; clears all state; calls `renderTable()` + `loadStats()`; toasts approved + skipped counts
+- `_qsDismissHarvest()`: clears `_lastRepairedKeys`, refreshes banner and table
+- Done-state banner: "✓ Approve N repaired" button (`.qsb-approve`) when `outcomes.repaired > 0` — direct one-click harvest without leaving Queue
+- Post-session harvest strip: `_renderQueueSessionBanner()` now has a third render path — `!_queueSession && _lastRepairedKeys.size > 0` → shows harvest strip (`qsb-harvest` class); live `approveCount` filter; "Approve N repaired" or "✓ All approved" + Dismiss
+- `renderTable` cohort pill: extended to check `_lastRepairedKeys` for `cp-repaired` pill when active session has no keys — graduation pill persists until next session or dismiss
+- CSS: `.qsb-harvest` (green-accent banner variant), `.qsb-approve` (green button), `.qsb-approve:hover`
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, `docs/`
+
+**Verified:** State machine audited by verifier — all 9 checks passed. No protected systems touched. Frontend-only.
+
+---
+
+### 2026-04-04 - Pass 142–147: Session Outcomes + Queue-Owned Recovery
 
 **Goal:** Queue owns the recovery outcome, not just the repair action. Operators see what happened after exception work — graduation counts mid-session and in done-state.
 

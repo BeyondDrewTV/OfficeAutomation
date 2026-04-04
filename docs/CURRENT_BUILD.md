@@ -1,12 +1,34 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-04-04 (Pass 142–147)
+Last Updated: 2026-04-04 (Pass 148–153)
 
 ## Active Pass
-Pass 142–147 — Session Outcomes + Queue-Owned Recovery
+Pass 148–153 — Queue Graduation Flow + Ready-State Harvest
 
 ## Status
-Pass 142–147 complete.
+Pass 148–153 complete.
+
+## What Pass 148–153 Changed
+
+**Goal:** Make recovered rows land clearly into ready-state and make that ready-state easy to act on from Queue — one flow from exception repair through graduation through approval.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+
+- **Pass 148 — `_lastRepairedKeys` + CSS:** New module-level `Set` that persists repaired row keys from a closed session. CSS: `#queue-session-banner.qsb-harvest` (green-tinted, distinct from copper active / green done-state) and `.qsb-approve` (green button).
+
+- **Pass 149 — Session lifecycle hooks:** `_qsStart` clears `_lastRepairedKeys` on new session start. `_qsEnd` copies `_qsRepairedKeys → _lastRepairedKeys` before clearing, so repaired keys survive the session close.
+
+- **Pass 150 — `_qsApproveRepaired()`:** New async function. Takes repaired keys from `_qsRepairedKeys` (session active/done) or `_lastRepairedKeys` (post-session). Iterates rows by key, calls `/api/approve_row` for each unapproved row with a valid email, mutates `row.approved = 'true'`. Clears all harvest state manually (bypasses `_qsEnd` so it does not re-snapshot). Calls `_renderQueueSessionBanner()`, `renderTable()`, `loadStats()`. Toasts count + skip count.
+
+- **Pass 151 — Done-state banner: harvest action:** When `qs.outcomes.repaired > 0`, done-state banner shows `"✓ Approve N repaired"` as the first action button (`.qsb-approve` style). Operator can approve the full repaired set with one click without leaving Queue.
+
+- **Pass 152 — Post-session harvest strip:** `_renderQueueSessionBanner()` now has a third render path: when `!_queueSession && _lastRepairedKeys.size > 0`, renders a harvest strip (`qsb-harvest` class) showing "N repaired rows are ready" with live `approveCount` (rows still unapproved, with email), "Approve N repaired" button, and "Dismiss" button. If all are already approved, shows "✓ All repaired rows approved" in place of the approve button. New `_qsDismissHarvest()` clears `_lastRepairedKeys` and refreshes banner + table.
+
+- **Pass 153 — `renderTable` pill: post-session persistence:** Cohort pill check extended to also test `_lastRepairedKeys.has(_pillKey)` for `bulk_safe` rows. `cp-repaired` pill persists in the table after session close until next session start or dismiss — giving the operator a stable visual reference for rows just repaired.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged.
 
 ## What Pass 142–147 Changed
 

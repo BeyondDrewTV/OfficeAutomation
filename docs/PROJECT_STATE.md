@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-04 (Pass 142–147)
+Last Updated: 2026-04-04 (Pass 148–153)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Pass 142–147 — Session Outcomes + Queue-Owned Recovery
+Pass 148–153 — Queue Graduation Flow + Ready-State Harvest
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 142–147 — Session Outcomes + Queue-Owned Recovery: _queueSession gains outcomes counter; _qsRepairedKeys Set tracks repaired row keys; _qsRecordOutcome(key,type) records repair result + refreshes banner; _rowSaveObsAndRegen + _rowDirectRegen compute post-repair cohort and show graduation toast ("✓ [name] → Ready to Approve") + record outcome; session banner shows live repair count mid-session and repair/blocked summary in done-state; renderTable shows cp-repaired green pill for rows repaired in current session
+Pass 148–153 — Queue Graduation Flow + Ready-State Harvest: _lastRepairedKeys Set persists repaired row keys after session close; _qsEnd copies to _lastRepairedKeys before clearing; _qsStart clears _lastRepairedKeys on new session; _qsApproveRepaired() batch-approves repaired set from active or last session; _qsDismissHarvest() clears harvest state; done-state banner gets "Approve N repaired" primary button; post-session harvest strip appears in banner area while _lastRepairedKeys non-empty; cp-repaired pills persist post-session via _lastRepairedKeys check in renderTable; CSS: .qsb-harvest + .qsb-approve
 
 ## Recent Passes
+Pass 148–153 milestone -- Queue Graduation Flow + Ready-State Harvest (frontend only)
 Pass 142–147 milestone -- Session Outcomes + Queue-Owned Recovery (frontend only)
 Pass 136–141 milestone -- Inline Exception Repair + Session Persistence (frontend only)
 Pass 130–135 milestone -- Queue Session Throughput + Batch Recovery Discipline (frontend only)
