@@ -139,6 +139,8 @@ tbody tr.cohort-hdr td{padding:8px 16px 4px;background:var(--surface2)}
 #queue-session-banner.qsb-harvest{background:rgba(52,199,89,.05);border-color:rgba(52,199,89,.2)}
 .qsb-approve{background:rgba(52,199,89,.18);color:var(--green)}
 .qsb-approve:hover{background:rgba(52,199,89,.28)}
+/* Pass 154-159: send-readiness strip */
+#queue-session-banner.qsb-send-ready{background:rgba(245,166,35,.05);border-color:rgba(245,166,35,.2)}
 tr.session-current{background:rgba(184,115,51,.04)}
 tr.session-current .td-chk{box-shadow:inset 3px 0 0 var(--copper)}
 /* Pass 140: inline obs repair row */
@@ -1230,7 +1232,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <div class="stat" title="Total businesses in discovery pool (prospects.csv) — independent of outreach queue"><div class="stat-n blue" id="s-prospects">—</div><div class="stat-lbl">Discovered</div></div>
   <div class="stat"><div class="stat-n blue" id="s-drafted">—</div><div class="stat-lbl">Drafted</div></div>
   <div class="stat"><div class="stat-n amber" id="s-pending">—</div><div class="stat-lbl">Pending</div></div>
-  <div class="stat"><div class="stat-n green" id="s-approved">—</div><div class="stat-lbl">Approved</div></div>
+  <div class="stat" style="cursor:pointer" onclick="setFilter('approved',document.querySelector('[data-filter=approved]'))" title="Click to view approved rows — ready to send">
+    <div class="stat-n green" id="s-approved">—</div><div class="stat-lbl">Approved ↗</div>
+  </div>
   <div class="stat"><div class="stat-n grey" id="s-sent">—</div><div class="stat-lbl">Sent</div></div>
   <div class="stat" title="Sent via log_contact (no SMTP message-id — not a confirmed send)"><div class="stat-n" id="s-logged" style="color:var(--muted)">—</div><div class="stat-lbl" style="color:var(--muted)">Logged Only</div></div>
   <div class="stat" style="cursor:pointer" onclick="setFilter('replied',document.querySelector('[data-filter=replied]'))" title="Click to view replies">
@@ -2135,6 +2139,7 @@ let panelOpenIntent = '';
 let _queueSession = null;   // Pass 130-135: { cohortKey, label, rowKeys, pos, done } — persists across panel open/close
 let _qsRepairedKeys = new Set();  // Pass 142-147: keys of rows repaired in current session
 let _lastRepairedKeys = new Set(); // Pass 148-153: repaired keys from last closed session — persists for harvest strip + pills
+let _lastApprovedCount = 0; // Pass 154-159: rows approved in last batch action — persists for send-readiness strip
 let _panelMousedownOnBackdrop = false; // Pass 37: drag-close guard
 let status_draft_version = '';
 
@@ -3049,6 +3054,7 @@ function _qsStart(cohortKey, rows, label) {
   _queueSession = { cohortKey, label, rowKeys: _panelSnapshotKeys(rows), pos: 0, done: false, outcomes: { repaired: 0, blocked: 0 } };
   _qsRepairedKeys = new Set();
   _lastRepairedKeys = new Set(); // Pass 148-153: new session clears prior harvest state
+  _lastApprovedCount = 0;        // Pass 154-159: new session clears send-readiness strip
   _renderQueueSessionBanner();
 }
 
@@ -3118,6 +3124,8 @@ async function _qsApproveRepaired() {
     row.approved = 'true';
     approved++;
   }
+  // Pass 154-159: record approved count before clearing state — drives send-readiness strip
+  _lastApprovedCount = approved;
   // Clear all harvest state — bypass _qsEnd so it does not re-snapshot into _lastRepairedKeys
   _lastRepairedKeys = new Set();
   _queueSession = null;
@@ -3134,6 +3142,11 @@ function _qsDismissHarvest() {
   renderTable(); // remove cp-repaired pills from table
 }
 
+function _qsDismissApproved() {
+  _lastApprovedCount = 0;
+  _renderQueueSessionBanner();
+}
+
 function _qsResume() {
   if (!_queueSession) return;
   const rows = _queueSession.rowKeys
@@ -3148,9 +3161,9 @@ function _renderQueueSessionBanner() {
   const banner = document.getElementById('queue-session-banner');
   if (!banner) return;
   const qs = _queueSession;
-  if (!qs && !_lastRepairedKeys.size) { banner.style.display = 'none'; return; }
+  if (!qs && !_lastRepairedKeys.size && !_lastApprovedCount) { banner.style.display = 'none'; return; }
   // Pass 148-153: post-session harvest strip — shown when session is closed but repaired rows are still harvestable
-  if (!qs) {
+  if (!qs && _lastRepairedKeys.size > 0) {
     const approveCount = [..._lastRepairedKeys].filter(k => {
       const r = allRows.find(row => _panelMakeKey(row) === k);
       return r && r.approved !== 'true' && !r.sent_at && r.to_email;
@@ -3161,6 +3174,17 @@ function _renderQueueSessionBanner() {
       ? `<button class="qsb-btn qsb-approve" onclick="_qsApproveRepaired()">✓ Approve ${approveCount} repaired</button>`
       : `<span class="qsb-meta" style="color:var(--green);font-weight:600">✓ All repaired rows approved</span>`;
     banner.innerHTML = `<span class="qsb-label" style="color:var(--green)">${_lastRepairedKeys.size} repaired rows are ready</span>${approveCount ? `<span class="qsb-meta">${approveCount} unapproved</span>` : ''}<div class="qsb-actions">${_hApproveHtml}<button class="qsb-btn qsb-end" onclick="_qsDismissHarvest()">✕ Dismiss</button></div>`;
+    return;
+  }
+  // Pass 154-159: send-readiness strip — appears after batch approval, persists until dismissed
+  if (!qs && _lastApprovedCount > 0) {
+    const _sendCount = allRows.filter(r => r.approved === 'true' && !r.sent_at && r.to_email).length;
+    banner.style.display = '';
+    banner.className = 'qsb-send-ready';
+    const _sendBtn = _sendCount > 0
+      ? `<button class="qsb-btn" style="background:rgba(245,166,35,.18);color:var(--amber)" onclick="confirmSend()" title="Send all approved rows — requires confirmation">▶ Send Approved (${_sendCount})</button>`
+      : `<span class="qsb-meta" style="color:var(--green);font-weight:600">✓ All approved rows sent</span>`;
+    banner.innerHTML = `<span class="qsb-label" style="color:var(--amber)">✓ ${_lastApprovedCount} approved — ready to schedule or send</span><div class="qsb-actions">${_sendBtn}<button class="qsb-btn qsb-end" onclick="_qsDismissApproved()">✕ Dismiss</button></div>`;
     return;
   }
   banner.style.display = '';
@@ -3356,9 +3380,11 @@ function _queueTimelineNoteHtml() {
     };
   }
   if (currentFilter === 'approved') {
+    // Pass 154-159: live send-ready count + explicit next-action guidance
+    const approvedSendReady = allRows.filter(r => r.approved === 'true' && !r.sent_at && r.to_email).length;
     return {
       tone: 'ready',
-      html: `<strong>Approved queue:</strong> these rows are ready to send now. Future-scheduled rows stay out until their time arrives; once a scheduled window is reached, the row is send-ready again.`,
+      html: `<strong>Approved — ${approvedSendReady} ready to send.</strong> Schedule individual rows with 🕐, or use <strong>▶ Send Approved</strong> in the toolbar to send all at once. Scheduled rows appear here once their send window arrives.`,
     };
   }
   if (currentFilter === 'active') {
