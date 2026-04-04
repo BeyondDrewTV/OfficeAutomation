@@ -1,4 +1,27 @@
-﻿### 2026-04-03 - Pass 130–135: Queue Session Throughput + Batch Recovery Discipline
+﻿### 2026-04-04 - Pass 136–141: Inline Exception Repair + Session Persistence
+
+**Goal:** Queue sessions survive normal operator movement. Exception repair increases inline. Session position stays accurate through all paths.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- `_panelMakeKey`: removed `row.subject` — key now uses stable fields only (biz name + city + state + website + email). Prevents session-current highlight from breaking after any regen that changes subject.
+- `_panelAdvanceAfterAction`: calls `_qsUpdatePos(nextIdx)` on advance and `_qsMarkDone()` at boundary — session pos stays in sync through approve+next, skip, schedule+next, etc.
+- Done-state banner: reads `allRows` instead of `filteredRows` for next-cohort count — correct on any filter tab
+- `_rowDirectRegen`: after success, calls `_qsUpdatePos` or `_qsMarkDone` — session bookmark advances past repaired row
+- `_runPageHooks('outreach')`: calls `_renderQueueSessionBanner()` + `renderTable()` — banner refreshes correctly on return from Social DMs or other sub-pages
+- `needs_obs` row action: new `◎ Quick Obs` button → `_rowToggleInlineObs(gi)` inserts expandable inline obs form below the row; `_rowSaveObsAndRegen(gi)` saves obs + regens draft inline via API, advances session, removes form, re-renders
+- CSS: `.inline-obs-row`, `.inline-obs-form`, `.inline-obs-textarea`, `.inline-obs-actions`, `.inline-obs-save`, `.inline-obs-cancel`
+- `_qsRefreshKeys()`: called in `loadAll()` after allRows refresh — re-resolves session row keys by identity (biz+city+state), prunes dropped rows, corrects pos if needed
+- `loadAll()`: calls `_qsRefreshKeys()` after `allRows` is set
+
+**What did NOT change:**
+- Row action discipline from Pass 124–129 — unchanged
+- Session lifecycle from Pass 130–135 — extended, not replaced
+- Protected systems — untouched
+- Drawer demotion — maintained; inline obs is additive, drawer remains deep-review path
+
+---
+
+### 2026-04-03 - Pass 130–135: Queue Session Throughput + Batch Recovery Discipline
 
 **Goal:** Queue becomes a true working session surface. Cohort sessions have clear start/progress/complete states. Exception cleanup is deliberate, not random row-hopping.
 

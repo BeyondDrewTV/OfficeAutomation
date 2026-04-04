@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-03 (Pass 130–135)
+Last Updated: 2026-04-04 (Pass 136–141)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Pass 130–135 — Queue Session Throughput + Batch Recovery Discipline
+Pass 136–141 — Inline Exception Repair + Session Persistence
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 130–135 — Queue Session Throughput + Batch Recovery Discipline: queue session banner persists at table level across panel open/close; session-current row highlighted with copper accent; navigatePanel fires session-complete state at boundary; _cohortStartSession labels include live row count; closePanel saves position before clearing; _qsStart/_qsEnd/_qsResume/_qsMarkDone/_qsUpdatePos/_renderQueueSessionBanner session lifecycle functions added
+Pass 136–141 — Inline Exception Repair + Session Persistence: _panelMakeKey stabilized (subject removed); _panelAdvanceAfterAction syncs _qsUpdatePos; done-state banner reads allRows not filteredRows; _rowDirectRegen advances session pos after success; outreach page hook refreshes banner on mode return; needs_obs rows get ◎ Quick Obs inline form + _rowSaveObsAndRegen; _qsRefreshKeys reconciles session after loadAll
 
 ## Recent Passes
+Pass 136–141 milestone -- Inline Exception Repair + Session Persistence (frontend only)
 Pass 130–135 milestone -- Queue Session Throughput + Batch Recovery Discipline (frontend only)
 Pass 124–129 milestone -- Drawer Demotion + Unified Row Action System (frontend only)
 Pass 118–123 milestone -- Queue-Native Exception Recovery + Legacy Surface Demotion (frontend only)

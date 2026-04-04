@@ -1,12 +1,34 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-04-03
+Last Updated: 2026-04-04
 
 ## Active Pass
-Pass 130–135 — Queue Session Throughput + Batch Recovery Discipline
+Pass 136–141 — Inline Exception Repair + Session Persistence
 
 ## Status
-Pass 130–135 complete.
+Pass 136–141 complete.
+
+## What Pass 136–141 Changed
+
+**Goal:** Queue sessions survive normal operator movement. More exception repair happens inline. Session completion/position state stays accurate across all paths.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+
+- **Pass 136 — Stable `_panelMakeKey`:** Removed `row.subject` from the key. Key is now business_name + city + state + website + to_email only. Subject is mutable (changes after regen), so it was causing session-current highlight to break silently after any draft regeneration.
+
+- **Pass 137 — `_panelAdvanceAfterAction` pos sync + reliable done-state:** After advancing via approve/schedule/skip, calls `_qsUpdatePos(nextIdx)` to keep `_queueSession.pos` accurate. Calls `_qsMarkDone()` when advancing past last row. Done-state banner now reads from `allRows` (not `filteredRows`) when counting next-cohort rows — correct regardless of which filter tab is active.
+
+- **Pass 138 — `_rowDirectRegen` session advance:** After a successful inline regen, calls `_qsUpdatePos(nextPos)` or `_qsMarkDone()` so the session bookmark moves forward. Previously the banner stayed frozen at the same row after a repair.
+
+- **Pass 139 — Outreach page hook:** `_runPageHooks('outreach')` now calls `_renderQueueSessionBanner()` + `renderTable()`. Returning from Social DMs or other sub-pages now refreshes the session banner correctly.
+
+- **Pass 140 — Inline obs repair for `needs_obs` rows:** New `◎ Quick Obs` button on needs_obs row actions. Calls `_rowToggleInlineObs(gi)` which inserts an expandable `<tr class="inline-obs-row">` directly below the row with a textarea and Save + Regen / Cancel buttons. `_rowSaveObsAndRegen(gi)` saves obs via `/api/update_observation`, then regens via `/api/regenerate_draft`, advances the session, removes the inline form, and re-renders. No drawer required for standard obs work. CSS: `.inline-obs-row`, `.inline-obs-form`, `.inline-obs-textarea`, `.inline-obs-actions`, `.inline-obs-save`, `.inline-obs-cancel`.
+
+- **Pass 141 — `_qsRefreshKeys` session reconciliation:** New function called in `loadAll()` after `allRows` is refreshed. Re-resolves each session row key against the fresh `allRows` by business_name+city+state identity, re-keys it with `_panelMakeKey`, prunes rows no longer in queue. Prevents session from going stale after a full reload while preserving position.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged.
 
 ## What Pass 130–135 Changed
 
