@@ -136,6 +136,15 @@ tbody tr.cohort-hdr td{padding:8px 16px 4px;background:var(--surface2)}
 .qsb-next:hover{background:rgba(79,142,247,.2)}
 tr.session-current{background:rgba(184,115,51,.04)}
 tr.session-current .td-chk{box-shadow:inset 3px 0 0 var(--copper)}
+/* Pass 140: inline obs repair row */
+.inline-obs-row td{padding:0!important;background:var(--surface2)}
+.inline-obs-form{display:flex;align-items:flex-start;gap:8px;padding:8px 14px 10px;border-top:1px solid rgba(245,166,35,.2)}
+.inline-obs-textarea{flex:1;font-size:12px;font-family:var(--mono);background:var(--surface);color:var(--text);border:1px solid rgba(245,166,35,.35);border-radius:3px;padding:5px 8px;min-height:48px;resize:vertical}
+.inline-obs-textarea:focus{outline:none;border-color:var(--amber)}
+.inline-obs-actions{display:flex;flex-direction:column;gap:4px;flex-shrink:0}
+.inline-obs-save{padding:4px 10px;font-size:11px;background:rgba(245,166,35,.18);color:var(--amber);border:1px solid rgba(245,166,35,.35);border-radius:3px;cursor:pointer;white-space:nowrap}
+.inline-obs-save:hover{background:rgba(245,166,35,.28)}
+.inline-obs-cancel{padding:4px 10px;font-size:11px;background:none;color:var(--dim);border:1px solid var(--border);border-radius:3px;cursor:pointer}
 tbody td{padding:10px 14px;vertical-align:middle}
 .td-chk{width:32px;text-align:center}
 .td-biz{min-width:180px;max-width:240px}
@@ -2545,13 +2554,14 @@ function _leadNextActionHint(record) {
 }
 function _panelMakeKey(row) {
   if (!row) return '';
+  // Pass 136: stable identity key — subject removed (mutable after regen) to prevent
+  // session-current highlight breaking when _rowDirectRegen or panelRegenerateDraft updates subject.
   return [
     row.business_name || '',
     row.city || '',
     row.state || '',
     row.website || '',
     row.to_email || '',
-    row.subject || '',
   ].map(v => String(v).trim().toLowerCase()).join('|');
 }
 
@@ -2700,8 +2710,12 @@ function _panelAdvanceAfterAction(doneLabel) {
   const nextIdx = panelIdx + 1;
   if (nextIdx >= 0 && nextIdx < rows.length) {
     openPanel(nextIdx, rows, panelSessionLabel);
+    // Pass 137: keep queue-level session position in sync with panel advance
+    if (_queueSession && !_queueSession.done) _qsUpdatePos(nextIdx);
     return true;
   }
+  // Pass 137: surface session completion at table level when advancing past last row
+  if (_queueSession && !_queueSession.done) _qsMarkDone();
   toast(`${doneLabel} — end of review set`, 'ok');
   return false;
 }
@@ -2811,6 +2825,7 @@ async function loadAll() {
     allRows = Array.isArray(queue) ? queue : [];
     if (!Array.isArray(queue)) console.error('Queue API returned non-array:', queue);
     _buildLeadKeyIndex(allRows); // Pass 41: rebuild stable-key index
+    _qsRefreshKeys();            // Pass 141: reconcile session keys against fresh allRows
     renderTable();
     _panelSyncOpenState();
   } catch(err) {
@@ -2904,6 +2919,12 @@ async function _rowDirectRegen(gi) {
       if (res.dm_draft) {
         row.facebook_dm_draft = row.instagram_dm_draft = row.contact_form_message = row.social_dm_text = res.dm_draft;
       }
+      // Pass 138: advance session position past this repaired row, or mark done if last
+      if (_queueSession && !_queueSession.done) {
+        const nextPos = _queueSession.pos + 1;
+        if (nextPos < _queueSession.rowKeys.length) _qsUpdatePos(nextPos);
+        else _qsMarkDone();
+      }
       renderTable();
       toast(`Draft refreshed — ${row.business_name}`, 'ok');
     } else {
@@ -2911,6 +2932,84 @@ async function _rowDirectRegen(gi) {
     }
   } catch(e) {
     toast('Regen error: ' + String(e), 'err');
+  }
+}
+
+// ── Pass 140: Inline obs repair — needs_obs rows can save + regen without drawer ─
+function _rowToggleInlineObs(gi) {
+  const existingId = `inline-obs-row-${gi}`;
+  const existing = document.getElementById(existingId);
+  if (existing) { existing.remove(); return; }
+  const row = allRows[gi];
+  if (!row) return;
+  // Find the table row for this row to insert after
+  const tbody = document.getElementById('tbody');
+  if (!tbody) return;
+  const trs = tbody.querySelectorAll('tr:not(.cohort-hdr):not(.inline-obs-row)');
+  // Match by gi stored on the approve/action button or by global index via the checkbox
+  let targetTr = null;
+  for (const tr of trs) {
+    const chk = tr.querySelector('.row-chk[data-gi]');
+    if (chk && parseInt(chk.dataset.gi) === gi) { targetTr = tr; break; }
+  }
+  if (!targetTr) return;
+  const currentObs = escHtml(row.business_specific_observation || '');
+  const newTr = document.createElement('tr');
+  newTr.id = existingId;
+  newTr.className = 'inline-obs-row';
+  newTr.innerHTML = `<td colspan="8"><div class="inline-obs-form">
+    <textarea class="inline-obs-textarea" id="inline-obs-ta-${gi}" placeholder="Add a specific, grounded observation about this business…">${currentObs}</textarea>
+    <div class="inline-obs-actions">
+      <button class="inline-obs-save" onclick="event.stopPropagation();_rowSaveObsAndRegen(${gi})">Save + Regen</button>
+      <button class="inline-obs-cancel" onclick="event.stopPropagation();document.getElementById('${existingId}')?.remove()">Cancel</button>
+    </div>
+  </div></td>`;
+  targetTr.after(newTr);
+  const ta = document.getElementById(`inline-obs-ta-${gi}`);
+  if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+}
+
+async function _rowSaveObsAndRegen(gi) {
+  const row = allRows[gi];
+  if (!row) return;
+  const ta = document.getElementById(`inline-obs-ta-${gi}`);
+  const obs = (ta?.value || '').trim();
+  if (!obs) { toast('Add an observation first', 'info'); if (ta) ta.focus(); return; }
+  // Save observation
+  toast(`Saving obs for ${row.business_name}…`, 'info');
+  try {
+    const saveRes = await apiJson('/api/update_observation', {
+      index: gi,
+      business_name: row.business_name,
+      observation: obs,
+    });
+    if (!saveRes.ok) { toast('Obs save failed: ' + (saveRes.error || 'unknown'), 'err'); return; }
+    row.business_specific_observation = saveRes.observation || obs;
+    row._savedObservationText = row.business_specific_observation;
+    // Regenerate draft
+    const regenRes = await apiJson('/api/regenerate_draft', {
+      index: gi,
+      business_name: row.business_name,
+      observation: row.business_specific_observation,
+    });
+    if (regenRes.ok) {
+      row.subject = regenRes.subject;
+      row.body = regenRes.body;
+      row.draft_version = status_draft_version;
+      if (regenRes.dm_draft) row.facebook_dm_draft = row.instagram_dm_draft = row.contact_form_message = row.social_dm_text = regenRes.dm_draft;
+    }
+    // Advance session position past this repaired row, or mark done
+    if (_queueSession && !_queueSession.done) {
+      const nextPos = _queueSession.pos + 1;
+      if (nextPos < _queueSession.rowKeys.length) _qsUpdatePos(nextPos);
+      else _qsMarkDone();
+    }
+    // Remove inline form and re-render
+    document.getElementById(`inline-obs-row-${gi}`)?.remove();
+    renderTable();
+    toast(`${row.business_name} — obs saved, draft refreshed`, 'ok');
+  } catch(e) {
+    toast('Inline obs error: ' + String(e), 'err');
   }
 }
 
@@ -2932,6 +3031,31 @@ function _cohortStartSession(cohortKey) {
 
 function _qsStart(cohortKey, rows, label) {
   _queueSession = { cohortKey, label, rowKeys: _panelSnapshotKeys(rows), pos: 0, done: false };
+  _renderQueueSessionBanner();
+}
+
+// Pass 141: After loadAll re-fetches allRows, session rowKeys that included mutable fields
+// may no longer resolve. Re-snapshot each key by finding the matching row in allRows by
+// business_name+city+state identity, then re-key it. Rows no longer in allRows are pruned.
+function _qsRefreshKeys() {
+  if (!_queueSession || _queueSession.done) return;
+  const refreshed = _queueSession.rowKeys
+    .map(k => {
+      // Keys are pipe-separated: business_name|city|state|website|to_email
+      const parts = k.split('|');
+      if (parts.length < 3) return null;
+      const [bn, city, state] = parts;
+      const match = allRows.find(r =>
+        String(r.business_name || '').trim().toLowerCase() === bn &&
+        String(r.city || '').trim().toLowerCase() === city &&
+        String(r.state || '').trim().toLowerCase() === state
+      );
+      return match ? _panelMakeKey(match) : null;
+    })
+    .filter(Boolean);
+  if (refreshed.length === 0) { _qsEnd(); return; }
+  _queueSession.rowKeys = refreshed;
+  if (_queueSession.pos >= refreshed.length) _queueSession.pos = refreshed.length - 1;
   _renderQueueSessionBanner();
 }
 
@@ -2977,7 +3101,8 @@ function _renderQueueSessionBanner() {
     let nextHtml = '';
     for (const ck of cohortOrder) {
       if (ck === qs.cohortKey) continue;
-      const count = (filteredRows || []).filter(r => !r.sent_at && _pipelineCohort(r) === ck).length;
+      // Pass 137: use allRows (not filteredRows) so count is correct regardless of active filter
+      const count = (allRows || []).filter(r => !r.sent_at && _pipelineCohort(r) === ck).length;
       if (count > 0) {
         const lbl = ck === 'needs_obs' ? `Obs Review (${count})` : ck === 'stale' ? `Stale Review (${count})` : `No-Email Review (${count})`;
         nextHtml = `<button class="qsb-btn qsb-next" onclick="_qsEnd();_cohortStartSession('${ck}')">→ ${lbl}</button>`;
@@ -3271,8 +3396,9 @@ function renderTable() {
       // Pass 124: no send path — primary is social, Review opens drawer for inspection/repair
       _rowActionHtml = `<button class="act" onclick="event.stopPropagation();_setWorkbenchMode('social')" style="background:rgba(100,116,139,.12);color:var(--dim);border:none" title="Switch to Social DMs surface">📲 Social →</button><button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>${_delBtn}`;
     } else if (_rowCohort === 'needs_obs') {
-      // Pass 125: obs-focused open IS the drawer entry — no redundant Edit button
-      _rowActionHtml = `<button class="act act-edit" onclick="event.stopPropagation();openPanelForRefresh(${fi})" title="Open directly to observation + regenerate flow">${refreshLabel}</button>${_schedBtn}${_unschedBtn}${_delBtn}`;
+      // Pass 125: obs-focused open is the drawer entry for deep work
+      // Pass 140: ◎ Quick Obs opens inline form for lightweight obs entry without drawer
+      _rowActionHtml = `<button class="act" onclick="event.stopPropagation();_rowToggleInlineObs(${gi})" style="background:rgba(245,166,35,.12);color:var(--amber);border:none" title="Add observation inline — no drawer needed">◎ Quick Obs</button><button class="act act-edit" onclick="event.stopPropagation();openPanelForRefresh(${fi})" style="opacity:.55;font-size:10px" title="Open full drawer for observation + review">Add Obs</button>${_delBtn}`;
     } else if (_rowCohort === 'stale') {
       // Pass 126: if obs exists → direct regen without drawer; if no obs → Add Obs opens drawer; Review available for deep work
       const _hasObs = !!(row.business_specific_observation || '').trim();
@@ -5667,6 +5793,8 @@ function _activatePage(name) {
 }
 
 function _runPageHooks(name) {
+  // Pass 139: refresh queue banner when returning to outreach — session state must stay visible
+  if (name === 'outreach') { _renderQueueSessionBanner(); renderTable(); }
   if (name === 'cities')        tpLoad();
   if (name === 'followup')      fqLoad();
   if (name === 'searches')      loadSearchHistory();
