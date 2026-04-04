@@ -1,12 +1,29 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-04-01
+Last Updated: 2026-04-03
 
 ## Active Pass
-None — last pass complete.
+Pass 124–129 — Drawer Demotion + Unified Row Action System
 
 ## Status
-Pass 118–123 complete.
+Pass 124–129 complete.
+
+## What Pass 124–129 Changed
+
+**Goal:** Queue becomes disciplined — every cohort row gets a consistent action pattern, blocker explanation, and next-step treatment. Drawer narrowed to deep review and manual recovery only.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- Row action block replaced with cohort-aware `_rowActionHtml` switch:
+  - `no_email` (Pass 124): Approve + Edit removed; `📲 Social →` as primary (calls `_setWorkbenchMode('social')`); dim `Review` opens drawer for inspection
+  - `needs_obs` (Pass 125): generic Edit removed; obs-focused `openPanelForRefresh` button IS the drawer entry
+  - `stale` (Pass 126): generic Edit removed; if obs exists → `↻ Regen` calls `_rowDirectRegen(gi)` directly; if no obs → `Add Obs` opens drawer focused; dim `Review` secondary
+  - `bulk_safe` (Pass 127): `Edit` renamed to `Review` (dimmed, 10px) to signal depth not requirement; Approve remains primary
+- Blocker banners upgraded (Pass 128): stale banner adds `↻ Regen now` button (calls `panelRegenerateDraft()`); no_email banner adds `📲 Social DMs →` button (calls `_setWorkbenchMode('social')` + `closePanel()`)
+- New `_rowDirectRegen(gi)` function (Pass 129): fetches obs from row, calls `/api/regenerate_draft`, updates `row.subject/body/draft_version/dm_draft` in memory, calls `renderTable()` — no drawer required
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged.
 
 ## What Pass 118–123 Changed
 

@@ -1,4 +1,25 @@
-﻿### 2026-04-03 - Pass 118–123: Queue-Native Exception Recovery + Legacy Surface Demotion
+﻿### 2026-04-03 - Pass 124–129: Drawer Demotion + Unified Row Action System
+
+**Goal:** Queue becomes disciplined — every cohort row gets a consistent, purpose-specific action. Drawer reserved for deep review and manual recovery only.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- Replaced generic `approveBtn` + `Edit` button pattern with cohort-aware `_rowActionHtml` switch block
+- `no_email` rows: Approve/Edit removed → `📲 Social →` primary + dim `Review` secondary
+- `needs_obs` rows: generic Edit removed → obs-focused `openPanelForRefresh` is the sole drawer entry
+- `stale` rows with obs: `↻ Regen` button calls new `_rowDirectRegen(gi)` without opening drawer; `Review` secondary for deep work
+- `stale` rows without obs: `Add Obs` opens drawer focused; same `Review` secondary
+- `bulk_safe` rows: `Edit` → `Review` (dimmed) — signals inspection not required editing
+- Stale blocker banner: added `↻ Regen now` inline button calling `panelRegenerateDraft()`
+- No-email blocker banner: added `📲 Social DMs →` inline button calling `_setWorkbenchMode('social') + closePanel()`
+- New `_rowDirectRegen(gi)`: row-level regen without drawer — reads obs from row, calls `/api/regenerate_draft`, patches `row.subject/body/draft_version/dm_draft`, calls `renderTable()`
+
+**What did NOT change:**
+- All cohort logic, bulk actions, send gates, backend — unchanged
+- No protected system touches
+
+---
+
+### 2026-04-03 - Pass 118–123: Queue-Native Exception Recovery + Legacy Surface Demotion
 
 **Goal:** All four exception cohorts now have Queue-native recovery paths. Legacy surfaces are visually secondary, not equal.
 

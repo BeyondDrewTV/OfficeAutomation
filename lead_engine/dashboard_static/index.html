@@ -2864,6 +2864,36 @@ function _cohortHeaderHtml(key, count) {
   </td></tr>`;
 }
 
+// ── Pass 129: Direct row-level regen — stale rows with obs, no drawer required ─
+async function _rowDirectRegen(gi) {
+  const row = allRows[gi];
+  if (!row) return;
+  const obs = (row.business_specific_observation || '').trim();
+  if (!obs) { toast('No observation on file — open row to add one first', 'info'); return; }
+  toast(`Regenerating ${row.business_name}…`, 'info');
+  try {
+    const res = await apiJson('/api/regenerate_draft', {
+      index: gi,
+      business_name: row.business_name,
+      observation: obs,
+    });
+    if (res.ok) {
+      row.subject = res.subject;
+      row.body = res.body;
+      row.draft_version = status_draft_version;
+      if (res.dm_draft) {
+        row.facebook_dm_draft = row.instagram_dm_draft = row.contact_form_message = row.social_dm_text = res.dm_draft;
+      }
+      renderTable();
+      toast(`Draft refreshed — ${row.business_name}`, 'ok');
+    } else {
+      toast('Regen failed: ' + (res.error || 'unknown'), 'err');
+    }
+  } catch(e) {
+    toast('Regen error: ' + String(e), 'err');
+  }
+}
+
 // ── Pass 112-117: Cohort-scoped panel session opener ─────────────────────────
 function _cohortStartSession(cohortKey) {
   const rows = filteredRows.filter(r => _pipelineCohort(r) === cohortKey);
@@ -3134,11 +3164,32 @@ function renderTable() {
       : _rowCohort === 'stale'    ? `<span class="cohort-pill cp-stale">↻ stale</span>`
       : _rowCohort === 'no_email' ? `<span class="cohort-pill cp-no-email">– no email</span>`
       : '';
-    const approveBtn = row.sent_at
-      ? `<span style="color:var(--dim);font-size:10px">sent</span>`
-      : row.approved === 'true'
+    // Pass 124-129: Cohort-aware row action block — drawer reserved for deep review only
+    const _schedBtn = actionable && !row.send_after ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowSchedule(${gi},${JSON.stringify(row.business_name)})" title="Schedule for tomorrow morning window">🕐</button>` : '';
+    const _unschedBtn = scheduled ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowUnschedule(${gi},${JSON.stringify(row.business_name)})" title="Clear schedule">✕Sched</button>` : '';
+    const _delBtn = actionable ? `<button class="act act-del" onclick="deleteRow(${gi})">Del</button>` : '';
+    let _rowActionHtml;
+    if (row.sent_at) {
+      _rowActionHtml = `<span style="color:var(--dim);font-size:10px">sent</span>`;
+    } else if (_rowCohort === 'no_email') {
+      // Pass 124: no send path — primary is social, Review opens drawer for inspection/repair
+      _rowActionHtml = `<button class="act" onclick="event.stopPropagation();_setWorkbenchMode('social')" style="background:rgba(100,116,139,.12);color:var(--dim);border:none" title="Switch to Social DMs surface">📲 Social →</button><button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>${_delBtn}`;
+    } else if (_rowCohort === 'needs_obs') {
+      // Pass 125: obs-focused open IS the drawer entry — no redundant Edit button
+      _rowActionHtml = `<button class="act act-edit" onclick="event.stopPropagation();openPanelForRefresh(${fi})" title="Open directly to observation + regenerate flow">${refreshLabel}</button>${_schedBtn}${_unschedBtn}${_delBtn}`;
+    } else if (_rowCohort === 'stale') {
+      // Pass 126: if obs exists → direct regen without drawer; if no obs → Add Obs opens drawer; Review available for deep work
+      const _hasObs = !!(row.business_specific_observation || '').trim();
+      _rowActionHtml = `${_hasObs
+        ? `<button class="act" onclick="event.stopPropagation();_rowDirectRegen(${gi})" style="background:rgba(79,142,247,.12);color:var(--blue);border:none" title="Regenerate draft without opening drawer">↻ Regen</button>`
+        : `<button class="act act-edit" onclick="event.stopPropagation();openPanelForRefresh(${fi})" title="Add observation to regenerate">Add Obs</button>`}<button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>${_schedBtn}${_unschedBtn}${_delBtn}`;
+    } else {
+      // Pass 127: bulk_safe — Approve is primary; Edit renamed to Review to signal depth not requirement
+      const _appBtn = row.approved === 'true'
         ? `<button class="act act-unapprove" onclick="event.stopPropagation();unapproveRow(${gi})">Undo</button>`
         : `<button class="act act-approve" onclick="event.stopPropagation();approveRow(${gi})">Approve</button>`;
+      _rowActionHtml = `${_appBtn}<button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>${_schedBtn}${_unschedBtn}${_delBtn}`;
+    }
 
     return _cohortHeader + `<tr class="${sentClass} ${repliedClass} ${scheduledClass}" onclick="openPanel(${fi})">
       <td class="td-chk" onclick="event.stopPropagation()">
@@ -3155,14 +3206,7 @@ function renderTable() {
       <td>${oppScoreBadge(row)}</td>
       <td class="td-status">${statusCellHtml(row)}</td>
       <td class="td-actions" onclick="event.stopPropagation()">
-        <div class="row-acts">
-          ${approveBtn}
-          ${needsRefresh ? `<button class="act act-edit" onclick="event.stopPropagation();openPanelForRefresh(${fi})" title="Open directly to observation + regenerate flow">${refreshLabel}</button>` : ''}
-          <button class="act act-edit" onclick="openPanel(${fi})">Edit</button>
-          ${actionable && !row.send_after ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowSchedule(${gi},${JSON.stringify(row.business_name)})" title="Schedule for tomorrow morning window">🕐</button>` : ''}
-          ${scheduled ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowUnschedule(${gi},${JSON.stringify(row.business_name)})" title="Clear schedule">✕Sched</button>` : ''}
-          ${actionable ? `<button class="act act-del" onclick="deleteRow(${gi})">Del</button>` : ''}
-        </div>
+        <div class="row-acts">${_rowActionHtml}</div>
       </td>
     </tr>`;
   }).join('');
@@ -3255,12 +3299,14 @@ async function fillPanel(row, fi, totalRows) {
       _blocker.style.display = '';
       _blocker.style.borderColor = 'var(--blue)';
       _blocker.style.color = 'var(--blue)';
-      _blocker.innerHTML = '<strong>↻ Stale draft</strong> — regenerate to update';
+      // Pass 128: add inline regen action so operator can repair without scrolling
+      _blocker.innerHTML = '<strong>↻ Stale draft</strong> — regenerate to update <button onclick="panelRegenerateDraft()" style="margin-left:8px;padding:2px 8px;font-size:10px;background:rgba(79,142,247,.15);color:var(--blue);border:1px solid rgba(79,142,247,.3);border-radius:3px;cursor:pointer">↻ Regen now</button>';
     } else if (_cohort === 'no_email') {
       _blocker.style.display = '';
       _blocker.style.borderColor = 'var(--dim)';
       _blocker.style.color = 'var(--dim)';
-      _blocker.innerHTML = '<strong>– No email path</strong> — use social channels below';
+      // Pass 128: add inline social switch so operator can act immediately
+      _blocker.innerHTML = '<strong>– No email path</strong> — no outbound route via email <button onclick="_setWorkbenchMode(\'social\');closePanel()" style="margin-left:8px;padding:2px 8px;font-size:10px;background:rgba(100,116,139,.15);color:var(--dim);border:1px solid rgba(100,116,139,.3);border-radius:3px;cursor:pointer">📲 Social DMs →</button>';
     } else {
       _blocker.style.display = 'none';
     }

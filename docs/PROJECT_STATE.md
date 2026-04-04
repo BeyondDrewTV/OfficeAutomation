@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-03 (Pass 118–123)
+Last Updated: 2026-04-03 (Pass 124–129)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-TBD — Pass 112–117 complete
+Pass 124–129 — Drawer Demotion + Unified Row Action System
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 118–123 -- Queue-Native Exception Recovery + Legacy Surface Demotion: stale cohort now has both bulk regen and a scoped Review Stale session; no_email cohort now has both a scoped Review No-Email session and direct Social DMs route; mode bar visually demotes Social DMs and Focus Mode as secondary tools behind a separator; Email Queue reads clearly as the primary operator surface
+Pass 124–129 — Drawer Demotion + Unified Row Action System: cohort-aware row action block replaces generic Edit; no_email rows get 📲 Social action; needs_obs rows get obs-focused open only; stale rows with obs get direct ↻ Regen; bulk_safe rows rename Edit→Review; blocker banners get repair action buttons; _rowDirectRegen() handles row-level regen without opening drawer
 
 ## Recent Passes
+Pass 124–129 milestone -- Drawer Demotion + Unified Row Action System (frontend only)
 Pass 118–123 milestone -- Queue-Native Exception Recovery + Legacy Surface Demotion (frontend only)
 Pass 112–117 milestone -- Queue Becomes the Real Operating System (frontend only)
 Pass 106–111 milestone -- Unified Operator Workbench + Review Drawer Recovery (frontend only)
