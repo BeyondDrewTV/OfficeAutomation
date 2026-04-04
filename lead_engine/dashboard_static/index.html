@@ -120,6 +120,22 @@ tbody tr.cohort-hdr td{padding:8px 16px 4px;background:var(--surface2)}
 .panel-blocker{padding:8px 16px;font-size:12px;border-left:3px solid;margin-bottom:8px;background:rgba(0,0,0,.15);border-radius:0 4px 4px 0}
 .wb-back-btn{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:4px 10px;color:var(--blue);background:none;border:1px solid rgba(79,142,247,.25);border-radius:var(--rs);cursor:pointer;margin-bottom:8px}
 .wb-back-btn:hover{background:rgba(79,142,247,.06)}
+/* Pass 130-135: Queue session banner + session-current row highlight */
+#queue-session-banner{display:flex;align-items:center;gap:10px;padding:7px 16px;background:rgba(184,115,51,.07);border:1px solid rgba(184,115,51,.2);border-radius:var(--rs);font-size:12px;margin-bottom:8px}
+#queue-session-banner.qsb-done{background:rgba(52,199,89,.06);border-color:rgba(52,199,89,.25)}
+.qsb-label{font-weight:700;color:var(--copper);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+#queue-session-banner.qsb-done .qsb-label{color:var(--green)}
+.qsb-meta{color:var(--muted);font-size:11px}
+.qsb-actions{display:flex;gap:6px;margin-left:auto;align-items:center}
+.qsb-btn{padding:2px 9px;font-size:11px;border-radius:3px;cursor:pointer;border:none;line-height:1.6}
+.qsb-resume{background:rgba(184,115,51,.18);color:var(--copper)}
+.qsb-resume:hover{background:rgba(184,115,51,.28)}
+.qsb-end{background:rgba(100,116,139,.12);color:var(--dim)}
+.qsb-end:hover{background:rgba(100,116,139,.2)}
+.qsb-next{background:rgba(79,142,247,.12);color:var(--blue)}
+.qsb-next:hover{background:rgba(79,142,247,.2)}
+tr.session-current{background:rgba(184,115,51,.04)}
+tr.session-current .td-chk{box-shadow:inset 3px 0 0 var(--copper)}
 tbody td{padding:10px 14px;vertical-align:middle}
 .td-chk{width:32px;text-align:center}
 .td-biz{min-width:180px;max-width:240px}
@@ -1193,6 +1209,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <button class="wb-mode-btn wb-mode-tool" data-mode="sprint" onclick="_setWorkbenchMode('sprint')">⚡ Focus Mode</button>
 </div>
 
+<!-- Pass 130-135: Queue session banner — shows active cohort session at table level, persists across panel open/close -->
+<div id="queue-session-banner" style="display:none"></div>
+
 <div class="stats">
   <div class="stat" title="Total businesses in discovery pool (prospects.csv) — independent of outreach queue"><div class="stat-n blue" id="s-prospects">—</div><div class="stat-lbl">Discovered</div></div>
   <div class="stat"><div class="stat-n blue" id="s-drafted">—</div><div class="stat-lbl">Drafted</div></div>
@@ -2099,6 +2118,7 @@ let panelRowsKeys = [];
 let panelRowKey = '';
 let panelSessionLabel = '';
 let panelOpenIntent = '';
+let _queueSession = null;   // Pass 130-135: { cohortKey, label, rowKeys, pos, done } — persists across panel open/close
 let _panelMousedownOnBackdrop = false; // Pass 37: drag-close guard
 let status_draft_version = '';
 
@@ -2895,12 +2915,83 @@ async function _rowDirectRegen(gi) {
 }
 
 // ── Pass 112-117: Cohort-scoped panel session opener ─────────────────────────
+// Pass 133: labels now include row count; Pass 134: registers queue-level session
 function _cohortStartSession(cohortKey) {
   const rows = filteredRows.filter(r => _pipelineCohort(r) === cohortKey);
   if (!rows.length) { toast('No rows in this cohort', 'info'); return; }
   if (cohortKey === 'needs_obs') panelOpenIntent = 'refresh';
-  const label = cohortKey === 'needs_obs' ? 'Obs Review' : cohortKey === 'stale' ? 'Stale Review' : 'Review';
+  const label = cohortKey === 'needs_obs' ? `Obs Review (${rows.length})`
+    : cohortKey === 'stale' ? `Stale Review (${rows.length})`
+    : `No-Email Review (${rows.length})`;
+  _qsStart(cohortKey, rows, label);
   openPanel(0, rows, label);
+}
+
+// ── Pass 130-135: Queue-level session state + banner ──────────────────────────
+// Session persists across drawer open/close so the operator stays oriented at table level.
+
+function _qsStart(cohortKey, rows, label) {
+  _queueSession = { cohortKey, label, rowKeys: _panelSnapshotKeys(rows), pos: 0, done: false };
+  _renderQueueSessionBanner();
+}
+
+function _qsUpdatePos(pos) {
+  if (!_queueSession || _queueSession.done) return;
+  _queueSession.pos = Math.max(0, pos);
+  _renderQueueSessionBanner();
+}
+
+function _qsMarkDone() {
+  if (!_queueSession) return;
+  _queueSession.done = true;
+  _renderQueueSessionBanner();
+}
+
+function _qsEnd() {
+  _queueSession = null;
+  _renderQueueSessionBanner();
+}
+
+function _qsResume() {
+  if (!_queueSession) return;
+  const rows = _queueSession.rowKeys
+    .map(k => allRows.find(r => _panelMakeKey(r) === k))
+    .filter(Boolean);
+  if (!rows.length) { _qsEnd(); return; }
+  if (_queueSession.cohortKey === 'needs_obs') panelOpenIntent = 'refresh';
+  openPanel(_queueSession.pos, rows, _queueSession.label);
+}
+
+function _renderQueueSessionBanner() {
+  const banner = document.getElementById('queue-session-banner');
+  if (!banner) return;
+  const qs = _queueSession;
+  if (!qs) { banner.style.display = 'none'; return; }
+  banner.style.display = '';
+  const iconMap = { needs_obs: '◎', stale: '↻', no_email: '📲' };
+  const icon = iconMap[qs.cohortKey] || '▸';
+  const total = qs.rowKeys.length;
+  if (qs.done) {
+    // Suggest the highest-priority next cohort that still has live rows
+    const cohortOrder = ['needs_obs', 'stale', 'no_email'];
+    let nextHtml = '';
+    for (const ck of cohortOrder) {
+      if (ck === qs.cohortKey) continue;
+      const count = (filteredRows || []).filter(r => !r.sent_at && _pipelineCohort(r) === ck).length;
+      if (count > 0) {
+        const lbl = ck === 'needs_obs' ? `Obs Review (${count})` : ck === 'stale' ? `Stale Review (${count})` : `No-Email Review (${count})`;
+        nextHtml = `<button class="qsb-btn qsb-next" onclick="_qsEnd();_cohortStartSession('${ck}')">→ ${lbl}</button>`;
+        break;
+      }
+    }
+    banner.className = 'qsb-done';
+    banner.innerHTML = `<span class="qsb-label">✓ ${escHtml(qs.label)} complete</span><span class="qsb-meta">${total} rows in set</span><div class="qsb-actions">${nextHtml}<button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ Close</button></div>`;
+  } else {
+    const pos1 = qs.pos + 1;
+    const remaining = total - qs.pos;
+    banner.className = '';
+    banner.innerHTML = `<span class="qsb-label">${icon} ${escHtml(qs.label)}</span><span class="qsb-meta">row ${pos1} of ${total} · ${remaining} remaining</span><div class="qsb-actions"><button class="qsb-btn qsb-resume" onclick="_qsResume()">→ Resume</button><button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ End</button></div>`;
+  }
 }
 
 // ── Pass 106-111: Workbench mode switching ────────────────────────────────────
@@ -3117,12 +3208,17 @@ function renderTable() {
   applyFiltersAndSort();
   _renderQueueTimelineNote();
   ccQueueRender(); // Pass 82: keep rail in sync
+  _renderQueueSessionBanner(); // Pass 130-135: refresh session banner on every table render
   const tbody = document.getElementById('tbody');
   const empty = document.getElementById('empty-state');
   document.getElementById('row-count').textContent = filteredRows.length + ' rows';
 
   if (!filteredRows.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
+
+  // Pass 131: current session row key for highlight — null when no active session
+  const _sessionCurrentKey = (_queueSession && !_queueSession.done)
+    ? (_queueSession.rowKeys[_queueSession.pos] || null) : null;
 
   // Pass 103-105: in Actionable view, stable-sort by cohort then render grouped
   let _lastCohort = null, _cohortSizes = {};
@@ -3191,7 +3287,9 @@ function renderTable() {
       _rowActionHtml = `${_appBtn}<button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>${_schedBtn}${_unschedBtn}${_delBtn}`;
     }
 
-    return _cohortHeader + `<tr class="${sentClass} ${repliedClass} ${scheduledClass}" onclick="openPanel(${fi})">
+    // Pass 131: highlight current session row so operator stays oriented at table level
+    const _isSessionCurrent = _sessionCurrentKey && _panelMakeKey(row) === _sessionCurrentKey;
+    return _cohortHeader + `<tr class="${sentClass} ${repliedClass} ${scheduledClass}${_isSessionCurrent ? ' session-current' : ''}" onclick="openPanel(${fi})">
       <td class="td-chk" onclick="event.stopPropagation()">
         ${bulkSelectable ? `<input type="checkbox" class="row-chk" data-gi="${gi}" onchange="updateBulkBar()">` : `<span style="color:var(--dim);font-size:10px">—</span>`}
       </td>
@@ -3607,6 +3705,8 @@ function closePanel(force) {
     toast('Finishing your edit save. Use Close again in a moment.', 'info');
     return;
   }
+  // Pass 134: save panel position into queue session before clearing so Resume works
+  if (_queueSession && !_queueSession.done && panelIdx >= 0) _queueSession.pos = panelIdx;
   document.getElementById('panel-overlay').classList.remove('open');
   panelIdx = -1;
   panelRowsKeys = [];
@@ -3635,7 +3735,14 @@ function closePanelOnOverlay(e) {
 function navigatePanel(dir) {
   const rows = _panelCurrentRows();
   const n = panelIdx + dir;
-  if (n >= 0 && n < rows.length) openPanel(n, rows);
+  if (n >= 0 && n < rows.length) {
+    openPanel(n, rows);
+    // Pass 132: keep queue-level session position in sync
+    if (_queueSession && !_queueSession.done) _qsUpdatePos(n);
+  } else if (dir > 0 && n >= rows.length && _queueSession && !_queueSession.done) {
+    // Pass 132: hit end of session — surface completion state at table level
+    _qsMarkDone();
+  }
 }
 
 // ── Social channel badge helpers ──────────────────────────────────────────────
