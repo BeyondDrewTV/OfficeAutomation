@@ -3094,6 +3094,7 @@ function _qsMarkDone() {
 
 function _qsEnd() {
   _queueSession = null;
+  _qsRepairedKeys = new Set();  // Pass 142-147: clear repaired markers so pills don't persist after session ends
   _renderQueueSessionBanner();
 }
 
