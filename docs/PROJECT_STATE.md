@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-03 (Pass 124–129)
+Last Updated: 2026-04-03 (Pass 130–135)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Pass 124–129 — Drawer Demotion + Unified Row Action System
+Pass 130–135 — Queue Session Throughput + Batch Recovery Discipline
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 124–129 — Drawer Demotion + Unified Row Action System: cohort-aware row action block replaces generic Edit; no_email rows get 📲 Social action; needs_obs rows get obs-focused open only; stale rows with obs get direct ↻ Regen; bulk_safe rows rename Edit→Review; blocker banners get repair action buttons; _rowDirectRegen() handles row-level regen without opening drawer
+Pass 130–135 — Queue Session Throughput + Batch Recovery Discipline: queue session banner persists at table level across panel open/close; session-current row highlighted with copper accent; navigatePanel fires session-complete state at boundary; _cohortStartSession labels include live row count; closePanel saves position before clearing; _qsStart/_qsEnd/_qsResume/_qsMarkDone/_qsUpdatePos/_renderQueueSessionBanner session lifecycle functions added
 
 ## Recent Passes
+Pass 130–135 milestone -- Queue Session Throughput + Batch Recovery Discipline (frontend only)
 Pass 124–129 milestone -- Drawer Demotion + Unified Row Action System (frontend only)
 Pass 118–123 milestone -- Queue-Native Exception Recovery + Legacy Surface Demotion (frontend only)
 Pass 112–117 milestone -- Queue Becomes the Real Operating System (frontend only)

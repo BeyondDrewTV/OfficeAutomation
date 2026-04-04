@@ -1,6 +1,6 @@
 ﻿# Copperline AI Control Panel
 
-Last Updated: 2026-04-03
+Last Updated: 2026-04-03 (Pass 130–135)
 Repository Version: v0.3
 
 > **Role:** Active operating contract + current AI guardrails.
@@ -15,9 +15,9 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | Pass 124–129 — Drawer Demotion + Unified Row Action System |
-| Last Completed Pass | Pass 124–129 — Drawer Demotion + Unified Row Action System |
-| Pass Before That | Pass 118–123 — Queue-Native Exception Recovery + Legacy Surface Demotion |
+| Current Focus | Pass 130–135 — Queue Session Throughput + Batch Recovery Discipline |
+| Last Completed Pass | Pass 130–135 — Queue Session Throughput + Batch Recovery Discipline |
+| Pass Before That | Pass 124–129 — Drawer Demotion + Unified Row Action System |
 | Next Pass | TBD |
 
 ---

@@ -1,4 +1,26 @@
-﻿### 2026-04-03 - Pass 124–129: Drawer Demotion + Unified Row Action System
+﻿### 2026-04-03 - Pass 130–135: Queue Session Throughput + Batch Recovery Discipline
+
+**Goal:** Queue becomes a true working session surface. Cohort sessions have clear start/progress/complete states. Exception cleanup is deliberate, not random row-hopping.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- New `_queueSession` global: `{ cohortKey, label, rowKeys, pos, done }` — persists independently of panel open/close
+- New `#queue-session-banner` DOM element (after mode bar, before stats): shows session label, row N of M, Resume and End buttons; transitions to green "complete" state with next-cohort suggestion when session boundary is hit
+- CSS: `#queue-session-banner`, `.qsb-*` classes, `tr.session-current` (copper left-rail accent on checkbox cell)
+- `renderTable()`: calls `_renderQueueSessionBanner()` on every render; computes `_sessionCurrentKey` and applies `.session-current` to the current session row
+- `navigatePanel()`: calls `_qsMarkDone()` when advancing past last row in scoped session — surfaces completion at table level instead of silent failure
+- `closePanel()`: saves `panelIdx` into `_queueSession.pos` before clearing panel state — Resume resumes at correct row
+- `_cohortStartSession()`: labels now include live count — `"Obs Review (7)"`, `"Stale Review (3)"`, `"No-Email Review (5)"`; calls `_qsStart()` to register queue-level session
+- New session lifecycle: `_qsStart()`, `_qsUpdatePos()`, `_qsMarkDone()`, `_qsEnd()`, `_qsResume()`, `_renderQueueSessionBanner()`
+- `_renderQueueSessionBanner()` done-state: suggests next highest-priority cohort with live rows (needs_obs → stale → no_email order)
+
+**What did NOT change:**
+- Cohort classification, row actions, bulk actions, send gates, backend — all unchanged from Pass 124–129
+- No protected system touches
+- Drawer demotion from Pass 124–129 preserved — drawer remains deep-review only
+
+---
+
+### 2026-04-03 - Pass 124–129: Drawer Demotion + Unified Row Action System
 
 **Goal:** Queue becomes disciplined — every cohort row gets a consistent, purpose-specific action. Drawer reserved for deep review and manual recovery only.
 

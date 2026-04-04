@@ -3,10 +3,32 @@
 Last Updated: 2026-04-03
 
 ## Active Pass
-Pass 124–129 — Drawer Demotion + Unified Row Action System
+Pass 130–135 — Queue Session Throughput + Batch Recovery Discipline
 
 ## Status
-Pass 124–129 complete.
+Pass 130–135 complete.
+
+## What Pass 130–135 Changed
+
+**Goal:** Queue becomes a disciplined working session surface. Cohort/session work is deliberate, progress is visible at table level, and exception cleanup has clear start/progress/complete states.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+
+- **Pass 130 — Queue session banner (CSS + DOM):** `#queue-session-banner` div inserted after mode bar, before stats strip. Shows session label, row N of M, remaining count, Resume and End buttons. Copper accent in active state; green accent in done state. CSS classes: `.qsb-label`, `.qsb-meta`, `.qsb-actions`, `.qsb-btn`, `.qsb-resume`, `.qsb-end`, `.qsb-next`.
+
+- **Pass 131 — Session-current row highlight:** `renderTable()` computes `_sessionCurrentKey` (the row key at current session position). Matching row gets `.session-current` CSS class — subtle copper left-rail accent on the checkbox cell. Gives the operator a visual bookmark in the table when the drawer is closed.
+
+- **Pass 132 — End-of-session signal:** `navigatePanel(dir)` now calls `_qsMarkDone()` when advancing past the last row in a scoped session. Banner transitions to green "✓ [Label] complete" state with next-cohort suggestion and Close button. Previously: silent failure at boundary.
+
+- **Pass 133 — Cohort session labels with live counts:** `_cohortStartSession()` now generates labels like `"Obs Review (7)"`, `"Stale Review (3)"`, `"No-Email Review (5)"` instead of generic `"Review"`. Count reflects live row count at session start.
+
+- **Pass 134 — Queue session persistence across close:** `closePanel()` saves `panelIdx` into `_queueSession.pos` before clearing panel state. `navigatePanel()` keeps `_queueSession.pos` in sync on every advance. Resume picks up where the operator left off.
+
+- **Pass 135 — Session lifecycle API:** New global `_queueSession` (null when inactive). New functions: `_qsStart(cohortKey, rows, label)`, `_qsUpdatePos(pos)`, `_qsMarkDone()`, `_qsEnd()`, `_qsResume()`, `_renderQueueSessionBanner()`. `renderTable()` calls `_renderQueueSessionBanner()` on every render. Banner next-cohort suggestion picks the highest-priority cohort (needs_obs → stale → no_email) with live rows.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged.
 
 ## What Pass 124–129 Changed
 
