@@ -135,6 +135,10 @@ tbody tr.cohort-hdr td{padding:8px 16px 4px;background:var(--surface2)}
 .qsb-end:hover{background:rgba(100,116,139,.2)}
 .qsb-next{background:rgba(79,142,247,.12);color:var(--blue)}
 .qsb-next:hover{background:rgba(79,142,247,.2)}
+/* Pass 148-153: harvest strip + approve button */
+#queue-session-banner.qsb-harvest{background:rgba(52,199,89,.05);border-color:rgba(52,199,89,.2)}
+.qsb-approve{background:rgba(52,199,89,.18);color:var(--green)}
+.qsb-approve:hover{background:rgba(52,199,89,.28)}
 tr.session-current{background:rgba(184,115,51,.04)}
 tr.session-current .td-chk{box-shadow:inset 3px 0 0 var(--copper)}
 /* Pass 140: inline obs repair row */
@@ -2130,6 +2134,7 @@ let panelSessionLabel = '';
 let panelOpenIntent = '';
 let _queueSession = null;   // Pass 130-135: { cohortKey, label, rowKeys, pos, done } — persists across panel open/close
 let _qsRepairedKeys = new Set();  // Pass 142-147: keys of rows repaired in current session
+let _lastRepairedKeys = new Set(); // Pass 148-153: repaired keys from last closed session — persists for harvest strip + pills
 let _panelMousedownOnBackdrop = false; // Pass 37: drag-close guard
 let status_draft_version = '';
 
@@ -3043,6 +3048,7 @@ function _cohortStartSession(cohortKey) {
 function _qsStart(cohortKey, rows, label) {
   _queueSession = { cohortKey, label, rowKeys: _panelSnapshotKeys(rows), pos: 0, done: false, outcomes: { repaired: 0, blocked: 0 } };
   _qsRepairedKeys = new Set();
+  _lastRepairedKeys = new Set(); // Pass 148-153: new session clears prior harvest state
   _renderQueueSessionBanner();
 }
 
@@ -3093,9 +3099,39 @@ function _qsMarkDone() {
 }
 
 function _qsEnd() {
+  _lastRepairedKeys = new Set(_qsRepairedKeys); // Pass 148-153: preserve for post-session harvest strip + pills
   _queueSession = null;
-  _qsRepairedKeys = new Set();  // Pass 142-147: clear repaired markers so pills don't persist after session ends
+  _qsRepairedKeys = new Set();
   _renderQueueSessionBanner();
+}
+
+// Pass 148-153: batch-approve rows repaired in the current or last session
+async function _qsApproveRepaired() {
+  const keys = _queueSession ? new Set(_qsRepairedKeys) : new Set(_lastRepairedKeys);
+  if (!keys.size) { toast('No repaired rows to approve', 'info'); return; }
+  let approved = 0, skipped = 0;
+  for (const key of keys) {
+    const row = allRows.find(r => _panelMakeKey(r) === key);
+    if (!row || row.approved === 'true' || row.sent_at || !row.to_email) { skipped++; continue; }
+    const gi = allRows.indexOf(row);
+    await api('/api/approve_row', { index: gi });
+    row.approved = 'true';
+    approved++;
+  }
+  // Clear all harvest state — bypass _qsEnd so it does not re-snapshot into _lastRepairedKeys
+  _lastRepairedKeys = new Set();
+  _queueSession = null;
+  _qsRepairedKeys = new Set();
+  _renderQueueSessionBanner();
+  renderTable();
+  loadStats();
+  toast(`Approved ${approved} repaired lead${approved === 1 ? '' : 's'}${skipped ? ` · ${skipped} skipped` : ''}`, 'ok');
+}
+
+function _qsDismissHarvest() {
+  _lastRepairedKeys = new Set();
+  _renderQueueSessionBanner();
+  renderTable(); // remove cp-repaired pills from table
 }
 
 function _qsResume() {
@@ -3112,7 +3148,21 @@ function _renderQueueSessionBanner() {
   const banner = document.getElementById('queue-session-banner');
   if (!banner) return;
   const qs = _queueSession;
-  if (!qs) { banner.style.display = 'none'; return; }
+  if (!qs && !_lastRepairedKeys.size) { banner.style.display = 'none'; return; }
+  // Pass 148-153: post-session harvest strip — shown when session is closed but repaired rows are still harvestable
+  if (!qs) {
+    const approveCount = [..._lastRepairedKeys].filter(k => {
+      const r = allRows.find(row => _panelMakeKey(row) === k);
+      return r && r.approved !== 'true' && !r.sent_at && r.to_email;
+    }).length;
+    banner.style.display = '';
+    banner.className = 'qsb-harvest';
+    const _hApproveHtml = approveCount > 0
+      ? `<button class="qsb-btn qsb-approve" onclick="_qsApproveRepaired()">✓ Approve ${approveCount} repaired</button>`
+      : `<span class="qsb-meta" style="color:var(--green);font-weight:600">✓ All repaired rows approved</span>`;
+    banner.innerHTML = `<span class="qsb-label" style="color:var(--green)">${_lastRepairedKeys.size} repaired rows are ready</span>${approveCount ? `<span class="qsb-meta">${approveCount} unapproved</span>` : ''}<div class="qsb-actions">${_hApproveHtml}<button class="qsb-btn qsb-end" onclick="_qsDismissHarvest()">✕ Dismiss</button></div>`;
+    return;
+  }
   banner.style.display = '';
   const iconMap = { needs_obs: '◎', stale: '↻', no_email: '📲' };
   const icon = iconMap[qs.cohortKey] || '▸';
@@ -3135,8 +3185,12 @@ function _renderQueueSessionBanner() {
     const _doneOutcome = qs.outcomes && (qs.outcomes.repaired || qs.outcomes.blocked)
       ? `${qs.outcomes.repaired} repaired${qs.outcomes.blocked ? ` · ${qs.outcomes.blocked} blocked` : ''}`
       : `${total} rows in set`;
+    // Pass 148-153: offer direct harvest action when rows were repaired this session
+    const _harvestBtn = qs.outcomes && qs.outcomes.repaired > 0
+      ? `<button class="qsb-btn qsb-approve" onclick="_qsApproveRepaired()" title="Approve all rows repaired in this session">✓ Approve ${qs.outcomes.repaired} repaired</button>`
+      : '';
     banner.className = 'qsb-done';
-    banner.innerHTML = `<span class="qsb-label">✓ ${escHtml(qs.label)} complete</span><span class="qsb-meta">${_doneOutcome}</span><div class="qsb-actions">${nextHtml}<button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ Close</button></div>`;
+    banner.innerHTML = `<span class="qsb-label">✓ ${escHtml(qs.label)} complete</span><span class="qsb-meta">${_doneOutcome}</span><div class="qsb-actions">${_harvestBtn}${nextHtml}<button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ Close</button></div>`;
   } else {
     const pos1 = qs.pos + 1;
     const remaining = total - qs.pos;
@@ -3409,11 +3463,14 @@ function renderTable() {
     const refreshLabel = (row.business_specific_observation || '').trim() ? 'Refresh' : 'Add Obs';
     // Pass 112-117: per-row cohort pill — visible in all filter views, not just active
     const _rowCohort = !row.sent_at ? _pipelineCohort(row) : 'bulk_safe';
+    const _pillKey = _panelMakeKey(row);
     const cohortPill = _rowCohort === 'needs_obs' ? `<span class="cohort-pill cp-needs-obs">◎ obs needed</span>`
       : _rowCohort === 'stale'    ? `<span class="cohort-pill cp-stale">↻ stale</span>`
       : _rowCohort === 'no_email' ? `<span class="cohort-pill cp-no-email">– no email</span>`
-      // Pass 142-147: graduation pill — row was repaired this session and is now bulk_safe
-      : (_qsRepairedKeys.size && _qsRepairedKeys.has(_panelMakeKey(row))) ? `<span class="cohort-pill cp-repaired">✓ repaired</span>`
+      // Pass 142-147: repaired this session (active session)
+      : (_qsRepairedKeys.size && _qsRepairedKeys.has(_pillKey)) ? `<span class="cohort-pill cp-repaired">✓ repaired</span>`
+      // Pass 148-153: repaired last session (persists until next session or dismiss)
+      : (_lastRepairedKeys.size && _lastRepairedKeys.has(_pillKey)) ? `<span class="cohort-pill cp-repaired">✓ repaired</span>`
       : '';
     // Pass 124-129: Cohort-aware row action block — drawer reserved for deep review only
     const _schedBtn = actionable && !row.send_after ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowSchedule(${gi},${JSON.stringify(row.business_name)})" title="Schedule for tomorrow morning window">🕐</button>` : '';
