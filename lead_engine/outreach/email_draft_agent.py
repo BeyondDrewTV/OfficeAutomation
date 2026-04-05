@@ -607,6 +607,8 @@ def _build_observation_opener(obs: str) -> str:
         "estimate form", "contact form", "quote form", "request form",
         "booking widget", "chat widget", "scheduling widget", "website ",
         "homepage ", "main page ",
+        # Callback / voicemail / dispatch noun phrases that act as sentence subjects
+        "dispatch number", "voicemail box", "main number", "main line", "phone number",
     )
     starts_with_noun_verb = any(o_lower.startswith(n) for n in needs_your)
     if starts_with_noun_verb and not o_lower.startswith("your ") and not o_lower.startswith("you"):
@@ -619,12 +621,14 @@ def _build_observation_opener(obs: str) -> str:
         "is", "are", "was", "were", "has", "have", "had",
         "does", "do", "did", "shows", "uses", "lists", "pushes",
         "advertises", "offers", "includes", "focuses", "keeps",
+        # Common sentence verbs used in voicemail / dispatch / callback observations
+        "goes", "routes", "rolls", "rings", "forwards", "sends",
+        "connects", "leads", "appears", "directs", "answers",
+        "reaches", "transfers",
     ))
     if not has_early_verb:
         if any(o_lower.startswith(n) for n in ("dispatch number", "voicemail box", "voicemail only")):
             o = "you're relying on " + o[0].lower() + o[1:]
-        elif any(o_lower.startswith(n) for n in ("phone number",)):
-            o = "you have " + o[0].lower() + o[1:]
 
     # Ensure first character is lowercase for clean sentence assembly
     if o and o[0].isalpha():
