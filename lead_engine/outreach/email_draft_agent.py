@@ -4,7 +4,7 @@ import hashlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-DRAFT_VERSION = "v22"
+DRAFT_VERSION = "v23"
 
 # ---------------------------------------------------------------------------
 # Copperline Voice Rules
@@ -633,7 +633,7 @@ def _build_consequence_sentence(obs: str, angle: str) -> str:
         return "When there's no confirmation after a form submission, most people assume it didn't go through and move on."
 
     if any(p in o for p in ("voicemail", "dispatch number", "dispatch line")):
-        return "Most people who hit voicemail on a service call don't leave a message — they call the next number on the list."
+        return "Most people who hit voicemail on a service call don't leave a message. They call the next number on the list."
 
     if any(p in o for p in (
         "only contact", "only way", "no other contact",
@@ -642,10 +642,10 @@ def _build_consequence_sentence(obs: str, angle: str) -> str:
         return "If that number goes unanswered while you're on a job, that lead is usually gone before you can call back."
 
     if any(p in o for p in ("24/7", "24 7", "emergency service", "same-day response", "same day response")):
-        return "That's a real commitment to back up operationally — most businesses that advertise it can't consistently deliver it."
+        return "When that kind of work is a big part of the business, missed calls and slow callbacks cost real jobs fast."
 
     if any(p in o for p in ("after-hours", "after hours", "weekend", "nights")):
-        return "After-hours requests that don't get a same-day response almost never convert — people make a decision and move on quickly."
+        return "After-hours requests that don't get a response the same day almost never convert. People make a decision and move on."
 
     if any(p in o for p in (
         "estimate request form", "estimate form", "primary call to action",
@@ -659,31 +659,31 @@ def _build_consequence_sentence(obs: str, angle: str) -> str:
     if any(p in o for p in (
         "proposal request", "proposal form", "free in-home",
     )):
-        return "Proposal requests that don't get a quick acknowledgment tend to go cold — people interpret silence as disinterest."
+        return "Proposal requests that don't get a quick acknowledgment tend to go cold. People interpret silence as disinterest."
 
     if any(p in o for p in ("chat widget", "text-back", "text back", "few different places", "couple different")):
-        return "When inquiries are coming in through multiple channels, it's easy for things to fall through between the cracks."
+        return "When inquiries are coming in through multiple channels, things fall through between the cracks faster than you'd expect."
 
     if any(p in o for p in ("online booking", "booking widget", "scheduling widget")):
-        return "Online bookings that don't get a quick confirmation call tend to generate no-shows — people aren't sure if it actually went through."
+        return "Online bookings that don't get a quick confirmation call tend to generate no-shows. People aren't sure if it actually went through."
 
     if any(p in o for p in ("water heater", "financing", "explicit about")):
-        return "Businesses that are very focused on one service sometimes have a harder time converting customers who want the full picture upfront."
+        return "When a site is focused tightly on one service, customers who want the full picture sometimes just move on."
 
-    # Angle fallbacks — direct, not passive
+    # Angle fallbacks — plain language, no consultant-speak
     fallbacks = {
         "after_hours_response":
-            "After-hours requests that don't get a fast response almost never convert.",
+            "When that kind of work is a big part of the business, missed calls after hours cost real jobs.",
         "estimate_follow_up":
-            "Slow estimate follow-up is usually the difference between winning and losing the job.",
+            "Slow follow-up on estimates is usually the difference between winning and losing the job.",
         "service_requests":
-            "New service requests that sit unacknowledged for more than a few hours rarely turn into customers.",
+            "New service requests that sit for more than a few hours rarely turn into customers.",
         "inquiry_routing":
-            "Inquiries that fall through without a quick response are usually already talking to someone else.",
+            "Inquiries that don't get a quick response are usually already talking to someone else.",
         "callback_recovery":
             "Missed calls that don't get a callback within the hour rarely convert.",
         "owner_workflow":
-            "When the owner is also running operations, things that need attention tend to stack up faster than they get resolved.",
+            "When the owner is also running the operation, things that need follow-through tend to stack up faster than they get cleared.",
     }
     return fallbacks.get(angle, fallbacks["owner_workflow"])
 
@@ -749,7 +749,7 @@ def _build_close_sentence(obs: str, angle: str, variant: int, channel: str) -> s
     elif channel == "dm":
         closes = [
             "Worth a quick conversation?",
-            "Want to jump on a quick call about it?",
+            "Want to get on a quick call about it?",
             "Would it be worth a short conversation?",
         ]
     else:
