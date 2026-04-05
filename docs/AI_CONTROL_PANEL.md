@@ -15,9 +15,9 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | Pass 154–159 — Approved Work Harvest + Send Readiness |
-| Last Completed Pass | Pass 154–159 — Approved Work Harvest + Send Readiness |
-| Pass Before That | Pass 148–153 — Queue Graduation Flow + Ready-State Harvest |
+| Current Focus | Pass 160–165 — Send-Ready Working Set + Review/Schedule Continuity |
+| Last Completed Pass | Pass 160–165 — Send-Ready Working Set + Review/Schedule Continuity |
+| Pass Before That | Pass 154–159 — Approved Work Harvest + Send Readiness |
 | Next Pass | TBD |
 
 ---

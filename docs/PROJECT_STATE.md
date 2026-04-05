@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-04 (Pass 154–159)
+Last Updated: 2026-04-04 (Pass 160–165)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Pass 154–159 — Approved Work Harvest + Send Readiness
+Pass 160–165 — Send-Ready Working Set + Review/Schedule Continuity
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 154–159 — Approved Work Harvest + Send Readiness: _lastApprovedCount tracks rows approved in last batch action; _qsApproveRepaired sets it before clearing harvest state; _qsDismissApproved clears it; _renderQueueSessionBanner gains fourth state (qsb-send-ready amber strip) when _lastApprovedCount > 0 and no session/harvest active; state ordering fixed so harvest and send-ready strips are mutually exclusive; stats strip "Approved" stat clickable → approved filter; _queueTimelineNoteHtml approved case shows live send-ready count + guidance; CSS: .qsb-send-ready
+Pass 160–165 — Send-Ready Working Set + Review/Schedule Continuity: _lastApprovedKeys Set tracks freshly-approved row keys; _qsStartApprovedReview() opens them as a panel session; send-ready strip gains → Review (N) button; _startApprovedSession() + approved filter CTA for all-approved review; _cohortBulkApprove() now feeds _lastApprovedCount + _lastApprovedKeys + loadStats(); approved session banner uses ● icon; done-state shows ▶ Send Approved for approved sessions
 
 ## Recent Passes
+Pass 160–165 milestone -- Send-Ready Working Set + Review/Schedule Continuity (frontend only)
 Pass 154–159 milestone -- Approved Work Harvest + Send Readiness (frontend only)
 Pass 148–153 milestone -- Queue Graduation Flow + Ready-State Harvest (frontend only)
 Pass 142–147 milestone -- Session Outcomes + Queue-Owned Recovery (frontend only)

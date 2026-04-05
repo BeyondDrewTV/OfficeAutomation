@@ -1,12 +1,34 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-04-04 (Pass 154–159)
+Last Updated: 2026-04-04 (Pass 160–165)
 
 ## Active Pass
-Pass 154–159 — Approved Work Harvest + Send Readiness
+Pass 160–165 — Send-Ready Working Set + Review/Schedule Continuity
 
 ## Status
-Pass 154–159 complete.
+Pass 160–165 complete.
+
+## What Pass 160–165 Changed
+
+**Goal:** Make freshly approved rows actionable as a real working set from Queue — review, schedule, and send — without hunting through filters after approval work.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+
+- **Pass 160 — `_lastApprovedKeys`:** New module-level `Set`. Tracks keys of rows approved in the last batch action. Cleared by `_qsStart()` and `_qsDismissApproved()`. Populated by `_qsApproveRepaired()` (collects key per approved row) and `_cohortBulkApprove()` (same pattern).
+
+- **Pass 161 — `_qsStartApprovedReview()`:** New function. Maps `_lastApprovedKeys` → allRows (filtered to unsent + has email). Calls `_qsStart('approved', rows, label)` + `openPanel(0, rows, label)`. Rows are snapshotted before `_qsStart` clears the Set — ordering is safe.
+
+- **Pass 162 — Send-ready strip `→ Review (N)`:** `_renderQueueSessionBanner()` send-ready state now includes a `→ Review (N)` button (`.qsb-next`) calling `_qsStartApprovedReview()` when `_lastApprovedKeys.size > 0`. Positioned before `▶ Send Approved`. Operator can open the freshly-approved set as a session directly from the strip.
+
+- **Pass 163 — `_startApprovedSession()` + approved filter CTA:** New `_startApprovedSession()` opens current `filteredRows` (approved filter view) as a panel session. `_queueTimelineNoteHtml()` approved filter case now includes an inline `→ Review (N)` button calling `_startApprovedSession()`. Mirrors the `→ Start Obs Review (N)` pattern for needs_obs.
+
+- **Pass 164 — `_cohortBulkApprove()` feeds send-ready strip:** Previously, "✓ Approve All Ready" from the active view did not trigger the send-ready strip. Now sets `_lastApprovedCount` and `_lastApprovedKeys` after the loop, and calls `loadStats()`. Send-ready strip now appears after standalone bulk-approve.
+
+- **Pass 165 — Banner polish for approved sessions:** `iconMap` gains `approved: '●'`. Done-state for `cohortKey === 'approved'` now includes `▶ Send Approved` button calling `confirmSend()` — completes the repair → approve → review/schedule → send loop at the banner level.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged. `confirmSend()` routes through existing modal gate on all new send paths. No auto-send introduced.
 
 ## What Pass 154–159 Changed
 
