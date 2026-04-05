@@ -1,12 +1,12 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-04-04 (Pass 166–171)
+Last Updated: 2026-04-04 (Pass 172–177)
 
 ## Active Pass
-Pass 166–171 — Approved Session Outcomes + Schedule Harvest
+Pass 172–177 — Scheduled Working Set + Waiting-State Harvest
 
 ## Status
-Pass 166–171 complete.
+Pass 172–177 complete.
 
 ## What Pass 166–171 Changed
 
@@ -29,6 +29,28 @@ Pass 166–171 complete.
 **Files changed:** `lead_engine/dashboard_static/index.html`, docs
 
 **Protected-system status:** unchanged. All schedule API calls route through existing `/api/schedule_email` endpoint. `confirmSend()` modal gate intact on all send paths. No auto-send introduced.
+
+## What Pass 172–177 Changed
+
+**Goal:** Make scheduled rows — especially those created during approved review work — feel like a real Queue-managed waiting set instead of a destination the operator has to hunt manually.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+
+- **Pass 172 — `_lastScheduledKeys` foundation:** New module-level `let _lastScheduledKeys = new Set()`. `_qsStart()` clears it (new session always resets). `_qsEnd()` persists `_qsScheduledKeys → _lastScheduledKeys` when closing an approved session with scheduled rows (`_qsScheduledKeys.size > 0`). New `_qsDismissScheduled()` clears `_lastScheduledKeys` and re-renders banner.
+
+- **Pass 173 — Banner scheduled waiting strip + CSS:** Early-exit guard updated to include `!_lastScheduledKeys.size`. New 6th banner state: `!qs && _lastScheduledKeys.size > 0` → `qsb-scheduled` strip (blue tint). Shows live waiting count (re-checked against allRows to exclude rows already sent/cleared). `→ Review (N)` CTA calls `_startScheduledSession()`. Dismiss calls `_qsDismissScheduled()`. Send-ready strip (amber) extended with `· N scheduled` note in label when `_lastScheduledKeys.size > 0`. CSS `.qsb-scheduled` added (blue tint, blue border).
+
+- **Pass 174 — `_startScheduledSession()` + timeline note CTA:** New `_startScheduledSession()` — collects all unsent scheduled rows from allRows, sorts by `send_after`, opens as panel session with `cohortKey: 'scheduled'`, label `Scheduled Review (N)`. `iconMap` gains `scheduled: '⏱'`. `_queueTimelineNoteHtml()` scheduled filter case now includes inline `→ Review (N)` CTA (same pattern as approved filter CTA).
+
+- **Pass 175 — Scheduled stat in stats strip:** New `s-scheduled` stat element after `s-stale` — clickable (→ `setFilter('scheduled',…)`), blue color, label `Scheduled ↗`. New `_updateScheduledStat()` helper computes count client-side from `allRows` (backend has no scheduled count endpoint). Called from `loadStats()` and from `loadAll()` after `renderTable()`.
+
+- **Pass 176 — Done-state "→ View Scheduled (N)":** Approved session done-state now includes `_viewScheduledBtn` when `_qsScheduledKeys.size > 0`. Button calls `_qsEnd()` then `setFilter('scheduled',…)` — closes session, persists `_lastScheduledKeys`, switches to scheduled filter. Renders before `▶ Send Approved` in the actions strip.
+
+- **Pass 177 — Docs truth-sync.**
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged. No new API endpoints. `confirmSend()` gate intact. No auto-send introduced.
 
 ## What Pass 160–165 Changed
 

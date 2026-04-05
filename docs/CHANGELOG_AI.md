@@ -1,4 +1,30 @@
-﻿### 2026-04-04 - Pass 166–171: Approved Session Outcomes + Schedule Harvest
+﻿### 2026-04-04 - Pass 172–177: Scheduled Working Set + Waiting-State Harvest
+
+**Goal:** Make scheduled rows — especially those created during approved review work — feel like a real Queue-managed waiting set with a persistent strip, session continuity, and a clickable stats entry.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- `_lastScheduledKeys`: new module-level Set; persisted from `_qsScheduledKeys` in `_qsEnd()` when closing an approved session with scheduled rows; cleared in `_qsStart()`
+- `_qsDismissScheduled()`: new function — clears `_lastScheduledKeys`, re-renders banner
+- Banner early-exit guard: updated to include `!_lastScheduledKeys.size`
+- `qsb-scheduled` CSS: new blue-tint strip class (`rgba(79,142,247,.05)` bg, blue border)
+- 6th banner state (`!qs && _lastScheduledKeys.size > 0`): scheduled waiting strip; live re-checks keys against allRows; `→ Review (N)` CTA → `_startScheduledSession()`; dismiss → `_qsDismissScheduled()`
+- Send-ready strip extended: `· N scheduled` note appended to label when `_lastScheduledKeys.size > 0`
+- `_startScheduledSession()`: new function — collects unsent scheduled rows from allRows, sorted by `send_after`, opens as `cohortKey: 'scheduled'` panel session
+- `iconMap` gains `scheduled: '⏱'`
+- Done-state `_viewScheduledBtn`: approved session done-state shows `→ View Scheduled (N)` when `_qsScheduledKeys.size > 0`; button calls `_qsEnd()` then `setFilter('scheduled',…)` — closes session, persists `_lastScheduledKeys`, navigates to scheduled filter
+- `_queueTimelineNoteHtml()` scheduled filter: now includes inline `→ Review (N)` CTA calling `_startScheduledSession()`
+- `s-scheduled` stat: new stat element in stats strip after `s-stale`; clickable → scheduled filter; blue; label `Scheduled ↗`
+- `_updateScheduledStat()`: new helper — computes scheduled count client-side from `allRows`; called from `loadStats()` and `loadAll()` after `renderTable()`
+
+**State machine:** All 6 banner states are mutually exclusive. Scheduled strip only shows when `!qs && !_lastApprovedCount && _lastScheduledKeys.size > 0` — send-ready strip (state 3) takes priority. `_qsStart` clears `_lastScheduledKeys` so new sessions don't inherit stale strip state.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, `docs/`
+
+**Protected-system status:** unchanged. No new API endpoints. `confirmSend()` gate intact. No auto-send introduced.
+
+---
+
+### 2026-04-04 - Pass 166–171: Approved Session Outcomes + Schedule Harvest
 
 **Goal:** Make approved review sessions behave like real Queue-owned sessions with visible scheduling outcomes and clear post-session next steps.
 

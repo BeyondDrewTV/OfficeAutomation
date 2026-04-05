@@ -141,6 +141,8 @@ tbody tr.cohort-hdr td{padding:8px 16px 4px;background:var(--surface2)}
 .qsb-approve:hover{background:rgba(52,199,89,.28)}
 /* Pass 154-159: send-readiness strip */
 #queue-session-banner.qsb-send-ready{background:rgba(245,166,35,.05);border-color:rgba(245,166,35,.2)}
+/* Pass 172-177: scheduled waiting strip */
+#queue-session-banner.qsb-scheduled{background:rgba(79,142,247,.05);border-color:rgba(79,142,247,.2)}
 tr.session-current{background:rgba(184,115,51,.04)}
 tr.session-current .td-chk{box-shadow:inset 3px 0 0 var(--copper)}
 /* Pass 140: inline obs repair row */
@@ -1248,6 +1250,10 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     <div class="stat-n" id="s-stale" style="color:var(--amber)">—</div>
     <div class="stat-lbl">Stale Copy</div>
   </div>
+  <div class="stat" style="cursor:pointer" onclick="setFilter('scheduled',document.querySelector('[data-filter=scheduled]'))" title="Rows waiting for their scheduled send window — click to view">
+    <div class="stat-n" id="s-scheduled" style="color:var(--blue)">—</div>
+    <div class="stat-lbl">Scheduled ↗</div>
+  </div>
 </div>
 
 <div class="discover-bar">
@@ -2142,6 +2148,7 @@ let _qsScheduledKeys = new Set(); // Pass 166-171: keys of rows scheduled during
 let _lastRepairedKeys = new Set(); // Pass 148-153: repaired keys from last closed session — persists for harvest strip + pills
 let _lastApprovedCount = 0; // Pass 154-159: rows approved in last batch action — persists for send-readiness strip
 let _lastApprovedKeys = new Set(); // Pass 160-165: keys of freshly approved rows — enables approved working-set review session
+let _lastScheduledKeys = new Set(); // Pass 172-177: scheduled rows from last approved session — persists for waiting-state strip
 let _panelMousedownOnBackdrop = false; // Pass 37: drag-close guard
 let status_draft_version = '';
 
@@ -2841,6 +2848,7 @@ async function loadAll() {
     _buildLeadKeyIndex(allRows); // Pass 41: rebuild stable-key index
     _qsRefreshKeys();            // Pass 141: reconcile session keys against fresh allRows
     renderTable();
+    _updateScheduledStat();      // Pass 172-177: refresh scheduled stat after allRows is set
     _panelSyncOpenState();
   } catch(err) {
     console.error('loadAll failed:', err);
@@ -2858,12 +2866,18 @@ async function loadStats() {
   document.getElementById('s-logged').textContent    = s.sent_logged_only ?? '—';
   _updateRepliedStat(s.replied ?? 0);
   document.getElementById('s-stale').textContent = s.stale_drafts ?? '—';
+  _updateScheduledStat(); // Pass 172-177: computed from allRows — must follow allRows population in loadAll
 }
 
 function _updateRepliedStat(count) {
   document.getElementById('s-replied').textContent = count;
   const pulse = document.getElementById('reply-pulse');
   if (pulse) pulse.style.display = count > 0 ? 'inline-block' : 'none';
+}
+
+function _updateScheduledStat() { // Pass 172-177: client-side computed — backend has no scheduled count endpoint
+  const el = document.getElementById('s-scheduled');
+  if (el) el.textContent = (allRows || []).filter(r => r.send_after && !r.sent_at).length;
 }
 
 function isRowActionable(row) {
@@ -3059,6 +3073,7 @@ function _qsStart(cohortKey, rows, label) {
   _lastRepairedKeys = new Set(); // Pass 148-153: new session clears prior harvest state
   _lastApprovedCount = 0;        // Pass 154-159: new session clears send-readiness strip
   _lastApprovedKeys = new Set(); // Pass 160-165: new session clears approved working-set
+  _lastScheduledKeys = new Set(); // Pass 172-177: new session clears scheduled waiting set
   _renderQueueSessionBanner();
 }
 
@@ -3135,6 +3150,7 @@ function _qsEnd() {
   // _lastApprovedCount was cleared by _qsStart — restore from live data so the strip reappears.
   if (_queueSession?.cohortKey === 'approved') {
     _lastApprovedCount = (allRows || []).filter(r => r.approved === 'true' && !r.sent_at && r.to_email).length;
+    if (_qsScheduledKeys.size > 0) _lastScheduledKeys = new Set(_qsScheduledKeys); // Pass 172-177: persist for waiting-state strip
   }
   _queueSession = null;
   _qsRepairedKeys = new Set();
@@ -3181,6 +3197,21 @@ function _qsDismissApproved() {
   _renderQueueSessionBanner();
 }
 
+function _qsDismissScheduled() { // Pass 172-177: clear scheduled waiting set on dismiss
+  _lastScheduledKeys = new Set();
+  _renderQueueSessionBanner();
+}
+
+// Pass 172-177: Open all scheduled (unsent) rows as a panel review session — scheduled working-set continuity.
+function _startScheduledSession() {
+  const rows = (allRows || []).filter(r => r.send_after && !r.sent_at);
+  rows.sort((a, b) => (a.send_after || '').localeCompare(b.send_after || ''));
+  if (!rows.length) { toast('No scheduled rows to review', 'info'); return; }
+  const label = `Scheduled Review (${rows.length})`;
+  _qsStart('scheduled', rows, label);
+  openPanel(0, rows, label);
+}
+
 // Pass 160-165: Open all currently-approved rows (from approved filter) as a panel review session.
 // Used from the approved filter CTA — reviews the full approved set, not just the freshly-approved batch.
 function _startApprovedSession() {
@@ -3218,7 +3249,7 @@ function _renderQueueSessionBanner() {
   const banner = document.getElementById('queue-session-banner');
   if (!banner) return;
   const qs = _queueSession;
-  if (!qs && !_lastRepairedKeys.size && !_lastApprovedCount) { banner.style.display = 'none'; return; }
+  if (!qs && !_lastRepairedKeys.size && !_lastApprovedCount && !_lastScheduledKeys.size) { banner.style.display = 'none'; return; }
   // Pass 148-153: post-session harvest strip — shown when session is closed but repaired rows are still harvestable
   if (!qs && _lastRepairedKeys.size > 0) {
     const approveCount = [..._lastRepairedKeys].filter(k => {
@@ -3245,11 +3276,27 @@ function _renderQueueSessionBanner() {
     const _reviewBtn = _lastApprovedKeys.size > 0
       ? `<button class="qsb-btn qsb-next" onclick="_qsStartApprovedReview()" title="Review and schedule these rows as a working set">→ Review (${_lastApprovedKeys.size})</button>`
       : '';
-    banner.innerHTML = `<span class="qsb-label" style="color:var(--amber)">✓ ${_lastApprovedCount} approved — ready to schedule or send</span><div class="qsb-actions">${_reviewBtn}${_sendBtn}<button class="qsb-btn qsb-end" onclick="_qsDismissApproved()">✕ Dismiss</button></div>`;
+    const _scheduledNote = _lastScheduledKeys.size > 0 ? ` · ${_lastScheduledKeys.size} scheduled` : ''; // Pass 172-177
+    banner.innerHTML = `<span class="qsb-label" style="color:var(--amber)">✓ ${_lastApprovedCount} approved — ready to schedule or send${_scheduledNote}</span><div class="qsb-actions">${_reviewBtn}${_sendBtn}<button class="qsb-btn qsb-end" onclick="_qsDismissApproved()">✕ Dismiss</button></div>`;
+    return;
+  }
+  // Pass 172-177: scheduled waiting strip — shown after approved session closes with scheduled rows, after send-ready strip is dismissed
+  if (!qs && _lastScheduledKeys.size > 0) {
+    const _waitingCount = [..._lastScheduledKeys].filter(k => {
+      const r = allRows.find(row => _panelMakeKey(row) === k);
+      return r && r.send_after && !r.sent_at;
+    }).length;
+    banner.style.display = '';
+    banner.className = 'qsb-scheduled';
+    const _reviewScheduledBtn = _waitingCount > 0
+      ? `<button class="qsb-btn qsb-next" onclick="_startScheduledSession()" title="Step through scheduled rows as a working set">→ Review (${_waitingCount})</button>`
+      : '';
+    const _labelText = _waitingCount > 0 ? `${_waitingCount} row${_waitingCount === 1 ? '' : 's'} waiting in schedule queue` : `Scheduled rows already sent or cleared`;
+    banner.innerHTML = `<span class="qsb-label" style="color:var(--blue)">${_labelText}</span><div class="qsb-actions">${_reviewScheduledBtn}<button class="qsb-btn qsb-end" onclick="_qsDismissScheduled()">✕ Dismiss</button></div>`;
     return;
   }
   banner.style.display = '';
-  const iconMap = { needs_obs: '◎', stale: '↻', no_email: '📲', approved: '●' }; // Pass 160-165: approved session icon
+  const iconMap = { needs_obs: '◎', stale: '↻', no_email: '📲', approved: '●', scheduled: '⏱' }; // Pass 160-165/172-177
   const icon = iconMap[qs.cohortKey] || '▸';
   const total = qs.rowKeys.length;
   if (qs.done) {
@@ -3267,7 +3314,7 @@ function _renderQueueSessionBanner() {
       }
     }
     // Pass 142-147 / 166-171: outcome summary — approved sessions get schedule+ready breakdown; others get repaired/blocked counts
-    let _doneOutcome, _sendReadyBtn = '';
+    let _doneOutcome, _sendReadyBtn = '', _viewScheduledBtn = '';
     if (qs.cohortKey === 'approved') {
       // Pass 166-171: meaningful approved-session summary — how many scheduled, how many still ready to send now
       const _scheduledInSession = qs.outcomes?.scheduled || 0;
@@ -3278,6 +3325,10 @@ function _renderQueueSessionBanner() {
       _sendReadyBtn = _readyNow > 0
         ? `<button class="qsb-btn" style="background:rgba(245,166,35,.18);color:var(--amber)" onclick="confirmSend()" title="Send all approved rows — requires confirmation">▶ Send Approved (${_readyNow})</button>`
         : `<span class="qsb-meta" style="color:var(--muted);font-size:11px">✓ All scheduled or sent</span>`;
+      // Pass 172-177: offer direct navigation to scheduled rows if any were scheduled this session
+      _viewScheduledBtn = _qsScheduledKeys.size > 0
+        ? `<button class="qsb-btn qsb-next" onclick="_qsEnd();setFilter('scheduled',document.querySelector('[data-filter=scheduled]'))" title="View rows scheduled this session">→ View Scheduled (${_qsScheduledKeys.size})</button>`
+        : '';
     } else {
       // Pass 142-147: repair/block summary for exception sessions
       _doneOutcome = qs.outcomes && (qs.outcomes.repaired || qs.outcomes.blocked)
@@ -3289,7 +3340,7 @@ function _renderQueueSessionBanner() {
       ? `<button class="qsb-btn qsb-approve" onclick="_qsApproveRepaired()" title="Approve all rows repaired in this session">✓ Approve ${qs.outcomes.repaired} repaired</button>`
       : '';
     banner.className = 'qsb-done';
-    banner.innerHTML = `<span class="qsb-label">✓ ${escHtml(qs.label)} complete</span><span class="qsb-meta">${_doneOutcome}</span><div class="qsb-actions">${_harvestBtn}${_sendReadyBtn}${nextHtml}<button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ Close</button></div>`;
+    banner.innerHTML = `<span class="qsb-label">✓ ${escHtml(qs.label)} complete</span><span class="qsb-meta">${_doneOutcome}</span><div class="qsb-actions">${_harvestBtn}${_viewScheduledBtn}${_sendReadyBtn}${nextHtml}<button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ Close</button></div>`;
   } else {
     const pos1 = qs.pos + 1;
     const remaining = total - qs.pos;
@@ -3458,9 +3509,13 @@ function _queueTimelineNoteHtml() {
   const futureScheduled = allRows.filter(r => !!(r.send_after && !r.sent_at) && !r.is_ready).length;
   const readyScheduled = allRows.filter(r => !!(r.send_after && !r.sent_at) && r.is_ready).length;
   if (currentFilter === 'scheduled') {
+    const _scheduledTotal = futureScheduled + readyScheduled;
+    const _reviewCta = _scheduledTotal > 0
+      ? ` <button style="font-size:11px;padding:2px 8px;background:rgba(79,142,247,.12);color:var(--blue);border:1px solid rgba(79,142,247,.25);border-radius:var(--rs);cursor:pointer;vertical-align:middle" onclick="_startScheduledSession()" title="Step through scheduled rows as a working set">→ Review (${_scheduledTotal})</button>`
+      : '';
     return {
       tone: 'scheduled',
-      html: `<strong>Scheduled queue:</strong> future rows wait here until their send window. "Tomorrow morning" uses the backend's industry send time. ${futureScheduled} future-scheduled • ${readyScheduled} window-reached row(s) still carry schedule timing.`,
+      html: `<strong>Scheduled queue:</strong> future rows wait here until their send window. "Tomorrow morning" uses the backend's industry send time. ${futureScheduled} future-scheduled • ${readyScheduled} window-reached.${_reviewCta}`,
     };
   }
   if (currentFilter === 'approved') {

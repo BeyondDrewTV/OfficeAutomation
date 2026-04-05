@@ -1,6 +1,6 @@
 ﻿# Copperline AI Control Panel
 
-Last Updated: 2026-04-04 (Pass 166–171)
+Last Updated: 2026-04-04 (Pass 172–177)
 Repository Version: v0.3
 
 > **Role:** Active operating contract + current AI guardrails.
@@ -15,9 +15,9 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | Pass 166–171 — Approved Session Outcomes + Schedule Harvest |
-| Last Completed Pass | Pass 166–171 — Approved Session Outcomes + Schedule Harvest |
-| Pass Before That | Pass 160–165 — Send-Ready Working Set + Review/Schedule Continuity |
+| Current Focus | Pass 172–177 — Scheduled Working Set + Waiting-State Harvest |
+| Last Completed Pass | Pass 172–177 — Scheduled Working Set + Waiting-State Harvest |
+| Pass Before That | Pass 166–171 — Approved Session Outcomes + Schedule Harvest |
 | Next Pass | TBD |
 
 ---
