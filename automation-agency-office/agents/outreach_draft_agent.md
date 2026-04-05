@@ -8,7 +8,7 @@ Sales Development
 Creates personalized outreach drafts referencing demos or automation opportunities with verified context.
 
 ## Inputs (memory files used)
-- `memory/sales_outreach_templates.md`
+- `memory/sales_outreach_templates.md` (**DEPRECATED** — do not use for copy; see deprecation banner inside the file)
 - `memory/outreach_queue.md`
 - `memory/prospect_research.md`
 - `memory/positioning_guardrails.md`
