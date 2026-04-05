@@ -1,12 +1,34 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-04-04 (Pass 160–165)
+Last Updated: 2026-04-04 (Pass 166–171)
 
 ## Active Pass
-Pass 160–165 — Send-Ready Working Set + Review/Schedule Continuity
+Pass 166–171 — Approved Session Outcomes + Schedule Harvest
 
 ## Status
-Pass 160–165 complete.
+Pass 166–171 complete.
+
+## What Pass 166–171 Changed
+
+**Goal:** Make approved review sessions behave like real Queue-owned sessions — track what happened (scheduled vs ready-now), show live progress, and give the operator clear post-session next steps.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+
+- **Pass 166 — `_qsScheduledKeys` + `outcomes.scheduled` + record functions:** New module-level `let _qsScheduledKeys = new Set()`. `_qsStart()` now initializes `outcomes: { repaired, blocked, scheduled: 0 }` and clears `_qsScheduledKeys`. New `_qsRecordScheduled(key)` — only fires during `cohortKey === 'approved'` sessions; idempotent (Set-guard prevents double-count on reschedule). New `_qsRecordUnscheduled(key)` — decrements only if key is tracked; handles mid-session schedule clears cleanly.
+
+- **Pass 167 — `rowSchedule` / `rowUnschedule` hooks:** `rowSchedule` calls `_qsRecordScheduled` after successful API response. `rowUnschedule` calls `_qsRecordUnscheduled` before clearing `row.send_after`. Both no-op when not in an approved session.
+
+- **Pass 168 — `panelScheduleTomorrow` / `panelUnschedule` / `panelReschedule` hooks:** `panelScheduleTomorrow` calls `_qsRecordScheduled` after `row.send_after = res.send_after`. `panelUnschedule` calls `_qsRecordUnscheduled` before clearing. `panelReschedule` calls `_qsRecordScheduled` (idempotent — reschedule of an already-tracked row is a no-op for the counter).
+
+- **Pass 169 — Active banner live tally:** `_renderQueueSessionBanner` active state now computes `_liveScheduled = (qs.cohortKey === 'approved' && qs.outcomes?.scheduled > 0) ? ' · N scheduled' : ''`. Appended to the meta line alongside the existing `_liveOutcome` (repaired tally). Operator sees scheduling progress without opening any drawer.
+
+- **Pass 170 — Done-state meaningful summary:** Done-state now branches on `qs.cohortKey`. For `'approved'`: computes `_scheduledInSession` + `_readyNow` (approved, unsent, unscheduled rows live in allRows). Renders `"N scheduled · M ready now"` or `"N rows reviewed · M ready now"`. `▶ Send Approved` shows live count `(M)`. If `_readyNow = 0` shows `"✓ All scheduled or sent"` instead of an unusable send button. For other cohort types: prior `repaired/blocked` logic unchanged.
+
+- **Pass 171 — `_qsEnd()` restores send-ready strip:** When closing an approved session, `_qsEnd` now sets `_lastApprovedCount` from live allRows count (approved, unsent, with email). `_qsScheduledKeys` cleared. Since `_lastApprovedKeys` is empty (not restored), the send-ready strip reappears without a "→ Review" button — review is done. Non-approved session close behavior is unchanged.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged. All schedule API calls route through existing `/api/schedule_email` endpoint. `confirmSend()` modal gate intact on all send paths. No auto-send introduced.
 
 ## What Pass 160–165 Changed
 

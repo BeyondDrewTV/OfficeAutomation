@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-04 (Pass 160–165)
+Last Updated: 2026-04-04 (Pass 166–171)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Pass 160–165 — Send-Ready Working Set + Review/Schedule Continuity
+Pass 166–171 — Approved Session Outcomes + Schedule Harvest
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 160–165 — Send-Ready Working Set + Review/Schedule Continuity: _lastApprovedKeys Set tracks freshly-approved row keys; _qsStartApprovedReview() opens them as a panel session; send-ready strip gains → Review (N) button; _startApprovedSession() + approved filter CTA for all-approved review; _cohortBulkApprove() now feeds _lastApprovedCount + _lastApprovedKeys + loadStats(); approved session banner uses ● icon; done-state shows ▶ Send Approved for approved sessions
+Pass 166–171 — Approved Session Outcomes + Schedule Harvest: _qsScheduledKeys tracks rows scheduled during approved sessions; _qsRecordScheduled/Unscheduled functions (idempotent); rowSchedule/rowUnschedule/panelScheduleTomorrow/panelUnschedule/panelReschedule all hook into session outcomes; active banner shows '· N scheduled' live tally; done-state shows 'X scheduled · Y ready now' with ▶ Send Approved (N) count; _qsEnd restores _lastApprovedCount (send-ready strip reappears after session close)
 
 ## Recent Passes
+Pass 166–171 milestone -- Approved Session Outcomes + Schedule Harvest (frontend only)
 Pass 160–165 milestone -- Send-Ready Working Set + Review/Schedule Continuity (frontend only)
 Pass 154–159 milestone -- Approved Work Harvest + Send Readiness (frontend only)
 Pass 148–153 milestone -- Queue Graduation Flow + Ready-State Harvest (frontend only)

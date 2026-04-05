@@ -1,4 +1,27 @@
-﻿### 2026-04-04 - Pass 160–165: Send-Ready Working Set + Review/Schedule Continuity
+﻿### 2026-04-04 - Pass 166–171: Approved Session Outcomes + Schedule Harvest
+
+**Goal:** Make approved review sessions behave like real Queue-owned sessions with visible scheduling outcomes and clear post-session next steps.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- `_qsScheduledKeys`: new module-level Set; cleared in `_qsStart` and `_qsEnd`
+- `outcomes.scheduled`: added to `_qsStart` outcomes object (alongside repaired/blocked)
+- `_qsRecordScheduled(key)`: new function — only fires for approved sessions; idempotent (Set-guard); increments `outcomes.scheduled` + adds to `_qsScheduledKeys`; refreshes banner
+- `_qsRecordUnscheduled(key)`: new function — decrements only if key is in `_qsScheduledKeys`; handles mid-session unschedule cleanly
+- `rowSchedule` / `rowUnschedule`: call `_qsRecordScheduled` / `_qsRecordUnscheduled` after API response
+- `panelScheduleTomorrow` / `panelUnschedule` / `panelReschedule`: same hooks; `panelReschedule` idempotent via Set-guard
+- Active banner: `_liveScheduled` appended to meta line for approved sessions when `outcomes.scheduled > 0` — operator sees live tally mid-session
+- Done-state: approved sessions now get `"N scheduled · M ready now"` breakdown; `▶ Send Approved (M)` with live ready-now count; `"✓ All scheduled or sent"` when M=0; non-approved sessions unchanged
+- `_qsEnd()`: when closing an approved session, restores `_lastApprovedCount` from live allRows (send-ready strip reappears); `_qsScheduledKeys` cleared; `_lastApprovedKeys` not restored (review is done — no "→ Review" re-entry)
+
+**State machine:** `_queueSession?.cohortKey` is read before null-assignment in `_qsEnd` — ordering safe. Non-approved sessions hit no new code paths. `confirmSend()` is the send gate on all new paths.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, `docs/`
+
+**Protected-system status:** unchanged. Frontend-only.
+
+---
+
+### 2026-04-04 - Pass 160–165: Send-Ready Working Set + Review/Schedule Continuity
 
 **Goal:** Make freshly approved rows actionable as a real working set — review, schedule, and send — without hunting through filters or losing continuity after approval.
 
