@@ -2140,6 +2140,7 @@ let _queueSession = null;   // Pass 130-135: { cohortKey, label, rowKeys, pos, d
 let _qsRepairedKeys = new Set();  // Pass 142-147: keys of rows repaired in current session
 let _lastRepairedKeys = new Set(); // Pass 148-153: repaired keys from last closed session — persists for harvest strip + pills
 let _lastApprovedCount = 0; // Pass 154-159: rows approved in last batch action — persists for send-readiness strip
+let _lastApprovedKeys = new Set(); // Pass 160-165: keys of freshly approved rows — enables approved working-set review session
 let _panelMousedownOnBackdrop = false; // Pass 37: drag-close guard
 let status_draft_version = '';
 
@@ -3055,6 +3056,7 @@ function _qsStart(cohortKey, rows, label) {
   _qsRepairedKeys = new Set();
   _lastRepairedKeys = new Set(); // Pass 148-153: new session clears prior harvest state
   _lastApprovedCount = 0;        // Pass 154-159: new session clears send-readiness strip
+  _lastApprovedKeys = new Set(); // Pass 160-165: new session clears approved working-set
   _renderQueueSessionBanner();
 }
 
@@ -3116,12 +3118,14 @@ async function _qsApproveRepaired() {
   const keys = _queueSession ? new Set(_qsRepairedKeys) : new Set(_lastRepairedKeys);
   if (!keys.size) { toast('No repaired rows to approve', 'info'); return; }
   let approved = 0, skipped = 0;
+  _lastApprovedKeys = new Set(); // Pass 160-165: reset before batch
   for (const key of keys) {
     const row = allRows.find(r => _panelMakeKey(r) === key);
     if (!row || row.approved === 'true' || row.sent_at || !row.to_email) { skipped++; continue; }
     const gi = allRows.indexOf(row);
     await api('/api/approve_row', { index: gi });
     row.approved = 'true';
+    _lastApprovedKeys.add(_panelMakeKey(row)); // Pass 160-165: track for review session
     approved++;
   }
   // Pass 154-159: record approved count before clearing state — drives send-readiness strip
@@ -3144,7 +3148,31 @@ function _qsDismissHarvest() {
 
 function _qsDismissApproved() {
   _lastApprovedCount = 0;
+  _lastApprovedKeys = new Set(); // Pass 160-165: clear working-set on dismiss
   _renderQueueSessionBanner();
+}
+
+// Pass 160-165: Open all currently-approved rows (from approved filter) as a panel review session.
+// Used from the approved filter CTA — reviews the full approved set, not just the freshly-approved batch.
+function _startApprovedSession() {
+  const rows = filteredRows.filter(r => r.approved === 'true' && !r.sent_at && r.to_email);
+  if (!rows.length) { toast('No approved rows to review', 'info'); return; }
+  const label = `Approved Review (${rows.length})`;
+  _qsStart('approved', rows, label);
+  openPanel(0, rows, label);
+}
+
+// Pass 160-165: Open the freshly-approved working set as a panel review session.
+// Rows come from _lastApprovedKeys — the exact set just approved in the last batch action.
+// Calling _qsStart clears _lastApprovedKeys and _lastApprovedCount (banner transitions to active session).
+function _qsStartApprovedReview() {
+  const rows = [..._lastApprovedKeys]
+    .map(k => allRows.find(r => _panelMakeKey(r) === k))
+    .filter(r => r && !r.sent_at && r.to_email);
+  if (!rows.length) { toast('No approved rows available to review', 'info'); return; }
+  const label = `Approved Review (${rows.length})`;
+  _qsStart('approved', rows, label);
+  openPanel(0, rows, label);
 }
 
 function _qsResume() {
@@ -3184,11 +3212,15 @@ function _renderQueueSessionBanner() {
     const _sendBtn = _sendCount > 0
       ? `<button class="qsb-btn" style="background:rgba(245,166,35,.18);color:var(--amber)" onclick="confirmSend()" title="Send all approved rows — requires confirmation">▶ Send Approved (${_sendCount})</button>`
       : `<span class="qsb-meta" style="color:var(--green);font-weight:600">✓ All approved rows sent</span>`;
-    banner.innerHTML = `<span class="qsb-label" style="color:var(--amber)">✓ ${_lastApprovedCount} approved — ready to schedule or send</span><div class="qsb-actions">${_sendBtn}<button class="qsb-btn qsb-end" onclick="_qsDismissApproved()">✕ Dismiss</button></div>`;
+    // Pass 160-165: review button — opens freshly-approved rows as a working-set session for review/schedule
+    const _reviewBtn = _lastApprovedKeys.size > 0
+      ? `<button class="qsb-btn qsb-next" onclick="_qsStartApprovedReview()" title="Review and schedule these rows as a working set">→ Review (${_lastApprovedKeys.size})</button>`
+      : '';
+    banner.innerHTML = `<span class="qsb-label" style="color:var(--amber)">✓ ${_lastApprovedCount} approved — ready to schedule or send</span><div class="qsb-actions">${_reviewBtn}${_sendBtn}<button class="qsb-btn qsb-end" onclick="_qsDismissApproved()">✕ Dismiss</button></div>`;
     return;
   }
   banner.style.display = '';
-  const iconMap = { needs_obs: '◎', stale: '↻', no_email: '📲' };
+  const iconMap = { needs_obs: '◎', stale: '↻', no_email: '📲', approved: '●' }; // Pass 160-165: approved session icon
   const icon = iconMap[qs.cohortKey] || '▸';
   const total = qs.rowKeys.length;
   if (qs.done) {
@@ -3213,8 +3245,12 @@ function _renderQueueSessionBanner() {
     const _harvestBtn = qs.outcomes && qs.outcomes.repaired > 0
       ? `<button class="qsb-btn qsb-approve" onclick="_qsApproveRepaired()" title="Approve all rows repaired in this session">✓ Approve ${qs.outcomes.repaired} repaired</button>`
       : '';
+    // Pass 160-165: offer Send Approved after reviewing the approved working set
+    const _sendReadyBtn = qs.cohortKey === 'approved'
+      ? `<button class="qsb-btn" style="background:rgba(245,166,35,.18);color:var(--amber)" onclick="confirmSend()" title="Send all approved rows — requires confirmation">▶ Send Approved</button>`
+      : '';
     banner.className = 'qsb-done';
-    banner.innerHTML = `<span class="qsb-label">✓ ${escHtml(qs.label)} complete</span><span class="qsb-meta">${_doneOutcome}</span><div class="qsb-actions">${_harvestBtn}${nextHtml}<button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ Close</button></div>`;
+    banner.innerHTML = `<span class="qsb-label">✓ ${escHtml(qs.label)} complete</span><span class="qsb-meta">${_doneOutcome}</span><div class="qsb-actions">${_harvestBtn}${_sendReadyBtn}${nextHtml}<button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ Close</button></div>`;
   } else {
     const pos1 = qs.pos + 1;
     const remaining = total - qs.pos;
@@ -3236,13 +3272,20 @@ async function _cohortBulkApprove() {
   const rows = filteredRows.filter(r => _pipelineCohort(r) === 'bulk_safe' && r.approved !== 'true');
   if (!rows.length) { toast('All ready rows already approved', 'ok'); return; }
   let done = 0;
+  _lastApprovedKeys = new Set(); // Pass 160-165: reset before batch
   for (const row of rows) {
     const gi = allRows.indexOf(row);
     if (gi < 0) continue;
     const res = await api('/api/approve_row', { global_idx: gi });
-    if (res.ok) { allRows[gi] = { ...allRows[gi], ...res.row }; done++; }
+    if (res.ok) {
+      allRows[gi] = { ...allRows[gi], ...res.row };
+      _lastApprovedKeys.add(_panelMakeKey(allRows[gi])); // Pass 160-165: track for review session
+      done++;
+    }
   }
+  _lastApprovedCount = done; // Pass 160-165: feed send-ready strip after standalone bulk approve
   renderTable();
+  loadStats();
   toast(`Approved ${done} ready lead${done === 1 ? '' : 's'}`, 'ok');
 }
 
@@ -3381,10 +3424,14 @@ function _queueTimelineNoteHtml() {
   }
   if (currentFilter === 'approved') {
     // Pass 154-159: live send-ready count + explicit next-action guidance
-    const approvedSendReady = allRows.filter(r => r.approved === 'true' && !r.sent_at && r.to_email).length;
+    // Pass 160-165: added → Review (N) session CTA so operator can step through approved rows inline
+    const approvedSendReady = filteredRows.filter(r => r.approved === 'true' && !r.sent_at && r.to_email).length;
+    const _reviewCta = approvedSendReady
+      ? ` <button style="font-size:11px;padding:2px 8px;background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.25);border-radius:var(--rs);cursor:pointer;vertical-align:middle" onclick="_startApprovedSession()" title="Step through these rows to review and schedule">→ Review (${approvedSendReady})</button>`
+      : '';
     return {
       tone: 'ready',
-      html: `<strong>Approved — ${approvedSendReady} ready to send.</strong> Schedule individual rows with 🕐, or use <strong>▶ Send Approved</strong> in the toolbar to send all at once. Scheduled rows appear here once their send window arrives.`,
+      html: `<strong>Approved — ${approvedSendReady} ready to send.</strong>${_reviewCta} Schedule individual rows with 🕐, or use <strong>▶ Send Approved</strong> in the toolbar to send all at once.`,
     };
   }
   if (currentFilter === 'active') {
