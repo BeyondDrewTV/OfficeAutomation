@@ -1,4 +1,28 @@
-﻿### 2026-04-04 - Pass 178–183: Sent Working Set + Follow-Up Readiness
+﻿### 2026-04-04 - Pass 184–189: Follow-Up Working Set + Due/Blocked Continuity
+
+**Goal:** Make Follow-Ups feel like the next disciplined operator stage after send, with clear working-set continuity, clear due-vs-blocked state, and no auto-follow-up behavior.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- `_fqCard()`: "just sent" pill — computes inline key `[business_name|city|state|website|to_email]`, checks `_lastSentKeys`; if matched, renders copper `↳ Just sent` pill next to business name; display-only, no mutations
+- `_fqCard()`: `sent_at` in meta — `"sent X ago"` via `_fqFmtDue(r.sent_at)`; absent if no `sent_at`
+- `_fqCard()`: `fq-today` class fix — CSS class was defined but never applied; now correctly applied when `isToday === true`
+- `_fqCard()`: `result.replace('_',' ')` → `replace(/_/g,' ')` for multi-underscore result codes
+- `_fqCard()`: better blocked state — `⚠ Blocked:` in amber as visible body text; human-readable reason map (4 codes); first 120 chars of `followup_blocked_message` as detail line; `escHtml()` applied to both
+- `fqRender()`: context note — when `_lastSentKeys.size > 0`, scans all follow-up rows for key matches; copper note if matched ("N row(s) from recent send batch — marked Just sent"), blue note if not yet eligible; read-only
+- `fqRender()`: `#fq-total-badge` enriched — shows `"N urgent · M total"` in amber when overdue+today > 0
+- `#fq-last-run` DOM element: new div in `#page-followup` toolbar area, `display:none` by default
+- `runFollowups()`: populates `#fq-last-run` with queued/blocked counts + timestamp after run; display-only
+- `runFollowupsDryRun()`: populates `#fq-last-run` with inline preview (up to 5 ready rows, up to 3 blocked rows with reasons); `escHtml()` on all data; `console.table` output preserved; display-only
+
+**Manual discipline:** `sendFollowup()` `confirm()` dialog intact. No new code paths trigger follow-up sends automatically. `_contextNote` and `justSentPill` are display-only.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, `docs/`
+
+**Protected-system status:** unchanged. No backend changes. No new API endpoints.
+
+---
+
+### 2026-04-04 - Pass 178–183: Sent Working Set + Follow-Up Readiness
 
 **Goal:** Make freshly sent rows feel like a real Queue-adjacent working set with visible continuity into reply monitoring and follow-up readiness, without introducing auto-follow-up behavior.
 

@@ -1,12 +1,12 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-04-04 (Pass 178–183)
+Last Updated: 2026-04-04 (Pass 184–189)
 
 ## Active Pass
-Pass 178–183 — Sent Working Set + Follow-Up Readiness
+Pass 184–189 — Follow-Up Working Set + Due/Blocked Continuity
 
 ## Status
-Pass 178–183 complete.
+Pass 184–189 complete.
 
 ## What Pass 166–171 Changed
 
@@ -29,6 +29,30 @@ Pass 178–183 complete.
 **Files changed:** `lead_engine/dashboard_static/index.html`, docs
 
 **Protected-system status:** unchanged. All schedule API calls route through existing `/api/schedule_email` endpoint. `confirmSend()` modal gate intact on all send paths. No auto-send introduced.
+
+## What Pass 184–189 Changed
+
+**Goal:** Make Follow-Ups feel like the next disciplined operator stage after send, with clear working-set continuity, clear due-vs-blocked state, and no auto-follow-up behavior.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+
+- **Pass 184 — Card "just sent" pill + `sent_at` meta + `fq-today` class fix:** `_fqCard(r)` now computes inline key `[business_name, city, state, website, to_email]` and checks against `_lastSentKeys` — if matched, renders a copper `↳ Just sent` pill next to the business name. `r.sent_at` rendered as `"sent X ago"` in the `.fq-meta` span line (gives timing context for the initial contact). Fixed bug: `fq-today` CSS class (defined but never applied) — now applied when `isToday === true`. `result.replace('_', ' ')` upgraded to `replace(/_/g,' ')` for multi-underscore results.
+
+- **Pass 185 — Better blocked state visibility:** When `followup_copy_ready === false`, the blocked reason is now rendered as visible body text (not just a tooltip). `⚠ Blocked: {human-readable reason}` in amber, followed by first 120 chars of `followup_blocked_message` as a detail line. Reason codes mapped to human text: `weak_context` → "needs stronger context (obs or website)", `missing_anchor` → "no anchor phrase found", etc. `escHtml()` applied to both reason and message.
+
+- **Pass 186 — `fqRender()` context note + richer badge:** When `_lastSentKeys.size > 0`, `fqRender()` scans all follow-up queue rows for key matches. If matches found: copper context note injected at top of `#fq-container` — "N row(s) from your recent send batch appear below — marked Just sent." If no matches (rows not yet follow-up eligible): blue note explaining the status. `#fq-total-badge` upgraded to show `"N urgent · M total"` with amber color when overdue+today > 0.
+
+- **Pass 187 — `runFollowups()` inline result strip:** After running, `#fq-last-run` div (new DOM element, `display:none` by default) is shown with: green "✓ N drafts queued in Queue tab" or amber "⚠ N blocked for weak context" or muted "no drafts due yet". Shows timestamp. Blocked count also shown when both queued and blocked. Display-only — no mutations.
+
+- **Pass 188 — `runFollowupsDryRun()` inline preview:** Dry-run result now shown in `#fq-last-run` inline (blue "🔍 Dry run preview" header, timestamp, up to 5 would-queue rows, up to 3 blocked rows with reason). Rows truncated with "N more — full list in console" note. `escHtml()` applied to all row data. `console.table` output preserved for full detail access.
+
+- **Pass 189 — Docs truth-sync.**
+
+**DOM change:** New `<div id="fq-last-run">` in `#page-followup` (after toolbar, before `#fq-container`), `display:none` by default.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged. No backend changes. No new API endpoints. `sendFollowup()` `confirm()` dialog intact. No auto-follow-up introduced. All new UI elements are display-only.
 
 ## What Pass 178–183 Changed
 

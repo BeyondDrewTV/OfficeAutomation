@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-04 (Pass 178–183)
+Last Updated: 2026-04-04 (Pass 184–189)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Pass 178–183 — Sent Working Set + Follow-Up Readiness
+Pass 184–189 — Follow-Up Working Set + Due/Blocked Continuity
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 178–183 — Sent Working Set + Follow-Up Readiness: _lastSentKeys captures rows from last sendLive() call (pre-send snapshot, verified post-loadAll); _qsStart clears it; _qsDismissSent(); sent working-set strip (qsb-sent, green, 8th banner state) with '→ Review (N)' + '→ Follow-Ups' CTAs; _startSentSession() opens sent batch as panel session; _queueTimelineNoteHtml gains 'sent' filter case with replied count + follow-up guidance; approved session done-state gains '→ Follow-Ups' when _readyNow === 0; iconMap gains sent: '✉'; no auto-follow-up introduced
+Pass 184–189 — Follow-Up Working Set + Due/Blocked Continuity: _fqCard gains 'just sent' pill (matches _lastSentKeys), sent_at meta ("sent X ago"), fq-today class fix; blocked state now shows visible ⚠ Blocked: reason text (not just tooltip); fqRender() injects copper context note when _lastSentKeys rows appear in queue; fq-total-badge shows "N urgent · M total"; #fq-last-run strip shows run result inline (queued/blocked counts for Generate, preview rows for Dry-run); no auto-follow-up introduced
 
 ## Recent Passes
+Pass 184–189 milestone -- Follow-Up Working Set + Due/Blocked Continuity (frontend only)
 Pass 178–183 milestone -- Sent Working Set + Follow-Up Readiness (frontend only)
 Pass 172–177 milestone -- Scheduled Working Set + Waiting-State Harvest (frontend only)
 Pass 166–171 milestone -- Approved Session Outcomes + Schedule Harvest (frontend only)

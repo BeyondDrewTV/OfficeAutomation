@@ -1739,6 +1739,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <button class="btn btn-primary" onclick="runFollowups()" title="Generate follow-up draft emails for eligible sent rows"><span class="spin"></span>🔁 Generate Follow-Up Drafts</button>
     </div>
   </div>
+  <div id="fq-last-run" style="display:none;margin-bottom:10px;font-size:12px;padding:7px 12px;border-radius:var(--rs);border:1px solid var(--border)"></div>
   <div id="fq-container">
     <div class="fq-empty">Loading…</div>
   </div>
@@ -6001,6 +6002,17 @@ async function runFollowups() {
           ? `No follow-ups queued — ${blocked} blocked for weak context`
           : 'No follow-ups due yet';
       toast(msg, n > 0 ? 'ok' : 'info');
+      // Pass 187: show inline run result in tab — richer than toast alone
+      const runEl = document.getElementById('fq-last-run');
+      if (runEl) {
+        const ts = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        const color = n > 0 ? 'var(--green)' : blocked > 0 ? 'var(--amber)' : 'var(--muted)';
+        runEl.style.display = '';
+        runEl.style.borderColor = n > 0 ? 'rgba(52,199,89,.25)' : blocked > 0 ? 'rgba(245,166,35,.25)' : 'var(--border)';
+        runEl.innerHTML = `<span style="color:${color};font-weight:600">${n > 0 ? `✓ ${n} draft${n===1?'':'s'} queued in Queue tab` : blocked > 0 ? `⚠ ${blocked} blocked for weak context` : '— No drafts due yet'}</span>`
+          + (blocked > 0 && n > 0 ? `<span style="color:var(--muted);margin-left:10px">· ${blocked} blocked</span>` : '')
+          + `<span style="color:var(--dim);float:right">${ts}</span>`;
+      }
       fqLoad();
     } else { toast('Error: '+res.error,'err'); }
   } catch(e) { toast('Connection error','err'); }
@@ -6015,24 +6027,26 @@ async function runFollowupsDryRun() {
       const n = (res.preview || []).length;
       const blocked = (res.blocked_preview || []).length;
       if (n === 0 && blocked === 0) { toast('Dry run: no rows eligible for follow-up right now','info'); return; }
-      toast(`Dry run: ${n} row(s) would queue, ${blocked} blocked — details in browser console`,'ok');
-      console.table((res.preview||[]).map(r=>({
-        business: r.business_name,
-        email: r.to_email,
-        step: r.followup_step,
-        angle: r.angle_family,
-        context: r.context_source,
-        sent_at: r.sent_at
-      })));
-      if (blocked) {
-        console.table((res.blocked_preview||[]).map(r=>({
-          business: r.business_name,
-          email: r.to_email,
-          step: r.followup_step,
-          blocked_reason: r.blocked_reason,
-          detail: r.error
-        })));
+      toast(`Dry run: ${n} would queue · ${blocked} blocked — see preview below`,'ok');
+      // Pass 188: show dry-run result inline in the tab, not just console
+      const runEl = document.getElementById('fq-last-run');
+      if (runEl) {
+        const ts = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        runEl.style.display = '';
+        runEl.style.borderColor = n > 0 ? 'rgba(79,142,247,.25)' : 'rgba(245,166,35,.25)';
+        const previewRows = (res.preview||[]).slice(0,5).map(r =>
+          `<div style="padding:3px 0;color:var(--muted)">${escHtml(r.business_name||'')} <span style="color:var(--dim)">· ${escHtml(r.followup_step||'')} · ${escHtml(r.angle_family||'')}</span></div>`
+        ).join('');
+        const blockedRows = (res.blocked_preview||[]).slice(0,3).map(r =>
+          `<div style="padding:3px 0;color:var(--amber)">${escHtml(r.business_name||'')} <span style="color:var(--dim)">· ${escHtml(r.blocked_reason||'')}</span></div>`
+        ).join('');
+        runEl.innerHTML = `<span style="color:var(--blue);font-weight:600">🔍 Dry run preview</span> <span style="color:var(--dim);float:right">${ts}</span>`
+          + (n > 0 ? `<div style="margin-top:5px"><span style="color:var(--green);font-weight:600">${n} would queue:</span>${previewRows}${n>5?`<div style="color:var(--dim);font-size:10px">+ ${n-5} more — full list in console</div>`:''}</div>` : '')
+          + (blocked > 0 ? `<div style="margin-top:4px"><span style="color:var(--amber);font-weight:600">${blocked} blocked:</span>${blockedRows}${blocked>3?`<div style="color:var(--dim);font-size:10px">+ ${blocked-3} more — full list in console</div>`:''}</div>` : '');
       }
+      // Keep console output for full detail
+      console.table((res.preview||[]).map(r=>({ business: r.business_name, email: r.to_email, step: r.followup_step, angle: r.angle_family, context: r.context_source, sent_at: r.sent_at })));
+      if (blocked) console.table((res.blocked_preview||[]).map(r=>({ business: r.business_name, email: r.to_email, step: r.followup_step, blocked_reason: r.blocked_reason, detail: r.error })));
     } else { toast('Error: '+res.error,'err'); }
   } catch(e) { toast('Connection error','err'); }
 }
@@ -6700,20 +6714,46 @@ function fqRender() {
   if (!_fqData) return;
   const {overdue, today, this_week, upcoming, counts} = _fqData;
   const badge = document.getElementById('fq-total-badge');
-  if (badge) badge.textContent = counts.total + ' due';
+  if (badge) {
+    // Pass 186: richer badge — overdue count prominent when nonzero
+    const urgentCount = counts.overdue + counts.today;
+    badge.textContent = urgentCount > 0 ? urgentCount + ' urgent · ' + counts.total + ' total' : counts.total + ' due';
+    badge.style.color = urgentCount > 0 ? 'var(--amber)' : '';
+  }
   const nav = document.getElementById('nav-followup');
   if (nav) nav.textContent = counts.overdue + counts.today > 0
     ? '\uD83D\uDD01 Follow-Up (' + (counts.overdue + counts.today) + ')' : '\uD83D\uDD01 Follow-Up';
   const container = document.getElementById('fq-container');
   if (!container) return;
-  if (counts.total === 0) { container.innerHTML = '<div class="fq-empty">\uD83C\uDF89 No follow-ups due. Queue is clear.</div>'; return; }
+  // Pass 186: context note — bridge from sent strip to follow-up tab when _lastSentKeys is active
+  let _contextNote = '';
+  if (_lastSentKeys.size > 0) {
+    const allFqRows = [...overdue, ...today, ...this_week, ...upcoming];
+    const matchCount = allFqRows.filter(r => {
+      const k = [r.business_name, r.city, r.state, r.website, r.to_email].map(v => String(v||'').trim().toLowerCase()).join('|');
+      return _lastSentKeys.has(k);
+    }).length;
+    if (matchCount > 0) {
+      _contextNote = `<div style="background:rgba(184,115,51,.07);border:1px solid rgba(184,115,51,.18);border-radius:var(--rs);padding:8px 14px;margin-bottom:14px;font-size:12px;color:var(--copper)">`
+        + `↳ ${matchCount} row${matchCount===1?'':'s'} from your recent send batch ${matchCount===1?'appears':'appear'} below — marked <strong>Just sent</strong>.`
+        + `</div>`;
+    } else {
+      _contextNote = `<div style="background:rgba(79,142,247,.05);border:1px solid rgba(79,142,247,.15);border-radius:var(--rs);padding:8px 14px;margin-bottom:14px;font-size:12px;color:var(--muted)">`
+        + `Recent send batch (${_lastSentKeys.size} row${_lastSentKeys.size===1?'':'s'}) not yet follow-up eligible — they may need time or a reply before appearing here.`
+        + `</div>`;
+    }
+  }
+  if (counts.total === 0) {
+    container.innerHTML = _contextNote + '<div class="fq-empty">\uD83C\uDF89 No follow-ups due. Queue is clear.</div>';
+    return;
+  }
   const groups = [
     {title:'\uD83D\uDD34 Overdue',   rows:overdue,   cls:'fq-group fq-group-overdue'},
     {title:'\uD83D\uDFE1 Due Today', rows:today,     cls:'fq-group fq-group-today'},
     {title:'\uD83D\uDD35 This Week', rows:this_week, cls:'fq-group fq-group-week'},
-    {title:'\u25A1 Upcoming',         rows:upcoming,  cls:'fq-group'},
+    {title:'\u25A1 Upcoming',        rows:upcoming,  cls:'fq-group'},
   ];
-  container.innerHTML = groups.filter(g=>g.rows.length).map(g =>
+  container.innerHTML = _contextNote + groups.filter(g=>g.rows.length).map(g =>
     '<div class="' + g.cls + '">'
     + '<div class="fq-group-hdr"><span class="fq-group-title">' + g.title + '</span><span class="fq-group-count">' + g.rows.length + '</span></div>'
     + g.rows.map(r => _fqCard(r)).join('')
@@ -6740,23 +6780,41 @@ function _fqCard(r) {
   const channel = r.last_contact_channel || '\u2014';
   const attempts = r.contact_attempt_count || '0';
   const due = r.next_followup_at || r.sent_at || '';
-  const isOverdue = due && new Date(due) < new Date();
-  const cardCls = isOverdue ? 'fq-card fq-overdue' : 'fq-card';
-  const dueLbl  = isOverdue ? 'overdue' : 'ok';
-  const resBadge = '<span class="fq-result-badge fqr-' + escHtml(result) + '">' + result.replace('_',' ') + '</span>';
+  const now = new Date();
+  const dueDate = due ? new Date(due) : null;
+  const isOverdue = dueDate && dueDate < now;
+  const isToday   = dueDate && !isOverdue && dueDate.toDateString() === now.toDateString();
+  // Pass 184: fq-today card class was defined in CSS but never applied — fix
+  const cardCls = isOverdue ? 'fq-card fq-overdue' : isToday ? 'fq-card fq-today' : 'fq-card';
+  const dueLbl  = isOverdue ? 'overdue' : isToday ? 'today' : 'ok';
+  const resBadge = '<span class="fq-result-badge fqr-' + escHtml(result) + '">' + result.replace(/_/g,' ') + '</span>';
   const bestBtn = _fqBestBtn(r, idx);
+  // Pass 184: "just sent" indicator — match row against _lastSentKeys using stable key formula
+  const _fqRowKey = [r.business_name, r.city, r.state, r.website, r.to_email].map(v => String(v||'').trim().toLowerCase()).join('|');
+  const isJustSent = _lastSentKeys.size > 0 && _lastSentKeys.has(_fqRowKey);
+  const justSentPill = isJustSent ? '<span style="font-size:10px;font-weight:600;color:var(--copper);background:rgba(184,115,51,.12);border:1px solid rgba(184,115,51,.2);border-radius:8px;padding:1px 7px;margin-left:6px;vertical-align:middle">↳ Just sent</span>' : '';
+  // Pass 184: sent_at in meta for operator context
+  const sentMeta = r.sent_at ? '<span title="Initial send date">sent ' + _fqFmtDue(r.sent_at) + '</span>' : '';
+  // Pass 185: better blocked state — show message as visible body text, not just tooltip
+  const _blockedReasonHuman = {
+    weak_context: 'needs stronger context (obs or website)',
+    missing_anchor: 'no anchor phrase found',
+    no_obs: 'no observation recorded',
+    low_score: 'context confidence too low',
+  };
   const followupMeta = r.followup_copy_ready === false
-    ? `<div style="margin-top:6px;font-size:11px;color:var(--amber)" title="${escHtml(r.followup_blocked_message || '')}">Needs grounded context: ${escHtml((r.followup_blocked_reason || 'blocked').replace(/_/g,' '))}</div>`
+    ? `<div style="margin-top:6px;font-size:11px"><span style="color:var(--amber);font-weight:600">⚠ Blocked:</span> <span style="color:var(--muted)">${escHtml(_blockedReasonHuman[r.followup_blocked_reason] || (r.followup_blocked_reason || 'blocked').replace(/_/g,' '))}</span>${r.followup_blocked_message ? `<span style="color:var(--dim);font-size:10px;display:block;margin-top:2px">${escHtml(r.followup_blocked_message.slice(0,120))}</span>` : ''}</div>`
     : r.followup_angle_label
       ? `<div style="margin-top:6px;font-size:11px;color:var(--muted)">Angle: ${escHtml(r.followup_angle_label)} · source: ${escHtml((r.followup_context_source || '').replace(/_/g,' '))}</div>`
       : '';
   return '<div class="' + cardCls + '">'
     + '<div class="fq-info">'
-    + '<div class="fq-name">' + escHtml(r.business_name) + '</div>'
+    + '<div class="fq-name">' + escHtml(r.business_name) + justSentPill + '</div>'
     + '<div class="fq-meta"><span>' + escHtml(r.city) + ', ' + escHtml(r.state) + '</span>'
     + (r.industry ? '<span>' + escHtml(r.industry) + '</span>' : '')
     + '<span>via ' + escHtml(channel) + '</span>'
     + '<span>' + attempts + ' attempt' + (attempts !== '1' ? 's' : '') + '</span>'
+    + sentMeta
     + resBadge + '</div>'
     + (due ? '<div class="fq-due ' + dueLbl + '">Due ' + _fqFmtDue(due) + '</div>' : '')
     + followupMeta
