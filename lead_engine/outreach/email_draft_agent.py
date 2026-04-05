@@ -575,7 +575,7 @@ def _build_observation_opener(obs: str) -> str:
         ("your site advertises ", "you're advertising "),
         ("your site keeps ", "you keep "),
         ("your site splits ", "you split "),
-        ("your site leans ", "you lean toward "),
+        ("your site leans ", "you lean "),
         ("your site has ", "you have "),
         ("your homepage has ", "you have "),
         ("your homepage centers ", "you're centering "),
