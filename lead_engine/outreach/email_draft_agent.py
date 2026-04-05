@@ -4,7 +4,7 @@ import hashlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-DRAFT_VERSION = "v23"
+DRAFT_VERSION = "v24"
 
 # ---------------------------------------------------------------------------
 # Copperline Voice Rules
@@ -269,6 +269,10 @@ _CONCRETE_SERVICE_SIGNALS = [
     "go cold", "gone cold", "gone somewhere else", "moved on",
     "unanswered", "not get returned", "never sees", "no idea",
     "outside of that", "leaking", "falling through", "go unanswered",
+    # v24 operational language
+    "catch them", "catch them earlier", "going quiet", "going cold",
+    "slipping", "dropping", "falling off", "being lost", "stalling",
+    "losing time", "losing jobs", "good jobs go cold",
 ]
 
 
@@ -387,6 +391,14 @@ def validate_draft(body: str, observation: str) -> None:
         "find what's creating the most drag", "find where the day is getting eaten",
         "build something specific", "set it up and keep it running",
         "set it up and maintain it",
+        # v24 direct operational framing
+        "i work with owners to find", "i work directly with owners",
+        "i look at how", "put something in place",
+        "built around how they", "built for how they",
+        "built to fit how", "find where calls", "find where jobs",
+        "find where estimates", "find where inquiries", "find where leads",
+        "find where new inquiries", "find where the incoming",
+        "find where after-hours",
     ]
     if not any(s in body_lower for s in _FIXER_LINE_SIGNALS):
         raise DraftInvalidError(
@@ -398,9 +410,11 @@ def validate_draft(body: str, observation: str) -> None:
         "worth a quick call", "worth a conversation", "would it be worth",
         "worth getting on", "want to get on", "worth a short conversation",
         "worth a quick conversation",
-        # v22 consultative close
+        # v22+ consultative closes
         "i'd like to take a look", "i'd like to show you",
-        "i'd like to hear what those look like",
+        "i'd like to hear what those look like", "i'd like to hear how",
+        # v24 statement-forward closes
+        "worth a reply", "worth a quick call if",
     ]
     if not any(s in body_lower for s in _CTA_SIGNALS):
         raise DraftInvalidError(
@@ -690,44 +704,42 @@ def _build_consequence_sentence(obs: str, angle: str) -> str:
 
 def _build_offer_sentence(obs: str, angle: str, variant: int) -> str:
     """
-    Drew's positioning: consultative, one-on-one diagnostic service.
-    He sits down with the owner, looks at how things actually run,
-    finds the friction, builds something specific, sets it up and maintains it.
-    Not a product. Not a narrow fix. A custom engagement.
-    Fixer/operator line must be visible — no burying the value prop at the end.
+    Drew's positioning: consultative, one-on-one, custom-built.
+    v24 standard: two short sentences max. No chained clauses.
+    First sentence: what Drew does, plainly stated.
+    Second sentence: grounds the ongoing commitment.
+    Must read like a person talking, not a resume bullet.
     """
-    o = obs.lower()
 
-    # All angles now use consultative framing — specific texture per angle
     if angle == "callback_recovery":
         variants = [
-            "I sit down with owners one on one, look at where calls and follow-through are falling off, and build something specific to address it. I set it up and keep it running.",
-            "I work one on one with owners to find where the incoming work is slipping and build something around those specific gaps. I set it up and maintain it from there.",
-            "I sit down with owners, look at how things are actually running, find where the friction is, and build something specific to handle it. I set it up and keep it running.",
+            "I work with owners one on one to find where calls and follow-through are dropping. Then I build something specific to that operation and keep it running.",
+            "I look at how the incoming work is actually being handled and build something around the gaps I find. I set it up and maintain it from there.",
+            "I work directly with owners to find where jobs are slipping and put something in place to catch them. Built for how they run things, not a generic fix.",
         ]
     elif angle == "estimate_follow_up":
         variants = [
-            "I sit down with owners one on one, look at where estimates are stalling out, and build something specific to address the follow-up side. I set it up and keep it running.",
-            "I work one on one with owners to find where the estimate process is losing time and build something around those specific gaps. I set it up and maintain it from there.",
-            "I sit down with owners, look at how things are actually running on the estimate side, find where jobs are going cold, and build something specific to handle it.",
+            "I work with owners to find where estimates are stalling and build something specific around that. I set it up and keep it running.",
+            "I look at how the estimate side is actually working and build something around what's losing time. I maintain it so it actually holds.",
+            "I work one on one with owners to find where good jobs go cold and put something in place to stop it. Built to fit how they operate.",
         ]
     elif angle == "after_hours_response":
         variants = [
-            "I sit down with owners one on one, look at how after-hours and overflow inquiries are being handled, and build something specific to close that gap. I set it up and keep it running.",
-            "I work one on one with owners to find where after-hours requests are falling off and build something specific to address it. I set it up and maintain it from there.",
-            "I sit down with owners, look at how things are actually running outside of business hours, find where the work is slipping, and build something specific to handle it.",
+            "I work with owners to find where after-hours and overflow work is falling through and build something specific to close that gap. I set it up and keep it running.",
+            "I look at how inquiries are handled outside of business hours and build something around the real gaps. I maintain it from there.",
+            "I work directly with owners to find where after-hours calls are being lost and put something in place to catch them. Built around how they actually run things.",
         ]
     elif angle == "inquiry_routing":
         variants = [
-            "I sit down with owners one on one, look at how new inquiries are being handled, and build something specific to fix the intake gaps. I set it up and keep it running.",
-            "I work one on one with owners to find where inquiries are falling through and build something specific around those gaps. I set it up and maintain it from there.",
-            "I sit down with owners, look at how things are actually running on the intake side, find where leads are going quiet, and build something specific to address it.",
+            "I work with owners to find where new inquiries are getting lost and build something specific to fix the intake side. I set it up and keep it running.",
+            "I look at how inquiries are actually being handled and build something around the gaps I find. I maintain it so it holds.",
+            "I work one on one with owners to find where leads are going quiet and put something in place to catch them earlier. Built for how they operate.",
         ]
     else:
         variants = [
-            "I sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to address it. I set it up and keep it running.",
-            "I work one on one with owners to find where the day is getting eaten up and build something specific around those gaps. I set it up and maintain it from there.",
-            "I sit down with owners, look at the whole operation, find what's creating the most drag, and build something specific to handle it. I set it up and keep it running.",
+            "I work with owners to find where the day keeps getting interrupted and build something specific around those spots. I set it up and keep it running.",
+            "I look at how things are actually running and build something around what's creating the most drag. I set it up and maintain it from there.",
+            "I work directly with owners to find the friction and build something specific to handle it. Not a generic tool — built around how they run their operation.",
         ]
 
     return variants[variant % len(variants)]
@@ -735,28 +747,29 @@ def _build_offer_sentence(obs: str, angle: str, variant: int) -> str:
 
 def _build_close_sentence(obs: str, angle: str, variant: int, channel: str) -> str:
     """
-    Direct soft question. Not permission-seeking. Not vague.
-    Drew closes with a real question that assumes the conversation is worth having.
+    v24 standard: statement-forward, not permission-seeking.
+    "I'd like to" beats "Would it be worth" every time.
+    Confident without being pushy. Low friction, not low confidence.
     """
     o = obs.lower()
 
-    if any(p in o for p in ("24/7", "emergency", "same-day", "same day")):
+    if channel == "dm":
         closes = [
-            "Would it be worth a quick call to talk through it?",
-            "Worth getting on a call to look at it together?",
-            "Want to get on a quick call and walk through how that's working?",
+            "I'd like to take a look and tell you what I'd address first.",
+            "Worth a quick conversation if that's something you want tightened up.",
+            "I'd like to hear what that looks like on your end.",
         ]
-    elif channel == "dm":
+    elif any(p in o for p in ("24/7", "emergency", "same-day", "same day")):
         closes = [
-            "Worth a quick conversation?",
-            "Want to get on a quick call about it?",
-            "Would it be worth a short conversation?",
+            "I'd like to take a look and tell you what I'd address first.",
+            "Worth a quick call if that's something you want tightened up.",
+            "I'd like to hear how that's working on your end.",
         ]
     else:
         closes = [
-            "Worth a quick call to look at it together?",
-            "Would it be worth getting on a call to walk through it?",
-            "Want to get on a quick call and see if there's something worth addressing?",
+            "I'd like to take a look and tell you what I'd address first.",
+            "Worth a reply if that's something you want looked at.",
+            "I'd like to show you what that looks like for a shop your size.",
         ]
 
     return closes[variant % len(closes)]
