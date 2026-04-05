@@ -577,6 +577,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .fq-card:hover{border-color:var(--border-hi)}
 .fq-card.fq-overdue{border-left:3px solid var(--red)}
 .fq-card.fq-today{border-left:3px solid var(--amber)}
+.fq-card.fq-dim{opacity:.6;border-style:dashed}
 .fq-info{flex:1;min-width:0}
 .fq-name{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fq-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:10px;flex-wrap:wrap}
@@ -1737,6 +1738,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <button class="btn btn-ghost" onclick="fqLoad()">↻ Refresh</button>
       <button class="btn btn-ghost" onclick="runFollowupsDryRun()" title="Preview which rows would get follow-up drafts — nothing is written">🔍 Preview Auto-Drafts</button>
       <button class="btn btn-primary" onclick="runFollowups()" title="Generate follow-up draft emails for eligible sent rows"><span class="spin"></span>🔁 Generate Follow-Up Drafts</button>
+      <button class="btn btn-ghost" onclick="switchSubPage('pipeline','conversations',document.getElementById('nav-conversations'))" title="Leads that have replied — manage handoff" id="fq-cv-nav-btn" style="border-color:rgba(62,207,114,.3);color:var(--green)">💬 Conversations</button>
     </div>
   </div>
   <div id="fq-last-run" style="display:none;margin-bottom:10px;font-size:12px;padding:7px 12px;border-radius:var(--rs);border:1px solid var(--border)"></div>
@@ -6714,21 +6716,40 @@ function fqRender() {
   if (!_fqData) return;
   const {overdue, today, this_week, upcoming, counts} = _fqData;
   const badge = document.getElementById('fq-total-badge');
+  const allFqRows = [...overdue, ...today, ...this_week, ...upcoming];
+  // Pass 193: compute blocked count client-side for badge enrichment
+  const blockedCount = allFqRows.filter(r => r.followup_copy_ready === false).length;
   if (badge) {
-    // Pass 186: richer badge — overdue count prominent when nonzero
+    // Pass 186: richer badge — overdue count prominent when nonzero; Pass 193: add blocked count
     const urgentCount = counts.overdue + counts.today;
-    badge.textContent = urgentCount > 0 ? urgentCount + ' urgent · ' + counts.total + ' total' : counts.total + ' due';
+    const blockedSuffix = blockedCount > 0 ? ' · ' + blockedCount + ' blocked' : '';
+    badge.textContent = urgentCount > 0 ? urgentCount + ' urgent · ' + counts.total + ' total' + blockedSuffix : counts.total + ' due' + blockedSuffix;
     badge.style.color = urgentCount > 0 ? 'var(--amber)' : '';
+  }
+  // Pass 190: update Conversations nav button label with live count when data is available
+  const cvNavBtn = document.getElementById('fq-cv-nav-btn');
+  if (cvNavBtn && _cvData && _cvData.length > 0) {
+    cvNavBtn.textContent = '💬 Conversations (' + _cvData.length + ')';
+  } else if (cvNavBtn) {
+    cvNavBtn.textContent = '💬 Conversations';
   }
   const nav = document.getElementById('nav-followup');
   if (nav) nav.textContent = counts.overdue + counts.today > 0
     ? '\uD83D\uDD01 Follow-Up (' + (counts.overdue + counts.today) + ')' : '\uD83D\uDD01 Follow-Up';
   const container = document.getElementById('fq-container');
   if (!container) return;
+  // Pass 190: reply continuity note — show replied leads count with route to Conversations
+  let _replyNote = '';
+  if (_cvData && _cvData.length > 0) {
+    const n = _cvData.length;
+    _replyNote = `<div style="background:rgba(62,207,114,.07);border:1px solid rgba(62,207,114,.2);border-radius:var(--rs);padding:8px 14px;margin-bottom:10px;font-size:12px;display:flex;align-items:center;justify-content:space-between;gap:12px">`
+      + `<span style="color:var(--green)">↩ ${n} lead${n===1?'':'s'} replied — handed off to Conversations</span>`
+      + `<button class="btn btn-ghost" style="font-size:11px;padding:3px 8px;flex-shrink:0" onclick="switchSubPage('pipeline','conversations',document.getElementById('nav-conversations'))">View ${n===1?'conversation':'all'} →</button>`
+      + `</div>`;
+  }
   // Pass 186: context note — bridge from sent strip to follow-up tab when _lastSentKeys is active
   let _contextNote = '';
   if (_lastSentKeys.size > 0) {
-    const allFqRows = [...overdue, ...today, ...this_week, ...upcoming];
     const matchCount = allFqRows.filter(r => {
       const k = [r.business_name, r.city, r.state, r.website, r.to_email].map(v => String(v||'').trim().toLowerCase()).join('|');
       return _lastSentKeys.has(k);
@@ -6744,7 +6765,7 @@ function fqRender() {
     }
   }
   if (counts.total === 0) {
-    container.innerHTML = _contextNote + '<div class="fq-empty">\uD83C\uDF89 No follow-ups due. Queue is clear.</div>';
+    container.innerHTML = _replyNote + _contextNote + '<div class="fq-empty">\uD83C\uDF89 No follow-ups due. Queue is clear.</div>';
     return;
   }
   const groups = [
@@ -6753,7 +6774,7 @@ function fqRender() {
     {title:'\uD83D\uDD35 This Week', rows:this_week, cls:'fq-group fq-group-week'},
     {title:'\u25A1 Upcoming',        rows:upcoming,  cls:'fq-group'},
   ];
-  container.innerHTML = _contextNote + groups.filter(g=>g.rows.length).map(g =>
+  container.innerHTML = _replyNote + _contextNote + groups.filter(g=>g.rows.length).map(g =>
     '<div class="' + g.cls + '">'
     + '<div class="fq-group-hdr"><span class="fq-group-title">' + g.title + '</span><span class="fq-group-count">' + g.rows.length + '</span></div>'
     + g.rows.map(r => _fqCard(r)).join('')
@@ -6785,7 +6806,9 @@ function _fqCard(r) {
   const isOverdue = dueDate && dueDate < now;
   const isToday   = dueDate && !isOverdue && dueDate.toDateString() === now.toDateString();
   // Pass 184: fq-today card class was defined in CSS but never applied — fix
-  const cardCls = isOverdue ? 'fq-card fq-overdue' : isToday ? 'fq-card fq-today' : 'fq-card';
+  // Pass 192: completed rows (3-touch exhausted) get dim treatment
+  const isCompleted = r.followup_status === 'completed';
+  const cardCls = isCompleted ? 'fq-card fq-dim' : isOverdue ? 'fq-card fq-overdue' : isToday ? 'fq-card fq-today' : 'fq-card';
   const dueLbl  = isOverdue ? 'overdue' : isToday ? 'today' : 'ok';
   const resBadge = '<span class="fq-result-badge fqr-' + escHtml(result) + '">' + result.replace(/_/g,' ') + '</span>';
   const bestBtn = _fqBestBtn(r, idx);
@@ -6829,14 +6852,21 @@ function _fqCard(r) {
 function _fqBestBtn(r, idx) {
   if (r.to_email && r.to_email.includes('@')) {
     const touchLabels = ['1st', '2nd', '3rd'];
-    const touchNum  = (r.followup_touch_num || 1) - 1;
-    const touchLabel = touchLabels[Math.min(touchNum, 2)] || '1st';
     const manualBtn = `<button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="fqLogAndOpen(${idx},'email','sent')" title="Log + open Gmail manually">&#9654; Manual</button>`;
+    // Pass 192: 3-touch sequence complete — no more follow-ups due, offer close only
+    if (!r.followup_touch_num) {
+      return `<span style="font-size:11px;color:var(--dim)">✓ 3-touch complete</span>`
+        + `<button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="fqClose(${idx})">✕ Close</button>`;
+    }
+    const touchNum  = r.followup_touch_num - 1;
+    const touchLabel = touchLabels[Math.min(touchNum, 2)] || '1st';
     if (r.followup_status !== 'due') {
       return `<span style="font-size:11px;color:var(--dim)">Auto-send when due</span>` + manualBtn;
     }
+    // Pass 191: blocked — surface recovery path to outreach (add obs / strengthen context)
     if (r.followup_copy_ready === false) {
-      return `<span style="font-size:11px;color:var(--amber)" title="${escHtml(r.followup_blocked_message || '')}">Needs context</span>` + manualBtn;
+      const fixBtn = `<button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="fqOpenLead(${idx})" title="Open in Outreach to add observation or strengthen context">→ Fix in Outreach</button>`;
+      return `<span style="font-size:11px;color:var(--amber)">Needs context</span>` + fixBtn + manualBtn;
     }
     return `<button class="btn btn-success" style="font-size:11px;padding:4px 10px" onclick="sendFollowup(${idx},${JSON.stringify(r.business_name)})" title="Auto-send ${touchLabel} follow-up via Gmail">&#9993; Send ${touchLabel} Follow-Up</button>`
       + manualBtn;

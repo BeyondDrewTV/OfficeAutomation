@@ -1,12 +1,36 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-04-04 (Pass 184–189)
+Last Updated: 2026-04-05 (Pass 190–195)
 
 ## Active Pass
-Pass 184–189 — Follow-Up Working Set + Due/Blocked Continuity
+Pass 190–195 — Follow-Up Outcome Harvest + Reply/Blocked Recovery
 
 ## Status
-Pass 184–189 complete.
+Pass 190–195 complete.
+
+## What Pass 190–195 Changed
+
+**Goal:** Make Follow-Up feel like a true operator-owned outcome surface — replied leads are visibly resolved, blocked rows have recovery paths, and exhausted rows are distinguished from actionable ones.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+
+- **Pass 190 — Reply continuity strip + toolbar nav:** `fqRender()` now computes `_replyNote` — when `_cvData.length > 0`, injects a green strip at top of `#fq-container`: "↩ N lead(s) replied — handed off to Conversations" with `"View →"` CTA calling `switchSubPage('pipeline','conversations',...)`. New `#fq-cv-nav-btn` button added to Follow-Up toolbar (always visible, green-tinted border): routes to Conversations and updates its label to show live count (`"💬 Conversations (N)"`) whenever `_cvData` is already loaded. Both are display/navigation only — no mutations.
+
+- **Pass 191 — Blocked card recovery routing:** `_fqBestBtn()` blocked path (`followup_copy_ready === false`) now renders `"→ Fix in Outreach"` button (calls `fqOpenLead(idx)`) alongside existing Manual button. Replaces the inert amber "Needs context" text-only label. `fqOpenLead` navigates to the lead's panel in the Outreach sub-tab where the operator can add or strengthen an observation to unblock copy generation.
+
+- **Pass 192 — Completed row distinction:** `_fqCard()` now checks `r.followup_status === 'completed'` and applies `.fq-dim` card class (dashed border, 60% opacity) to 3-touch-exhausted rows. `_fqBestBtn()` adds early guard: `if (!r.followup_touch_num)` → renders `"✓ 3-touch complete"` label + `"✕ Close"` button only, bypassing the misleading "Auto-send when due" label that previously appeared for these rows.
+
+- **Pass 193–194 — Badge blocked count:** `fqRender()` now computes `blockedCount` client-side by scanning all follow-up rows for `followup_copy_ready === false`. Badge text upgraded to: `"N urgent · M total · P blocked"` when blocked rows exist; `"M due · P blocked"` when no urgent. Gives operator the outcome mix at a glance.
+
+- **CSS:** `.fq-card.fq-dim{opacity:.6;border-style:dashed}` added after `.fq-card.fq-today` rule.
+
+**Manual discipline:** `sendFollowup()` `confirm()` dialog intact. No code path triggers follow-up sends automatically. Reply note and Conversations button navigate only. `fqOpenLead()` navigates only — does not log or mutate.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, `docs/`
+
+**Protected-system status:** unchanged. No backend changes. No new API endpoints. No auto-follow-up introduced. No scheduler or sender touched.
+
+## What Pass 184–189 Changed
 
 ## What Pass 166–171 Changed
 

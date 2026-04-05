@@ -1,4 +1,23 @@
-﻿### 2026-04-04 - Pass 184–189: Follow-Up Working Set + Due/Blocked Continuity
+﻿### 2026-04-05 - Pass 190–195: Follow-Up Outcome Harvest + Reply/Blocked Recovery
+
+**Goal:** Make Follow-Up feel like a true operator-owned outcome surface — replied leads are visibly resolved, blocked rows have recovery paths, and exhausted rows are distinguished from actionable ones.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- **Pass 190 — Reply continuity:** `fqRender()` now injects a green `_replyNote` strip when `_cvData.length > 0` — shows replied lead count with `"View conversation(s) →"` CTA routing to Conversations sub-tab. `#fq-cv-nav-btn` Conversations button added to Follow-Up toolbar (always visible, green-tinted, updates to show live count when `_cvData` is loaded). Display-only — no mutations.
+- **Pass 191 — Blocked recovery routing:** `_fqBestBtn()` blocked path now renders `"→ Fix in Outreach"` button (calls `fqOpenLead(idx)`) alongside Manual button, replacing the inert "Needs context" text. Routes operator to the lead's outreach panel where observation can be added to unblock copy generation.
+- **Pass 192 — Completed row distinction:** `_fqCard()` now applies `.fq-dim` CSS class when `r.followup_status === 'completed'` (3-touch-exhausted rows). `_fqBestBtn()` guards `!r.followup_touch_num` early — renders `"✓ 3-touch complete"` label + `"✕ Close"` button instead of the misleading "Auto-send when due" that previously appeared for these rows.
+- **Pass 193–194 — Badge enrichment:** `fqRender()` computes `blockedCount` client-side from all follow-up rows. Badge now shows `"N urgent · M total · P blocked"` when blocked rows exist — gives operator outcome mix at a glance without opening cards.
+- **CSS:** `.fq-card.fq-dim{opacity:.6;border-style:dashed}` added for completed row visual treatment.
+
+**Manual discipline:** `sendFollowup()` `confirm()` dialog intact. No new code paths trigger follow-up sends. `_replyNote` and `fq-cv-nav-btn` navigate only. `fqOpenLead()` navigates only.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, `docs/`
+
+**Protected-system status:** unchanged. No backend changes. No new API endpoints. No auto-follow-up introduced.
+
+---
+
+### 2026-04-04 - Pass 184–189: Follow-Up Working Set + Due/Blocked Continuity
 
 **Goal:** Make Follow-Ups feel like the next disciplined operator stage after send, with clear working-set continuity, clear due-vs-blocked state, and no auto-follow-up behavior.
 

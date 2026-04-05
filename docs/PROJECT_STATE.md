@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-04 (Pass 184–189)
+Last Updated: 2026-04-05 (Pass 190–195)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Pass 184–189 — Follow-Up Working Set + Due/Blocked Continuity
+Pass 190–195 — Follow-Up Outcome Harvest + Reply/Blocked Recovery
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 184–189 — Follow-Up Working Set + Due/Blocked Continuity: _fqCard gains 'just sent' pill (matches _lastSentKeys), sent_at meta ("sent X ago"), fq-today class fix; blocked state now shows visible ⚠ Blocked: reason text (not just tooltip); fqRender() injects copper context note when _lastSentKeys rows appear in queue; fq-total-badge shows "N urgent · M total"; #fq-last-run strip shows run result inline (queued/blocked counts for Generate, preview rows for Dry-run); no auto-follow-up introduced
+Pass 190–195 — Follow-Up Outcome Harvest + Reply/Blocked Recovery: replied leads now surface as green continuity strip in fqRender() (count + "View →" CTA to Conversations) when _cvData is loaded; 💬 Conversations button always visible in Follow-Up toolbar; blocked cards gain "→ Fix in Outreach" recovery CTA (routes to fqOpenLead); 3-touch-exhausted rows show "✓ 3-touch complete" + Close instead of "Auto-send when due"; completed cards styled with .fq-dim (dashed, dimmed); fq-total-badge now shows blocked count alongside urgent/total
 
 ## Recent Passes
+Pass 190–195 milestone -- Follow-Up Outcome Harvest + Reply/Blocked Recovery (frontend only)
 Pass 184–189 milestone -- Follow-Up Working Set + Due/Blocked Continuity (frontend only)
 Pass 178–183 milestone -- Sent Working Set + Follow-Up Readiness (frontend only)
 Pass 172–177 milestone -- Scheduled Working Set + Waiting-State Harvest (frontend only)
