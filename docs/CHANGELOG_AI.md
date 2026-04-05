@@ -1,4 +1,28 @@
-﻿### 2026-04-04 - Pass 172–177: Scheduled Working Set + Waiting-State Harvest
+﻿### 2026-04-04 - Pass 178–183: Sent Working Set + Follow-Up Readiness
+
+**Goal:** Make freshly sent rows feel like a real Queue-adjacent working set with visible continuity into reply monitoring and follow-up readiness, without introducing auto-follow-up behavior.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+- `_lastSentKeys`: new module-level Set; populated in `sendLive()` via pre-send key snapshot (verified post-`loadAll()` against `sent_at`); cleared in `_qsStart()`
+- `sendLive()`: pre-send key capture before API call; clears `_lastApprovedCount` + `_lastApprovedKeys` before `loadAll()` when rows sent; populates `_lastSentKeys` after `loadAll()` (allRows is fresh); calls `_renderQueueSessionBanner()` after population
+- `_qsDismissSent()`: new function — clears `_lastSentKeys`, re-renders banner
+- Banner early-exit guard: updated to include `!_lastSentKeys.size`
+- CSS `.qsb-sent`: green tint strip (matches `.qsb-harvest` tone)
+- Sent working-set strip (8th banner state, after scheduled strip): `!qs && _lastSentKeys.size > 0`; live re-validates against allRows; `→ Review (N)` CTA → `_startSentSession()`; `→ Follow-Ups` CTA → `switchSubPage('pipeline','followup',…)` (navigation only); dismiss → `_qsDismissSent()`
+- `iconMap` gains `sent: '✉'`
+- `_startSentSession()`: new function — sources rows from `_lastSentKeys`, filters to `r.sent_at`, opens as panel session with `cohortKey: 'sent'`
+- `_queueTimelineNoteHtml()`: new `currentFilter === 'sent'` case — tone `'info'`; shows sent count + replied count (copper); directs to `🔁 Follow-Ups →` toolbar button
+- Approved session done-state: `_followupReadyBtn` added (navigation to follow-up tab) — only renders when `_readyNow === 0`
+
+**State machine:** 8-state banner, all mutually exclusive. Sent strip is lowest priority strip (after scheduled) — appears as natural resting state after full send flow. `_qsStart` clears all `_last*` including `_lastSentKeys` so new sessions never inherit stale sent context.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, `docs/`
+
+**Protected-system status:** unchanged. No backend changes. No new API endpoints. `confirmSend()` gate intact throughout. No auto-send or auto-follow-up introduced. Follow-up CTAs navigate only.
+
+---
+
+### 2026-04-04 - Pass 172–177: Scheduled Working Set + Waiting-State Harvest
 
 **Goal:** Make scheduled rows — especially those created during approved review work — feel like a real Queue-managed waiting set with a persistent strip, session continuity, and a clickable stats entry.
 

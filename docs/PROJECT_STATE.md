@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-04 (Pass 172–177)
+Last Updated: 2026-04-04 (Pass 178–183)
 
 ## Copperline Version
 v0.3
@@ -9,15 +9,16 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Pass 172–177 — Scheduled Working Set + Waiting-State Harvest
+Pass 178–183 — Sent Working Set + Follow-Up Readiness
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
 ## Last Completed Pass
-Pass 172–177 — Scheduled Working Set + Waiting-State Harvest: _lastScheduledKeys persists scheduled rows from approved sessions; _qsDismissScheduled(); 6th banner state (qsb-scheduled strip, blue); send-ready strip shows '· N scheduled' note; _startScheduledSession() opens all scheduled rows as Queue-owned panel session; iconMap gains scheduled: '⏱'; _queueTimelineNoteHtml scheduled filter gets '→ Review (N)' CTA; s-scheduled stat in strip (client-side computed via _updateScheduledStat()); done-state '→ View Scheduled (N)' button for approved sessions
+Pass 178–183 — Sent Working Set + Follow-Up Readiness: _lastSentKeys captures rows from last sendLive() call (pre-send snapshot, verified post-loadAll); _qsStart clears it; _qsDismissSent(); sent working-set strip (qsb-sent, green, 8th banner state) with '→ Review (N)' + '→ Follow-Ups' CTAs; _startSentSession() opens sent batch as panel session; _queueTimelineNoteHtml gains 'sent' filter case with replied count + follow-up guidance; approved session done-state gains '→ Follow-Ups' when _readyNow === 0; iconMap gains sent: '✉'; no auto-follow-up introduced
 
 ## Recent Passes
+Pass 178–183 milestone -- Sent Working Set + Follow-Up Readiness (frontend only)
 Pass 172–177 milestone -- Scheduled Working Set + Waiting-State Harvest (frontend only)
 Pass 166–171 milestone -- Approved Session Outcomes + Schedule Harvest (frontend only)
 Pass 160–165 milestone -- Send-Ready Working Set + Review/Schedule Continuity (frontend only)

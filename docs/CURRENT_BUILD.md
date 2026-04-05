@@ -1,12 +1,12 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-04-04 (Pass 172–177)
+Last Updated: 2026-04-04 (Pass 178–183)
 
 ## Active Pass
-Pass 172–177 — Scheduled Working Set + Waiting-State Harvest
+Pass 178–183 — Sent Working Set + Follow-Up Readiness
 
 ## Status
-Pass 172–177 complete.
+Pass 178–183 complete.
 
 ## What Pass 166–171 Changed
 
@@ -29,6 +29,28 @@ Pass 172–177 complete.
 **Files changed:** `lead_engine/dashboard_static/index.html`, docs
 
 **Protected-system status:** unchanged. All schedule API calls route through existing `/api/schedule_email` endpoint. `confirmSend()` modal gate intact on all send paths. No auto-send introduced.
+
+## What Pass 178–183 Changed
+
+**Goal:** Make freshly sent rows feel like a real Queue-adjacent working set with visible continuity into reply monitoring and follow-up readiness, without introducing auto-follow-up behavior.
+
+**Changes (frontend only — `lead_engine/dashboard_static/index.html`):**
+
+- **Pass 178 — `_lastSentKeys` foundation + `sendLive()` capture:** New module-level `let _lastSentKeys = new Set()`. `_qsStart()` clears it. In `sendLive()`: before the API call, snapshot `_preSendKeys` (approved + unsent + has email). On success with `s.sent > 0`: clear `_lastApprovedCount` and `_lastApprovedKeys` before `loadAll()` (clean banner render during reload); after `loadAll()`, verify which pre-send keys now have `sent_at` and persist as `_lastSentKeys`; call `_renderQueueSessionBanner()`. Backward-safe: if no rows sent, `_lastSentKeys` stays empty and no new strip appears.
+
+- **Pass 179 — CSS + banner sent strip + `_qsDismissSent()`:** CSS `.qsb-sent` (green tint, green border — matches `.qsb-harvest` tone). Early-exit guard updated to include `!_lastSentKeys.size`. New banner state inserted after scheduled strip: `!qs && _lastSentKeys.size > 0` → green `qsb-sent` strip; live re-validates keys against allRows (`r.sent_at`); `→ Review (N)` CTA → `_startSentSession()`; `→ Follow-Ups` CTA → `switchSubPage('pipeline','followup',…)` (navigation only — no auto-generation); `✕ Dismiss` → `_qsDismissSent()`. `iconMap` gains `sent: '✉'`.
+
+- **Pass 180 — `_startSentSession()` + `_qsDismissSent()`:** `_startSentSession()` sources rows from `_lastSentKeys`, filters to confirmed `sent_at` rows, opens as panel session with `cohortKey: 'sent'`. `_qsDismissSent()` clears `_lastSentKeys` only — does not touch any other state.
+
+- **Pass 181 — `_queueTimelineNoteHtml()` sent filter case:** New `currentFilter === 'sent'` branch — tone `'info'`; shows sent count + replied count (copper-colored); directs operator to `🔁 Follow-Ups →` toolbar button. Approved session done-state now includes `_followupReadyBtn` when `_readyNow === 0` — `→ Follow-Ups` CTA (navigation only) surfaces when there's nothing left to send.
+
+- **Pass 182 — State ordering final review.** Banner states are mutually exclusive and in priority order: hide → harvest → send-ready → scheduled → sent → qs done/active. Each strip uses `return`. Sent strip is last before the qs-branch — deliberate: it appears after the operator dismisses other strips, making the send→follow-up handoff the natural resting state after the full send flow completes.
+
+- **Pass 183 — Docs truth-sync.**
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, docs
+
+**Protected-system status:** unchanged. No backend changes. `confirmSend()` gate intact. No auto-send or auto-follow-up introduced. `_followupNavBtn` and `_followupReadyBtn` navigate only.
 
 ## What Pass 172–177 Changed
 
