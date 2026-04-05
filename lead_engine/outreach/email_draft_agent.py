@@ -4,7 +4,7 @@ import hashlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-DRAFT_VERSION = "v20"
+DRAFT_VERSION = "v21"
 
 # ---------------------------------------------------------------------------
 # Copperline Voice Rules
@@ -48,76 +48,67 @@ Not a pitch deck. Not a networking intro. Not an AI-generated cold email.
 
 _INDUSTRY_FALLBACK_BODIES: Dict[str, List[str]] = {
     "plumbing": [
-        "I work with a lot of plumbing shops and the thing that comes up almost every time is that the phone is the whole business — when it's covered, things run fine, but when it's not, jobs and callbacks just disappear.\n\nI help service businesses stop losing work to missed calls and slow callbacks — one on one with owners, built around how they actually run their operation.\n\nWorth a quick call to look at it together?",
-        "I've been working with service businesses on the gap between getting a call and actually closing the job. For most plumbing shops it's not a volume problem — it's a follow-through problem.\n\nI help owners tighten up the callback side so calls that come in actually turn into jobs.\n\nWould it be worth a quick conversation?",
+        "I work with plumbing shops pretty regularly and the thing I see most is that the day fills up before the extra work does. Callbacks to return, estimates to follow up on, customer coordination between jobs. Not enough to justify bringing someone on for it, but enough to slow things down.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to address it. I set it up and keep it running.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "hvac": [
-        "I work with a lot of HVAC owners and the pattern I see most is that the busy season creates a backlog that never fully clears — and by the time things slow down, the leads from the peak are already gone somewhere else.\n\nI help service businesses stop losing seasonal work to slow follow-up and callback gaps — one on one with owners, built around how they actually operate.\n\nWorth a quick call to look at it together?",
-        "I've been working with HVAC shops on the operational side — specifically the part where new calls come in while the crew is already stretched and things start slipping between the cracks.\n\nI help owners fix the follow-up and intake leaks that cost them work when they're at capacity.\n\nWould it be worth a quick conversation?",
+        "I work with HVAC owners pretty regularly and the thing I see most is that the coordination side never really settles. Quote follow-up, scheduling between calls, keeping up with customers during a busy stretch. Not a full-time job on its own, but it adds up faster than it gets cleared.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to handle it. I set it up and keep it running from there.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "electrical": [
-        "I work with electrical contractors pretty regularly and the thing that comes up most is scheduling — jobs run long, new calls stack up, and by the time someone gets back to an estimate request it's usually too late.\n\nI help service businesses stop losing estimate requests and callbacks to slow follow-up — one on one with owners, specific to how they run things.\n\nWorth a quick call to look at it together?",
-        "I've been working with electrical shops on the gap between incoming work and actual capacity. Most of the time it's not a sales problem — it's a coordination problem.\n\nI help owners fix the operational gaps that let good jobs slip away when the crew is already stretched.\n\nWould it be worth a quick conversation?",
+        "I work with electrical contractors pretty regularly and the thing I see most is that the back office side fills up while the crew is on-site. Estimate requests coming in, customer follow-through, scheduling coordination. Not enough to justify a hire, but enough to create gaps.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to address it. I set it up and keep it running.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "roofing": [
-        "I work with roofing contractors and the pattern I see most is that storm season creates a volume problem that the follow-up process wasn't built for — estimates go out and nobody knows which ones are still live.\n\nI help service businesses tighten estimate follow-up so quotes don't go cold — one on one with owners, built around how they actually run their operation.\n\nWorth a quick call to look at it together?",
-        "I've been working with roofing shops on the estimate follow-up side — most are leaving jobs on the table not because the price is wrong but because the follow-up timing is.\n\nI help owners stop losing jobs to slow follow-up on estimates and callbacks.\n\nWould it be worth a quick conversation?",
+        "I work with roofing contractors pretty regularly and the thing I see most is that tracking open estimates and following up with leads is harder to stay on top of than the actual job work. It piles up in the background, especially when the crew is stretched.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to address it. I set it up and keep it running from there.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "towing": [
-        "I work with towing companies and the thing I see most is that dispatch is the whole bottleneck — when it's tight, calls get missed or returned too late and the job goes to whoever picked up.\n\nI help service businesses stop losing dispatch calls to slow callbacks and missed pickups — one on one with owners, built around how they actually run things.\n\nWorth a quick call to look at it together?",
+        "I work with towing companies pretty regularly and the thing I see most is that the operational back-and-forth fills up the day faster than dispatch does. Billing follow-up, coordination with customers, keeping track of what's pending. Not enough to hire for, but enough to create drag.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to handle it. I set it up and keep it running.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "auto": [
-        "I work with auto shops and the thing that comes up almost every time is that the front desk is doing five things at once — and the calls that don't get answered during a busy afternoon usually don't come back.\n\nI help service businesses stop losing work to missed calls and slow follow-up — working one on one with owners to fix the specific gaps in how they handle incoming work.\n\nWorth a quick call to look at it together?",
+        "I work with auto shops pretty regularly and the thing I see most is that the front desk is doing five things at once and the follow-through side is the first to slip. Appointment coordination, parts follow-up, customer communication between jobs. None of it is huge on its own, but it stacks up.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to address it. I set it up and keep it running.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "landscaping": [
-        "I work with landscaping companies and the pattern I see most is that spring creates more demand than the process was built to handle — estimates pile up, follow-ups slip, and a lot of good jobs just don't close.\n\nI help service businesses tighten estimate follow-up so quotes don't go cold during the busy season — one on one, specific to how they run things.\n\nWorth a quick call to look at it together?",
+        "I work with landscaping companies pretty regularly and the thing I see most is that the customer-facing side of the operation takes more time than it should. Estimate coordination, scheduling follow-up, keeping up with the back-and-forth between seasons. Not enough to justify a dedicated hire, but enough to slow things down.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to handle it. I set it up and keep it running from there.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "painting": [
-        "I work with painting contractors and the thing I see most is that the estimate side is solid but the follow-up isn't — most jobs that don't close are ones where no one circled back within a few days.\n\nI help owners stop losing jobs to slow follow-up on estimates and callbacks — one on one, built around how they actually operate.\n\nWorth a quick call to look at it together?",
+        "I work with painting contractors pretty regularly and the thing I see most is that the estimate side is well-handled but the follow-up after isn't. Leads go cold not because the price is wrong but because no one circled back in time. That kind of thing tends to compound.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to address it. I set it up and keep it running.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "cleaning": [
-        "I work with cleaning businesses and the pattern I see most is that recurring clients are easy to keep but new ones are hard to convert because the inquiry process is slow.\n\nI help service businesses fix the intake leaks that cost them new clients — working one on one with owners to clean up how inquiries get handled.\n\nWorth a quick call to look at it together?",
+        "I work with cleaning businesses pretty regularly and the thing I see most is that managing recurring clients is smooth, but the new inquiry side is slower than it needs to be. Intake handling, follow-through, getting back to people quickly. It adds up when you're running the operation yourself.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to handle it. I set it up and keep it running from there.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "concrete": [
-        "I work with concrete contractors and the thing I see most is that the estimate-to-job gap is long and most of that time is just waiting — and the jobs that go cold are usually the ones where nobody followed up in the first week.\n\nI help service businesses tighten estimate follow-up so good jobs don't slip away while the owner is on-site running work.\n\nWorth a quick call to look at it together?",
+        "I work with concrete contractors pretty regularly and the thing I see most is that the estimate-to-job gap is long and most of the delay is on the follow-up side. It's not a sales problem, it's a follow-through problem, and it compounds when the owner is in the field running other work.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to address it. I set it up and keep it running.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "tree_service": [
-        "I work with tree service companies and the pattern I see most is that storm work creates a volume spike the process wasn't built for — and a lot of good leads just disappear between the estimate and the call back.\n\nI help service businesses stop losing seasonal work to slow estimate follow-up and callback gaps — one on one, specific to how they operate.\n\nWorth a quick call to look at it together?",
+        "I work with tree service companies pretty regularly and the thing I see most is that demand spikes create coordination problems the normal process wasn't built for. Estimates pile up, follow-up slips, and a lot of good leads just go quiet. Not a marketing problem, a follow-through problem.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to handle it. I set it up and keep it running from there.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "flooring": [
-        "I work with flooring contractors and the thing I see most is that showroom visits don't always turn into jobs — usually because the follow-up after the estimate is inconsistent.\n\nI help owners tighten up estimate follow-up so the leads they're already getting actually turn into booked jobs.\n\nWorth a quick call to look at it together?",
+        "I work with flooring contractors pretty regularly and the thing I see most is that the back-and-forth between estimate and install takes more attention than it should. Supplier coordination, customer follow-up, keeping the job pipeline moving. It's not dramatic, just a constant drain.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to address it. I set it up and keep it running.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "appliance_repair": [
-        "I work with appliance repair shops and the thing that comes up most is same-day calls — when the schedule is full and the phone still rings, those jobs usually just go to whoever can get there first.\n\nI help service businesses stop losing same-day calls and callbacks to slow response — one on one, built around how they actually handle incoming work.\n\nWorth a quick call to look at it together?",
+        "I work with appliance repair shops pretty regularly and the thing I see most is that scheduling and parts coordination creates more back-and-forth than the actual repairs do. Confirming appointments, following up on parts, keeping customers in the loop. It fills the day in the background.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to handle it. I set it up and keep it running from there.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "moving": [
-        "I work with moving companies and the pattern I see most is that quote requests come in and the response time is what decides the job — not the price.\n\nI help service businesses stop losing quote requests to slow response — working one on one with owners to fix the intake and follow-up gaps that cost them work.\n\nWorth a quick call to look at it together?",
+        "I work with moving companies pretty regularly and the thing I see most is that the gap between quote request and confirmed booking is where most of the manual work lives. Follow-up, customer coordination, keeping the schedule straight. Not huge in isolation, but it compounds.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to address it. I set it up and keep it running.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "pressure_washing": [
-        "I work with pressure washing businesses and the thing I see most is that spring and summer create more demand than the scheduling process was built for — and a lot of jobs just go to whoever responds first.\n\nI help service businesses stop losing seasonal work to slow response and poor follow-up — one on one, specific to how they operate.\n\nWorth a quick call to look at it together?",
+        "I work with pressure washing businesses pretty regularly and the thing I see most is that the booking side fills up faster than the seasonal schedule can absorb. Coordinating availability, following up on estimates, keeping up with the back-and-forth. It's the kind of work that doesn't feel heavy until it's already slowing things down.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to handle it. I set it up and keep it running from there.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "construction": [
-        "I work with general contractors and the pattern I see most is that the estimate pipeline gets backed up when the crew is full — and by the time there's bandwidth to follow up, the homeowner has already moved on.\n\nI help service businesses tighten estimate follow-up so good jobs don't go cold while the owner is stretched running other work.\n\nWorth a quick call to look at it together?",
+        "I work with general contractors pretty regularly and the thing I see most is that the coordination side of the business takes more time than it should. Sub scheduling, estimate follow-up, supplier back-and-forth. Not the kind of thing that justifies a full hire, but enough to create real drag when the owner is already stretched.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to address it. I set it up and keep it running.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
     "pest_control": [
-        "I work with pest control companies and the thing I see most is that the scheduling side works fine for recurring accounts but new calls get treated like walk-ins — and a lot of those just go cold.\n\nI help service businesses fix the intake side so new calls actually get routed and followed up — one on one, built around how they run their operation.\n\nWorth a quick call to look at it together?",
+        "I work with pest control companies pretty regularly and the thing I see most is that managing recurring accounts is handled well but the new client intake side is slower than it could be. Getting back to inquiries, scheduling initial visits, following through. It piles up in the background.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to handle it. I set it up and keep it running from there.\n\nI'd like to take a look and tell you what I'd address first.",
     ],
 }
 
 # Generic fallback for any industry not specifically mapped
 _GENERIC_FALLBACK_BODIES: List[str] = [
-    "I work with service business owners pretty regularly and the thing that comes up most is that the operational side — keeping up with new work, following up on estimates, staying on top of incoming calls — is harder to manage than the work itself.\n\nI help owners fix the follow-up and intake leaks that cost them work — one on one, built around how they actually run things.\n\nWorth a quick call to look at it together?",
-    "I've been working with small business owners on the gap between the work they're doing and the work they could be closing. Most of the time it's not a marketing problem — it's a process problem.\n\nI help service businesses stop losing jobs to slow follow-up, missed callbacks, and estimates that go cold — one on one, specific to how they operate.\n\nWould it be worth a quick conversation?",
-    "I work with owners who are doing the work, running the business, and handling everything in between — and usually the thing that's hardest to stay on top of is the follow-up side.\n\nI help service businesses get more out of the leads they already have by fixing the operational gaps that let work slip through.\n\nWorth a quick call to look at it together?",
+    "I work with service business owners pretty regularly and the thing I see most is that the operational side of the business takes more of the day than the actual work does. Back-and-forth with customers, follow-through on estimates, small process gaps that don't justify a hire but don't go away on their own.\n\nI sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to address it. I set it up and keep it running from there.\n\nI'd like to take a look and tell you what I'd address first.",
+    "I work with small business owners across a lot of trades and the pattern I see most is that the work itself is manageable. It's the stuff around it that fills the day. Repetitive back-and-forth, follow-through gaps, tasks that keep coming back because nothing is handling them consistently. Not enough to justify another hire, but enough to slow things down.\n\nI sit down with owners one on one, look at how things are actually running, find what's creating the most drag, and build something specific to address it. I set it up and keep it running.\n\nI'd like to take a look and tell you what I'd address first.",
 ]
 
 _FALLBACK_SUBJECTS: List[str] = [
-    "missed calls",
-    "callback backlog",
-    "estimate follow-up",
-    "after-hours leads",
-    "contact form lag",
-    "scheduling friction",
+    "repetitive work",
+    "too many hats",
 ]
 
 
@@ -837,7 +828,7 @@ def _build_dm_body(prospect: Dict[str, str], observation: str) -> str:
 # Public API
 # ---------------------------------------------------------------------------
 
-_SUBJECT_OPTIONS = ["quick question", "missed calls", "after-hours follow-up"]
+_SUBJECT_OPTIONS = ["missed calls", "after-hours calls", "after-hours follow-up"]
 _HIGH_FIT_INDUSTRIES = {
     "plumbing", "hvac", "electrical", "locksmith", "garage_door", "towing",
 }
