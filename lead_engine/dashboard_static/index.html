@@ -2138,6 +2138,7 @@ let panelSessionLabel = '';
 let panelOpenIntent = '';
 let _queueSession = null;   // Pass 130-135: { cohortKey, label, rowKeys, pos, done } — persists across panel open/close
 let _qsRepairedKeys = new Set();  // Pass 142-147: keys of rows repaired in current session
+let _qsScheduledKeys = new Set(); // Pass 166-171: keys of rows scheduled during approved session
 let _lastRepairedKeys = new Set(); // Pass 148-153: repaired keys from last closed session — persists for harvest strip + pills
 let _lastApprovedCount = 0; // Pass 154-159: rows approved in last batch action — persists for send-readiness strip
 let _lastApprovedKeys = new Set(); // Pass 160-165: keys of freshly approved rows — enables approved working-set review session
@@ -3052,8 +3053,9 @@ function _cohortStartSession(cohortKey) {
 // Session persists across drawer open/close so the operator stays oriented at table level.
 
 function _qsStart(cohortKey, rows, label) {
-  _queueSession = { cohortKey, label, rowKeys: _panelSnapshotKeys(rows), pos: 0, done: false, outcomes: { repaired: 0, blocked: 0 } };
+  _queueSession = { cohortKey, label, rowKeys: _panelSnapshotKeys(rows), pos: 0, done: false, outcomes: { repaired: 0, blocked: 0, scheduled: 0 } }; // Pass 166-171: scheduled added
   _qsRepairedKeys = new Set();
+  _qsScheduledKeys = new Set(); // Pass 166-171: new session clears schedule tracking
   _lastRepairedKeys = new Set(); // Pass 148-153: new session clears prior harvest state
   _lastApprovedCount = 0;        // Pass 154-159: new session clears send-readiness strip
   _lastApprovedKeys = new Set(); // Pass 160-165: new session clears approved working-set
@@ -3100,6 +3102,27 @@ function _qsRecordOutcome(key, type) {
   _renderQueueSessionBanner();
 }
 
+// Pass 166-171: record a scheduling outcome in an active approved session (idempotent — no double-count on reschedule)
+function _qsRecordScheduled(key) {
+  if (!_queueSession || _queueSession.cohortKey !== 'approved') return;
+  if (!_queueSession.outcomes) _queueSession.outcomes = { repaired: 0, blocked: 0, scheduled: 0 };
+  if (!_qsScheduledKeys.has(key)) {
+    _queueSession.outcomes.scheduled++;
+    _qsScheduledKeys.add(key);
+  }
+  _renderQueueSessionBanner();
+}
+
+// Pass 166-171: undo a scheduling outcome when a row is unscheduled during an approved session
+function _qsRecordUnscheduled(key) {
+  if (!_queueSession || _queueSession.cohortKey !== 'approved') return;
+  if (_qsScheduledKeys.has(key)) {
+    _queueSession.outcomes.scheduled = Math.max(0, _queueSession.outcomes.scheduled - 1);
+    _qsScheduledKeys.delete(key);
+  }
+  _renderQueueSessionBanner();
+}
+
 function _qsMarkDone() {
   if (!_queueSession) return;
   _queueSession.done = true;
@@ -3108,8 +3131,14 @@ function _qsMarkDone() {
 
 function _qsEnd() {
   _lastRepairedKeys = new Set(_qsRepairedKeys); // Pass 148-153: preserve for post-session harvest strip + pills
+  // Pass 166-171: after an approved session closes, restore send-ready strip showing remaining ready-now count.
+  // _lastApprovedCount was cleared by _qsStart — restore from live data so the strip reappears.
+  if (_queueSession?.cohortKey === 'approved') {
+    _lastApprovedCount = (allRows || []).filter(r => r.approved === 'true' && !r.sent_at && r.to_email).length;
+  }
   _queueSession = null;
   _qsRepairedKeys = new Set();
+  _qsScheduledKeys = new Set(); // Pass 166-171: clear session schedule tracking
   _renderQueueSessionBanner();
 }
 
@@ -3237,17 +3266,27 @@ function _renderQueueSessionBanner() {
         break;
       }
     }
-    // Pass 142-147: show repair outcome counts in done-state
-    const _doneOutcome = qs.outcomes && (qs.outcomes.repaired || qs.outcomes.blocked)
-      ? `${qs.outcomes.repaired} repaired${qs.outcomes.blocked ? ` · ${qs.outcomes.blocked} blocked` : ''}`
-      : `${total} rows in set`;
+    // Pass 142-147 / 166-171: outcome summary — approved sessions get schedule+ready breakdown; others get repaired/blocked counts
+    let _doneOutcome, _sendReadyBtn = '';
+    if (qs.cohortKey === 'approved') {
+      // Pass 166-171: meaningful approved-session summary — how many scheduled, how many still ready to send now
+      const _scheduledInSession = qs.outcomes?.scheduled || 0;
+      const _readyNow = (allRows || []).filter(r => r.approved === 'true' && !r.sent_at && !r.send_after && r.to_email).length;
+      _doneOutcome = _scheduledInSession > 0
+        ? `${_scheduledInSession} scheduled · ${_readyNow} ready now`
+        : `${total} rows reviewed · ${_readyNow} ready now`;
+      _sendReadyBtn = _readyNow > 0
+        ? `<button class="qsb-btn" style="background:rgba(245,166,35,.18);color:var(--amber)" onclick="confirmSend()" title="Send all approved rows — requires confirmation">▶ Send Approved (${_readyNow})</button>`
+        : `<span class="qsb-meta" style="color:var(--muted);font-size:11px">✓ All scheduled or sent</span>`;
+    } else {
+      // Pass 142-147: repair/block summary for exception sessions
+      _doneOutcome = qs.outcomes && (qs.outcomes.repaired || qs.outcomes.blocked)
+        ? `${qs.outcomes.repaired} repaired${qs.outcomes.blocked ? ` · ${qs.outcomes.blocked} blocked` : ''}`
+        : `${total} rows in set`;
+    }
     // Pass 148-153: offer direct harvest action when rows were repaired this session
     const _harvestBtn = qs.outcomes && qs.outcomes.repaired > 0
       ? `<button class="qsb-btn qsb-approve" onclick="_qsApproveRepaired()" title="Approve all rows repaired in this session">✓ Approve ${qs.outcomes.repaired} repaired</button>`
-      : '';
-    // Pass 160-165: offer Send Approved after reviewing the approved working set
-    const _sendReadyBtn = qs.cohortKey === 'approved'
-      ? `<button class="qsb-btn" style="background:rgba(245,166,35,.18);color:var(--amber)" onclick="confirmSend()" title="Send all approved rows — requires confirmation">▶ Send Approved</button>`
       : '';
     banner.className = 'qsb-done';
     banner.innerHTML = `<span class="qsb-label">✓ ${escHtml(qs.label)} complete</span><span class="qsb-meta">${_doneOutcome}</span><div class="qsb-actions">${_harvestBtn}${_sendReadyBtn}${nextHtml}<button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ Close</button></div>`;
@@ -3256,8 +3295,10 @@ function _renderQueueSessionBanner() {
     const remaining = total - qs.pos;
     // Pass 142-147: show live repair tally mid-session
     const _liveOutcome = qs.outcomes && qs.outcomes.repaired ? ` · ${qs.outcomes.repaired} repaired` : '';
+    // Pass 166-171: show live schedule tally for approved sessions
+    const _liveScheduled = (qs.cohortKey === 'approved' && qs.outcomes?.scheduled > 0) ? ` · ${qs.outcomes.scheduled} scheduled` : '';
     banner.className = '';
-    banner.innerHTML = `<span class="qsb-label">${icon} ${escHtml(qs.label)}</span><span class="qsb-meta">row ${pos1} of ${total} · ${remaining} remaining${_liveOutcome}</span><div class="qsb-actions"><button class="qsb-btn qsb-resume" onclick="_qsResume()">→ Resume</button><button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ End</button></div>`;
+    banner.innerHTML = `<span class="qsb-label">${icon} ${escHtml(qs.label)}</span><span class="qsb-meta">row ${pos1} of ${total} · ${remaining} remaining${_liveOutcome}${_liveScheduled}</span><div class="qsb-actions"><button class="qsb-btn qsb-resume" onclick="_qsResume()">→ Resume</button><button class="qsb-btn qsb-end" onclick="_qsEnd()">✕ End</button></div>`;
   }
 }
 
@@ -4968,6 +5009,7 @@ async function panelScheduleTomorrow() {
     });
     if (!res.ok) { toast('Schedule error: ' + (res.error || 'unknown'), 'err'); _btnRestore(_schedBtn); return; }
     row.send_after = res.send_after;
+    _qsRecordScheduled(_panelMakeKey(row)); // Pass 166-171: record in approved session outcome
     renderTable();
     fillPanel(row, panelIdx, _panelCurrentRows().length);
     toast(`Scheduled for ${_formatSendAfter(row.send_after)} - waits until that time`, 'ok');
@@ -4992,6 +5034,7 @@ async function panelUnschedule() {
       send_after: '',
     });
     if (!res.ok) { toast('Clear error: ' + (res.error || 'unknown'), 'err'); return; }
+    _qsRecordUnscheduled(_panelMakeKey(row)); // Pass 166-171: undo in approved session outcome
     row.send_after = '';
     renderTable();
     fillPanel(row, panelIdx, _panelCurrentRows().length);
@@ -5018,6 +5061,7 @@ async function panelReschedule(days) {
     });
     if (!res.ok) { toast('Reschedule error: ' + (res.error || 'unknown'), 'err'); return; }
     row.send_after = res.send_after;
+    _qsRecordScheduled(_panelMakeKey(row)); // Pass 166-171: idempotent — no double-count if already scheduled this session
     renderTable();
     fillPanel(row, panelIdx, _panelCurrentRows().length);
     toast('Rescheduled for ' + _formatSendAfter(row.send_after) + ' - waits until then', 'ok');
@@ -5504,7 +5548,7 @@ async function rowSchedule(gi, businessName) {
   if (!row) return;
   try {
     const res = await api('/api/schedule_email', { index: gi, business_name: businessName, days_ahead: 1 });
-    if (res.ok) { row.send_after = res.send_after; renderTable(); await loadStats(); toast(`Scheduled: ${businessName} for ${_formatSendAfter(row.send_after)} - waits until then`, 'ok'); }
+    if (res.ok) { row.send_after = res.send_after; _qsRecordScheduled(_panelMakeKey(row)); renderTable(); await loadStats(); toast(`Scheduled: ${businessName} for ${_formatSendAfter(row.send_after)} - waits until then`, 'ok'); } // Pass 166-171
     else toast('Schedule failed: ' + (res.error || ''), 'err');
   } catch(e) { toast('Connection error', 'err'); }
 }
@@ -5514,7 +5558,7 @@ async function rowUnschedule(gi, businessName) {
   if (!row) return;
   try {
     const res = await api('/api/schedule_email', { index: gi, business_name: businessName, send_after: '' });
-    if (res.ok) { row.send_after = ''; renderTable(); await loadStats(); toast('Schedule cleared - back in ready-now queue', 'ok'); }
+    if (res.ok) { _qsRecordUnscheduled(_panelMakeKey(row)); row.send_after = ''; renderTable(); await loadStats(); toast('Schedule cleared - back in ready-now queue', 'ok'); } // Pass 166-171
     else toast('Clear failed: ' + (res.error || ''), 'err');
   } catch(e) { toast('Connection error', 'err'); }
 }
