@@ -4,7 +4,7 @@ import hashlib
 import re
 from typing import Dict, List, Optional, Tuple
 
-DRAFT_VERSION = "v21"
+DRAFT_VERSION = "v22"
 
 # ---------------------------------------------------------------------------
 # Copperline Voice Rules
@@ -311,7 +311,17 @@ def validate_draft(body: str, observation: str) -> None:
             "Draft contains an em dash. Use plain punctuation instead."
         )
 
-    hits = [w for w in _BANNED_WORDS if w in body_lower]
+    # Use word-boundary matching for short tokens that appear as substrings
+    # e.g. "ai" must not match inside "maintain", "rain", "paid", etc.
+    _WORD_BOUNDARY_TOKENS = {"ai", "roi"}
+    hits = []
+    for w in _BANNED_WORDS:
+        if w in _WORD_BOUNDARY_TOKENS:
+            if re.search(r"\b" + re.escape(w) + r"\b", body_lower):
+                hits.append(w)
+        else:
+            if w in body_lower:
+                hits.append(w)
     if hits:
         raise DraftInvalidError(f"Banned word(s) in draft: {hits}")
 
@@ -371,6 +381,12 @@ def validate_draft(body: str, observation: str) -> None:
         "help owners clean", "fix the operational", "fix the follow",
         "fix the gaps", "plug the leaks", "stop losing work",
         "stop losing jobs", "get more out of",
+        # v22 consultative framing
+        "i sit down with owners", "i work one on one with owners",
+        "look at how things are actually running", "find where the friction is",
+        "find what's creating the most drag", "find where the day is getting eaten",
+        "build something specific", "set it up and keep it running",
+        "set it up and maintain it",
     ]
     if not any(s in body_lower for s in _FIXER_LINE_SIGNALS):
         raise DraftInvalidError(
@@ -382,6 +398,9 @@ def validate_draft(body: str, observation: str) -> None:
         "worth a quick call", "worth a conversation", "would it be worth",
         "worth getting on", "want to get on", "worth a short conversation",
         "worth a quick conversation",
+        # v22 consultative close
+        "i'd like to take a look", "i'd like to show you",
+        "i'd like to hear what those look like",
     ]
     if not any(s in body_lower for s in _CTA_SIGNALS):
         raise DraftInvalidError(
@@ -671,42 +690,44 @@ def _build_consequence_sentence(obs: str, angle: str) -> str:
 
 def _build_offer_sentence(obs: str, angle: str, variant: int) -> str:
     """
-    Drew's positioning: clearly states what he helps fix, then grounds it in
-    one-on-one, specific-to-their-operation work.
+    Drew's positioning: consultative, one-on-one diagnostic service.
+    He sits down with the owner, looks at how things actually run,
+    finds the friction, builds something specific, sets it up and maintains it.
+    Not a product. Not a narrow fix. A custom engagement.
     Fixer/operator line must be visible — no burying the value prop at the end.
     """
     o = obs.lower()
 
-    # Angle-specific fixer lines
+    # All angles now use consultative framing — specific texture per angle
     if angle == "callback_recovery":
         variants = [
-            "I help service businesses stop losing work to missed calls and slow callbacks. I work one on one with owners to fix the specific gaps in how they handle incoming work.",
-            "I help owners tighten up the callback side so calls that come in actually turn into jobs. One on one, built around how they actually run things.",
-            "I help service businesses get more out of the calls they're already getting by fixing the follow-up leaks that cost them work.",
+            "I sit down with owners one on one, look at where calls and follow-through are falling off, and build something specific to address it. I set it up and keep it running.",
+            "I work one on one with owners to find where the incoming work is slipping and build something around those specific gaps. I set it up and maintain it from there.",
+            "I sit down with owners, look at how things are actually running, find where the friction is, and build something specific to handle it. I set it up and keep it running.",
         ]
     elif angle == "estimate_follow_up":
         variants = [
-            "I help service businesses tighten estimate follow-up so quotes don't go cold. I work one on one with owners, built around how they actually run their operation.",
-            "I help owners stop losing jobs to slow follow-up on estimates. I work one on one to fix the operational gaps that let good work slip away.",
-            "I help service businesses close more of the estimates they're already sending by fixing the follow-up timing that loses jobs.",
+            "I sit down with owners one on one, look at where estimates are stalling out, and build something specific to address the follow-up side. I set it up and keep it running.",
+            "I work one on one with owners to find where the estimate process is losing time and build something around those specific gaps. I set it up and maintain it from there.",
+            "I sit down with owners, look at how things are actually running on the estimate side, find where jobs are going cold, and build something specific to handle it.",
         ]
     elif angle == "after_hours_response":
         variants = [
-            "I help service businesses handle after-hours and overflow inquiries so leads don't go cold before the next business day. One on one, specific to how they operate.",
-            "I help owners fix the after-hours gap so calls and requests that come in outside of business hours don't just disappear.",
-            "I help service businesses stop losing after-hours work by fixing how inquiries get handled when the owner isn't available.",
+            "I sit down with owners one on one, look at how after-hours and overflow inquiries are being handled, and build something specific to close that gap. I set it up and keep it running.",
+            "I work one on one with owners to find where after-hours requests are falling off and build something specific to address it. I set it up and maintain it from there.",
+            "I sit down with owners, look at how things are actually running outside of business hours, find where the work is slipping, and build something specific to handle it.",
         ]
     elif angle == "inquiry_routing":
         variants = [
-            "I help service businesses fix the intake side so inquiries that come in actually get routed and followed up. I work one on one with owners to plug the leaks.",
-            "I help owners tighten up how new inquiries are handled so leads don't fall through between the form submission and the callback.",
-            "I help service businesses stop losing leads in the gap between when someone reaches out and when someone actually gets back to them.",
+            "I sit down with owners one on one, look at how new inquiries are being handled, and build something specific to fix the intake gaps. I set it up and keep it running.",
+            "I work one on one with owners to find where inquiries are falling through and build something specific around those gaps. I set it up and maintain it from there.",
+            "I sit down with owners, look at how things are actually running on the intake side, find where leads are going quiet, and build something specific to address it.",
         ]
     else:
         variants = [
-            "I help service businesses fix the operational gaps that lose jobs. I work one on one with owners to build something specific to how they actually run things.",
-            "I help owners clean up the follow-up and intake leaks that cost them work. One on one, built around their operation.",
-            "I help service businesses get more out of the leads they already have by fixing the gaps in follow-up, callbacks, and estimate handling.",
+            "I sit down with owners one on one, look at how things are actually running, find where the friction is, and build something specific to address it. I set it up and keep it running.",
+            "I work one on one with owners to find where the day is getting eaten up and build something specific around those gaps. I set it up and maintain it from there.",
+            "I sit down with owners, look at the whole operation, find what's creating the most drag, and build something specific to handle it. I set it up and keep it running.",
         ]
 
     return variants[variant % len(variants)]
