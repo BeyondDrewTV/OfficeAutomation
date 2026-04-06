@@ -1,6 +1,6 @@
-# Copperline Project State
+﻿# Copperline Project State
 
-Last Updated: 2026-04-05 (Pass 190–195)
+Last Updated: 2026-04-05 (Queue / Pipeline redesign underway)
 
 ## Copperline Version
 v0.3
@@ -9,36 +9,41 @@ v0.3
 Lead Acquisition + Conversion Delivery Engine
 
 ## Current Focus
-Pass 190–195 — Follow-Up Outcome Harvest + Reply/Blocked Recovery
+Queue / Pipeline operator-workbench redesign
 
 ## Copperline Positioning
 Copperline = One-on-one workflow consulting for small service business owners
 
-## Last Completed Pass
-Pass 190–195 — Follow-Up Outcome Harvest + Reply/Blocked Recovery: replied leads now surface as green continuity strip in fqRender() (count + "View →" CTA to Conversations) when _cvData is loaded; 💬 Conversations button always visible in Follow-Up toolbar; blocked cards gain "→ Fix in Outreach" recovery CTA (routes to fqOpenLead); 3-touch-exhausted rows show "✓ 3-touch complete" + Close instead of "Auto-send when due"; completed cards styled with .fq-dim (dashed, dimmed); fq-total-badge now shows blocked count alongside urgent/total
+## Last Completed Work
+Out-of-band stranded-drafted recovery hotfix: 95c4b15890bc702394d5c02a0adab330671389fe
+
+## Repo Truth
+- Files changed in the hotfix: lead_engine/run_lead_engine.py, lead_engine/stranded_drafted.py, lead_engine/scripts/recover_stranded_drafted.py
+- Live audit result: recoverable stranded 0, already queued 274, already sent 4, excluded contactability 0, drafted with no direct email 545
+- Known prevention gap: reset_queue_from_gmail.py still needs repair; the current queue also still has 2 invalid emails and 1 approved-without-email row outside this pass
 
 ## Recent Passes
-Pass 190–195 milestone -- Follow-Up Outcome Harvest + Reply/Blocked Recovery (frontend only)
-Pass 184–189 milestone -- Follow-Up Working Set + Due/Blocked Continuity (frontend only)
-Pass 178–183 milestone -- Sent Working Set + Follow-Up Readiness (frontend only)
-Pass 172–177 milestone -- Scheduled Working Set + Waiting-State Harvest (frontend only)
-Pass 166–171 milestone -- Approved Session Outcomes + Schedule Harvest (frontend only)
-Pass 160–165 milestone -- Send-Ready Working Set + Review/Schedule Continuity (frontend only)
-Pass 154–159 milestone -- Approved Work Harvest + Send Readiness (frontend only)
-Pass 148–153 milestone -- Queue Graduation Flow + Ready-State Harvest (frontend only)
-Pass 142–147 milestone -- Session Outcomes + Queue-Owned Recovery (frontend only)
-Pass 136–141 milestone -- Inline Exception Repair + Session Persistence (frontend only)
-Pass 130–135 milestone -- Queue Session Throughput + Batch Recovery Discipline (frontend only)
-Pass 124–129 milestone -- Drawer Demotion + Unified Row Action System (frontend only)
-Pass 118–123 milestone -- Queue-Native Exception Recovery + Legacy Surface Demotion (frontend only)
-Pass 112–117 milestone -- Queue Becomes the Real Operating System (frontend only)
-Pass 106–111 milestone -- Unified Operator Workbench + Review Drawer Recovery (frontend only)
-Pass 103–105 milestone -- Bulk-First Pipeline + Exception Queue (frontend only)
-Pass 100–102 milestone -- Discovery Workflow Cohesion + Run Feedback (frontend only)
-Pass 97–99 milestone -- Discovery Throughput + History-to-Action Loop (frontend only)
-Pass 94–96 milestone -- Discovery History recovery (DOM fix only)
+Pass 190â€“195 milestone -- Follow-Up Outcome Harvest + Reply/Blocked Recovery (frontend only)
+Pass 184â€“189 milestone -- Follow-Up Working Set + Due/Blocked Continuity (frontend only)
+Pass 178â€“183 milestone -- Sent Working Set + Follow-Up Readiness (frontend only)
+Pass 172â€“177 milestone -- Scheduled Working Set + Waiting-State Harvest (frontend only)
+Pass 166â€“171 milestone -- Approved Session Outcomes + Schedule Harvest (frontend only)
+Pass 160â€“165 milestone -- Send-Ready Working Set + Review/Schedule Continuity (frontend only)
+Pass 154â€“159 milestone -- Approved Work Harvest + Send Readiness (frontend only)
+Pass 148â€“153 milestone -- Queue Graduation Flow + Ready-State Harvest (frontend only)
+Pass 142â€“147 milestone -- Session Outcomes + Queue-Owned Recovery (frontend only)
+Pass 136â€“141 milestone -- Inline Exception Repair + Session Persistence (frontend only)
+Pass 130â€“135 milestone -- Queue Session Throughput + Batch Recovery Discipline (frontend only)
+Pass 124â€“129 milestone -- Drawer Demotion + Unified Row Action System (frontend only)
+Pass 118â€“123 milestone -- Queue-Native Exception Recovery + Legacy Surface Demotion (frontend only)
+Pass 112â€“117 milestone -- Queue Becomes the Real Operating System (frontend only)
+Pass 106â€“111 milestone -- Unified Operator Workbench + Review Drawer Recovery (frontend only)
+Pass 103â€“105 milestone -- Bulk-First Pipeline + Exception Queue (frontend only)
+Pass 100â€“102 milestone -- Discovery Workflow Cohesion + Run Feedback (frontend only)
+Pass 97â€“99 milestone -- Discovery Throughput + History-to-Action Loop (frontend only)
+Pass 94â€“96 milestone -- Discovery History recovery (DOM fix only)
 Pass 93 -- Command Center UI/UX hierarchy polish (CSS only)
-Pass 90–92 milestone -- Truth sync + Delivery nav fix + legacy DOM cleanup
+Pass 90â€“92 milestone -- Truth sync + Delivery nav fix + legacy DOM cleanup
 Pass 89a -- CC blocking bug fix: discovery nav blank-page, mc-wrap layout compression, boot map init
 Pass 88 -- Voice rules embedded + em dash enforcement (v20)
 Pass 87 -- First-touch tightening: fixer/operator line enforcement, expanded bans, problem-labeled subjects, v19 draft version
@@ -119,26 +124,26 @@ plumbing, hvac, electrical, roofing, construction, landscaping, painting,
 tree_service, cleaning, auto, flooring, concrete, towing, appliance_repair,
 pressure_washing
 
-[2026-04-02] Session: Pass 100-102 — Discovery Workflow Cohesion + Run Feedback. History always refreshes after discover runs; _shRerun race fixed with polling check; last-updated timestamp added. CC Discover button async with loading state; grid sweep wired to progress bar; exhaustive scan gets indeterminate animation; visible Cancel Sweep button; map-status styled during active runs. Post-run drilldown panel (_cdrShow) appears inline after CC discover with lead summary. Territory overlay dash patterns; searched circle opacity reduced; legend labels legible. Next: commit Pass 100-102, then start Pass 103-105 (Bulk-First Pipeline + Exception Queue).
+[2026-04-02] Session: Pass 100-102 â€” Discovery Workflow Cohesion + Run Feedback. History always refreshes after discover runs; _shRerun race fixed with polling check; last-updated timestamp added. CC Discover button async with loading state; grid sweep wired to progress bar; exhaustive scan gets indeterminate animation; visible Cancel Sweep button; map-status styled during active runs. Post-run drilldown panel (_cdrShow) appears inline after CC discover with lead summary. Territory overlay dash patterns; searched circle opacity reduced; legend labels legible. Next: commit Pass 100-102, then start Pass 103-105 (Bulk-First Pipeline + Exception Queue).
 
 ---
-**Pass 100–102 — 2026-04-02 — Discovery workflow cohesion + run feedback**
+**Pass 100â€“102 â€” 2026-04-02 â€” Discovery workflow cohesion + run feedback**
 
 What was done:
-- `discoverLeads()`: removed conditional history refresh — `loadSearchHistory()` now always fires after any discover run regardless of active tab
+- `discoverLeads()`: removed conditional history refresh â€” `loadSearchHistory()` now always fires after any discover run regardless of active tab
 - `_shRerun()`: replaced fixed 200ms setTimeout with a polling readiness check (`_attempt`, up to 650ms) that verifies CC form values are populated before firing `ccCmdDiscover()`
 - Added `_shLastRefreshTime` + `_shRenderTimestamp()`: "Updated just now / Xs ago" timestamp in History header, auto-increments via `setInterval` every 10s
 - `ccCmdDiscover()`: refactored to `async` with CC button loading state (`.loading` class + `disabled`) via try/finally
 - Grid sweep: wired `_cmdProgressSet()` at each `callsDone++` for real progress bar fill; reset in finally
 - Exhaustive scan: indeterminate animated progress bar via `#cmd-progress-fill.indeterminate` keyframe; `.running` class on `#map-status`; cleared in finally
-- Added `#btnCancelGridVisible` (✕ Cancel Sweep) adjacent to `#map-status`; toggled by `_mapSetGridRunUi()`
-- Added `_cdrShow()` + `#cc-discover-results`: lightweight inline post-run summary panel (business, website, status, score — max 20 rows, dismissible, no actions)
+- Added `#btnCancelGridVisible` (âœ• Cancel Sweep) adjacent to `#map-status`; toggled by `_mapSetGridRunUi()`
+- Added `_cdrShow()` + `#cc-discover-results`: lightweight inline post-run summary panel (business, website, status, score â€” max 20 rows, dismissible, no actions)
 - Territory rect dash patterns: `worked` (4 3), `saturated` (6 3), `quiet` (3 5); `next` cells weight 2.5 solid
-- Coverage circle `searched`: opacity 0.45→0.3, dashArray `4 4`
-- Legend labels: `var(--text)`, dot 9px→11px with border-radius
+- Coverage circle `searched`: opacity 0.45â†’0.3, dashArray `4 4`
+- Legend labels: `var(--text)`, dot 9pxâ†’11px with border-radius
 
 Files touched: `lead_engine/dashboard_static/index.html`, `docs/PROJECT_STATE.md`
 
 State after this pass: History updates immediately after every discover run; CC button shows loading state; grid sweeps show real progress fill; exhaustive scans show indeterminate animation; Cancel Sweep always visible during sweeps; lightweight results panel appears inline after CC discover; territory overlay cells differentiated by dash pattern.
 
-Next: Pass 103–105 — Bulk-First Pipeline + Exception Queue
+Next: Pass 103â€“105 â€” Bulk-First Pipeline + Exception Queue

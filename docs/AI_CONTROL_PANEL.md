@@ -1,6 +1,6 @@
 ﻿# Copperline AI Control Panel
 
-Last Updated: 2026-04-05 (Pass 190–195)
+Last Updated: 2026-04-05 (Queue / Pipeline redesign underway)
 Repository Version: v0.3
 
 > **Role:** Active operating contract + current AI guardrails.
@@ -15,10 +15,9 @@ Repository Version: v0.3
 | Field | Value |
 |---|---|
 | Project Phase | Lead Acquisition + Conversion Delivery Engine |
-| Current Focus | Pass 190–195 — Follow-Up Outcome Harvest + Reply/Blocked Recovery |
-| Last Completed Pass | Pass 190–195 — Follow-Up Outcome Harvest + Reply/Blocked Recovery |
-| Pass Before That | Pass 184–189 — Follow-Up Working Set + Due/Blocked Continuity |
-| Next Pass | TBD |
+| Current Focus | Queue / Pipeline operator-workbench redesign |
+| Last Completed Work | Out-of-band stranded-drafted recovery hotfix |
+| Current Truth | Pass 190–195 is complete, but no longer the active center of gravity |
 
 ---
 
@@ -42,6 +41,7 @@ Copperline: discover local service businesses -> draft outreach -> send manually
 | Map discovery interface | `lead_engine/dashboard_static/index.html` |
 | Dashboard API | `lead_engine/dashboard_server.py` |
 | Durable lead memory + timeline | `lead_engine/lead_memory.py` + `lead_engine/data/lead_memory.json` |
+| Queue / pipeline redesign target | `lead_engine/dashboard_static/index.html` |
 
 Protected systems are listed in `PROTECTED_SYSTEMS.md`. Do not duplicate that list here.
 

@@ -1,14 +1,22 @@
 ﻿# Current Build Pass
 
-Last Updated: 2026-04-05 (Pass 190–195)
+Last Updated: 2026-04-05 (Queue / Pipeline redesign underway)
 
-## Active Pass
-Pass 190–195 — Follow-Up Outcome Harvest + Reply/Blocked Recovery
+## Active Focus
+Queue / Pipeline operator-workbench redesign
 
 ## Status
-Pass 190–195 complete.
+Pass 190–195 is complete, but it is no longer the active center of gravity.
 
-## What Pass 190–195 Changed
+## Current Repo Truth
+
+- Out-of-band repo-truth hotfix, not a numbered pass: stranded-drafted recovery.
+- Commit: `95c4b15890bc702394d5c02a0adab330671389fe`
+- Files changed: `lead_engine/run_lead_engine.py`, `lead_engine/stranded_drafted.py`, `lead_engine/scripts/recover_stranded_drafted.py`
+- Live audit result on current data: recoverable stranded `0`, already queued `274`, already sent `4`, excluded contactability `0`, drafted with no direct email `545`
+- Known follow-up risk: `reset_queue_from_gmail.py` is still the prevention-side gap, and the queue still has `2` invalid emails plus `1` approved-without-email row outside this pass
+
+## Archived: Pass 190–195
 
 **Goal:** Make Follow-Up feel like a true operator-owned outcome surface — replied leads are visibly resolved, blocked rows have recovery paths, and exhausted rows are distinguished from actionable ones.
 
@@ -29,8 +37,6 @@ Pass 190–195 complete.
 **Files changed:** `lead_engine/dashboard_static/index.html`, `docs/`
 
 **Protected-system status:** unchanged. No backend changes. No new API endpoints. No auto-follow-up introduced. No scheduler or sender touched.
-
-## What Pass 184–189 Changed
 
 ## What Pass 166–171 Changed
 
@@ -502,4 +508,3 @@ TBD
 - Full View button preserves Pipeline access
 
 ---
-

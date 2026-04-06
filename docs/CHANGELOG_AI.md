@@ -1,4 +1,18 @@
-﻿### 2026-04-05 - Pass 190–195: Follow-Up Outcome Harvest + Reply/Blocked Recovery
+﻿### 2026-04-05 - Out-of-band repo-truth hotfix: stranded-drafted recovery
+
+**Goal:** Recover stranded drafted leads that had direct email addresses but were missing from `pending_emails.csv`, without widening the queue or breaking dedupe.
+
+**Changes:**
+- `run_lead_engine.py` now recognizes stranded drafted recovery state instead of leaving it invisible to future runs.
+- `stranded_drafted.py` classifies drafted rows against queue/dedupe/sent-history truth so recoverable rows can be separated from already queued, already sent, and excluded contactability rows.
+- `scripts/recover_stranded_drafted.py` provides an auditable recovery path for recoverable stranded rows only.
+
+**Live audit result:** recoverable stranded `0`; already queued `274`; already sent `4`; excluded contactability `0`; drafted with no direct email `545`.
+
+**Known follow-up gap:** `reset_queue_from_gmail.py` is still the prevention-side hole and has not been fixed in this hotfix.
+
+**Files changed:** `lead_engine/run_lead_engine.py`, `lead_engine/stranded_drafted.py`, `lead_engine/scripts/recover_stranded_drafted.py`
+### 2026-04-05 - Pass 190–195: Follow-Up Outcome Harvest + Reply/Blocked Recovery
 
 **Goal:** Make Follow-Up feel like a true operator-owned outcome surface — replied leads are visibly resolved, blocked rows have recovery paths, and exhausted rows are distinguished from actionable ones.
 
@@ -2881,4 +2895,3 @@ Fallback bodies (all 17 trades + 3 generic):
 - Full rules in docs/VOICE_RULES.md, short version in agent file comment
 
 ---
-
