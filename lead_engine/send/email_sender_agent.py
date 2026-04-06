@@ -74,6 +74,19 @@ _SIGNATURE = (
 _SIGNATURE_ANCHOR = "drewyomantas@gmail.com"
 
 
+def _parse_send_after_local(send_after_raw: str):
+    raw = (send_after_raw or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = datetime.fromisoformat(raw)
+    except ValueError:
+        return None
+    if parsed.tzinfo is not None:
+        parsed = parsed.astimezone().replace(tzinfo=None)
+    return parsed
+
+
 def _append_signature(body: str) -> str:
     if _SIGNATURE_ANCHOR in body:
         return body
@@ -178,13 +191,9 @@ def _is_send_eligible(row: Dict[str, str]) -> bool:
     # send_after is stored as a naive local ISO string (e.g. "2026-03-17T07:30:00").
     # Comparison uses local time to match how the timestamp was generated.
     send_after_raw = (row.get("send_after") or "").strip()
-    if send_after_raw:
-        try:
-            send_after_dt = datetime.fromisoformat(send_after_raw)
-            if datetime.now() < send_after_dt:
-                return False  # scheduled but not yet due
-        except ValueError:
-            pass  # malformed timestamp — don't block the send
+    send_after_dt = _parse_send_after_local(send_after_raw)
+    if send_after_dt and datetime.now() < send_after_dt:
+        return False  # scheduled but not yet due
 
     draft_state = _draft_validation_state(row)
     return (
@@ -206,11 +215,11 @@ def get_send_readiness(row: Dict[str, str]) -> Dict[str, str | bool]:
     send_after_raw = (row.get("send_after") or "").strip()
     scheduled_waiting = False
     schedule_parse_error = False
-    if send_after_raw:
-        try:
-            scheduled_waiting = datetime.now() < datetime.fromisoformat(send_after_raw)
-        except ValueError:
-            schedule_parse_error = True
+    send_after_dt = _parse_send_after_local(send_after_raw)
+    if send_after_raw and send_after_dt is None:
+        schedule_parse_error = True
+    elif send_after_dt is not None:
+        scheduled_waiting = datetime.now() < send_after_dt
     draft_state = _draft_validation_state(row)
 
     blocked_reason = ""
@@ -420,9 +429,8 @@ def send_next_due_email(pending_csv_path: str | Path) -> bool:
             if not send_after_raw:
                 continue  # not scheduled
             # Parse send_after — skip malformed timestamps
-            try:
-                send_after_dt = datetime.fromisoformat(send_after_raw)
-            except ValueError:
+            send_after_dt = _parse_send_after_local(send_after_raw)
+            if send_after_dt is None:
                 continue
             if now < send_after_dt:
                 continue  # not yet due — never send early

@@ -42,6 +42,7 @@ from send.email_sender_agent import (
     CSV_WRITE_LOCK,
     _is_send_eligible,
     get_send_readiness,
+    _parse_send_after_local,
 )
 from intelligence.email_extractor_agent import enrich_prospects_with_emails
 from intelligence.observation_evidence_agent import refresh_observation_evidence
@@ -407,13 +408,8 @@ def api_queue():
         # Computed field: is_ready — true when send_after is set and its time has passed.
         # Used by frontend to promote past-due scheduled rows into the Actionable filter.
         send_after_raw = (row.get("send_after") or "").strip()
-        if send_after_raw:
-            try:
-                row["is_ready"] = _datetime.fromisoformat(send_after_raw) <= now_local
-            except ValueError:
-                row["is_ready"] = False
-        else:
-            row["is_ready"] = False
+        send_after_dt = _parse_send_after_local(send_after_raw)
+        row["is_ready"] = bool(send_after_dt and send_after_dt <= now_local)
         readiness = get_send_readiness(row)
         row["send_ready"] = readiness["is_send_ready"]
         row["send_ready_blocked_reason"] = readiness["blocked_reason"]
@@ -1229,11 +1225,11 @@ def api_debug_scheduled_send_probe():
     now_local = _datetime.now()
     send_after_due = False
     send_after_parse_error = False
-    if send_after_raw:
-        try:
-            send_after_due = now_local >= _datetime.fromisoformat(send_after_raw)
-        except ValueError:
-            send_after_parse_error = True
+    send_after_dt = _parse_send_after_local(send_after_raw)
+    if send_after_raw and send_after_dt is None:
+        send_after_parse_error = True
+    elif send_after_dt is not None:
+        send_after_due = now_local >= send_after_dt
 
     payload = {
         "ok": True,
@@ -2915,6 +2911,25 @@ def _start_scheduler_once() -> None:
     t = _threading_ds.Thread(target=scheduler_loop, daemon=True, name="copperline-scheduler")
     t.start()
     log.info("[scheduler] Thread started (daemon=True).")
+
+
+@app.before_request
+def _start_scheduler_for_requests() -> None:
+    if os.getenv("COPPERLINE_DISABLE_SCHEDULER", "").strip().lower() in {"1", "true", "yes"}:
+        return
+    _start_scheduler_once()
+
+
+def _running_from_reloader() -> bool:
+    try:
+        from werkzeug.serving import is_running_from_reloader
+        return bool(is_running_from_reloader())
+    except Exception:
+        return False
+
+
+if os.getenv("COPPERLINE_DISABLE_SCHEDULER", "").strip().lower() not in {"1", "true", "yes"} and _running_from_reloader():
+    _start_scheduler_once()
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────

@@ -52,7 +52,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .btn.loading .spin{display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.queue-command-strip{position:sticky;top:116px;z-index:130;display:flex;flex-direction:column;gap:10px;padding:14px 16px 12px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(15,17,23,.98),rgba(11,13,18,.95))}
+.queue-command-strip{position:sticky;top:116px;z-index:130;display:flex;flex-direction:column;gap:12px;padding:14px 16px 12px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(15,17,23,.98),rgba(11,13,18,.95))}
+.queue-workflow-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
+.queue-workflow-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+.queue-workflow-kicker{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--copper)}
+.queue-workflow-title{font-size:17px;font-weight:700;letter-spacing:-.02em;color:var(--text);line-height:1.2}
+.queue-workflow-sub{max-width:860px;font-size:12px;line-height:1.45;color:var(--muted)}
+.queue-workflow-rail{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.queue-rail-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.queue-rail-chip strong{font-family:var(--mono);font-size:11px;color:var(--text)}
+.queue-rail-chip.ready{border-color:rgba(62,207,114,.22);background:rgba(62,207,114,.08);color:var(--green)}
+.queue-rail-chip.scheduled{border-color:rgba(79,142,247,.22);background:rgba(79,142,247,.08);color:var(--blue)}
+.queue-rail-chip.sent{border-color:rgba(200,136,74,.2);background:rgba(200,136,74,.08);color:var(--copper)}
+.queue-rail-chip.followup{border-color:rgba(245,166,35,.18);background:rgba(245,166,35,.08);color:var(--amber)}
 .queue-secondary-controls{border-top:1px solid var(--border);padding-top:10px}
 .queue-secondary-controls>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
 .queue-secondary-controls>summary::-webkit-details-marker{display:none}
@@ -78,7 +90,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .queue-main{min-width:0;display:flex;flex-direction:column;gap:10px}
 .queue-ledger{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--card-shadow)}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.9))}
-.stat{padding:11px 14px;border-right:1px solid var(--border)}.stat:last-child{border-right:none}
+.stat{padding:10px 14px;border-right:1px solid var(--border)}.stat:last-child{border-right:none}
 .stat-n{font-family:var(--mono);font-size:24px;font-weight:600;line-height:1}
 .stat-n.blue{color:var(--blue)}.stat-n.amber{color:var(--amber)}.stat-n.green{color:var(--green)}.stat-n.grey{color:var(--muted)}
 .stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px}
@@ -314,6 +326,8 @@ tbody td{padding:10px 14px;vertical-align:middle}
   .queue-shell{grid-template-columns:1fr}
   .queue-outliner{position:relative;top:auto}
   .panel{width:min(92vw,440px)}
+  .queue-workflow-head{flex-direction:column;align-items:flex-start}
+  .queue-workflow-rail{justify-content:flex-start}
 }
 
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .15s}
@@ -1283,6 +1297,19 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <button class="wb-mode-btn wb-mode-tool" data-mode="sprint" onclick="_setWorkbenchMode('sprint')">⚡ Focus Mode</button>
 </div>
 
+<div class="queue-workflow-head">
+  <div class="queue-workflow-copy">
+    <div class="queue-workflow-kicker">Queue</div>
+    <div class="queue-workflow-title">One lane, one send truth</div>
+    <div class="queue-workflow-sub">Ready now stays in the send lane, scheduled rows wait for their window, and due rows rejoin Send Approved instead of living in a separate state.</div>
+  </div>
+  <div class="queue-workflow-rail" aria-hidden="true">
+    <span class="queue-rail-chip ready">Ready now lane</span>
+    <span class="queue-rail-chip scheduled">Scheduled waiting</span>
+    <span class="queue-rail-chip sent">Sent + follow-up</span>
+  </div>
+</div>
+
 <!-- Pass 130-135: Queue session banner — shows active cohort session at table level, persists across panel open/close -->
 <div id="queue-session-banner" style="display:none"></div>
 
@@ -1290,8 +1317,8 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <div class="stat" title="Total businesses in discovery pool (prospects.csv) — independent of outreach queue"><div class="stat-n blue" id="s-prospects">—</div><div class="stat-lbl">Discovered</div></div>
   <div class="stat"><div class="stat-n blue" id="s-drafted">—</div><div class="stat-lbl">Drafted</div></div>
   <div class="stat"><div class="stat-n amber" id="s-pending">—</div><div class="stat-lbl">Pending</div></div>
-  <div class="stat" style="cursor:pointer" onclick="setFilter('approved',document.querySelector('[data-filter=approved]'))" title="Click to view approved rows — ready to send">
-    <div class="stat-n green" id="s-approved">—</div><div class="stat-lbl">Approved ↗</div>
+  <div class="stat" style="cursor:pointer" onclick="setFilter('approved',document.querySelector('[data-filter=approved]'))" title="Click to view ready-now rows — approved rows that can send now">
+    <div class="stat-n green" id="s-approved">—</div><div class="stat-lbl">Ready Now ↗</div>
   </div>
   <div class="stat"><div class="stat-n grey" id="s-sent">—</div><div class="stat-lbl">Sent</div></div>
   <div class="stat" title="Sent via log_contact (no SMTP message-id — not a confirmed send)"><div class="stat-n" id="s-logged" style="color:var(--muted)">—</div><div class="stat-lbl" style="color:var(--muted)">Logged Only</div></div>
@@ -1393,14 +1420,14 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     </div>
 
     <div class="filter-tabs">
-      <div class="ftab active" data-filter="active" onclick="setFilter('active',this)" title="Queue overview — unsent leads needing attention"><div class="ftab-top"><span>⚡ Queue Overview</span><span class="ftab-count" id="lane-count-active">—</span></div><div class="ftab-sub" id="lane-sub-active">Ready-now work, ordered by urgency</div></div>
+      <div class="ftab active" data-filter="active" onclick="setFilter('active',this)" title="Queue overview — ready-now leads needing attention"><div class="ftab-top"><span>⚡ Ready Now</span><span class="ftab-count" id="lane-count-active">—</span></div><div class="ftab-sub" id="lane-sub-active">Ready-now work, ordered by urgency</div></div>
       <div class="ftab" data-filter="needs_obs" onclick="setFilter('needs_obs',this)" title="Rows missing an observation"><div class="ftab-top"><span>◎ Needs Observation</span><span class="ftab-count" id="lane-count-needs_obs">—</span></div><div class="ftab-sub" id="lane-sub-needs_obs">Observation-led first touch is blocked</div></div>
       <div class="ftab" data-filter="draft_repair" onclick="setFilter('draft_repair',this)" title="Rows with invalid drafts that are not actually send-ready"><div class="ftab-top"><span>! Draft Repair</span><span class="ftab-count" id="lane-count-draft_repair">—</span></div><div class="ftab-sub" id="lane-sub-draft_repair">Validation truth blocks send</div></div>
-      <div class="ftab" data-filter="pending" onclick="setFilter('pending',this)" title="Drafts waiting for approval"><div class="ftab-top"><span>● Ready to Approve</span><span class="ftab-count" id="lane-count-pending">—</span></div><div class="ftab-sub" id="lane-sub-pending">Review and approve before send</div></div>
-      <div class="ftab" data-filter="approved" onclick="setFilter('approved',this)" title="Approved rows that can be sent now"><div class="ftab-top"><span>→ Ready to Send</span><span class="ftab-count" id="lane-count-approved">—</span></div><div class="ftab-sub" id="lane-sub-approved">Manual send gate stays intact</div></div>
-      <div class="ftab" data-filter="scheduled" onclick="setFilter('scheduled',this)" style="color:var(--amber)" title="Emails approved and queued for a send window"><div class="ftab-top"><span>🕐 Scheduled / Waiting</span><span class="ftab-count" id="lane-count-scheduled">—</span></div><div class="ftab-sub" id="lane-sub-scheduled">Waiting on the send window</div></div>
-      <div class="ftab" data-filter="sent" onclick="setFilter('sent',this)" title="Sent rows that need reply watching"><div class="ftab-top"><span>✉ Sent / Handoff</span><span class="ftab-count" id="lane-count-sent">—</span></div><div class="ftab-sub" id="lane-sub-sent">Monitor replies and follow-up handoff</div></div>
-      <div class="ftab" data-filter="replied" onclick="setFilter('replied',this)" style="color:var(--copper)" title="Rows with replies or active conversations"><div class="ftab-top"><span>★ Replied / Conversations</span><span class="ftab-count" id="lane-count-replied">—</span></div><div class="ftab-sub" id="lane-sub-replied">Conversation handoff lives here</div></div>
+      <div class="ftab" data-filter="pending" onclick="setFilter('pending',this)" title="Drafts waiting for approval"><div class="ftab-top"><span>● Pending</span><span class="ftab-count" id="lane-count-pending">—</span></div><div class="ftab-sub" id="lane-sub-pending">Review and approve before send</div></div>
+      <div class="ftab" data-filter="approved" onclick="setFilter('approved',this)" title="Approved rows that can be sent now"><div class="ftab-top"><span>→ Ready to Send</span><span class="ftab-count" id="lane-count-approved">—</span></div><div class="ftab-sub" id="lane-sub-approved">Due scheduled rows return here too</div></div>
+      <div class="ftab" data-filter="scheduled" onclick="setFilter('scheduled',this)" style="color:var(--amber)" title="Rows approved and queued for a send window"><div class="ftab-top"><span>🕐 Scheduled</span><span class="ftab-count" id="lane-count-scheduled">—</span></div><div class="ftab-sub" id="lane-sub-scheduled">Waiting for the send window</div></div>
+      <div class="ftab" data-filter="sent" onclick="setFilter('sent',this)" title="Sent rows that need reply watching"><div class="ftab-top"><span>✉ Sent</span><span class="ftab-count" id="lane-count-sent">—</span></div><div class="ftab-sub" id="lane-sub-sent">Monitor replies and hand off follow-up</div></div>
+      <div class="ftab" data-filter="replied" onclick="setFilter('replied',this)" style="color:var(--copper)" title="Rows with replies or active conversations"><div class="ftab-top"><span>★ Follow-Up</span><span class="ftab-count" id="lane-count-replied">—</span></div><div class="ftab-sub" id="lane-sub-replied">Conversation handoff lives here</div></div>
       <div class="ftab-more" onclick="toggleExtraFilters(this)">⋯ More</div>
       <div class="ftab ftab-aux" data-filter="all" onclick="setFilter('all',this)"><div class="ftab-top"><span>All</span><span class="ftab-count" id="lane-count-all">—</span></div><div class="ftab-sub" id="lane-sub-all">Everything in queue order</div></div>
       <div class="ftab ftab-aux" data-filter="stale" onclick="setFilter('stale',this)" style="color:var(--amber)" title="Rows with old copy — regenerate before sending"><div class="ftab-top"><span>⚠ Stale</span><span class="ftab-count" id="lane-count-stale">—</span></div><div class="ftab-sub" id="lane-sub-stale">Needs regeneration before send</div></div>
@@ -3257,6 +3284,14 @@ function _updateScheduledStat() { // Pass 172-177: client-side computed — back
   if (el) el.textContent = (allRows || []).filter(r => r.send_after && !r.sent_at).length;
 }
 
+function _sendableRows(rows) {
+  return (rows || []).filter(r => r.send_ready && !r.sent_at && r.to_email);
+}
+
+function _dueScheduledRows(rows) {
+  return _sendableRows(rows).filter(r => !!(r.send_after || '').trim());
+}
+
 function isRowActionable(row) {
   const terminal = new Set(['replied','not_interested','bad_lead','no_contact_route','closed']);
   // A row is actionable if: not sent, not terminal, AND either no schedule OR schedule is past-due.
@@ -3645,7 +3680,7 @@ function _renderQueueSessionBanner() {
   }
   // Pass 154-159: send-readiness strip — appears after batch approval, persists until dismissed
   if (!qs && _lastApprovedCount > 0) {
-    const _sendCount = allRows.filter(r => r.send_ready && !r.sent_at && r.to_email).length;
+    const _sendCount = _sendableRows(allRows).length;
     banner.style.display = '';
     banner.className = 'qsb-send-ready';
     const _sendBtn = _sendCount > 0
@@ -3713,12 +3748,14 @@ function _renderQueueSessionBanner() {
     if (qs.cohortKey === 'approved') {
       // Pass 166-171: meaningful approved-session summary — how many scheduled, how many still ready to send now
       const _scheduledInSession = qs.outcomes?.scheduled || 0;
-      const _readyNow = (allRows || []).filter(r => r.send_ready && !r.sent_at && !r.send_after && r.to_email).length;
+      const _sendableNow = _sendableRows(allRows).length;
+      const _dueFromSchedule = _dueScheduledRows(allRows).length;
+      const _readyNow = Math.max(0, _sendableNow - _dueFromSchedule);
       _doneOutcome = _scheduledInSession > 0
-        ? `${_scheduledInSession} scheduled · ${_readyNow} ready now`
-        : `${total} rows reviewed · ${_readyNow} ready now`;
-      _sendReadyBtn = _readyNow > 0
-        ? `<button class="qsb-btn" style="background:rgba(245,166,35,.18);color:var(--amber)" onclick="confirmSend()" title="Send all approved rows — requires confirmation">▶ Send Approved (${_readyNow})</button>`
+        ? `${_scheduledInSession} scheduled · ${_readyNow} ready now${_dueFromSchedule ? ` · ${_dueFromSchedule} due from schedule` : ''}`
+        : `${total} rows reviewed · ${_readyNow} ready now${_dueFromSchedule ? ` · ${_dueFromSchedule} due from schedule` : ''}`;
+      _sendReadyBtn = _sendableNow > 0
+        ? `<button class="qsb-btn" style="background:rgba(245,166,35,.18);color:var(--amber)" onclick="confirmSend()" title="Send all approved rows — requires confirmation">▶ Send Approved (${_sendableNow})</button>`
         : `<span class="qsb-meta" style="color:var(--muted);font-size:11px">✓ All scheduled or sent</span>`;
       // Pass 172-177: offer direct navigation to scheduled rows if any were scheduled this session
       _viewScheduledBtn = _qsScheduledKeys.size > 0
@@ -3841,7 +3878,9 @@ function statusBadge(row) {
   if (!row.sent_at && status_draft_version && row.draft_version !== status_draft_version)
     return '<span class="badge badge-stale" title="Old copy — regenerate before sending">⚠ Stale</span>';
   if (row.draft_valid === false) return '<span class="badge badge-bad">! Repair</span>';
-  if (row.send_after && !row.sent_at) return `<span class="badge badge-scheduled" title="Scheduled: ${escHtml(row.send_after)}">🕐 Scheduled</span>`;
+  if (row.send_after && !row.sent_at) return row.is_ready
+    ? `<span class="badge badge-ready" title="Scheduled window reached: ${escHtml(row.send_after)}">→ Ready Now</span>`
+    : `<span class="badge badge-scheduled" title="Scheduled: ${escHtml(row.send_after)}">🕐 Scheduled</span>`;
   if (row.send_ready) return '<span class="badge badge-approved">● Approved</span>';
   return '<span class="badge badge-pending">○ Pending</span>';
 }
@@ -3943,19 +3982,20 @@ function _queueTimelineNoteHtml() {
       : '';
     return {
       tone: 'scheduled',
-      html: `<strong>Scheduled queue:</strong> future rows wait here until their send window. "Tomorrow morning" uses the backend's industry send time. ${futureScheduled} future-scheduled • ${readyScheduled} window-reached.${_reviewCta}`,
+      html: `<strong>Scheduled queue:</strong> future rows wait here until their send window. Reached-window rows are marked Ready Now and rejoin Send Approved. ${futureScheduled} future-scheduled • ${readyScheduled} window-reached.${_reviewCta}`,
     };
   }
   if (currentFilter === 'approved') {
     // Pass 154-159: live send-ready count + explicit next-action guidance
     // Pass 160-165: added → Review (N) session CTA so operator can step through approved rows inline
-    const approvedSendReady = filteredRows.filter(r => r.send_ready && !r.sent_at && r.to_email).length;
+    const approvedSendReady = _sendableRows(filteredRows).length;
+    const approvedDueFromSchedule = _dueScheduledRows(filteredRows).length;
     const _reviewCta = approvedSendReady
       ? ` <button style="font-size:11px;padding:2px 8px;background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.25);border-radius:var(--rs);cursor:pointer;vertical-align:middle" onclick="_startApprovedSession()" title="Step through these rows to review and schedule">→ Review (${approvedSendReady})</button>`
       : '';
     return {
       tone: 'ready',
-      html: `<strong>Approved — ${approvedSendReady} ready to send.</strong>${_reviewCta} Schedule individual rows with 🕐, or use <strong>▶ Send Approved</strong> in the toolbar to send all at once.`,
+      html: `<strong>Ready Now — ${approvedSendReady} ready to send.</strong>${approvedDueFromSchedule ? ` ${approvedDueFromSchedule} came back from schedule.` : ''}${_reviewCta} Schedule individual rows with 🕐, or use <strong>▶ Send Approved</strong> in the toolbar to send all at once.`,
     };
   }
   if (currentFilter === 'active') {
@@ -3979,7 +4019,7 @@ function _queueTimelineNoteHtml() {
   if (currentFilter === 'all') {
     return {
       tone: 'scheduled',
-      html: `<strong>All queue:</strong> ready-now work appears first, then future-scheduled rows, then history. ${futureScheduled} future-scheduled • ${readyScheduled} scheduled row(s) have reached their send window.`,
+      html: `<strong>All queue:</strong> ready-now work appears first, then future-scheduled rows, then history. ${futureScheduled} future-scheduled • ${readyScheduled} scheduled row(s) have reached their send window and rejoin Ready Now.`,
     };
   }
   return null;
@@ -6332,9 +6372,9 @@ async function sendDryRun() {
 }
 
 function confirmSend() {
-  const ready = allRows.filter(r=>r.send_ready&&!r.sent_at&&r.to_email).length;
+  const ready = _sendableRows(allRows).length;
   document.getElementById('send-modal-msg').innerHTML =
-    `<strong>${ready} email${ready!==1?'s':''}</strong> will be sent from your Gmail account as Drew @ Copperline. Only rows that are approved, valid, and currently send-ready are included. This cannot be undone.`;
+    `<strong>${ready} email${ready!==1?'s':''}</strong> will be sent from your Gmail account as Drew @ Copperline. Only rows that are approved, valid, and currently send-ready are included, including rows whose schedule window has arrived. This cannot be undone.`;
   document.getElementById('send-modal').classList.add('open');
 }
 
