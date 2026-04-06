@@ -917,12 +917,66 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .mrp-group-collapsed .mrp-item{display:none}
 .mrp-group-toggle{cursor:pointer;user-select:none;font-size:10px;color:var(--dim)}
 
-/* ── Pass 75: Command Center split layout ─────────────────────────── */
-.cc-wrap{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;overflow:hidden}
-.cc-main-row{display:flex;flex:1;min-height:0;overflow:hidden}
-.cc-map-pane{flex:1;min-width:500px;display:flex;flex-direction:column;padding:4px 6px 0 10px;box-sizing:border-box;min-height:0}
+/* ── Pass 136: Command Center shell + Operations Theater ─────────── */
+.cc-wrap{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;overflow:hidden;background:linear-gradient(180deg,#0a0d13,#0f131c 24%,#0d1118)}
+.cc-shell-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 12px 10px;border-bottom:1px solid rgba(255,255,255,.07);background:linear-gradient(180deg,rgba(18,22,30,.96),rgba(12,15,22,.94));box-shadow:inset 0 -1px 0 rgba(255,255,255,.03)}
+.cc-shell-brand{display:flex;align-items:flex-start;gap:14px;min-width:0}
+.cc-shell-kicker{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--copper)}
+.cc-shell-title{font-size:18px;font-weight:700;color:#f3f6fc;line-height:1.05}
+.cc-shell-note{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:460px}
+.cc-shell-modes{display:flex;align-items:center;gap:5px;padding:3px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:999px}
+.cc-shell-mode{padding:5px 11px;border:none;border-radius:999px;background:transparent;color:var(--dim);font-size:11px;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:.14s}
+.cc-shell-mode.active{background:rgba(79,142,247,.16);color:#dbeafe;box-shadow:inset 0 0 0 1px rgba(79,142,247,.28)}
+.cc-shell-mode.is-future{opacity:.5;cursor:default}
+.cc-shell-scope{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);min-width:0}
+.cc-shell-scope-dot{color:var(--copper);font-size:11px}
+.cc-shell-scope-text{font-size:11px;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.cc-shell-scope-meta{font-size:10px;color:var(--dim);font-family:var(--mono);white-space:nowrap}
+.cc-main-row{display:flex;flex:1;min-height:0;overflow:hidden;padding:10px 10px 0;gap:10px}
+.cc-wrap.mode-operations .cc-tp-pane{display:none}
+.cc-wrap.mode-operations .cc-journal-pane,.cc-wrap.mode-operations .cc-ops-dossier{display:flex}
+.cc-wrap.mode-operations .cc-ops-drawer{display:flex}
+.cc-wrap.mode-territory .cc-journal-pane,.cc-wrap.mode-territory .cc-ops-dossier,.cc-wrap.mode-territory .cc-ops-drawer{display:none}
+.cc-wrap.mode-territory .cc-tp-pane{display:flex}
+.cc-wrap.mode-focus .cc-journal-pane{width:220px}
+.cc-wrap.mode-focus .cc-ops-dossier{width:420px}
+.cc-journal-pane{width:258px;flex-shrink:0;display:none;flex-direction:column;background:linear-gradient(180deg,rgba(19,24,33,.98),rgba(13,17,24,.97));border:1px solid rgba(255,255,255,.07);border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.26)}
+.cc-journal-head{padding:12px 13px 10px;border-bottom:1px solid rgba(255,255,255,.06)}
+.cc-journal-kicker{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--copper)}
+.cc-journal-title{font-size:16px;font-weight:700;color:#f4f7fb;margin-top:4px}
+.cc-journal-sub{font-size:11px;color:var(--muted);line-height:1.45;margin-top:4px}
+.cc-journal-list{flex:1;overflow-y:auto;padding:8px}
+.cc-journal-item{display:flex;flex-direction:column;gap:6px;padding:10px 11px 11px;border-radius:14px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.025);cursor:pointer;transition:.14s;margin-bottom:8px}
+.cc-journal-item:hover{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.04)}
+.cc-journal-item.active{background:linear-gradient(180deg,rgba(79,142,247,.16),rgba(79,142,247,.08));border-color:rgba(79,142,247,.28);box-shadow:0 8px 20px rgba(79,142,247,.12)}
+.cc-journal-item.ready{background:linear-gradient(180deg,rgba(62,207,114,.12),rgba(62,207,114,.05));border-color:rgba(62,207,114,.22)}
+.cc-journal-item.block{background:linear-gradient(180deg,rgba(245,166,35,.11),rgba(245,166,35,.04));border-color:rgba(245,166,35,.18)}
+.cc-journal-top{display:flex;align-items:center;gap:8px}
+.cc-journal-icon{width:24px;height:24px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);font-size:12px;flex-shrink:0}
+.cc-journal-label{font-size:12px;font-weight:700;color:#f3f6fc;flex:1;min-width:0}
+.cc-journal-count{font-family:var(--mono);font-size:16px;font-weight:700;color:#f3f6fc;line-height:1}
+.cc-journal-note{font-size:10px;color:var(--muted);line-height:1.45}
+.cc-journal-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px;color:var(--dim)}
+.cc-journal-meta strong{color:var(--text);font-weight:700}
+.cc-map-pane{flex:1;min-width:480px;display:flex;flex-direction:column;padding:0;box-sizing:border-box;min-height:0;gap:8px}
+.cc-map-pane #map-layout{flex:1;min-height:0;height:100%}
+.cc-map-pane .map-page-wrap{padding:0;flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.cc-map-pane #map-status{flex-shrink:0;padding:3px 4px;font-size:10px}
+.cc-map-pane #map-territory-legend,.cc-map-pane #map-history{display:none!important}
+.cc-map-pane .cmd-bar{border-radius:16px 16px 12px 12px;margin-bottom:0;padding:8px 12px;background:linear-gradient(180deg,rgba(22,28,38,.98),rgba(14,18,26,.96));border:1px solid rgba(255,255,255,.08);box-shadow:0 12px 28px rgba(0,0,0,.24)}
+.cc-ops-runway{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.cc-runway-card{padding:9px 10px;border-radius:14px;background:linear-gradient(180deg,rgba(27,33,45,.96),rgba(17,22,30,.94));border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 24px rgba(0,0,0,.18)}
+.cc-runway-card.ready{background:linear-gradient(180deg,rgba(26,49,35,.96),rgba(15,30,21,.94));border-color:rgba(62,207,114,.2)}
+.cc-runway-card.warn{background:linear-gradient(180deg,rgba(52,38,20,.96),rgba(27,21,14,.94));border-color:rgba(245,166,35,.22)}
+.cc-runway-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--dim)}
+.cc-runway-value{font-family:var(--mono);font-size:19px;font-weight:700;color:#f5f7fb;line-height:1;margin-top:5px}
+.cc-runway-note{font-size:10px;color:var(--muted);line-height:1.4;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-map-statusbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 4px}
+.cc-map-statusbar-left{display:flex;align-items:center;gap:8px;min-width:0}
+.cc-map-statusbar-right{font-size:10px;color:var(--dim);font-family:var(--mono);white-space:nowrap}
+.cc-map-territory-note{padding:7px 10px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);font-size:11px;color:var(--muted)}
 /* Territory planner — supporting role, not competing */
-.cc-tp-pane{width:260px;flex-shrink:0;display:flex;flex-direction:column;border-left:1px solid var(--border-hi);background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.97));overflow:hidden}
+.cc-tp-pane{width:280px;flex-shrink:0;display:none;flex-direction:column;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.97));overflow:hidden}
 .cc-tp-header{padding:8px 12px 7px;border-top:2px solid var(--copper);border-bottom:1px solid var(--border);flex-shrink:0}
 .cc-tp-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text);margin-bottom:5px}
 .cc-tp-addrow{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
@@ -931,74 +985,47 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cc-tp-filters{display:flex;gap:4px;padding:4px 12px;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;align-items:center}
 .cc-tp-body{flex:1;overflow-y:auto;padding:6px 8px 40px}
 .cc-tp-body .tp-card{margin-bottom:8px}
-/* Highlight territory card when map selects it */
 .tp-card.cc-selected{border-color:var(--copper)!important;box-shadow:0 0 0 1px var(--copper),0 4px 16px rgba(184,115,51,.2)!important}
-/* Map pane fills the split — height accounts for: top nav(44) + sub-nav(34) + cmd-bar(40) + map-cmd-bar(48) + cmd-bar-bottom(44) + padding(20) */
-.cc-map-pane #map-layout{flex:1;min-height:0;height:100%}
-.cc-map-pane .map-page-wrap{padding:0;flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
-.cc-map-pane #map-status{flex-shrink:0;padding:3px 4px;font-size:10px}
-.cc-map-pane #map-territory-legend,.cc-map-pane #map-history{display:none!important}
-.cc-map-pane .cmd-bar{border-radius:var(--r) var(--r) 0 0;margin-bottom:0;padding:8px 12px}
-
-/* ── Pass 82: Queue rail ──────────────────────────────────────────── */
-.cc-queue-rail{width:280px;flex-shrink:0;display:flex;flex-direction:column;border-left:1px solid rgba(184,115,51,.22);background:var(--surface);overflow:hidden}
-.cc-qr-header{padding:6px 10px;border-bottom:1px solid var(--border);border-top:2px solid var(--copper);flex-shrink:0;display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
-.cc-qr-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--copper);white-space:nowrap}
-.cc-qr-search{flex:1;min-width:0;padding:3px 7px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:11px;outline:none}
-.cc-qr-search:focus{border-color:var(--blue)}
-.cc-qr-filters{display:flex;gap:3px;padding:4px 8px;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
-.cc-qr-filters::-webkit-scrollbar{display:none}
-.cc-qrf{padding:2px 8px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:10px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.12s}
-.cc-qrf.active{background:var(--blue-glow);border-color:rgba(79,142,247,.35);color:var(--blue)}
-.cc-qrf:hover:not(.active){color:var(--text);border-color:var(--border-hi)}
-.cc-qr-stats{display:flex;gap:0;border-bottom:1px solid var(--border);flex-shrink:0}
-.cc-qr-stat{flex:1;padding:5px 4px;text-align:center;border-right:1px solid var(--border)}
-.cc-qr-stat:last-child{border-right:none}
-.cc-qr-stat-n{font-family:var(--mono);font-size:18px;font-weight:700;line-height:1}
-.cc-qr-stat-l{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
-.cc-qr-body{flex:1;overflow-y:auto;padding:0}
-.cc-qr-empty{padding:16px 12px;font-size:11px;color:var(--muted);text-align:center}
-/* Pass 84: Territory scope bar */
-.cc-scope-bar{display:flex;align-items:center;gap:6px;padding:5px 10px;border-bottom:1px solid rgba(184,115,51,.25);background:rgba(184,115,51,.07);flex-shrink:0}
-.cc-scope-icon{font-size:11px;color:var(--copper);flex-shrink:0}
-.cc-scope-name{font-size:11px;font-weight:700;color:var(--copper);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cc-scope-count{font-size:10px;color:var(--dim);font-family:var(--mono);white-space:nowrap;flex-shrink:0}
-.cc-scope-clear{background:none;border:none;color:var(--dim);font-size:13px;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0;transition:color .12s}
-.cc-scope-clear:hover{color:var(--copper)}
-/* Pass 84: Scoped summary strip */
-.cc-scope-summary{display:flex;gap:0;border-bottom:1px solid var(--border);flex-shrink:0}
-.cc-scope-stat{flex:1;padding:4px 4px;text-align:center;border-right:1px solid var(--border)}
-.cc-scope-stat:last-child{border-right:none}
-.cc-scope-stat-n{font-family:var(--mono);font-size:13px;font-weight:700;line-height:1;color:var(--text)}
-.cc-scope-stat-n.copper{color:var(--copper)}
-.cc-scope-stat-n.amber{color:var(--amber)}
-.cc-scope-stat-n.green{color:var(--green)}
-.cc-scope-stat-l{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
-/* Pass 84: Scoped cmd bar label */
+.cc-ops-dossier{width:360px;flex-shrink:0;display:none;flex-direction:column;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:linear-gradient(180deg,rgba(17,23,33,.98),rgba(12,16,23,.97));overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.22)}
+.cc-dossier-head{padding:12px 13px 10px;border-bottom:1px solid rgba(255,255,255,.06)}
+.cc-dossier-kicker{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue)}
+.cc-dossier-title{font-size:16px;font-weight:700;color:#f4f7fb;margin-top:4px}
+.cc-dossier-sub{font-size:11px;color:var(--muted);line-height:1.45;margin-top:4px}
+.cc-dossier-presence{padding:9px 13px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;gap:8px;background:rgba(255,255,255,.025)}
+.cc-dossier-chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);font-size:10px;color:var(--muted)}
+.cc-dossier-chip.live{border-color:rgba(79,142,247,.24);background:rgba(79,142,247,.12);color:#dbeafe}
+.cc-dossier-dock{flex:1;min-height:0;display:flex;flex-direction:column}
+.cc-dossier-empty{flex:1;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:22px 18px;color:var(--muted);gap:8px}
+.cc-dossier-empty strong{font-size:15px;color:#f3f6fb}
+.cc-ops-drawer{display:none;flex-shrink:0;flex-direction:column;min-height:210px;max-height:34vh;margin:10px 10px 0;border:1px solid rgba(255,255,255,.08);border-radius:18px 18px 0 0;background:linear-gradient(180deg,rgba(18,23,32,.98),rgba(13,17,24,.98));overflow:hidden;box-shadow:0 -8px 22px rgba(0,0,0,.18)}
+.cc-drawer-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.cc-drawer-title{font-size:15px;font-weight:700;color:#f4f7fb}
+.cc-drawer-meta{font-size:11px;color:var(--muted);line-height:1.45;margin-top:3px}
+.cc-drawer-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.cc-drawer-chip{padding:4px 9px;border-radius:999px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03);font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;transition:.12s}
+.cc-drawer-chip.active{background:rgba(79,142,247,.14);border-color:rgba(79,142,247,.25);color:#dbeafe}
+.cc-drawer-search{padding:5px 8px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text);font-size:11px;outline:none;min-width:180px}
+.cc-drawer-search:focus{border-color:rgba(79,142,247,.35)}
+.cc-drawer-body{flex:1;overflow:auto;padding:8px 10px 12px}
+.cc-drawer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cc-drawer-row{display:flex;flex-direction:column;gap:7px;padding:10px 11px;border-radius:14px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.03);cursor:pointer;transition:.12s}
+.cc-drawer-row:hover{border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.05)}
+.cc-drawer-row-top{display:flex;align-items:flex-start;gap:8px}
+.cc-drawer-row-name{font-size:12px;font-weight:700;color:#f4f7fb;flex:1;min-width:0}
+.cc-drawer-row-name span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-drawer-row-score{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--muted);flex-shrink:0}
+.cc-drawer-row-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:10px;color:var(--dim)}
+.cc-drawer-pill{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.cc-drawer-pill.ready{background:rgba(62,207,114,.13);border-color:rgba(62,207,114,.26);color:var(--green)}
+.cc-drawer-pill.wait{background:rgba(79,142,247,.13);border-color:rgba(79,142,247,.24);color:var(--blue)}
+.cc-drawer-pill.block{background:rgba(245,166,35,.12);border-color:rgba(245,166,35,.22);color:var(--amber)}
+.cc-drawer-pill.follow{background:rgba(184,115,51,.13);border-color:rgba(184,115,51,.22);color:var(--copper)}
+.cc-drawer-note{font-size:10px;color:var(--muted);line-height:1.45}
+.cc-drawer-actions{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cc-drawer-link{font-size:10px;color:var(--blue);text-decoration:none}
+.cc-drawer-empty{padding:18px 12px;color:var(--muted);font-size:11px}
 .cc-cmd-scope-label{font-size:10px;font-weight:700;color:var(--copper);white-space:nowrap;padding:2px 7px;border-radius:999px;background:rgba(184,115,51,.12);border:1px solid rgba(184,115,51,.25)}
-/* Compact queue row cards */
-.cc-qrow{padding:6px 10px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s;border-left:2px solid transparent}
-.cc-qrow:hover{background:var(--surface2)}
-.cc-qrow.cc-qrow-approved{border-left-color:var(--green)}
-.cc-qrow.cc-qrow-sent{border-left-color:var(--muted);opacity:.5}
-.cc-qrow.cc-qrow-replied{border-left-color:var(--copper)}
-.cc-qrow.cc-qrow-pending{border-left-color:var(--border)}
-.cc-qrow.cc-qrow-stale{border-left-color:var(--amber)}
-.cc-qrow-top{display:flex;align-items:center;gap:6px}
-.cc-qrow-name{font-size:12px;font-weight:600;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cc-qrow-score{font-size:9px;font-family:var(--mono);padding:1px 5px;border-radius:4px;background:var(--surface3);color:var(--muted);flex-shrink:0}
-.cc-qrow-score.high{background:rgba(62,207,114,.12);color:var(--green)}
-.cc-qrow-bot{display:flex;align-items:center;gap:5px;margin-top:2px;flex-wrap:wrap}
-.cc-qrow-city{font-size:10px;color:var(--dim)}
-.cc-qrow-badge{font-size:9px;padding:1px 6px;border-radius:8px;font-weight:700;flex-shrink:0}
-.cc-qrow-badge.approved{background:rgba(79,142,247,.12);color:var(--blue)}
-.cc-qrow-badge.sent{background:rgba(62,207,114,.12);color:var(--green)}
-.cc-qrow-badge.replied{background:rgba(200,136,74,.18);color:var(--copper)}
-.cc-qrow-badge.pending{background:rgba(255,255,255,.06);color:var(--dim)}
-.cc-qrow-badge.stale{background:rgba(245,166,35,.1);color:var(--amber)}
-.cc-qrow-subj{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-
-/* ── Pass 82: Bottom command bar ─────────────────────────────────── */
+/* Bottom command bar */
 .cc-cmd-bar{flex-shrink:0;display:flex;align-items:center;gap:5px;padding:4px 12px;border-top:1px solid rgba(184,115,51,.2);background:linear-gradient(0deg,rgba(8,10,15,1),rgba(11,13,18,.96));flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
 .cc-cmd-bar::-webkit-scrollbar{display:none}
 .cc-cmd-sep{width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 2px}
@@ -1014,6 +1041,16 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cc-cmd-btn:disabled{opacity:.38;cursor:not-allowed}
 .cc-cmd-btn.loading{opacity:.75;cursor:wait}
 .cc-cmd-btn.loading .spin{display:inline-block}
+@media (max-width:1500px){
+  .cc-journal-pane{width:236px}
+  .cc-ops-dossier{width:332px}
+}
+@media (max-width:1320px){
+  .cc-main-row{padding:8px 8px 0}
+  .cc-wrap.mode-operations .cc-journal-pane{display:none}
+  .cc-ops-runway{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cc-drawer-grid{grid-template-columns:1fr}
+}
 .map-status.running{color:var(--text);font-weight:600;background:rgba(184,115,51,.08);border:1px solid rgba(184,115,51,.2);border-radius:4px;padding:3px 8px}
 #cmd-progress-fill.indeterminate{width:40%!important;animation:progress-slide 1.4s ease-in-out infinite}
 @keyframes progress-slide{0%{transform:translateX(-150%)}100%{transform:translateX(350%)}}
@@ -1920,8 +1957,38 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 
 <!-- ══════════════ PAGE: COMMAND CENTER (Map + Territory combined) ══════════════ -->
 <div class="page active" id="page-command-center">
-<div class="cc-wrap">
+<div class="cc-wrap mode-operations" id="cc-wrap">
+<div class="cc-shell-bar">
+  <div class="cc-shell-brand">
+    <div>
+      <div class="cc-shell-kicker">Command Center</div>
+      <div class="cc-shell-title" id="cc-shell-title">Operations Theater</div>
+      <div class="cc-shell-note" id="cc-shell-note">Map-anchored queue pressure, territory context, and dossier review in one shell.</div>
+    </div>
+    <div class="cc-shell-modes">
+      <button class="cc-shell-mode" data-cc-mode="territory" onclick="ccSetMode('territory',this)">Territory View</button>
+      <button class="cc-shell-mode active" data-cc-mode="operations" onclick="ccSetMode('operations',this)">Operations View</button>
+      <button class="cc-shell-mode is-future" type="button" title="Focus View will promote dossier-first review in a later pass">Focus View</button>
+    </div>
+  </div>
+  <div class="cc-shell-scope" id="cc-shell-scope">
+    <span class="cc-shell-scope-dot">◈</span>
+    <span class="cc-shell-scope-text" id="cc-shell-scope-text">Global queue</span>
+    <span class="cc-shell-scope-meta" id="cc-shell-scope-meta">all rows</span>
+  </div>
+</div>
 <div class="cc-main-row">
+
+  <aside class="cc-journal-pane" id="cc-journal-pane">
+    <div class="cc-journal-head">
+      <div class="cc-journal-kicker">Operations Journal</div>
+      <div class="cc-journal-title">Priority stack</div>
+      <div class="cc-journal-sub">Choose the front you want to work. The drawer and dossier stay scoped to this lane and the current territory.</div>
+    </div>
+    <div class="cc-journal-list" id="cc-journal-list">
+      <div class="cc-drawer-empty">Loading operations…</div>
+    </div>
+  </aside>
 
   <!-- LEFT: Map pane — full map experience -->
   <div class="cc-map-pane">
@@ -1965,6 +2032,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
           <button id="btnMapTerritorySaturation" class="btn btn-ghost map-territory-btn active" onclick="mapToggleIndustrySaturation()" style="font-size:11px">◎ Saturation</button>
           <button id="btnMapTerritoryRefresh" class="btn btn-ghost" onclick="mapReloadTerritoryOverlay()" style="font-size:11px">↻ Refresh</button>
         </div>
+      </div>
+      <div class="cc-ops-runway" id="cc-ops-runway">
+        <div class="cc-runway-card"><div class="cc-runway-label">Loading</div><div class="cc-runway-value">—</div><div class="cc-runway-note">Reading queue pressure…</div></div>
       </div>
       <!-- Hidden legacy inputs kept for JS compatibility -->
       <div id="bnd-bar" style="display:none">
@@ -2011,13 +2081,14 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
           <div class="mrp-list" id="mrp-list"></div>
         </div>
       </div>
-      <div style="margin-top:6px;display:flex;align-items:center;justify-content:space-between;gap:12px">
-        <div style="display:flex;align-items:center;gap:8px">
+      <div class="cc-map-statusbar">
+        <div class="cc-map-statusbar-left">
           <div id="map-status" class="map-status"></div>
           <button id="btnCancelGridVisible" class="btn btn-ghost" onclick="mapCancelAreaGrid()" style="display:none;font-size:11px;padding:4px 10px;color:var(--amber);border-color:rgba(245,166,35,.3)">✕ Cancel Sweep</button>
         </div>
-        <span id="map-zoom-hint" style="font-size:10px;color:var(--dim);white-space:nowrap;font-family:var(--mono);flex-shrink:0"></span>
+        <span id="map-zoom-hint" class="cc-map-statusbar-right"></span>
       </div>
+      <div class="cc-map-territory-note" id="cc-map-territory-note">Global map pressure. Select a territory to collapse the journal, runway, and drawer to that operating front.</div>
       <div id="map-territory-legend"></div>
       <div id="map-history">
         <div class="mh-hdr">
@@ -2074,47 +2145,42 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     </div>
   </div>
 
-  <!-- ── Pass 82/83: Queue Rail — right column inside cc-main-row ── -->
-  <div class="cc-queue-rail" id="cc-queue-rail">
-    <div class="cc-qr-header">
-      <span class="cc-qr-title">Outreach Queue</span>
-      <input class="cc-qr-search" id="cc-qr-search" type="text" placeholder="Search…" oninput="ccQueueRender()">
+  <aside class="cc-ops-dossier" id="cc-ops-dossier">
+    <div class="cc-dossier-head">
+      <div class="cc-dossier-kicker">Dossier</div>
+      <div class="cc-dossier-title">Focused row review</div>
+      <div class="cc-dossier-sub">Approve, schedule, repair, and continue sessions without leaving the map shell.</div>
     </div>
-    <div class="cc-qr-stats">
-      <div class="cc-qr-stat"><div class="cc-qr-stat-n blue" id="ccqr-s-approved">—</div><div class="cc-qr-stat-l">Approved</div></div>
-      <div class="cc-qr-stat"><div class="cc-qr-stat-n" style="color:var(--amber)" id="ccqr-s-pending">—</div><div class="cc-qr-stat-l">Pending</div></div>
-      <div class="cc-qr-stat"><div class="cc-qr-stat-n green" id="ccqr-s-sent">—</div><div class="cc-qr-stat-l">Sent</div></div>
-      <div class="cc-qr-stat"><div class="cc-qr-stat-n" style="color:var(--copper)" id="ccqr-s-replied">—</div><div class="cc-qr-stat-l">Replied</div></div>
+    <div class="cc-dossier-presence" id="cc-dossier-presence">
+      <span class="cc-dossier-chip live" id="cc-dossier-mode-chip">Operations live</span>
+      <span class="cc-dossier-chip" id="cc-dossier-slice-chip">No row selected</span>
     </div>
-    <div class="cc-qr-filters">
-      <span class="cc-qrf active" data-ccqf="active"   onclick="ccQueueFilter('active',this)">⚡ Actionable</span>
-      <span class="cc-qrf"       data-ccqf="approved"  onclick="ccQueueFilter('approved',this)">Approved</span>
-      <span class="cc-qrf"       data-ccqf="pending"   onclick="ccQueueFilter('pending',this)">Pending</span>
-      <span class="cc-qrf"       data-ccqf="stale"     onclick="ccQueueFilter('stale',this)" style="color:var(--amber)">⚠ Stale</span>
-      <span class="cc-qrf"       data-ccqf="replied"   onclick="ccQueueFilter('replied',this)" style="color:var(--copper)">★ Replied</span>
-      <span class="cc-qrf"       data-ccqf="all"       onclick="ccQueueFilter('all',this)">All</span>
+    <div class="cc-dossier-dock" id="cc-ops-dossier-dock"></div>
+    <div class="cc-dossier-empty" id="cc-ops-dossier-empty">
+      <strong>Row focus stays here.</strong>
+      <div>Pick a business from the drawer or map results to open the full review dossier inside Command Center.</div>
     </div>
-    <!-- Pass 84: Territory scope bar -->
-    <div class="cc-scope-bar" id="cc-scope-bar" style="display:none">
-      <span class="cc-scope-icon">◈</span>
-      <span class="cc-scope-name" id="cc-scope-name">—</span>
-      <span class="cc-scope-count" id="cc-scope-count"></span>
-      <button class="cc-scope-clear" onclick="ccClearTerritoryScope()" title="Clear scope">✕</button>
-    </div>
-    <!-- Pass 84: Scoped territory summary -->
-    <div class="cc-scope-summary" id="cc-scope-summary" style="display:none">
-      <div class="cc-scope-stat"><div class="cc-scope-stat-n copper" id="ccsc-total">—</div><div class="cc-scope-stat-l">Total</div></div>
-      <div class="cc-scope-stat"><div class="cc-scope-stat-n" style="color:var(--blue)" id="ccsc-approved">—</div><div class="cc-scope-stat-l">Appr</div></div>
-      <div class="cc-scope-stat"><div class="cc-scope-stat-n amber" id="ccsc-stale">—</div><div class="cc-scope-stat-l">Stale</div></div>
-      <div class="cc-scope-stat"><div class="cc-scope-stat-n green" id="ccsc-replied">—</div><div class="cc-scope-stat-l">Replied</div></div>
-      <div class="cc-scope-stat"><div class="cc-scope-stat-n" style="color:var(--dim)" id="ccsc-noemail">—</div><div class="cc-scope-stat-l">No Email</div></div>
-    </div>
-        <div class="cc-qr-body" id="cc-qr-body">
-      <div class="cc-qr-empty">Loading queue…</div>
-    </div>
-  </div>
+  </aside>
 
 </div><!-- /cc-main-row -->
+
+<div class="cc-ops-drawer" id="cc-ops-drawer">
+  <div class="cc-drawer-head">
+    <div>
+      <div class="cc-drawer-title" id="cc-drawer-title">Operational slice</div>
+      <div class="cc-drawer-meta" id="cc-drawer-meta">Current front for the active journal entry.</div>
+    </div>
+    <div class="cc-drawer-controls">
+      <button class="cc-drawer-chip active" id="cc-drawer-mode-slice" onclick="ccSetDrawerMode('slice')">Current slice</button>
+      <button class="cc-drawer-chip" id="cc-drawer-mode-selected" onclick="ccSetDrawerMode('selected')">Selected set</button>
+      <input class="cc-drawer-search" id="cc-ops-search" type="text" placeholder="Search current theater…" oninput="ccQueueRender()">
+      <button class="cc-cmd-btn cc-cmd-btn-ghost" onclick="switchParent('pipeline',document.querySelector('[data-parent=pipeline]'))" title="Open the full Queue page">Queue →</button>
+    </div>
+  </div>
+  <div class="cc-drawer-body" id="cc-ops-drawer-body">
+    <div class="cc-drawer-empty">Loading current slice…</div>
+  </div>
+</div>
 
 <!-- Pass 102: Post-run drilldown summary panel -->
 <div id="cc-discover-results" style="display:none;flex-shrink:0;max-height:280px;overflow-y:auto;background:var(--surface);border-top:1px solid rgba(184,115,51,.25);border-bottom:1px solid var(--border)">
@@ -4408,14 +4474,26 @@ function _shouldDockQueueInspector() {
   return !!(page && page.classList.contains('active') && window.innerWidth > 1180);
 }
 
+function _shouldDockCommandCenterInspector() {
+  const page = document.getElementById('page-command-center');
+  return !!(page && page.classList.contains('active') && _ccMode !== 'territory' && window.innerWidth > 1260);
+}
+
 function _syncQueueInspectorDock() {
   const overlay = document.getElementById('panel-overlay');
   const panel = document.getElementById('review-panel');
-  const dock = document.getElementById('queue-inspector-dock');
-  const empty = document.getElementById('queue-inspector-empty');
-  if (!overlay || !panel || !dock) return;
-  const shouldDock = _shouldDockQueueInspector();
+  const queueDock = document.getElementById('queue-inspector-dock');
+  const queueEmpty = document.getElementById('queue-inspector-empty');
+  const ccDock = document.getElementById('cc-ops-dossier-dock');
+  const ccEmpty = document.getElementById('cc-ops-dossier-empty');
+  if (!overlay || !panel) return;
+  const shouldDockQueue = _shouldDockQueueInspector();
+  const shouldDockCc = !shouldDockQueue && _shouldDockCommandCenterInspector();
+  const dock = shouldDockQueue ? queueDock : shouldDockCc ? ccDock : null;
+  const empty = shouldDockQueue ? queueEmpty : shouldDockCc ? ccEmpty : null;
+  const shouldDock = !!dock;
   if (shouldDock) {
+    if (!dock) return;
     if (panel.parentElement !== dock) dock.appendChild(panel);
     overlay.classList.remove('open');
     overlay.classList.add('docked');
@@ -4429,8 +4507,10 @@ function _syncQueueInspectorDock() {
     overlay.classList.remove('docked');
     panel.classList.remove('panel-docked');
     panel.style.display = '';
-    dock.classList.remove('has-panel');
-    if (empty) empty.style.display = '';
+    if (queueDock) queueDock.classList.remove('has-panel');
+    if (ccDock) ccDock.classList.remove('has-panel');
+    if (queueEmpty) queueEmpty.style.display = '';
+    if (ccEmpty) ccEmpty.style.display = '';
     overlay.classList.toggle('open', panelIdx >= 0);
   }
 }
@@ -7160,6 +7240,7 @@ function _runPageHooks(name) {
     });
     if (name === 'command-center') {
       setTimeout(() => tpLoad(), 150);
+      setTimeout(() => { ccQueueRender(); _syncQueueInspectorDock(); }, 220);
     }
   }
 }
@@ -9344,17 +9425,19 @@ function qlfJump(gi) {
 // to leads matching that territory. Uses only existing allRows data.
 // ══════════════════════════════════════════════════════════════════
 
-let _ccTerrScope = null; // null = unscoped | { name, city, bbox }
+let _ccTerrScope = null;
+let _ccMode = 'operations';
+let _ccOpsSlice = 'due_now';
+let _ccDrawerMode = 'slice';
 
 function _ccScopeMatchRow(row) {
-  if (!_ccTerrScope) return true; // no scope = match all
+  if (!_ccTerrScope) return true;
   const city = (row.city || '').trim().toLowerCase();
   const scopeCity = (_ccTerrScope.city || '').trim().toLowerCase();
-  // Primary: city name match
   if (scopeCity && city === scopeCity) return true;
-  // Secondary: bbox match (when lat/lng present)
   if (_ccTerrScope.bbox && _ccTerrScope.bbox.length === 4) {
-    const la = parseFloat(row.lat || 0), lo = parseFloat(row.lng || 0);
+    const la = parseFloat(row.lat || 0);
+    const lo = parseFloat(row.lng || 0);
     if (la !== 0 || lo !== 0) {
       const [minLat, maxLat, minLng, maxLng] = _ccTerrScope.bbox.map(parseFloat);
       if (la >= minLat && la <= maxLat && lo >= minLng && lo <= maxLng) return true;
@@ -9363,77 +9446,100 @@ function _ccScopeMatchRow(row) {
   return false;
 }
 
-function _ccRenderScopeSummary() {
-  if (!_ccTerrScope || !Array.isArray(allRows)) return;
-  const scoped = allRows.filter(_ccScopeMatchRow);
-  const approved = scoped.filter(r => !r.sent_at && r.send_ready).length;
-  const stale    = scoped.filter(r => _rowNeedsDraftRefresh(r)).length;
-  const replied  = scoped.filter(r => String(r.replied||'').toLowerCase()==='true').length;
-  const noEmail  = scoped.filter(r => !(r.to_email||'').trim()).length;
-  const el = id => document.getElementById(id);
-  if (el('ccsc-total'))    el('ccsc-total').textContent    = scoped.length;
-  if (el('ccsc-approved')) el('ccsc-approved').textContent = approved;
-  if (el('ccsc-stale'))    el('ccsc-stale').textContent    = stale;
-  if (el('ccsc-replied'))  el('ccsc-replied').textContent  = replied;
-  if (el('ccsc-noemail'))  el('ccsc-noemail').textContent  = noEmail;
+function _ccScopedRows() {
+  return (allRows || []).filter(row => row && _ccScopeMatchRow(row));
+}
+
+function _ccOpsSearchValue() {
+  return (document.getElementById('cc-ops-search')?.value || '').trim().toLowerCase();
+}
+
+function _ccOpsFormatSendAfter(value) {
+  if (!value) return 'scheduled';
+  if (typeof _formatSendAfter === 'function') {
+    const formatted = _formatSendAfter(value);
+    if (formatted) return formatted;
+  }
+  return String(value).replace('T', ' ');
+}
+
+function _ccOpsSliceDefs(rows) {
+  const scoped = Array.isArray(rows) ? rows : _ccScopedRows();
+  const dueNow = scoped.filter(row => !row.sent_at && !!(row.send_after || '').trim() && row.is_ready && row.send_ready && row.to_email);
+  const readyApprove = scoped.filter(row => isRowActionable(row) && !row.sent_at && (row.subject || '').trim() && row.to_email && !row.send_ready && _pipelineCohort(row) === 'bulk_safe');
+  const stale = scoped.filter(row => !row.sent_at && _pipelineCohort(row) === 'stale');
+  const blockers = scoped.filter(row => !row.sent_at && ['needs_obs', 'draft_repair', 'no_email'].includes(_pipelineCohort(row)));
+  const follow = scoped.filter(row => String(row.replied || '').toLowerCase() === 'true' || (!!row.sent_at && String(row.replied || '').toLowerCase() !== 'true'));
+  return [
+    { key: 'due_now', label: 'Due now', tone: 'ready', icon: '▶', rows: dueNow, note: 'Scheduled windows have arrived. These rows belong in the send lane right now.' },
+    { key: 'ready_approve', label: 'Ready for approval', tone: 'wait', icon: '✓', rows: readyApprove, note: 'Drafted rows with a valid email path that still need operator approval.' },
+    { key: 'stale', label: 'Stale drafts', tone: 'wait', icon: '↻', rows: stale, note: 'Drafts drifted behind current evidence or current draft version and need refresh.' },
+    { key: 'blockers', label: 'Blocked', tone: 'block', icon: '◎', rows: blockers, note: 'Observation gaps, invalid drafts, and no-email paths are slowing this front.' },
+    { key: 'follow', label: 'Follow-up attention', tone: 'follow', icon: '✉', rows: follow, note: 'Sent and replied rows that still need downstream attention or handoff context.' }
+  ];
+}
+
+function _ccSliceByKey(key) {
+  return _ccOpsSliceDefs().find(def => def.key === key) || _ccOpsSliceDefs()[0];
+}
+
+function _ccRowSummary(row) {
+  const replied = String(row.replied || '').toLowerCase() === 'true';
+  const scheduled = !!(row.send_after || '').trim() && !row.sent_at;
+  if (replied) return { cls: 'follow', label: 'Replied', note: 'Conversation is live.' };
+  if (row.sent_at) return { cls: 'follow', label: 'Sent', note: 'Waiting on follow-up timing or reply.' };
+  if (row.send_ready && scheduled && row.is_ready) return { cls: 'ready', label: 'Due now', note: `Window reached ${_ccOpsFormatSendAfter(row.send_after)}.` };
+  if (row.send_ready) return { cls: 'ready', label: 'Send ready', note: 'Eligible in Send Approved.' };
+  if (_rowNeedsDraftRefresh(row)) return { cls: 'block', label: 'Stale', note: 'Refresh the draft before approval.' };
+  const cohort = _pipelineCohort(row);
+  if (cohort === 'needs_obs') return { cls: 'block', label: 'Needs observation', note: 'Add grounded evidence to unlock approval.' };
+  if (cohort === 'draft_repair') return { cls: 'block', label: 'Repair required', note: row.send_ready_blocked_message || 'Draft validation is blocking send readiness.' };
+  if (cohort === 'no_email') return { cls: 'block', label: 'No email path', note: 'Work this row through social or another route.' };
+  if (scheduled && !row.is_ready) return { cls: 'wait', label: 'Scheduled', note: `Waiting for ${_ccOpsFormatSendAfter(row.send_after)}.` };
+  return { cls: 'wait', label: 'Approval lane', note: 'Ready for review and operator decision.' };
+}
+
+function _ccSortRows(rows) {
+  if (!Array.isArray(rows)) return [];
+  if (typeof _queueSortRows === 'function') return _queueSortRows(rows);
+  return [...rows];
+}
+
+function _ccUpdateScopeChrome() {
+  const scoped = _ccScopedRows();
+  const scopeText = document.getElementById('cc-shell-scope-text');
+  const scopeMeta = document.getElementById('cc-shell-scope-meta');
+  const note = document.getElementById('cc-map-territory-note');
+  const pill = document.getElementById('cc-cmd-scope-pill');
+  const pillName = document.getElementById('cc-cmd-scope-pill-name');
+  const approveScoped = document.getElementById('cc-cmd-approve-scoped');
+  const regenScoped = document.getElementById('cc-cmd-regen-scoped');
+  if (scopeText) scopeText.textContent = _ccTerrScope ? _ccTerrScope.name : 'Global queue';
+  if (scopeMeta) scopeMeta.textContent = `${scoped.length} row${scoped.length === 1 ? '' : 's'}`;
+  if (note) note.textContent = _ccTerrScope
+    ? `${_ccTerrScope.name} is active. Journal counts, dispatch pulse, and the drawer are now locked to this territory until you clear scope.`
+    : 'Global map pressure. Select a territory to collapse the journal, runway, and drawer to that operating front.';
+  if (pill) pill.style.display = _ccTerrScope ? '' : 'none';
+  if (pillName) pillName.textContent = _ccTerrScope ? _ccTerrScope.name : '';
+  if (approveScoped) approveScoped.style.display = _ccTerrScope ? '' : 'none';
+  if (regenScoped) regenScoped.style.display = _ccTerrScope ? '' : 'none';
 }
 
 function ccScopeToTerritory(data) {
   if (!data) return;
   const shortName = data.short_name || (data.display_name || '').split(',')[0] || 'Territory';
-  const city = shortName.split(',')[0].trim();
   _ccTerrScope = {
     name: shortName,
-    city: city,
+    city: shortName.split(',')[0].trim(),
     bbox: (data.bbox && data.bbox.length === 4) ? data.bbox : null
   };
-  // Update scope bar
-  const bar     = document.getElementById('cc-scope-bar');
-  const nameEl  = document.getElementById('cc-scope-name');
-  const countEl = document.getElementById('cc-scope-count');
-  const summary = document.getElementById('cc-scope-summary');
-  if (bar)     bar.style.display = '';
-  if (nameEl)  nameEl.textContent = shortName;
-  if (summary) summary.style.display = '';
-  // Count scoped leads for count pill
-  if (Array.isArray(allRows)) {
-    const n = allRows.filter(_ccScopeMatchRow).length;
-    if (countEl) countEl.textContent = n > 0 ? n + ' leads' : 'no leads yet';
-  }
-  // Update cmd bar scope pill
-  const pill = document.getElementById('cc-cmd-scope-pill');
-  const pillName = document.getElementById('cc-cmd-scope-pill-name');
-  const approveScoped = document.getElementById('cc-cmd-approve-scoped');
-  const regenScoped   = document.getElementById('cc-cmd-regen-scoped');
-  const approveAll    = document.getElementById('cc-cmd-approve-all');
-  const regenAll      = document.getElementById('cc-cmd-regen-stale');
-  if (pill)          pill.style.display = '';
-  if (pillName)      pillName.textContent = shortName;
-  if (approveScoped) approveScoped.style.display = '';
-  if (regenScoped)   regenScoped.style.display   = '';
-  if (approveAll)    approveAll.style.display     = 'none';
-  if (regenAll)      regenAll.style.display       = 'none';
-  // Render summary + re-render rail
-  _ccRenderScopeSummary();
+  _ccUpdateScopeChrome();
   ccQueueRender();
 }
 
 function ccClearTerritoryScope() {
   _ccTerrScope = null;
-  const bar     = document.getElementById('cc-scope-bar');
-  const summary = document.getElementById('cc-scope-summary');
-  const pill    = document.getElementById('cc-cmd-scope-pill');
-  const approveScoped = document.getElementById('cc-cmd-approve-scoped');
-  const regenScoped   = document.getElementById('cc-cmd-regen-scoped');
-  const approveAll    = document.getElementById('cc-cmd-approve-all');
-  const regenAll      = document.getElementById('cc-cmd-regen-stale');
-  if (bar)     bar.style.display     = 'none';
-  if (summary) summary.style.display = 'none';
-  if (pill)    pill.style.display    = 'none';
-  if (approveScoped) approveScoped.style.display = 'none';
-  if (regenScoped)   regenScoped.style.display   = 'none';
-  if (approveAll)    approveAll.style.display     = '';
-  if (regenAll)      regenAll.style.display       = '';
+  _ccUpdateScopeChrome();
   ccQueueRender();
 }
 
@@ -9454,7 +9560,7 @@ async function ccCmdApproveScoped() {
   }
   if (btn) { btn.disabled = false; btn.textContent = '✓ Approve Scoped'; }
   toast(`Approved ${done} leads in ${_ccTerrScope ? _ccTerrScope.name : 'territory'}`, 'ok');
-  _ccRenderScopeSummary();
+  _ccUpdateScopeChrome();
   ccQueueRender();
   renderTable();
 }
@@ -9480,131 +9586,198 @@ async function ccCmdRegenScoped() {
   }
   if (btn) { btn.disabled = false; btn.textContent = '↻ Regen Scoped'; }
   toast(`Regenerated ${done} drafts in ${_ccTerrScope ? _ccTerrScope.name : 'territory'}`, 'ok');
-  _ccRenderScopeSummary();
-  ccQueueRender();
-}
-let _ccQueueFilter = 'active';
-
-function ccQueueFilter(f, el) {
-  _ccQueueFilter = f;
-  document.querySelectorAll('.cc-qrf').forEach(c => c.classList.remove('active'));
-  if (el) el.classList.add('active');
+  _ccUpdateScopeChrome();
   ccQueueRender();
 }
 
-function _ccQueueFilterRow(row) {
-  if (!row) return false;
-  if (_ccTerrScope && !_ccScopeMatchRow(row)) return false; // Pass 84: territory scope gate
-  const sent     = !!(row.sent_at || '').trim();
-  const replied  = String(row.replied || '').toLowerCase() === 'true';
-  const approved = String(row.approved || '').toLowerCase() === 'true';
-  const stale    = _rowNeedsDraftRefresh(row);
-  const hasDraft = !!(row.subject || '').trim();
-  const search   = (document.getElementById('cc-qr-search')?.value || '').toLowerCase().trim();
-
-  if (search) {
-    const hay = ((row.business_name||'') + (row.city||'') + (row.to_email||'') + (row.industry||'')).toLowerCase();
-    if (!hay.includes(search)) return false;
-  }
-
-  switch (_ccQueueFilter) {
-    case 'active':   return !sent && hasDraft;
-    case 'approved': return !sent && approved;
-    case 'pending':  return !sent && !approved && hasDraft;
-    case 'stale':    return !sent && stale;
-    case 'replied':  return replied;
-    case 'all':      return true;
-    default:         return !sent && hasDraft;
-  }
+function ccSetMode(mode, el) {
+  if (!['territory', 'operations', 'focus'].includes(mode)) return;
+  _ccMode = mode === 'focus' ? 'operations' : mode;
+  const wrap = document.getElementById('cc-wrap');
+  const title = document.getElementById('cc-shell-title');
+  const note = document.getElementById('cc-shell-note');
+  if (wrap) wrap.className = `cc-wrap mode-${mode === 'focus' ? 'focus' : mode}`;
+  document.querySelectorAll('.cc-shell-mode[data-cc-mode]').forEach(btn => btn.classList.toggle('active', btn.dataset.ccMode === _ccMode));
+  if (title) title.textContent = _ccMode === 'territory' ? 'Territory View' : 'Operations Theater';
+  if (note) note.textContent = _ccMode === 'territory'
+    ? 'Map planning and territory expansion stay centered here while the queue remains secondary.'
+    : 'Map-anchored queue pressure, territory context, and dossier review in one shell.';
+  _syncQueueInspectorDock();
+  ccQueueRender();
+  requestAnimationFrame(() => { if (_mapInstance) _mapInstance.invalidateSize(true); });
 }
 
-function _ccRowBadge(row) {
-  const sent    = !!(row.sent_at || '').trim();
-  const replied = String(row.replied || '').toLowerCase() === 'true';
-  const approved = String(row.approved || '').toLowerCase() === 'true';
-  const stale   = _rowNeedsDraftRefresh(row);
-  if (replied)  return ['replied', '★ Replied'];
-  if (sent)     return ['sent',    '✓ Sent'];
-  if (stale)    return ['stale',   '⚠ Stale'];
-  if (approved) return ['approved','Approved'];
-  return ['pending', 'Pending'];
+function ccSetDrawerMode(mode) {
+  const selectedRows = _selectedRows();
+  if (mode === 'selected' && !selectedRows.length) {
+    toast('No selected set is active yet.', 'info');
+    return;
+  }
+  _ccDrawerMode = mode;
+  ccQueueRender();
 }
 
-function _ccRowClass(row) {
-  const sent    = !!(row.sent_at || '').trim();
-  const replied = String(row.replied || '').toLowerCase() === 'true';
-  const approved = String(row.approved || '').toLowerCase() === 'true';
-  const stale   = _rowNeedsDraftRefresh(row);
-  if (replied)  return 'cc-qrow-replied';
-  if (sent)     return 'cc-qrow-sent';
-  if (stale)    return 'cc-qrow-stale';
-  if (approved) return 'cc-qrow-approved';
-  return 'cc-qrow-pending';
+function ccSetSlice(key) {
+  _ccOpsSlice = key;
+  _ccDrawerMode = 'slice';
+  ccQueueRender();
+}
+
+function _ccDrawerRows() {
+  const query = _ccOpsSearchValue();
+  const selectedRows = _selectedRows().filter(row => row && _ccScopeMatchRow(row));
+  let baseRows = [];
+  let title = 'Operational slice';
+  let meta = '';
+  if (_ccDrawerMode === 'selected' && selectedRows.length) {
+    baseRows = selectedRows;
+    title = 'Selected set';
+    meta = `${selectedRows.length} checked row${selectedRows.length === 1 ? '' : 's'} stay visible here without leaving the map shell.`;
+  } else {
+    const slice = _ccSliceByKey(_ccOpsSlice);
+    baseRows = slice.rows;
+    title = slice.label;
+    meta = slice.note;
+  }
+  if (query) {
+    const searchRows = (_ccDrawerMode === 'selected' && selectedRows.length) ? selectedRows : _ccScopedRows();
+    baseRows = searchRows.filter(row => {
+      const hay = `${row.business_name || ''} ${row.city || ''} ${row.state || ''} ${row.industry || ''} ${row.to_email || ''} ${row.subject || ''}`.toLowerCase();
+      return hay.includes(query);
+    });
+    title = 'Search results';
+    meta = query ? `Live search within ${_ccTerrScope ? _ccTerrScope.name : 'the current theater'} for “${query}”.` : meta;
+  }
+  return { rows: _ccSortRows(baseRows), title, meta };
+}
+
+function _ccRenderJournal() {
+  const wrap = document.getElementById('cc-journal-list');
+  if (!wrap) return;
+  const scoped = _ccScopedRows();
+  const defs = _ccOpsSliceDefs(scoped);
+  wrap.innerHTML = defs.map(def => {
+    const preview = def.rows[0];
+    const previewText = preview
+      ? `${preview.business_name || 'Lead'}${preview.city ? ` • ${preview.city}` : ''}`
+      : 'No rows at this front right now.';
+    return `<div class="cc-journal-item ${def.tone}${_ccOpsSlice === def.key ? ' active' : ''}" onclick="ccSetSlice('${def.key}')">
+      <div class="cc-journal-top">
+        <span class="cc-journal-icon">${def.icon}</span>
+        <span class="cc-journal-label">${def.label}</span>
+        <span class="cc-journal-count">${def.rows.length}</span>
+      </div>
+      <div class="cc-journal-note">${def.note}</div>
+      <div class="cc-journal-meta"><span>${escHtml(previewText)}</span><strong>${def.rows.length ? 'Open slice' : 'Quiet'}</strong></div>
+    </div>`;
+  }).join('');
+}
+
+function _ccRenderRunway() {
+  const wrap = document.getElementById('cc-ops-runway');
+  if (!wrap) return;
+  const scoped = _ccScopedRows();
+  const futureScheduled = scoped.filter(row => !!(row.send_after || '').trim() && !row.sent_at && !row.is_ready);
+  const dueNow = scoped.filter(row => !!(row.send_after || '').trim() && !row.sent_at && row.is_ready && row.send_ready);
+  const blockedScheduled = futureScheduled.filter(row => ['needs_obs', 'draft_repair', 'no_email'].includes(_pipelineCohort(row)));
+  const readyNow = scoped.filter(row => !row.sent_at && row.send_ready && row.to_email).length;
+  const nextDue = futureScheduled
+    .slice()
+    .sort((a, b) => String(a.send_after || '').localeCompare(String(b.send_after || '')))[0];
+  wrap.innerHTML = `
+    <div class="cc-runway-card ready">
+      <div class="cc-runway-label">Dispatch pulse</div>
+      <div class="cc-runway-value">${dueNow.length}</div>
+      <div class="cc-runway-note">${dueNow.length ? 'Scheduled rows are due now and back in Send Approved.' : 'No scheduled rows have reached their window yet.'}</div>
+    </div>
+    <div class="cc-runway-card">
+      <div class="cc-runway-label">Next due</div>
+      <div class="cc-runway-value">${nextDue ? _ccOpsFormatSendAfter(nextDue.send_after) : '—'}</div>
+      <div class="cc-runway-note">${nextDue ? (nextDue.business_name || 'Next scheduled lead') : 'No future scheduled rows are waiting.'}</div>
+    </div>
+    <div class="cc-runway-card warn">
+      <div class="cc-runway-label">Blocked scheduled</div>
+      <div class="cc-runway-value">${blockedScheduled.length}</div>
+      <div class="cc-runway-note">${blockedScheduled.length ? 'Scheduled rows still need repair, observation, or another route.' : 'Scheduled rows are currently clean.'}</div>
+    </div>
+    <div class="cc-runway-card">
+      <div class="cc-runway-label">Ready now</div>
+      <div class="cc-runway-value">${readyNow}</div>
+      <div class="cc-runway-note">${readyNow ? 'Rows are currently eligible in the live send lane.' : 'No rows are send-ready in this scope.'}</div>
+    </div>`;
+}
+
+function _ccRenderDossierPresence() {
+  const chip = document.getElementById('cc-dossier-slice-chip');
+  if (!chip) return;
+  const slice = _ccSliceByKey(_ccOpsSlice);
+  const active = panelIdx >= 0;
+  chip.textContent = active ? `${slice.label} active` : `${slice.label} selected`;
+}
+
+function _ccRenderDrawer() {
+  const title = document.getElementById('cc-drawer-title');
+  const meta = document.getElementById('cc-drawer-meta');
+  const body = document.getElementById('cc-ops-drawer-body');
+  const chipSlice = document.getElementById('cc-drawer-mode-slice');
+  const chipSelected = document.getElementById('cc-drawer-mode-selected');
+  if (!title || !meta || !body) return;
+  const drawer = _ccDrawerRows();
+  title.textContent = drawer.title;
+  meta.textContent = drawer.meta;
+  if (chipSlice) chipSlice.classList.toggle('active', _ccDrawerMode !== 'selected');
+  if (chipSelected) {
+    const selectedCount = _selectedRows().length;
+    chipSelected.classList.toggle('active', _ccDrawerMode === 'selected' && selectedCount > 0);
+    chipSelected.textContent = selectedCount ? `Selected set (${selectedCount})` : 'Selected set';
+  }
+  if (!drawer.rows.length) {
+    body.innerHTML = '<div class="cc-drawer-empty">No rows match the current operational slice.</div>';
+    return;
+  }
+  body.innerHTML = `<div class="cc-drawer-grid">${drawer.rows.slice(0, 24).map(row => {
+    const gi = allRows.indexOf(row);
+    const score = parseInt(row.final_priority_score) || 0;
+    const summary = _ccRowSummary(row);
+    const location = [row.city, row.state].filter(Boolean).join(', ');
+    const note = summary.note || ((row.subject || '').replace(/^Re:\\s*/i, ''));
+    return `<div class="cc-drawer-row" onclick="ccQueueOpenRow(${gi})">
+      <div class="cc-drawer-row-top">
+        <div class="cc-drawer-row-name"><span>${escHtml(row.business_name || '—')}</span></div>
+        <span class="cc-drawer-row-score">${score}</span>
+      </div>
+      <div class="cc-drawer-row-meta">
+        ${location ? `<span>${escHtml(location)}</span>` : '<span>Location pending</span>'}
+        <span class="cc-drawer-pill ${summary.cls}">${escHtml(summary.label)}</span>
+      </div>
+      <div class="cc-drawer-note">${escHtml(note || 'Open dossier')}</div>
+      <div class="cc-drawer-actions">
+        <a class="cc-drawer-link" href="#" onclick="event.preventDefault();ccQueueOpenRow(${gi})">Open dossier</a>
+        <span class="cc-drawer-link">${(row.industry || '').trim() ? escHtml(row.industry) : 'Queue row'}</span>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
 }
 
 function ccQueueRender() {
-  const body = document.getElementById('cc-qr-body');
-  if (!body) return;
-  if (!Array.isArray(allRows) || !allRows.length) {
-    body.innerHTML = '<div class="cc-qr-empty">No leads loaded.</div>';
-    ccQueueUpdateStats();
-    return;
-  }
-  const visible = allRows.filter(_ccQueueFilterRow);
-  if (!visible.length) {
-    body.innerHTML = '<div class="cc-qr-empty">No rows match this filter.</div>';
-    ccQueueUpdateStats();
-    return;
-  }
-  body.innerHTML = visible.map(row => {
-    const gi = allRows.indexOf(row);
-    const [badgeClass, badgeLabel] = _ccRowBadge(row);
-    const rowClass = _ccRowClass(row);
-    const score = parseInt(row.final_priority_score) || 0;
-    const scoreClass = score >= 4 ? 'high' : '';
-    const subj = (row.subject || '').replace(/^Re:\s*/i,'');
-    return `<div class="cc-qrow ${rowClass}" onclick="ccQueueOpenRow(${gi})">
-      <div class="cc-qrow-top">
-        <span class="cc-qrow-name">${escHtml(row.business_name || '—')}</span>
-        <span class="cc-qrow-score ${scoreClass}">${score}</span>
-      </div>
-      <div class="cc-qrow-bot">
-        <span class="cc-qrow-city">${escHtml(row.city || '')}${row.state ? ', '+escHtml(row.state) : ''}</span>
-        <span class="cc-qrow-badge ${badgeClass}">${badgeLabel}</span>
-      </div>
-      ${subj ? `<div class="cc-qrow-subj">${escHtml(subj)}</div>` : ''}
-    </div>`;
-  }).join('');
-  ccQueueUpdateStats();
-}
-
-function ccQueueUpdateStats() {
-  if (!Array.isArray(allRows)) return;
-  const el = id => document.getElementById(id);
-  const approved = allRows.filter(r => !r.sent_at && r.send_ready).length;
-  const pending  = allRows.filter(r => !r.sent_at && !r.send_ready && (r.subject||'').trim()).length;
-  const sent     = allRows.filter(r => !!(r.sent_at||'').trim()).length;
-  const replied  = allRows.filter(r => String(r.replied||'').toLowerCase()==='true').length;
-  if (el('ccqr-s-approved')) el('ccqr-s-approved').textContent = approved;
-  if (el('ccqr-s-pending'))  el('ccqr-s-pending').textContent  = pending;
-  if (el('ccqr-s-sent'))     el('ccqr-s-sent').textContent     = sent;
-  if (el('ccqr-s-replied'))  el('ccqr-s-replied').textContent  = replied;
+  _ccUpdateScopeChrome();
+  _ccRenderRunway();
+  _ccRenderJournal();
+  _ccRenderDrawer();
+  _ccRenderDossierPresence();
 }
 
 function ccQueueOpenRow(gi) {
-  // Open the full panel — switch to Pipeline Outreach context, set filter
-  // to 'all' so the row is visible, then open it.
   const row = allRows[gi];
   if (!row) return;
-  // Bring panel up directly without switching tabs — row exists in allRows
-  const fi = filteredRows.indexOf(row);
-  if (fi >= 0) {
-    openPanel(fi);
+  const drawer = _ccDrawerRows();
+  const rows = drawer.rows.length ? drawer.rows : _ccScopedRows();
+  const idx = Math.max(0, rows.indexOf(row));
+  if (idx >= 0) {
+    openPanel(idx, rows, drawer.title);
   } else {
-    // Row not in current filteredRows — switch Pipeline to All filter first
-    setFilter('all', document.querySelector('[data-filter=all]'));
-    const fi2 = filteredRows.indexOf(row);
-    if (fi2 >= 0) openPanel(fi2);
+    const fi = filteredRows.indexOf(row);
+    if (fi >= 0) openPanel(fi);
   }
 }
 
@@ -9708,6 +9881,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(_ccSyncIndustryDropdown, 800);
   // Boot CC: initialize map + territory on first load (HTML active class bypasses _runPageHooks)
   requestAnimationFrame(() => { _mapInit(); _mapPopulateIndustries(); setTimeout(() => tpLoad(), 150); });
+  setTimeout(() => { _ccUpdateScopeChrome(); ccQueueRender(); _syncQueueInspectorDock(); }, 320);
 });
 
 
