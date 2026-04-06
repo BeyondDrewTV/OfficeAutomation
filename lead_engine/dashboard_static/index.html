@@ -52,13 +52,32 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .btn.loading .spin{display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.stats{display:flex;border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.9))}
-.stat{padding:12px 20px;flex:1;border-right:1px solid var(--border)}.stat:last-child{border-right:none}
+.queue-command-strip{position:sticky;top:116px;z-index:130;display:flex;flex-direction:column;gap:10px;padding:14px 16px 12px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(15,17,23,.98),rgba(11,13,18,.95))}
+.queue-shell{display:grid;grid-template-columns:minmax(235px,278px) minmax(0,1fr);gap:14px;padding:14px 16px 16px;align-items:start}
+.queue-outliner{position:sticky;top:10px;align-self:start;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.98));border:1px solid var(--border);border-radius:var(--r);padding:14px;box-shadow:var(--card-shadow)}
+.queue-outliner-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:12px}
+.queue-outliner-kicker{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.queue-outliner-title{font-size:14px;font-weight:700;color:var(--text)}
+.queue-outliner-sub{font-size:11px;color:var(--muted);line-height:1.45;margin-top:3px}
+.queue-outliner-foot{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.45}
+.queue-outliner .filter-tabs{display:flex;flex-direction:column;gap:8px;background:none;border:none;border-radius:0;padding:0}
+.queue-outliner .ftab{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:10px 12px;border-radius:8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);min-height:0}
+.queue-outliner .ftab.active{background:rgba(79,142,247,.1);color:var(--text);border-color:rgba(79,142,247,.28);box-shadow:none}
+.queue-outliner .ftab:hover:not(.active){color:var(--text);border-color:var(--border-hi)}
+.ftab-top{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;font-size:12px;font-weight:600}
+.ftab-count{font-family:var(--mono);font-size:11px;color:var(--dim)}
+.ftab-sub{font-size:10px;line-height:1.35;color:var(--dim)}
+.queue-outliner .ftab.active .ftab-count{color:var(--blue)}
+.queue-outliner .ftab-more{width:100%;text-align:center;margin-top:2px}
+.queue-main{min-width:0;display:flex;flex-direction:column;gap:10px}
+.queue-ledger{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--card-shadow)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.9))}
+.stat{padding:11px 14px;border-right:1px solid var(--border)}.stat:last-child{border-right:none}
 .stat-n{font-family:var(--mono);font-size:24px;font-weight:600;line-height:1}
 .stat-n.blue{color:var(--blue)}.stat-n.amber{color:var(--amber)}.stat-n.green{color:var(--green)}.stat-n.grey{color:var(--muted)}
 .stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px}
 
-.discover-bar{border-bottom:1px solid var(--border);padding:10px 24px;background:var(--surface)}
+.discover-bar{border-bottom:1px solid var(--border);padding:10px 16px;background:var(--surface)}
 .discover-inner{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .discover-label{font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap;margin-right:2px}
 .d-input{padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:12px;outline:none;transition:.12s}
@@ -67,9 +86,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .d-state{width:50px}.d-num{width:66px}
 .api-notice{margin-top:7px;font-size:12px;color:var(--amber);background:var(--amber-bg);border:1px solid rgba(245,166,35,.3);border-radius:var(--rs);padding:6px 11px}
 
-.toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 28px;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.9))}
+.toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.9))}
 .toolbar-l,.toolbar-r{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.queue-note{padding:9px 24px;border-bottom:1px solid var(--border);font-size:12px;line-height:1.5;color:var(--muted);background:rgba(255,255,255,.02)}
+.queue-note{padding:9px 16px;border-bottom:1px solid var(--border);font-size:12px;line-height:1.5;color:var(--muted);background:rgba(255,255,255,.02)}
 .queue-note strong{color:var(--text)}
 .queue-note.queue-note-ready{background:rgba(46,204,113,.08);color:var(--green)}
 .queue-note.queue-note-scheduled{background:rgba(245,166,35,.08);color:var(--amber)}
@@ -87,11 +106,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .sort-select{padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--muted);font-family:var(--sans);font-size:11px;outline:none;cursor:pointer}
 .sort-select option{background:var(--surface2)}
 
-.bulk-bar{display:none;align-items:center;gap:8px;padding:7px 24px;background:var(--blue-glow);border-bottom:1px solid rgba(79,142,247,.2);font-size:12px;color:var(--blue);flex-wrap:wrap}
+.bulk-bar{display:none;align-items:center;gap:8px;padding:7px 16px;background:var(--blue-glow);border-bottom:1px solid rgba(79,142,247,.2);font-size:12px;color:var(--blue);flex-wrap:wrap}
 .bulk-bar.visible{display:flex}
 .bulk-btn-unschedule{display:none}
 
-.main{display:flex;min-height:calc(100vh - 200px)}
+.main{display:flex;min-height:0}
 .table-wrap{flex:1;overflow-x:auto;min-width:0;padding-top:0}
 table{width:100%;border-collapse:collapse;font-size:13px}
 thead th{background:var(--surface);color:var(--muted);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;padding:9px 14px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;position:sticky;top:0;z-index:10}
@@ -213,9 +232,9 @@ tbody td{padding:10px 14px;vertical-align:middle}
 .empty p{font-size:12px;max-width:360px;margin:0 auto}
 
 /* Review Panel */
-.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;opacity:0;pointer-events:none;transition:opacity .2s}
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.36);backdrop-filter:blur(2px);z-index:300;opacity:0;pointer-events:none;transition:opacity .2s}
 .panel-overlay.open{opacity:1;pointer-events:all}
-.panel{position:fixed;top:0;right:0;width:var(--panel-w);height:100vh;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.98));border-left:1px solid var(--border);z-index:301;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 40px rgba(0,0,0,.5)}
+.panel{position:fixed;top:0;right:0;width:min(440px,34vw);height:100vh;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.98));border-left:1px solid var(--border);z-index:301;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 32px rgba(0,0,0,.42)}
 .panel-overlay.open .panel{transform:translateX(0)}
 .panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0}
 .panel-title{font-size:14px;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -263,6 +282,12 @@ tbody td{padding:10px 14px;vertical-align:middle}
 .panel-footer{border-top:1px solid var(--border);padding:14px 20px;display:flex;gap:8px;flex-shrink:0;background:var(--surface)}
 .panel-score-row{display:flex;align-items:center;gap:10px}
 .panel-reason{font-size:11px;color:var(--muted);font-style:italic;flex:1}
+
+@media (max-width: 1180px){
+  .queue-shell{grid-template-columns:1fr}
+  .queue-outliner{position:relative;top:auto}
+  .panel{width:min(92vw,440px)}
+}
 
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .15s}
 .modal-overlay.open{opacity:1;pointer-events:all}
@@ -1223,6 +1248,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 <!-- ══════════════ PAGE: OUTREACH ══════════════ -->
 <div class="page" id="page-outreach">
 
+<div class="queue-command-strip">
 <div class="wb-mode-bar">
   <button class="wb-mode-btn active" data-mode="outreach" onclick="_setWorkbenchMode('outreach')">📤 Email Queue</button>
   <span class="wb-mode-sep"></span>
@@ -1291,19 +1317,6 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 
 <div class="toolbar">
   <div class="toolbar-l">
-    <div class="filter-tabs">
-      <div class="ftab active" data-filter="active" onclick="setFilter('active',this)" title="Unsent leads that need action — default view">⚡ Actionable</div>
-      <div class="ftab" data-filter="pending" onclick="setFilter('pending',this)">Pending</div>
-      <div class="ftab" data-filter="approved" onclick="setFilter('approved',this)">Approved</div>
-      <div class="ftab" data-filter="scheduled" onclick="setFilter('scheduled',this)" style="color:var(--amber)" title="Emails approved and queued for a send window">🕐 Scheduled</div>
-      <div class="ftab" data-filter="sent" onclick="setFilter('sent',this)">✓ Done</div>
-      <div class="ftab-more" onclick="toggleExtraFilters(this)">⋯ More</div>
-      <div class="ftab ftab-aux" data-filter="all" onclick="setFilter('all',this)">All</div>
-      <div class="ftab ftab-aux" data-filter="replied" onclick="setFilter('replied',this)" style="color:var(--copper)">★ Replied</div>
-      <div class="ftab ftab-aux" data-filter="stale" onclick="setFilter('stale',this)" style="color:var(--amber)" title="Rows with old copy — regenerate before sending">⚠ Stale</div>
-      <div class="ftab ftab-aux" data-filter="no_email" onclick="setFilter('no_email',this)">No Email</div>
-      <div class="ftab ftab-aux" data-filter="high_score" onclick="setFilter('high_score',this)">High Score</div>
-    </div>
     <input class="search-box" id="searchBox" type="text" placeholder="Search name, email, city, phone…" oninput="renderTable()">
     <span id="row-count" class="tag" style="font-size:10px"></span>
   </div>
@@ -1332,7 +1345,39 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 </div>
 
 <div id="queue-timeline-note" class="queue-note"></div>
+ </div>
 
+<div class="queue-shell">
+  <aside class="queue-outliner">
+    <div class="queue-outliner-head">
+      <div>
+        <div class="queue-outliner-kicker">Work Modes</div>
+        <div class="queue-outliner-title">Queue outliner</div>
+        <div class="queue-outliner-sub">Glance here first. Pick the lane, then work the table.</div>
+      </div>
+      <span class="tag" id="queue-outliner-tag">—</span>
+    </div>
+
+    <div class="filter-tabs">
+      <div class="ftab active" data-filter="active" onclick="setFilter('active',this)" title="Queue overview — unsent leads needing attention"><div class="ftab-top"><span>⚡ Queue Overview</span><span class="ftab-count" id="lane-count-active">—</span></div><div class="ftab-sub" id="lane-sub-active">Ready-now work, ordered by urgency</div></div>
+      <div class="ftab" data-filter="needs_obs" onclick="setFilter('needs_obs',this)" title="Rows missing an observation"><div class="ftab-top"><span>◎ Needs Observation</span><span class="ftab-count" id="lane-count-needs_obs">—</span></div><div class="ftab-sub" id="lane-sub-needs_obs">Observation-led first touch is blocked</div></div>
+      <div class="ftab" data-filter="pending" onclick="setFilter('pending',this)" title="Drafts waiting for approval"><div class="ftab-top"><span>● Ready to Approve</span><span class="ftab-count" id="lane-count-pending">—</span></div><div class="ftab-sub" id="lane-sub-pending">Review and approve before send</div></div>
+      <div class="ftab" data-filter="approved" onclick="setFilter('approved',this)" title="Approved rows that can be sent now"><div class="ftab-top"><span>→ Ready to Send</span><span class="ftab-count" id="lane-count-approved">—</span></div><div class="ftab-sub" id="lane-sub-approved">Manual send gate stays intact</div></div>
+      <div class="ftab" data-filter="scheduled" onclick="setFilter('scheduled',this)" style="color:var(--amber)" title="Emails approved and queued for a send window"><div class="ftab-top"><span>🕐 Scheduled / Waiting</span><span class="ftab-count" id="lane-count-scheduled">—</span></div><div class="ftab-sub" id="lane-sub-scheduled">Waiting on the send window</div></div>
+      <div class="ftab" data-filter="sent" onclick="setFilter('sent',this)" title="Sent rows that need reply watching"><div class="ftab-top"><span>✉ Sent / Handoff</span><span class="ftab-count" id="lane-count-sent">—</span></div><div class="ftab-sub" id="lane-sub-sent">Monitor replies and follow-up handoff</div></div>
+      <div class="ftab" data-filter="replied" onclick="setFilter('replied',this)" style="color:var(--copper)" title="Rows with replies or active conversations"><div class="ftab-top"><span>★ Replied / Conversations</span><span class="ftab-count" id="lane-count-replied">—</span></div><div class="ftab-sub" id="lane-sub-replied">Conversation handoff lives here</div></div>
+      <div class="ftab" data-filter="recovery" onclick="setFilter('recovery',this)" style="color:var(--amber)" title="Stale or no-email rows that need operator recovery"><div class="ftab-top"><span>↻ Exceptions / Recovery</span><span class="ftab-count" id="lane-count-recovery">—</span></div><div class="ftab-sub" id="lane-sub-recovery">Stale + no-email recovery lanes</div></div>
+      <div class="ftab-more" onclick="toggleExtraFilters(this)">⋯ More</div>
+      <div class="ftab ftab-aux" data-filter="all" onclick="setFilter('all',this)"><div class="ftab-top"><span>All</span><span class="ftab-count" id="lane-count-all">—</span></div><div class="ftab-sub" id="lane-sub-all">Everything in queue order</div></div>
+      <div class="ftab ftab-aux" data-filter="stale" onclick="setFilter('stale',this)" style="color:var(--amber)" title="Rows with old copy — regenerate before sending"><div class="ftab-top"><span>⚠ Stale</span><span class="ftab-count" id="lane-count-stale">—</span></div><div class="ftab-sub" id="lane-sub-stale">Needs regeneration before send</div></div>
+      <div class="ftab ftab-aux" data-filter="no_email" onclick="setFilter('no_email',this)"><div class="ftab-top"><span>No Email</span><span class="ftab-count" id="lane-count-no_email">—</span></div><div class="ftab-sub" id="lane-sub-no_email">Use social or form fallback</div></div>
+      <div class="ftab ftab-aux" data-filter="high_score" onclick="setFilter('high_score',this)"><div class="ftab-top"><span>High Score</span><span class="ftab-count" id="lane-count-high_score">—</span></div><div class="ftab-sub" id="lane-sub-high_score">Top-fit rows only</div></div>
+    </div>
+    <div class="queue-outliner-foot">Queue overview, filter lanes, and recovery work live here. Keep the table moving; use the inspector for deep review.</div>
+  </aside>
+
+  <section class="queue-main">
+    <div class="queue-ledger">
 <div class="bulk-bar" id="bulk-bar">
   <strong id="bulk-count">0</strong> selected —
   <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkApprove()">Approve</button>
@@ -1368,6 +1413,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <p>Use <strong>Discover + Draft</strong> to find local service businesses and generate outreach emails</p>
     </div>
   </div>
+</div>
+    </div>
+  </section>
 </div>
 
 <!-- END PAGE: OUTREACH -->
@@ -3436,10 +3484,20 @@ function applyFiltersAndSort() {
   else if (currentFilter === 'approved')   rows = rows.filter(r => isRowActionable(r) && r.approved === 'true');
   else if (currentFilter === 'sent')       rows = rows.filter(r => !!r.sent_at);
   else if (currentFilter === 'replied')    rows = rows.filter(r => r.replied === 'true');
+  else if (currentFilter === 'needs_obs')  rows = rows.filter(r => _pipelineCohort(r) === 'needs_obs');
   else if (currentFilter === 'stale')      rows = rows.filter(r => !r.sent_at && r.draft_version !== status_draft_version);
   else if (currentFilter === 'has_email')  rows = rows.filter(r => r.to_email && r.to_email.includes('@'));
   else if (currentFilter === 'no_email')   rows = rows.filter(r => !r.to_email || !r.to_email.includes('@'));
   else if (currentFilter === 'high_score') rows = rows.filter(r => parseInt(r.final_priority_score) >= 4);
+  else if (currentFilter === 'recovery')    {
+    rows = rows.filter(r => _pipelineCohort(r) === 'stale' || _pipelineCohort(r) === 'no_email');
+    rows.sort((a, b) => {
+      const bucket = (r) => _pipelineCohort(r) === 'stale' ? 0 : 1;
+      const delta = bucket(a) - bucket(b);
+      if (delta) return delta;
+      return (b.opp_score||parseInt(b.opportunity_score)||0) - (a.opp_score||parseInt(a.opportunity_score)||0);
+    });
+  }
 
   else if (currentFilter === 'all')  {
     // Keep actionable work at the top, then scheduled, then done history.
@@ -3488,6 +3546,20 @@ function statusBadge(row) {
   if (row.send_after && !row.sent_at) return `<span class="badge badge-scheduled" title="Scheduled: ${escHtml(row.send_after)}">🕐 Scheduled</span>`;
   if (row.approved === 'true') return '<span class="badge badge-approved">● Approved</span>';
   return '<span class="badge badge-pending">○ Pending</span>';
+}
+
+function _queueRowNextAction(row, meta) {
+  if (!row || row.sent_at) return 'Sent rows are done';
+  if (row.replied === 'true') return 'Open in Conversations';
+  const cohort = typeof _pipelineCohort === 'function' && !row.sent_at ? _pipelineCohort(row) : '';
+  if (!row.to_email || !row.to_email.includes('@')) return 'Use social or form fallback';
+  if (cohort === 'needs_obs') return 'Add observation';
+  if (cohort === 'stale') return (row.business_specific_observation || '').trim() ? 'Regenerate draft' : 'Add observation';
+  if (row.send_after && !row.sent_at) return row.is_ready ? 'Ready to send now' : 'Wait for scheduled window';
+  if (row.approved === 'true') return 'Send Approved when ready';
+  if (meta?.label === 'Pending') return 'Approve row';
+  if (meta?.label === 'Blocked') return 'Use recovery action';
+  return 'Review the row';
 }
 
 // Pass 10 — human-readable schedule time label
@@ -3540,9 +3612,11 @@ function statusCellHtml(row) {
     .join(' · ');
   const _scSubline = [meta.subline || '', _scSubExtra].filter(Boolean).join(' · ');
   const _scHistory = _leadHistoryChipsHtml(_scRecord, { className: 'status-history-row', max: 4 });
+  const _nextAction = _queueRowNextAction(row, meta);
   return `<div class="status-stack">` +
     `<span class="badge ${meta.badgeClass}" title="${escHtml(meta.title || meta.label)}">${escHtml(meta.label)}</span>` +
-    `<div class="status-sub ${meta.tone || 'info'}">${escHtml(_scSubline)}</div>` +
+    `<div class="status-sub ${meta.tone || 'info'}">${escHtml(_nextAction)}</div>` +
+    `<div class="status-sub exact">${escHtml(_scSubline)}</div>` +
     (meta.detail ? `<div class="status-sub exact">${escHtml(meta.detail)}</div>` : '') +
     _scHistory +
     `</div>`;
@@ -3584,6 +3658,12 @@ function _queueTimelineNoteHtml() {
     return {
       tone: 'ready',
       html: `<strong>Actionable queue</strong> — grouped by status: ✓ Ready to Approve first, then ◎ Needs Observation, ↻ Stale Draft, – No Email Path. Bulk-ready rows approve in one click. Each section shows the next action.`,
+    };
+  }
+  if (currentFilter === 'recovery') {
+    return {
+      tone: 'blocked',
+      html: `<strong>Recovery lanes:</strong> stale drafts and no-email rows need operator repair before they can re-enter normal queue flow. Keep the inspector open only when you need deeper review.`,
     };
   }
   if (currentFilter === 'pending') {
@@ -3633,6 +3713,7 @@ function escHtml(s) {
 function renderTable() {
   applyFiltersAndSort();
   _renderQueueTimelineNote();
+  renderQueueOutliner();
   ccQueueRender(); // Pass 82: keep rail in sync
   _renderQueueSessionBanner(); // Pass 130-135: refresh session banner on every table render
   const tbody = document.getElementById('tbody');
@@ -3691,32 +3772,23 @@ function renderTable() {
       // Pass 148-153: repaired last session (persists until next session or dismiss)
       : (_lastRepairedKeys.size && _lastRepairedKeys.has(_pillKey)) ? `<span class="cohort-pill cp-repaired">✓ repaired</span>`
       : '';
-    // Pass 124-129: Cohort-aware row action block — drawer reserved for deep review only
-    const _schedBtn = actionable && !row.send_after ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowSchedule(${gi},${JSON.stringify(row.business_name)})" title="Schedule for tomorrow morning window">🕐</button>` : '';
-    const _unschedBtn = scheduled ? `<button class="act" style="background:rgba(245,166,35,.13);color:var(--amber);border:none" onclick="rowUnschedule(${gi},${JSON.stringify(row.business_name)})" title="Clear schedule">✕Sched</button>` : '';
-    const _delBtn = actionable ? `<button class="act act-del" onclick="deleteRow(${gi})">Del</button>` : '';
     let _rowActionHtml;
     if (row.sent_at) {
-      _rowActionHtml = `<span style="color:var(--dim);font-size:10px">sent</span>`;
+      _rowActionHtml = `<button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>`;
     } else if (_rowCohort === 'no_email') {
-      // Pass 124: no send path — primary is social, Review opens drawer for inspection/repair
-      _rowActionHtml = `<button class="act" onclick="event.stopPropagation();_setWorkbenchMode('social')" style="background:rgba(100,116,139,.12);color:var(--dim);border:none" title="Switch to Social DMs surface">📲 Social →</button><button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>${_delBtn}`;
+      _rowActionHtml = `<button class="act" onclick="event.stopPropagation();_setWorkbenchMode('social')" style="background:rgba(100,116,139,.12);color:var(--dim);border:none" title="Switch to Social DMs surface">📲 Social →</button><button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>`;
     } else if (_rowCohort === 'needs_obs') {
-      // Pass 125: obs-focused open is the drawer entry for deep work
-      // Pass 140: ◎ Quick Obs opens inline form for lightweight obs entry without drawer
-      _rowActionHtml = `<button class="act" onclick="event.stopPropagation();_rowToggleInlineObs(${gi})" style="background:rgba(245,166,35,.12);color:var(--amber);border:none" title="Add observation inline — no drawer needed">◎ Quick Obs</button><button class="act act-edit" onclick="event.stopPropagation();openPanelForRefresh(${fi})" style="opacity:.55;font-size:10px" title="Open full drawer for observation + review">Add Obs</button>${_delBtn}`;
+      _rowActionHtml = `<button class="act act-edit" onclick="event.stopPropagation();openPanelForRefresh(${fi})" title="Open the inspector to add an observation">Add Obs</button><button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>`;
     } else if (_rowCohort === 'stale') {
-      // Pass 126: if obs exists → direct regen without drawer; if no obs → Add Obs opens drawer; Review available for deep work
       const _hasObs = !!(row.business_specific_observation || '').trim();
       _rowActionHtml = `${_hasObs
         ? `<button class="act" onclick="event.stopPropagation();_rowDirectRegen(${gi})" style="background:rgba(79,142,247,.12);color:var(--blue);border:none" title="Regenerate draft without opening drawer">↻ Regen</button>`
-        : `<button class="act act-edit" onclick="event.stopPropagation();openPanelForRefresh(${fi})" title="Add observation to regenerate">Add Obs</button>`}<button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>${_schedBtn}${_unschedBtn}${_delBtn}`;
+        : `<button class="act act-edit" onclick="event.stopPropagation();openPanelForRefresh(${fi})" title="Open the inspector to add an observation">Add Obs</button>`}<button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>`;
     } else {
-      // Pass 127: bulk_safe — Approve is primary; Edit renamed to Review to signal depth not requirement
       const _appBtn = row.approved === 'true'
         ? `<button class="act act-unapprove" onclick="event.stopPropagation();unapproveRow(${gi})">Undo</button>`
         : `<button class="act act-approve" onclick="event.stopPropagation();approveRow(${gi})">Approve</button>`;
-      _rowActionHtml = `${_appBtn}<button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>${_schedBtn}${_unschedBtn}${_delBtn}`;
+      _rowActionHtml = `${_appBtn}<button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>`;
     }
 
     // Pass 131: highlight current session row so operator stays oriented at table level
@@ -3757,6 +3829,44 @@ function toggleExtraFilters(btn) {
   if (!tabs) return;
   const on = tabs.classList.toggle('show-aux');
   if (btn) btn.textContent = on ? '⋯ Less' : '⋯ More';
+}
+
+function renderQueueOutliner() {
+  const tag = document.getElementById('queue-outliner-tag');
+  if (tag) {
+    const labels = {
+      active: 'Overview',
+      needs_obs: 'Needs Obs',
+      pending: 'To Approve',
+      approved: 'Ready to Send',
+      scheduled: 'Scheduled',
+      sent: 'Sent',
+      replied: 'Replied',
+      recovery: 'Recovery',
+      all: 'All',
+    };
+    tag.textContent = `${labels[currentFilter] || currentFilter} · ${filteredRows.length}`;
+  }
+  const laneSpecs = {
+    active:    { count: allRows.filter(r => isRowActionable(r)).length, signal: 'Ready-now work' },
+    needs_obs: { count: allRows.filter(r => _pipelineCohort(r) === 'needs_obs').length, signal: 'Observation blocked' },
+    pending:   { count: allRows.filter(r => isRowActionable(r) && r.approved !== 'true').length, signal: 'Awaiting approval' },
+    approved:  { count: allRows.filter(r => isRowActionable(r) && r.approved === 'true').length, signal: 'Ready to send' },
+    scheduled: { count: allRows.filter(r => r.send_after && !r.sent_at).length, signal: 'Waiting window' },
+    sent:      { count: allRows.filter(r => !!r.sent_at).length, signal: 'Watch replies' },
+    replied:   { count: allRows.filter(r => r.replied === 'true').length, signal: 'Conversations' },
+    recovery:  { count: allRows.filter(r => _pipelineCohort(r) === 'stale' || _pipelineCohort(r) === 'no_email').length, signal: 'Stale + no email' },
+    all:       { count: allRows.length, signal: 'All rows' },
+    stale:     { count: allRows.filter(r => !r.sent_at && r.draft_version !== status_draft_version).length, signal: 'Regenerate first' },
+    no_email:  { count: allRows.filter(r => !r.to_email || !r.to_email.includes('@')).length, signal: 'Social fallback' },
+    high_score:{ count: allRows.filter(r => parseInt(r.final_priority_score) >= 4).length, signal: 'Top fit rows' },
+  };
+  Object.entries(laneSpecs).forEach(([key, spec]) => {
+    const countEl = document.getElementById(`lane-count-${key}`);
+    if (countEl) countEl.textContent = String(spec.count);
+    const subEl = document.getElementById(`lane-sub-${key}`);
+    if (subEl) subEl.textContent = spec.signal;
+  });
 }
 
 // ── Review Panel ──────────────────────────────────────────────────────────────
