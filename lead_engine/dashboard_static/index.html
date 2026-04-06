@@ -975,6 +975,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cc-map-statusbar-left{display:flex;align-items:center;gap:8px;min-width:0}
 .cc-map-statusbar-right{font-size:10px;color:var(--dim);font-family:var(--mono);white-space:nowrap}
 .cc-map-territory-note{padding:7px 10px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);font-size:11px;color:var(--muted)}
+.cc-runway-card.clickable{cursor:pointer;transition:.14s}
+.cc-runway-card.clickable:hover{border-color:rgba(255,255,255,.15);transform:translateY(-1px)}
+.cc-runway-card.active{box-shadow:inset 0 0 0 1px rgba(79,142,247,.28)}
 /* Territory planner — supporting role, not competing */
 .cc-tp-pane{width:280px;flex-shrink:0;display:none;flex-direction:column;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.97));overflow:hidden}
 .cc-tp-header{padding:8px 12px 7px;border-top:2px solid var(--copper);border-bottom:1px solid var(--border);flex-shrink:0}
@@ -1195,6 +1198,10 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .msat-chip.underworked{background:#e9f9ef;border-color:#b8e7c7;color:#127a3f}
 .msat-chip.worked{background:#edf4ff;border-color:#c8dafc;color:#2f69d9}
 .msat-chip.saturated{background:#fff3e3;border-color:#f3d7ac;color:#a05a00}
+.msat-chip.ready{background:rgba(62,207,114,.14);border-color:rgba(62,207,114,.35);color:var(--green)}
+.msat-chip.wait{background:rgba(79,142,247,.14);border-color:rgba(79,142,247,.32);color:var(--blue)}
+.msat-chip.block{background:rgba(245,166,35,.14);border-color:rgba(245,166,35,.32);color:var(--amber)}
+.msat-chip.follow{background:rgba(184,115,51,.14);border-color:rgba(184,115,51,.32);color:var(--copper)}
 .msat-chip.light{background:#f3f4f6;border-color:#d6d8df;color:#4b5563}
 .msat-note{font-size:10px;color:var(--dim);line-height:1.45}
 .msat-empty{font-size:11px;color:var(--muted);padding:8px 10px;border:1px dashed var(--border);border-radius:var(--rs);background:var(--surface2)}
@@ -1236,6 +1243,14 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 /* ── Pass 78: RTS Coverage Glow System ────────────────────────────── */
 /* Lead count floating badges */
 .rts-badge{display:flex;align-items:center;justify-content:center;min-width:22px;height:18px;padding:0 5px;border-radius:9px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;pointer-events:none;backdrop-filter:blur(2px)}
+.ops-pressure-badge{display:flex;align-items:center;justify-content:center;min-width:28px;height:20px;padding:0 6px;border-radius:10px;font-size:10px;font-weight:700;font-family:var(--mono);white-space:nowrap;backdrop-filter:blur(3px);box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.ops-pressure-badge.ready{background:rgba(62,207,114,.18);border:1px solid rgba(62,207,114,.55);color:#b9ffd0}
+.ops-pressure-badge.wait{background:rgba(79,142,247,.18);border:1px solid rgba(79,142,247,.5);color:#dbeafe}
+.ops-pressure-badge.block{background:rgba(245,166,35,.16);border:1px solid rgba(245,166,35,.45);color:#ffd69a}
+.ops-pressure-badge.follow{background:rgba(184,115,51,.18);border:1px solid rgba(184,115,51,.5);color:#f0c49a}
+.ops-pressure-badge.active{box-shadow:0 0 0 1px rgba(255,255,255,.08),0 0 0 4px rgba(79,142,247,.1),0 10px 24px rgba(0,0,0,.3)}
+.ops-pressure-cell path{mix-blend-mode:screen}
+.ops-pressure-cell.active path{filter:drop-shadow(0 0 8px rgba(79,142,247,.22))}
 
 /* Searched cells: subtle copper outline only, fills barely visible */
 .rts-core-searched path { mix-blend-mode: screen; }
@@ -3354,14 +3369,18 @@ function _panelSyncOpenState() {
 async function loadAll() {
   try {
     const [status, queue] = await Promise.all([api('/api/status'), api('/api/queue')]);
-    document.getElementById('s-prospects').textContent = status.prospects_loaded ?? '—';
-    document.getElementById('s-drafted').textContent   = status.total_drafted ?? '—';
-    document.getElementById('s-pending').textContent   = status.pending_approval ?? '—';
-    document.getElementById('s-approved').textContent  = status.approved_unsent ?? '—';
-    document.getElementById('s-sent').textContent      = status.sent ?? '—';
-    document.getElementById('s-logged').textContent    = status.sent_logged_only ?? '—';
+    const setText = (id, value) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value ?? '—';
+    };
+    setText('s-prospects', status.prospects_loaded);
+    setText('s-drafted', status.total_drafted);
+    setText('s-pending', status.pending_approval);
+    setText('s-approved', status.approved_unsent);
+    setText('s-sent', status.sent);
+    setText('s-logged', status.sent_logged_only);
     _updateRepliedStat(status.replied ?? 0);
-    document.getElementById('s-stale').textContent = status.stale_drafts ?? '—';
+    setText('s-stale', status.stale_drafts);
     status_draft_version = status.current_draft_version ?? '';
     // Background badge fetch — doesn't block queue load
     _refreshNavBadges();
@@ -3380,19 +3399,24 @@ async function loadAll() {
 
 async function loadStats() {
   const s = await api('/api/status');
-  document.getElementById('s-prospects').textContent = s.prospects_loaded ?? '—';
-  document.getElementById('s-drafted').textContent   = s.total_drafted ?? '—';
-  document.getElementById('s-pending').textContent   = s.pending_approval ?? '—';
-  document.getElementById('s-approved').textContent  = s.approved_unsent ?? '—';
-  document.getElementById('s-sent').textContent      = s.sent ?? '—';
-  document.getElementById('s-logged').textContent    = s.sent_logged_only ?? '—';
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value ?? '—';
+  };
+  setText('s-prospects', s.prospects_loaded);
+  setText('s-drafted', s.total_drafted);
+  setText('s-pending', s.pending_approval);
+  setText('s-approved', s.approved_unsent);
+  setText('s-sent', s.sent);
+  setText('s-logged', s.sent_logged_only);
   _updateRepliedStat(s.replied ?? 0);
-  document.getElementById('s-stale').textContent = s.stale_drafts ?? '—';
+  setText('s-stale', s.stale_drafts);
   _updateScheduledStat(); // Pass 172-177: computed from allRows — must follow allRows population in loadAll
 }
 
 function _updateRepliedStat(count) {
-  document.getElementById('s-replied').textContent = count;
+  const stat = document.getElementById('s-replied');
+  if (stat) stat.textContent = count;
   const pulse = document.getElementById('reply-pulse');
   if (pulse) pulse.style.display = count > 0 ? 'inline-block' : 'none';
 }
@@ -4541,6 +4565,7 @@ function openPanel(fi, rowsCtx, sessionLabel) {
   const overlay = document.getElementById('panel-overlay');
   if (overlay && !_shouldDockQueueInspector()) overlay.classList.add('open');
   _syncQueueInspectorDock();
+  ccQueueRender();
 }
 
 function panelFocusObservation(selectAll) {
@@ -4912,6 +4937,7 @@ function closePanel(force) {
   panelSessionLabel = '';
   panelOpenIntent = '';
   _syncQueueInspectorDock();
+  ccQueueRender();
   window.setTimeout(() => {
     const current = document.querySelector('#tbody tr.session-current');
     if (current && current.scrollIntoView) current.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
@@ -7396,6 +7422,8 @@ async function tpLoad() {
     if (el) el.textContent = _tpIndustries.length;
     _tpUpdateStats();
     tpRender();
+    if (_mapTerritoryData) _mapRenderTerritoryOverlay();
+    ccQueueRender();
   } catch(e) {
     const c = document.getElementById('tp-cards');
     if (c) c.innerHTML = '<div class="tp-empty"><div class="tp-empty-icon">\u26A0\uFE0F</div><div>Failed to load territory data</div></div>';
@@ -9429,6 +9457,15 @@ let _ccTerrScope = null;
 let _ccMode = 'operations';
 let _ccOpsSlice = 'due_now';
 let _ccDrawerMode = 'slice';
+let _mapOpsLayer = null;
+
+function _ccParseSendAfterLocal(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return null;
+  const normalized = raw.replace(' ', 'T');
+  const dt = new Date(normalized);
+  return Number.isNaN(dt.getTime()) ? null : dt;
+}
 
 function _ccScopeMatchRow(row) {
   if (!_ccTerrScope) return true;
@@ -9479,6 +9516,16 @@ function _ccOpsSliceDefs(rows) {
   ];
 }
 
+function _ccRowInSlice(row, key) {
+  if (!row) return false;
+  if (key === 'due_now') return !row.sent_at && !!(row.send_after || '').trim() && row.is_ready && row.send_ready && row.to_email;
+  if (key === 'ready_approve') return isRowActionable(row) && !row.sent_at && (row.subject || '').trim() && row.to_email && !row.send_ready && _pipelineCohort(row) === 'bulk_safe';
+  if (key === 'stale') return !row.sent_at && _pipelineCohort(row) === 'stale';
+  if (key === 'blockers') return !row.sent_at && ['needs_obs', 'draft_repair', 'no_email'].includes(_pipelineCohort(row));
+  if (key === 'follow') return String(row.replied || '').toLowerCase() === 'true' || (!!row.sent_at && String(row.replied || '').toLowerCase() !== 'true');
+  return false;
+}
+
 function _ccSliceByKey(key) {
   return _ccOpsSliceDefs().find(def => def.key === key) || _ccOpsSliceDefs()[0];
 }
@@ -9499,6 +9546,135 @@ function _ccRowSummary(row) {
   return { cls: 'wait', label: 'Approval lane', note: 'Ready for review and operator decision.' };
 }
 
+function _ccCellMatchesScope(cell) {
+  if (!_ccTerrScope || !_ccTerrScope.bbox || _ccTerrScope.bbox.length !== 4) return false;
+  const [minLat, maxLat, minLng, maxLng] = _ccTerrScope.bbox.map(parseFloat);
+  return !(
+    _mapTerritoryNumber(cell.max_lat) < minLat ||
+    _mapTerritoryNumber(cell.min_lat) > maxLat ||
+    _mapTerritoryNumber(cell.max_lng) < minLng ||
+    _mapTerritoryNumber(cell.min_lng) > maxLng
+  );
+}
+
+function _ccRowsForCell(cell) {
+  return _ccScopedRows().filter(row => {
+    const lat = _mapTerritoryNumber(row.lat);
+    const lng = _mapTerritoryNumber(row.lng);
+    if (!(lat || lng)) return false;
+    return (
+      lat >= _mapTerritoryNumber(cell.min_lat) &&
+      lat < _mapTerritoryNumber(cell.max_lat) &&
+      lng >= _mapTerritoryNumber(cell.min_lng) &&
+      lng < _mapTerritoryNumber(cell.max_lng)
+    );
+  });
+}
+
+function _ccNormalizeCityName(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function _ccTerritoryPointCoords(entry) {
+  const raw = String(entry?.city || '').trim();
+  if (raw.includes(',')) {
+    const [latRaw, lngRaw] = raw.split(',');
+    const lat = parseFloat(latRaw);
+    const lng = parseFloat(lngRaw);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng };
+  }
+  const fallback = (_tpData || []).find(other =>
+    other !== entry &&
+    _ccNormalizeCityName(other?.display_name || other?.city || '') === _ccNormalizeCityName(entry?.display_name || entry?.city || '') &&
+    String(other?.city || '').includes(',')
+  );
+  if (!fallback) return null;
+  const [latRaw, lngRaw] = String(fallback.city).split(',');
+  const lat = parseFloat(latRaw);
+  const lng = parseFloat(lngRaw);
+  return (Number.isFinite(lat) && Number.isFinite(lng)) ? { lat, lng } : null;
+}
+
+function _ccRowsForTerritoryPoint(entry) {
+  const pointName = _ccNormalizeCityName(entry?.display_name || entry?.display || entry?.name || '');
+  const pointState = _ccNormalizeCityName(entry?.state || '');
+  return _ccScopedRows().filter(row => {
+    const rowCity = _ccNormalizeCityName(row.city);
+    const rowState = _ccNormalizeCityName(row.state);
+    if (!rowCity) return false;
+    if (pointName && rowCity === pointName) return !pointState || pointState === 'area' || !rowState || rowState === pointState;
+    return false;
+  });
+}
+
+function _ccTerritoryPointMetrics(entry) {
+  const rows = _ccRowsForTerritoryPoint(entry);
+  const now = Date.now();
+  const sessionKeys = _queueSession && !_queueSession.done ? new Set(_queueSession.rowKeys || []) : null;
+  const metrics = {
+    rows,
+    total: rows.length,
+    dueNow: rows.filter(row => _ccRowInSlice(row, 'due_now')).length,
+    readyApprove: rows.filter(row => _ccRowInSlice(row, 'ready_approve')).length,
+    stale: rows.filter(row => _ccRowInSlice(row, 'stale')).length,
+    blockers: rows.filter(row => _ccRowInSlice(row, 'blockers')).length,
+    follow: rows.filter(row => _ccRowInSlice(row, 'follow')).length,
+    active: sessionKeys ? rows.filter(row => sessionKeys.has(_panelMakeKey(row))).length : 0,
+    dueSoon: rows.filter(row => {
+      const sendAt = _ccParseSendAfterLocal(row.send_after);
+      return !!(sendAt && !row.is_ready && (sendAt.getTime() - now) <= 2 * 60 * 60 * 1000 && (sendAt.getTime() - now) > 0);
+    }).length,
+    blockedScheduled: rows.filter(row => !!(row.send_after || '').trim() && !row.is_ready && ['needs_obs', 'draft_repair', 'no_email'].includes(_pipelineCohort(row))).length,
+  };
+  metrics.frontCount = (
+    _ccOpsSlice === 'due_now' ? metrics.dueNow :
+    _ccOpsSlice === 'ready_approve' ? metrics.readyApprove :
+    _ccOpsSlice === 'stale' ? metrics.stale :
+    _ccOpsSlice === 'blockers' ? metrics.blockers :
+    metrics.follow
+  );
+  return metrics;
+}
+
+function _ccOpsTone(key) {
+  return {
+    due_now: { cls: 'ready', color: '#3ecf72', label: 'Due now' },
+    ready_approve: { cls: 'wait', color: '#4f8ef7', label: 'Ready for approval' },
+    stale: { cls: 'wait', color: '#7db1ff', label: 'Stale drafts' },
+    blockers: { cls: 'block', color: '#f5a623', label: 'Blocked' },
+    follow: { cls: 'follow', color: '#c8884a', label: 'Follow-up' },
+  }[key] || { cls: 'wait', color: '#4f8ef7', label: 'Operational pressure' };
+}
+
+function _ccCellMetrics(cell) {
+  const rows = _ccRowsForCell(cell);
+  const now = Date.now();
+  const sessionKeys = _queueSession && !_queueSession.done ? new Set(_queueSession.rowKeys || []) : null;
+  const metrics = {
+    rows,
+    total: rows.length,
+    dueNow: rows.filter(row => _ccRowInSlice(row, 'due_now')).length,
+    readyApprove: rows.filter(row => _ccRowInSlice(row, 'ready_approve')).length,
+    stale: rows.filter(row => _ccRowInSlice(row, 'stale')).length,
+    blockers: rows.filter(row => _ccRowInSlice(row, 'blockers')).length,
+    follow: rows.filter(row => _ccRowInSlice(row, 'follow')).length,
+    active: sessionKeys ? rows.filter(row => sessionKeys.has(_panelMakeKey(row))).length : 0,
+    dueSoon: rows.filter(row => {
+      const sendAt = _ccParseSendAfterLocal(row.send_after);
+      return !!(sendAt && !row.is_ready && (sendAt.getTime() - now) <= 2 * 60 * 60 * 1000 && (sendAt.getTime() - now) > 0);
+    }).length,
+    blockedScheduled: rows.filter(row => !!(row.send_after || '').trim() && !row.is_ready && ['needs_obs', 'draft_repair', 'no_email'].includes(_pipelineCohort(row))).length,
+  };
+  metrics.frontCount = (
+    _ccOpsSlice === 'due_now' ? metrics.dueNow :
+    _ccOpsSlice === 'ready_approve' ? metrics.readyApprove :
+    _ccOpsSlice === 'stale' ? metrics.stale :
+    _ccOpsSlice === 'blockers' ? metrics.blockers :
+    metrics.follow
+  );
+  return metrics;
+}
+
 function _ccSortRows(rows) {
   if (!Array.isArray(rows)) return [];
   if (typeof _queueSortRows === 'function') return _queueSortRows(rows);
@@ -9516,9 +9692,10 @@ function _ccUpdateScopeChrome() {
   const regenScoped = document.getElementById('cc-cmd-regen-scoped');
   if (scopeText) scopeText.textContent = _ccTerrScope ? _ccTerrScope.name : 'Global queue';
   if (scopeMeta) scopeMeta.textContent = `${scoped.length} row${scoped.length === 1 ? '' : 's'}`;
+  const front = _ccSliceByKey(_ccOpsSlice);
   if (note) note.textContent = _ccTerrScope
-    ? `${_ccTerrScope.name} is active. Journal counts, dispatch pulse, and the drawer are now locked to this territory until you clear scope.`
-    : 'Global map pressure. Select a territory to collapse the journal, runway, and drawer to that operating front.';
+    ? `${_ccTerrScope.name} is active. ${front.label} is the current front, so map pressure, runway, and drawer are locked to that territory until you clear scope.`
+    : `${front.label} is the current front. Select a territory to collapse the journal, runway, and drawer to that operating front.`;
   if (pill) pill.style.display = _ccTerrScope ? '' : 'none';
   if (pillName) pillName.textContent = _ccTerrScope ? _ccTerrScope.name : '';
   if (approveScoped) approveScoped.style.display = _ccTerrScope ? '' : 'none';
@@ -9534,12 +9711,20 @@ function ccScopeToTerritory(data) {
     bbox: (data.bbox && data.bbox.length === 4) ? data.bbox : null
   };
   _ccUpdateScopeChrome();
+  if (_mapTerritoryData) _mapRenderTerritoryOverlay();
   ccQueueRender();
+}
+
+function ccScopeToTerritoryName(name) {
+  const safeName = String(name || '').trim();
+  if (!safeName) return;
+  ccScopeToTerritory({ short_name: safeName, display_name: safeName, city: safeName, bbox: null });
 }
 
 function ccClearTerritoryScope() {
   _ccTerrScope = null;
   _ccUpdateScopeChrome();
+  if (_mapTerritoryData) _mapRenderTerritoryOverlay();
   ccQueueRender();
 }
 
@@ -9620,6 +9805,10 @@ function ccSetDrawerMode(mode) {
 function ccSetSlice(key) {
   _ccOpsSlice = key;
   _ccDrawerMode = 'slice';
+  const status = document.getElementById('map-status');
+  const front = _ccSliceByKey(key);
+  if (status) status.textContent = `${front.label} front loaded. The map is now emphasizing territories carrying this operational pressure.`;
+  if (_mapTerritoryData) _mapRenderTerritoryOverlay();
   ccQueueRender();
 }
 
@@ -9673,46 +9862,70 @@ function _ccRenderJournal() {
   }).join('');
 }
 
+function _ccRenderDossierPresence() {
+  const modeChip = document.getElementById('cc-dossier-mode-chip');
+  const sliceChip = document.getElementById('cc-dossier-slice-chip');
+  const empty = document.getElementById('cc-ops-dossier-empty');
+  const slice = _ccSliceByKey(_ccOpsSlice);
+  const scoped = _ccScopedRows();
+  const active = panelIdx >= 0;
+  if (modeChip) {
+    const scopeLabel = _ccTerrScope ? _ccTerrScope.name : 'Global theater';
+    modeChip.textContent = active ? 'Business focus' : `${scopeLabel}`;
+  }
+  if (sliceChip) {
+    sliceChip.textContent = active ? `${slice.label} active` : `${slice.label} front`;
+  }
+  if (empty && !active) {
+    const lead = slice.rows[0];
+    const territoryText = _ccTerrScope ? `${_ccTerrScope.name} is selected.` : 'No territory is pinned.';
+    empty.innerHTML = `<strong>${escHtml(slice.label)} is the active front.</strong>
+      <div>${escHtml(territoryText)} ${slice.rows.length} row${slice.rows.length === 1 ? '' : 's'} currently sit in this front.</div>
+      <div>${escHtml(lead ? `${lead.business_name || 'A lead'} is the closest live row in this front.` : 'Choose a territory or click a front to surface the nearest operational row here.')}</div>`;
+  }
+}
+
 function _ccRenderRunway() {
   const wrap = document.getElementById('cc-ops-runway');
   if (!wrap) return;
   const scoped = _ccScopedRows();
   const futureScheduled = scoped.filter(row => !!(row.send_after || '').trim() && !row.sent_at && !row.is_ready);
   const dueNow = scoped.filter(row => !!(row.send_after || '').trim() && !row.sent_at && row.is_ready && row.send_ready);
+  const dueSoon = futureScheduled.filter(row => {
+    const sendAt = _ccParseSendAfterLocal(row.send_after);
+    if (!sendAt) return false;
+    const mins = (sendAt.getTime() - Date.now()) / 60000;
+    return mins > 0 && mins <= 120;
+  });
   const blockedScheduled = futureScheduled.filter(row => ['needs_obs', 'draft_repair', 'no_email'].includes(_pipelineCohort(row)));
   const readyNow = scoped.filter(row => !row.sent_at && row.send_ready && row.to_email).length;
   const nextDue = futureScheduled
     .slice()
     .sort((a, b) => String(a.send_after || '').localeCompare(String(b.send_after || '')))[0];
+  const dueNowTerritories = new Set(dueNow.map(row => `${row.city || ''}|${row.state || ''}`).filter(v => v !== '|')).size;
+  const dueSoonTerritories = new Set(dueSoon.map(row => `${row.city || ''}|${row.state || ''}`).filter(v => v !== '|')).size;
+  const blockedTerritories = new Set(blockedScheduled.map(row => `${row.city || ''}|${row.state || ''}`).filter(v => v !== '|')).size;
   wrap.innerHTML = `
-    <div class="cc-runway-card ready">
+    <div class="cc-runway-card ready clickable ${_ccOpsSlice === 'due_now' ? 'active' : ''}" onclick="ccSetSlice('due_now')">
       <div class="cc-runway-label">Dispatch pulse</div>
       <div class="cc-runway-value">${dueNow.length}</div>
-      <div class="cc-runway-note">${dueNow.length ? 'Scheduled rows are due now and back in Send Approved.' : 'No scheduled rows have reached their window yet.'}</div>
+      <div class="cc-runway-note">${dueNow.length ? `${dueNowTerritories || 1} territor${dueNowTerritories === 1 ? 'y' : 'ies'} are live now.` : 'No scheduled rows have reached their window yet.'}</div>
     </div>
-    <div class="cc-runway-card">
-      <div class="cc-runway-label">Next due</div>
-      <div class="cc-runway-value">${nextDue ? _ccOpsFormatSendAfter(nextDue.send_after) : '—'}</div>
-      <div class="cc-runway-note">${nextDue ? (nextDue.business_name || 'Next scheduled lead') : 'No future scheduled rows are waiting.'}</div>
+    <div class="cc-runway-card clickable ${_ccOpsSlice === 'ready_approve' ? 'active' : ''}" onclick="ccSetSlice('ready_approve')">
+      <div class="cc-runway-label">Due soon</div>
+      <div class="cc-runway-value">${dueSoon.length}</div>
+      <div class="cc-runway-note">${dueSoon.length ? `${dueSoonTerritories || 1} territor${dueSoonTerritories === 1 ? 'y' : 'ies'} will heat up within 2 hours.` : (nextDue ? `Next window: ${_ccOpsFormatSendAfter(nextDue.send_after)}` : 'No future scheduled rows are waiting.')}</div>
     </div>
-    <div class="cc-runway-card warn">
+    <div class="cc-runway-card warn clickable ${_ccOpsSlice === 'blockers' ? 'active' : ''}" onclick="ccSetSlice('blockers')">
       <div class="cc-runway-label">Blocked scheduled</div>
       <div class="cc-runway-value">${blockedScheduled.length}</div>
-      <div class="cc-runway-note">${blockedScheduled.length ? 'Scheduled rows still need repair, observation, or another route.' : 'Scheduled rows are currently clean.'}</div>
+      <div class="cc-runway-note">${blockedScheduled.length ? `${blockedTerritories || 1} territor${blockedTerritories === 1 ? 'y is' : 'ies are'} carrying blocked schedule pressure.` : 'Scheduled rows are currently clean.'}</div>
     </div>
-    <div class="cc-runway-card">
+    <div class="cc-runway-card clickable ${_ccOpsSlice === 'follow' ? 'active' : ''}" onclick="ccSetSlice('follow')">
       <div class="cc-runway-label">Ready now</div>
       <div class="cc-runway-value">${readyNow}</div>
-      <div class="cc-runway-note">${readyNow ? 'Rows are currently eligible in the live send lane.' : 'No rows are send-ready in this scope.'}</div>
+      <div class="cc-runway-note">${readyNow ? 'Rows are currently eligible in the live send lane across the active map scope.' : 'No rows are send-ready in this scope.'}</div>
     </div>`;
-}
-
-function _ccRenderDossierPresence() {
-  const chip = document.getElementById('cc-dossier-slice-chip');
-  if (!chip) return;
-  const slice = _ccSliceByKey(_ccOpsSlice);
-  const active = panelIdx >= 0;
-  chip.textContent = active ? `${slice.label} active` : `${slice.label} selected`;
 }
 
 function _ccRenderDrawer() {
@@ -9760,6 +9973,9 @@ function _ccRenderDrawer() {
 }
 
 function ccQueueRender() {
+  if (_ccMode !== 'territory' && _mapInstance && !_mapTerritoryData) {
+    _mapLoadTerritoryOverlay();
+  }
   _ccUpdateScopeChrome();
   _ccRenderRunway();
   _ccRenderJournal();
@@ -12098,10 +12314,87 @@ function _mapRefreshTerritoryButtons() {
   }
 }
 
+function _mapEnsureOpsLayer() {
+  if (!_mapInstance) return null;
+  if (!_mapOpsLayer) _mapOpsLayer = L.layerGroup().addTo(_mapInstance);
+  return _mapOpsLayer;
+}
+
+function _ccOpsPopupHtml(metrics) {
+  if (!metrics || !metrics.total) return '';
+  const front = _ccSliceByKey(_ccOpsSlice);
+  return (
+    `<div class="map-territory-popup-note"><strong>${escHtml(front.label)}</strong>: ${metrics.frontCount} • ready now: ${metrics.dueNow + metrics.readyApprove} • blocked: ${metrics.blockers} • follow-up: ${metrics.follow}</div>` +
+    (metrics.dueSoon ? `<div class="map-territory-popup-note">Due soon in this cell: <strong>${metrics.dueSoon}</strong></div>` : '') +
+    (metrics.active ? `<div class="map-territory-popup-note">Active session rows here: <strong>${metrics.active}</strong></div>` : '')
+  );
+}
+
+function _mapRenderOperationsPressure(cells) {
+  const layer = _mapEnsureOpsLayer();
+  if (!layer) return;
+  layer.clearLayers();
+  if (_ccMode === 'territory' || !_mapTerritoryVisible || !Array.isArray(cells) || !cells.length) return;
+  const tone = _ccOpsTone(_ccOpsSlice);
+  const bounds = _mapInstance ? _mapInstance.getBounds() : null;
+  const hotPoints = (_tpData || [])
+    .map(entry => ({ entry, coords: _ccTerritoryPointCoords(entry) }))
+    .filter(item => item.coords && (!bounds || bounds.contains([item.coords.lat, item.coords.lng])))
+    .map(item => ({ ...item, metrics: _ccTerritoryPointMetrics(item.entry) }))
+    .filter(item => (item.metrics.frontCount || item.metrics.active) > 0)
+    .sort((a, b) => (b.metrics.frontCount - a.metrics.frontCount) || (b.metrics.total - a.metrics.total))
+    .slice(0, 18);
+  hotPoints.forEach(({ entry, coords, metrics }) => {
+      const lat = coords.lat;
+      const lng = coords.lng;
+      if (!lat && !lng) return;
+      const cityName = String(entry.display_name || '').trim();
+      const isScoped = _ccTerrScope && _ccNormalizeCityName(_ccTerrScope.city || _ccTerrScope.name) === _ccNormalizeCityName(cityName);
+      const intensity = Math.min(0.34, 0.08 + (metrics.frontCount * 0.03));
+      const halo = L.circle([lat, lng], {
+        radius: 1400 + (metrics.frontCount * 120),
+        color: tone.color,
+        weight: isScoped ? 2.6 : 1.2,
+        opacity: isScoped ? 0.95 : 0.68,
+        fillColor: tone.color,
+        fillOpacity: intensity,
+        interactive: false,
+        className: `ops-pressure-cell${isScoped ? ' active' : ''}`,
+      }).addTo(layer);
+      if (typeof halo.bringToFront === 'function') halo.bringToFront();
+      const icon = L.divIcon({
+        className: '',
+        html: `<div class="ops-pressure-badge ${tone.cls}${isScoped ? ' active' : ''}">${metrics.frontCount}</div>`,
+        iconSize: [36, 20],
+        iconAnchor: [18, 10],
+      });
+      const marker = L.marker([lat, lng], { icon, interactive: true, zIndexOffset: isScoped ? 240 : 180 }).addTo(layer);
+      marker.bindTooltip(
+        `<div class="county-tooltip">` +
+          `<div class="county-tooltip-name">${escHtml(cityName || 'Territory')}</div>` +
+          `<div class="county-tooltip-row"><span>${escHtml(tone.label)}</span><span class="county-tooltip-val">${metrics.frontCount}</span></div>` +
+          `<div class="county-tooltip-row"><span>Due now</span><span class="county-tooltip-val">${metrics.dueNow}</span></div>` +
+          `<div class="county-tooltip-row"><span>Blocked</span><span class="county-tooltip-val">${metrics.blockers}</span></div>` +
+          `<div class="county-tooltip-row"><span>Follow-up</span><span class="county-tooltip-val">${metrics.follow}</span></div>` +
+          (metrics.dueSoon ? `<div class="county-tooltip-row"><span>Due soon</span><span class="county-tooltip-val">${metrics.dueSoon}</span></div>` : '') +
+          (metrics.active ? `<div class="county-tooltip-row"><span>Active session</span><span class="county-tooltip-val">${metrics.active}</span></div>` : '') +
+          `<span class="county-tooltip-status cts-worked">${escHtml(tone.label)}</span>` +
+        `</div>`,
+        { className: '', sticky: false, opacity: 1 }
+      );
+      marker.on('click', () => {
+        ccScopeToTerritory({ short_name: cityName, display_name: cityName, city: cityName, bbox: null });
+        if (_mapInstance) _mapInstance.setView([lat, lng], Math.max(_mapInstance.getZoom(), 11));
+        ccQueueRender();
+      });
+    });
+}
+
 function _mapTerritoryPopupHtml(cell, stats, tone, industry) {
   const searchLabel = industry ? `${_mapTerritoryIndustryLabel(industry)} searches` : 'Area searches';
   const leadLabel = industry ? `${_mapTerritoryIndustryLabel(industry)} leads` : 'Stored leads';
   const subLabel = `${_mapTerritoryIndustryLabel(industry)} • coarse territory cell`;
+  const opsMetrics = _ccCellMetrics(cell);
   return (
     `<div class="map-territory-popup">` +
       `<div class="map-territory-popup-title">${escHtml(tone.label)}</div>` +
@@ -12113,6 +12406,7 @@ function _mapTerritoryPopupHtml(cell, stats, tone, industry) {
       `</div>` +
       `<div class="map-territory-popup-note">${escHtml(tone.note)}</div>` +
       `<div class="map-territory-popup-note">Found from stored area searches: <strong>${stats.foundCount}</strong> • duplicate-heavy runs: <strong>${stats.duplicateCount}</strong></div>` +
+      _ccOpsPopupHtml(opsMetrics) +
       `<button class="map-territory-popup-act" onclick="_mapUseTerritoryCell('${cell.key}')">Use This Cell</button>` +
     `</div>`
   );
@@ -12130,6 +12424,13 @@ function _mapRenderTerritoryLegend(summary) {
     ? `Filtered to ${_mapTerritoryIndustryLabel(_mapTerritorySelectedIndustry())}`
     : 'Showing all industries';
   const visibleCells = _mapVisibleTerritoryCells();
+  const bounds = _mapInstance ? _mapInstance.getBounds() : null;
+  const front = _ccSliceByKey(_ccOpsSlice);
+  const hotCells = (_tpData || [])
+    .map(entry => ({ entry, coords: _ccTerritoryPointCoords(entry), metrics: _ccTerritoryPointMetrics(entry) }))
+    .filter(entry => entry.coords && (!bounds || bounds.contains([entry.coords.lat, entry.coords.lng])) && entry.metrics.frontCount > 0)
+    .sort((a, b) => (b.metrics.frontCount - a.metrics.frontCount) || (b.metrics.total - a.metrics.total))
+    .slice(0, 5);
   const saturationRows = _mapCollectIndustrySaturation(visibleCells);
   const coverageRows = saturationRows.slice(0, 8);
   const bestNextRows = saturationRows.filter(row => row.tone.key === 'underworked').slice(0, 5);
@@ -12141,6 +12442,15 @@ function _mapRenderTerritoryLegend(summary) {
         `<div class="mtl-row-meta">${row.leadCount} leads • ${row.searchCount} searches • ${row.plannerChecked} planner checks</div>` +
       `</div>` +
       `<button class="mtl-row-act" onclick="_mapUseTerritoryCell('${row.cell.key}')">Use Cell</button>` +
+    `</div>`
+  ).join('');
+  const opsRows = hotCells.map(entry =>
+    `<div class="mtl-row">` +
+      `<div class="mtl-row-main">` +
+        `<div class="mtl-row-title">${escHtml(entry.entry.display_name || 'Territory')}<span class="msat-chip ${escHtml(_ccOpsTone(_ccOpsSlice).cls)}">${entry.metrics.frontCount} ${escHtml(front.label)}</span></div>` +
+        `<div class="mtl-row-meta">Due now ${entry.metrics.dueNow} • blocked ${entry.metrics.blockers} • follow-up ${entry.metrics.follow}</div>` +
+      `</div>` +
+      `<button class="mtl-row-act" onclick="ccScopeToTerritoryName(${JSON.stringify(entry.entry.display_name || '')})">Focus</button>` +
     `</div>`
   ).join('');
   const saturationHtml = _mapTerritorySaturationVisible
@@ -12184,6 +12494,9 @@ function _mapRenderTerritoryLegend(summary) {
       (nextRows
         ? `<div class="mtl-list">${nextRows}</div>`
         : '') +
+      (opsRows
+        ? `<div class="msat-section"><div class="msat-head"><div><div class="msat-title">${escHtml(front.label)} Front</div><div class="msat-sub">The current journal front is spatially concentrated in these visible cells.</div></div></div><div class="mtl-list">${opsRows}</div></div>`
+        : '') +
       saturationHtml +
       `<div class="mtl-note">Territory cells are coarse neighborhood guides built from persisted area-search centers, AREA planner records, and stored lead coordinates. Use a suggested cell to move the search circle there.</div>` +
     `</div>`;
@@ -12220,16 +12533,28 @@ function _mapRenderTerritoryOverlay() {
     if (!_mapTerritoryIntersects(cell, bounds)) return;
 
     const tone = _mapTerritoryTone(stats);
+    const opsMetrics = _ccCellMetrics(cell);
+    const scopeHit = _ccCellMatchesScope(cell);
     if (_mapTerritoryNextOnly && tone.key !== 'next') return;
 
+    const frontTone = _ccOpsTone(_ccOpsSlice);
+    const frontHeat = opsMetrics.frontCount || 0;
+    const strokeColor = frontHeat ? frontTone.color : tone.color;
+    const weight = scopeHit ? 2.2 : frontHeat ? Math.min(3.2, 1.2 + (frontHeat * 0.22)) : (tone.key === 'next' ? 2.5 : 0.8);
+    const opacity = scopeHit ? 0.96 : frontHeat ? 0.84 : (tone.key === 'next' ? 0.9 : 0.5);
+    const fillOpacity = scopeHit
+      ? Math.max(tone.fillOpacity, 0.18)
+      : frontHeat
+        ? Math.min(0.3, Math.max(tone.fillOpacity, 0.06 + (frontHeat * 0.025)))
+        : tone.fillOpacity;
     const rect = L.rectangle(
       [[cell.min_lat, cell.min_lng], [cell.max_lat, cell.max_lng]],
       {
-        color: tone.color,
-        weight: tone.key === 'next' ? 2.5 : 0.8,
-        opacity: tone.key === 'next' ? 0.9 : 0.5,
-        fillColor: tone.color,
-        fillOpacity: tone.fillOpacity,
+        color: strokeColor,
+        weight,
+        opacity,
+        fillColor: strokeColor,
+        fillOpacity,
         dashArray: tone.dashArray || null,
         interactive: false,
       }
@@ -12251,6 +12576,7 @@ function _mapRenderTerritoryOverlay() {
     a.searchCount - b.searchCount
   );
 
+  _mapRenderOperationsPressure(Array.from(_mapTerritoryCellsByKey.values()));
   _mapRenderTerritoryLegend(summary);
   _mapRefreshTerritoryButtons();
 }
