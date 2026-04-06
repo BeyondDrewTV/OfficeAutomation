@@ -735,8 +735,8 @@ def _build_offer_sentence(obs: str, angle: str, variant: int) -> str:
     elif angle == "callback_recovery":
         variants = [
             "I work with owners one on one to find where calls and follow-through are dropping. Then I build something specific to that operation and keep it running.",
-            "I look at how the incoming work is actually being handled and build something around the gaps I find. I set it up and maintain it from there.",
-            "I work directly with owners to find where jobs are slipping and put something in place to catch them. Built for how they run things, not a generic fix.",
+            "I look at how calls and callbacks are actually being handled and build something around what's falling through. I set it up and maintain it from there.",
+            "I work directly with owners to find where calls are slipping and put something in place to catch them. Built for how they run things, not a generic fix.",
         ]
     elif angle == "estimate_follow_up":
         variants = [
@@ -830,6 +830,9 @@ def _subject_options_for_angle(angle: str, observation: str) -> List[str]:
         return ["estimate follow-up", "estimate requests", "quote follow-up"]
     if any(kw in obs_lower for kw in ("contact form", "inquiry", "message", "form")):
         return ["new inquiries", "inquiry follow-up", "contact follow-up"]
+    # owner_workflow angle — operational subjects, no contact-method-specific terms
+    if angle == "owner_workflow":
+        return ["follow-up timing", "too much back-and-forth", "operational drag"]
     return ["missed calls", "new inquiries", "follow-up timing"]
 
 
