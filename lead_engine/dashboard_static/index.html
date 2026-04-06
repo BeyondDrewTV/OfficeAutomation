@@ -1414,6 +1414,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     <div class="queue-ledger">
 <div class="bulk-bar" id="bulk-bar">
   <strong id="bulk-count">0</strong> selected —
+  <span id="bulk-target-meta" style="font-size:11px;color:var(--muted)">checked rows are the active repair target</span>
   <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('refresh_evidence','selected')">Refresh Evidence</button>
   <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('regen_candidates','selected')">Regenerate Candidates</button>
   <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('repair_rebuild','selected')">Repair + Rebuild</button>
@@ -2245,6 +2246,7 @@ let _lastApprovedCount = 0; // Pass 154-159: rows approved in last batch action 
 let _lastApprovedKeys = new Set(); // Pass 160-165: keys of freshly approved rows — enables approved working-set review session
 let _lastScheduledKeys = new Set(); // Pass 172-177: scheduled rows from last approved session — persists for waiting-state strip
 let _lastSentKeys = new Set();      // Pass 178-183: rows sent in last sendLive() — enables follow-up continuity strip
+let _selectedRowKeys = new Set();
 let _panelMousedownOnBackdrop = false; // Pass 37: drag-close guard
 let status_draft_version = '';
 let _repairBatchState = null;
@@ -2327,6 +2329,7 @@ function _mergeRowTruth(row, truth) {
   row.draft_valid = truth.draft_valid !== false;
   row.draft_blocked_reason = truth.draft_blocked_reason || '';
   row.draft_blocked_message = truth.draft_blocked_message || '';
+  row.scheduled_waiting = !!truth.scheduled_waiting;
   return row;
 }
 
@@ -2503,6 +2506,9 @@ function _repairBarActions(scope) {
   const title = scope === 'selected' ? 'Selected recovery' : 'Visible recovery';
   const rows = _repairRowsForScope(scope);
   const count = rows.length;
+  const scopeMeta = scope === 'selected'
+    ? 'Checked rows are the active target'
+    : `${_panelFilterLabel(currentFilter)} in view`;
   const buttons = [
     ['refresh_evidence', 'Refresh Evidence', ''],
     ['regen_candidates', 'Regenerate Candidates', ''],
@@ -2514,7 +2520,7 @@ function _repairBarActions(scope) {
   return `
     <div class="repair-toolbar-head">
       <div class="repair-toolbar-title">${title}</div>
-      <div class="repair-toolbar-sub">${count} row${count === 1 ? '' : 's'} in scope</div>
+      <div class="repair-toolbar-sub">${count} row${count === 1 ? '' : 's'} in scope · ${scopeMeta}</div>
     </div>
     <div class="repair-toolbar-actions">
       ${buttons.map(([action, label, cls]) => `<button class="repair-mini-btn ${cls}" onclick="runRepairAction('${action}','${scope}')" ${count ? '' : 'disabled'}>${label}</button>`).join('')}
@@ -2526,7 +2532,10 @@ function _renderVisibleRepairBar() {
   const el = document.getElementById('queue-visible-repair-bar');
   if (!el) return;
   const visibleRows = _repairRowsForScope('visible');
-  const show = ['active', 'needs_obs', 'stale', 'draft_repair', 'pending', 'approved', 'all'].includes(currentFilter) && visibleRows.length > 0;
+  const selectedCount = _selectedRows().length;
+  const show = ['active', 'needs_obs', 'stale', 'draft_repair', 'pending', 'approved', 'all'].includes(currentFilter)
+    && visibleRows.length > 0
+    && selectedCount === 0;
   el.hidden = !show;
   if (!show) {
     el.innerHTML = '';
@@ -3093,7 +3102,8 @@ function _panelRenderFlowActions(row) {
 
 function _panelAdvanceAfterAction(doneLabel) {
   const rows = _panelCurrentRows();
-  const nextIdx = panelIdx + 1;
+  const currentIdx = Math.max(0, rows.findIndex(row => _panelMakeKey(row) === panelRowKey));
+  const nextIdx = currentIdx + 1;
   if (nextIdx >= 0 && nextIdx < rows.length) {
     openPanel(nextIdx, rows, panelSessionLabel);
     // Pass 137: keep queue-level session position in sync with panel advance
@@ -3111,8 +3121,10 @@ function _panelAdvanceToIndex(targetIdx, doneLabel, refreshIntent) {
   if (targetIdx >= 0 && targetIdx < rows.length) {
     if (refreshIntent) panelOpenIntent = 'refresh';
     openPanel(targetIdx, rows, panelSessionLabel);
+    if (_queueSession && !_queueSession.done) _qsUpdatePos(targetIdx);
     return true;
   }
+  if (_queueSession && !_queueSession.done) _qsMarkDone();
   toast(doneLabel, 'info');
   return false;
 }
@@ -4089,7 +4101,7 @@ function renderTable() {
     const _isSessionCurrent = _sessionCurrentKey && _panelMakeKey(row) === _sessionCurrentKey;
     return _cohortHeader + `<tr class="${sentClass} ${repliedClass} ${scheduledClass}${_isSessionCurrent ? ' session-current' : ''}" onclick="openPanel(${fi})">
       <td class="td-chk" onclick="event.stopPropagation()">
-        ${bulkSelectable ? `<input type="checkbox" class="row-chk" data-gi="${gi}" onchange="updateBulkBar()">` : `<span style="color:var(--dim);font-size:10px">—</span>`}
+        ${bulkSelectable ? `<input type="checkbox" class="row-chk" data-gi="${gi}" data-row-key="${escHtml(_panelMakeKey(row))}" onchange="updateBulkBar()" ${_selectedRowKeys.has(_panelMakeKey(row)) ? 'checked' : ''}>` : `<span style="color:var(--dim);font-size:10px">—</span>`}
       </td>
       <td class="td-biz">
         <span class="biz-name">${escHtml(row.business_name)}</span>${cohortPill ? ' ' + cohortPill : ''}
@@ -5308,12 +5320,15 @@ async function panelFixAndNext(advance = true) {
   const btn = document.getElementById('panel-fix-next-btn');
   _btnPending(btn, advance ? 'Fixing...' : 'Fixing...');
   try {
+    const rowsBefore = _panelCurrentRows();
+    const currentIdx = Math.max(0, rowsBefore.findIndex(item => _panelMakeKey(item) === _panelMakeKey(row)));
     const result = await _runRowRepairMacro(row, { forceCandidate: true });
     _qsRecordOutcome(_panelMakeKey(row), result.ok ? 'repaired' : 'blocked');
     await _fetchRowTruth(row);
     renderTable();
     await fillPanel(row, panelIdx, _panelCurrentRows().length);
     if (!result.ok) {
+      panelOpenIntent = 'refresh';
       toast(result.message || 'Repair failed', 'err');
       return false;
     }
@@ -5322,7 +5337,7 @@ async function panelFixAndNext(advance = true) {
       return true;
     }
     const rows = _panelCurrentRows();
-    const nextIdx = panelIdx + 1 < rows.length ? panelIdx + 1 : -1;
+    const nextIdx = currentIdx + 1 < rows.length ? currentIdx + 1 : -1;
     if (_panelAdvanceToIndex(nextIdx, 'Draft repaired — no more rows in this review set', true)) {
       toast('Draft repaired — moved to next row', 'ok');
       return true;
@@ -5559,6 +5574,8 @@ async function panelScheduleTomorrow() {
     });
     if (!res.ok) { toast('Schedule error: ' + (res.error || 'unknown'), 'err'); _btnRestore(_schedBtn); return; }
     row.send_after = res.send_after;
+    row.is_ready = false;
+    await _fetchRowTruth(row);
     _qsRecordScheduled(_panelMakeKey(row)); // Pass 166-171: record in approved session outcome
     renderTable();
     fillPanel(row, panelIdx, _panelCurrentRows().length);
@@ -5586,6 +5603,8 @@ async function panelUnschedule() {
     if (!res.ok) { toast('Clear error: ' + (res.error || 'unknown'), 'err'); return; }
     _qsRecordUnscheduled(_panelMakeKey(row)); // Pass 166-171: undo in approved session outcome
     row.send_after = '';
+    row.is_ready = false;
+    await _fetchRowTruth(row);
     renderTable();
     fillPanel(row, panelIdx, _panelCurrentRows().length);
     await loadStats();
@@ -5611,6 +5630,8 @@ async function panelReschedule(days) {
     });
     if (!res.ok) { toast('Reschedule error: ' + (res.error || 'unknown'), 'err'); return; }
     row.send_after = res.send_after;
+    row.is_ready = false;
+    await _fetchRowTruth(row);
     _qsRecordScheduled(_panelMakeKey(row)); // Pass 166-171: idempotent — no double-count if already scheduled this session
     renderTable();
     fillPanel(row, panelIdx, _panelCurrentRows().length);
@@ -5961,7 +5982,18 @@ async function approveAll() {
 }
 
 // ── Bulk ──────────────────────────────────────────────────────────────────────
-function getSelectedGIs() { return [...document.querySelectorAll('.row-chk:checked')].map(c=>parseInt(c.dataset.gi)); }
+function _syncSelectedKeysFromDom() {
+  _selectedRowKeys = new Set(
+    [...document.querySelectorAll('.row-chk:checked')]
+      .map(c => c.dataset.rowKey || '')
+      .filter(Boolean)
+  );
+}
+function getSelectedGIs() {
+  return [..._selectedRowKeys]
+    .map(key => allRows.findIndex(row => _panelMakeKey(row) === key))
+    .filter(i => i >= 0);
+}
 function _bulkAllowedInCurrentFilter() {
   return ['active', 'needs_obs', 'stale', 'draft_repair', 'pending', 'approved', 'scheduled', 'all'].includes(currentFilter);
 }
@@ -5983,25 +6015,44 @@ function updateBulkSafety() {
     if (!allowed) master.checked = false;
   }
   if (!allowed) {
+    _selectedRowKeys = new Set();
     document.querySelectorAll('.row-chk').forEach(c=>c.checked=false);
     if (bulk) bulk.classList.remove('visible');
   }
+  updateBulkBar();
 }
 
 function updateBulkBar() {
   if (!_bulkAllowedInCurrentFilter()) return;
-  const n = document.querySelectorAll('.row-chk:checked').length;
+  _syncSelectedKeysFromDom();
+  const n = _selectedRows().length;
   const unscheduleBtn = document.getElementById('bulk-unschedule-btn');
+  const meta = document.getElementById('bulk-target-meta');
   document.getElementById('bulk-count').textContent = n;
+  if (meta) meta.textContent = n
+    ? `${n} checked row${n === 1 ? '' : 's'} will receive selected-set actions`
+    : 'checked rows are the active repair target';
   if (unscheduleBtn) unscheduleBtn.style.display = n > 0 && _selectedHasScheduled() ? 'inline-flex' : 'none';
   document.getElementById('bulk-bar').classList.toggle('visible', n > 0);
+  _renderVisibleRepairBar();
 }
 function clearSelection() {
+  _selectedRowKeys = new Set();
   document.querySelectorAll('.row-chk').forEach(c=>c.checked=false);
   document.getElementById('chk-all').checked=false;
   updateBulkBar();
 }
-function toggleCheckAll(master) { if (!_bulkAllowedInCurrentFilter()) return; document.querySelectorAll('.row-chk').forEach(c=>c.checked=master.checked); updateBulkBar(); }
+function toggleCheckAll(master) {
+  if (!_bulkAllowedInCurrentFilter()) return;
+  document.querySelectorAll('.row-chk').forEach(c => {
+    c.checked = master.checked;
+    const key = c.dataset.rowKey || '';
+    if (!key) return;
+    if (master.checked) _selectedRowKeys.add(key);
+    else _selectedRowKeys.delete(key);
+  });
+  updateBulkBar();
+}
 
 async function runRepairAction(action, scope) {
   if (_repairRunInFlight) { toast('A repair batch is already running', 'info'); return; }
@@ -6017,6 +6068,7 @@ async function runRepairAction(action, scope) {
   };
   _repairRunInFlight = true;
   _repairBatchState = {
+    scope,
     label: `${labels[action] || 'Repair'} · ${scope === 'selected' ? 'selected' : 'visible'}`,
     total: rows.length,
     done: 0,
@@ -6122,6 +6174,7 @@ async function runRepairAction(action, scope) {
 
     renderTable();
     await loadStats();
+    if (scope === 'selected') clearSelection();
     const counts = _repairBatchState.counts;
     toast(`${labels[action] || 'Repair'}: ${counts.repaired} repaired, ${counts.blocked} blocked${counts.approved ? `, ${counts.approved} approved` : ''}`, counts.blocked ? 'info' : 'ok');
   } finally {
@@ -6215,7 +6268,12 @@ async function bulkSchedule(mode) {
       else                payload.days_ahead  = 1;   // both Tomorrow and Best Time use days_ahead=1;
                                                       // backend picks industry-window time automatically
       const res = await api('/api/schedule_email', payload);
-      if (res.ok) { row.send_after = res.send_after ?? ''; ok++; }
+      if (res.ok) {
+        row.send_after = res.send_after ?? '';
+        row.is_ready = false;
+        await _fetchRowTruth(row);
+        ok++;
+      }
       else fail++;
     } catch(e) { fail++; }
   }
@@ -6230,7 +6288,15 @@ async function rowSchedule(gi, businessName) {
   if (!row) return;
   try {
     const res = await api('/api/schedule_email', { index: gi, business_name: businessName, days_ahead: 1 });
-    if (res.ok) { row.send_after = res.send_after; _qsRecordScheduled(_panelMakeKey(row)); renderTable(); await loadStats(); toast(`Scheduled: ${businessName} for ${_formatSendAfter(row.send_after)} - waits until then`, 'ok'); } // Pass 166-171
+    if (res.ok) {
+      row.send_after = res.send_after;
+      row.is_ready = false;
+      await _fetchRowTruth(row);
+      _qsRecordScheduled(_panelMakeKey(row));
+      renderTable();
+      await loadStats();
+      toast(`Scheduled: ${businessName} for ${_formatSendAfter(row.send_after)} - waits until then`, 'ok');
+    } // Pass 166-171
     else toast('Schedule failed: ' + (res.error || ''), 'err');
   } catch(e) { toast('Connection error', 'err'); }
 }
@@ -6240,7 +6306,15 @@ async function rowUnschedule(gi, businessName) {
   if (!row) return;
   try {
     const res = await api('/api/schedule_email', { index: gi, business_name: businessName, send_after: '' });
-    if (res.ok) { _qsRecordUnscheduled(_panelMakeKey(row)); row.send_after = ''; renderTable(); await loadStats(); toast('Schedule cleared - back in ready-now queue', 'ok'); } // Pass 166-171
+    if (res.ok) {
+      _qsRecordUnscheduled(_panelMakeKey(row));
+      row.send_after = '';
+      row.is_ready = false;
+      await _fetchRowTruth(row);
+      renderTable();
+      await loadStats();
+      toast('Schedule cleared - back in ready-now queue', 'ok');
+    } // Pass 166-171
     else toast('Clear failed: ' + (res.error || ''), 'err');
   } catch(e) { toast('Connection error', 'err'); }
 }
