@@ -52,46 +52,56 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .btn.loading .spin{display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.queue-command-strip{position:sticky;top:116px;z-index:130;display:flex;flex-direction:column;gap:12px;padding:14px 16px 12px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(15,17,23,.98),rgba(11,13,18,.95))}
-.queue-workflow-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px}
+.queue-command-strip{position:sticky;top:116px;z-index:130;display:flex;flex-direction:column;gap:12px;padding:16px 16px 14px;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(14,17,24,.98),rgba(8,10,14,.97));box-shadow:0 20px 44px rgba(0,0,0,.16)}
+.queue-workflow-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:16px;padding:14px 16px;border:1px solid var(--border);border-radius:calc(var(--r) - 2px);background:linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,.015));box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
 .queue-workflow-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
-.queue-workflow-kicker{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--copper)}
-.queue-workflow-title{font-size:17px;font-weight:700;letter-spacing:-.02em;color:var(--text);line-height:1.2}
-.queue-workflow-sub{max-width:860px;font-size:12px;line-height:1.45;color:var(--muted)}
-.queue-workflow-rail{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.queue-rail-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.queue-workflow-kicker{font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--copper)}
+.queue-workflow-title{font-size:18px;font-weight:700;letter-spacing:-.03em;color:var(--text);line-height:1.15}
+.queue-workflow-sub{max-width:860px;font-size:12px;line-height:1.5;color:var(--muted)}
+.queue-workflow-rail{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:360px}
+.queue-rail-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
 .queue-rail-chip strong{font-family:var(--mono);font-size:11px;color:var(--text)}
-.queue-rail-chip.ready{border-color:rgba(62,207,114,.22);background:rgba(62,207,114,.08);color:var(--green)}
-.queue-rail-chip.scheduled{border-color:rgba(79,142,247,.22);background:rgba(79,142,247,.08);color:var(--blue)}
+.queue-rail-chip.ready{border-color:rgba(62,207,114,.22);background:rgba(62,207,114,.1);color:var(--green)}
+.queue-rail-chip.selected{border-color:rgba(184,115,51,.24);background:rgba(184,115,51,.08);color:var(--copper)}
+.queue-rail-chip.scheduled{border-color:rgba(79,142,247,.22);background:rgba(79,142,247,.1);color:var(--blue)}
 .queue-rail-chip.sent{border-color:rgba(200,136,74,.2);background:rgba(200,136,74,.08);color:var(--copper)}
 .queue-rail-chip.followup{border-color:rgba(245,166,35,.18);background:rgba(245,166,35,.08);color:var(--amber)}
+.queue-workframe{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.queue-workframe-card{display:flex;flex-direction:column;gap:5px;padding:12px 14px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.03);min-width:0}
+.queue-workframe-card .qwc-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.queue-workframe-card .qwc-value{font-size:16px;line-height:1.15;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.queue-workframe-card .qwc-sub{font-size:11px;line-height:1.45;color:var(--muted)}
+.queue-workframe-card.selected{border-color:rgba(79,142,247,.22);background:rgba(79,142,247,.06)}
+.queue-workframe-card.visible{border-color:rgba(245,166,35,.18);background:rgba(245,166,35,.05)}
+.queue-workframe-card.session{border-color:rgba(184,115,51,.2);background:rgba(184,115,51,.06)}
 .queue-secondary-controls{border-top:1px solid var(--border);padding-top:10px}
-.queue-secondary-controls>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.queue-secondary-controls>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:4px 2px}
 .queue-secondary-controls>summary::-webkit-details-marker{display:none}
 .queue-secondary-controls[open]>summary{color:var(--text)}
 .queue-secondary-hint{font-size:10px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--dim)}
-.queue-secondary-body{display:flex;flex-direction:column;gap:10px;padding-top:10px}
-.queue-shell{display:grid;grid-template-columns:minmax(235px,278px) minmax(0,1fr);gap:14px;padding:14px 16px 16px;align-items:start}
-.queue-outliner{position:sticky;top:10px;align-self:start;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.98));border:1px solid var(--border);border-radius:var(--r);padding:14px;box-shadow:var(--card-shadow)}
-.queue-outliner-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:12px}
+.queue-secondary-body{display:flex;flex-direction:column;gap:12px;padding-top:10px}
+.queue-shell{display:grid;grid-template-columns:minmax(258px,300px) minmax(0,1fr);gap:16px;padding:14px 16px 16px;align-items:start}
+.queue-outliner{position:sticky;top:10px;align-self:start;background:linear-gradient(180deg,rgba(17,20,28,.98),rgba(9,11,16,.98));border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;box-shadow:var(--card-shadow),inset 0 1px 0 rgba(255,255,255,.03);overflow:hidden}
+.queue-outliner-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
 .queue-outliner-kicker{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
-.queue-outliner-title{font-size:14px;font-weight:700;color:var(--text)}
-.queue-outliner-sub{font-size:11px;color:var(--muted);line-height:1.45;margin-top:3px}
+.queue-outliner-title{font-size:15px;font-weight:700;color:var(--text)}
+.queue-outliner-sub{font-size:11px;color:var(--muted);line-height:1.45;margin-top:3px;max-width:180px}
 .queue-outliner-foot{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.45}
 .queue-outliner .filter-tabs{display:flex;flex-direction:column;gap:8px;background:none;border:none;border-radius:0;padding:0}
-.queue-outliner .ftab{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:10px 12px;border-radius:8px;font-size:11px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);min-height:0}
-.queue-outliner .ftab.active{background:rgba(79,142,247,.1);color:var(--text);border-color:rgba(79,142,247,.28);box-shadow:none}
-.queue-outliner .ftab:hover:not(.active){color:var(--text);border-color:var(--border-hi)}
+.queue-outliner .ftab{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:11px 12px;border-radius:12px;font-size:11px;background:linear-gradient(180deg,var(--surface2),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.05);color:var(--muted);min-height:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.02);transition:transform .12s,border-color .12s,background .12s,box-shadow .12s}
+.queue-outliner .ftab.active{background:linear-gradient(180deg,rgba(79,142,247,.12),rgba(79,142,247,.06));color:var(--text);border-color:rgba(79,142,247,.28);box-shadow:0 0 0 1px rgba(79,142,247,.06),inset 0 1px 0 rgba(255,255,255,.03)}
+.queue-outliner .ftab:hover:not(.active){color:var(--text);border-color:var(--border-hi);transform:translateX(1px)}
 .ftab-top{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;font-size:12px;font-weight:600}
 .ftab-count{font-family:var(--mono);font-size:11px;color:var(--dim)}
 .ftab-sub{font-size:10px;line-height:1.35;color:var(--dim)}
 .queue-outliner .ftab.active .ftab-count{color:var(--blue)}
 .queue-outliner .ftab-more{width:100%;text-align:center;margin-top:2px}
-.queue-main{min-width:0;display:flex;flex-direction:column;gap:10px}
-.queue-ledger{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--card-shadow)}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.9))}
-.stat{padding:10px 14px;border-right:1px solid var(--border)}.stat:last-child{border-right:none}
-.stat-n{font-family:var(--mono);font-size:24px;font-weight:600;line-height:1}
+.queue-main{min-width:0;display:flex;flex-direction:column;gap:12px}
+.queue-ledger{background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.98));border:1px solid rgba(255,255,255,.06);border-radius:18px;overflow:hidden;box-shadow:var(--card-shadow)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(124px,1fr));border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.92))}
+.stat{padding:11px 14px;border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between;min-height:62px;background:linear-gradient(180deg,rgba(255,255,255,.015),rgba(255,255,255,0))}
+.stat:last-child{border-right:none}
+.stat-n{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1}
 .stat-n.blue{color:var(--blue)}.stat-n.amber{color:var(--amber)}.stat-n.green{color:var(--green)}.stat-n.grey{color:var(--muted)}
 .stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px}
 
@@ -104,9 +114,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .d-state{width:50px}.d-num{width:66px}
 .api-notice{margin-top:7px;font-size:12px;color:var(--amber);background:var(--amber-bg);border:1px solid rgba(245,166,35,.3);border-radius:var(--rs);padding:6px 11px}
 
-.toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.9))}
+.toolbar{display:flex;align-items:flex-start;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01))}
 .toolbar-l,.toolbar-r{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.queue-note{padding:9px 16px;border-bottom:1px solid var(--border);font-size:12px;line-height:1.5;color:var(--muted);background:rgba(255,255,255,.02)}
+.queue-note{padding:10px 16px;border-bottom:1px solid var(--border);font-size:12px;line-height:1.5;color:var(--muted);background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01))}
 .queue-note strong{color:var(--text)}
 .queue-note.queue-note-ready{background:rgba(46,204,113,.08);color:var(--green)}
 .queue-note.queue-note-scheduled{background:rgba(245,166,35,.08);color:var(--amber)}
@@ -124,8 +134,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .sort-select{padding:5px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--muted);font-family:var(--sans);font-size:11px;outline:none;cursor:pointer}
 .sort-select option{background:var(--surface2)}
 
-.bulk-bar{display:none;align-items:center;gap:8px;padding:7px 16px;background:var(--blue-glow);border-bottom:1px solid rgba(79,142,247,.2);font-size:12px;color:var(--blue);flex-wrap:wrap}
+.bulk-bar{display:none;align-items:flex-start;gap:10px;padding:10px 16px 11px;background:linear-gradient(180deg,rgba(79,142,247,.09),rgba(79,142,247,.04));border-bottom:1px solid rgba(79,142,247,.2);font-size:12px;color:var(--blue);flex-wrap:wrap}
 .bulk-bar.visible{display:flex}
+.bulk-bar-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:220px}
+.bulk-bar-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.bulk-bar-actions.repair{flex:1}
+.bulk-bar-actions.state{margin-left:auto;justify-content:flex-end}
+.bulk-bar-label{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+.bulk-bar-meta{font-size:11px;color:var(--muted)}
+.bulk-bar-scopes{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.bulk-scope-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:var(--muted);white-space:nowrap}
+.bulk-scope-chip.selected{border-color:rgba(79,142,247,.24);background:rgba(79,142,247,.08);color:var(--blue)}
+.bulk-scope-chip.visible{border-color:rgba(245,166,35,.22);background:rgba(245,166,35,.08);color:var(--amber)}
+.bulk-scope-chip.session{border-color:rgba(184,115,51,.22);background:rgba(184,115,51,.08);color:var(--copper)}
 .bulk-btn-unschedule{display:none}
 
 .main{display:flex;min-height:0}
@@ -159,12 +180,12 @@ tbody tr.cohort-hdr td{padding:8px 16px 4px;background:var(--surface2)}
 .wb-back-btn{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:4px 10px;color:var(--blue);background:none;border:1px solid rgba(79,142,247,.25);border-radius:var(--rs);cursor:pointer;margin-bottom:8px}
 .wb-back-btn:hover{background:rgba(79,142,247,.06)}
 /* Pass 130-135: Queue session banner + session-current row highlight */
-#queue-session-banner{display:flex;align-items:center;gap:10px;padding:7px 16px;background:rgba(184,115,51,.07);border:1px solid rgba(184,115,51,.2);border-radius:var(--rs);font-size:12px;margin-bottom:8px}
+#queue-session-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(180deg,rgba(184,115,51,.08),rgba(255,255,255,.018));border:1px solid rgba(184,115,51,.2);border-radius:calc(var(--rs) + 1px);font-size:12px;margin-bottom:8px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
 #queue-session-banner.qsb-done{background:rgba(52,199,89,.06);border-color:rgba(52,199,89,.25)}
 .qsb-label{font-weight:700;color:var(--copper);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
 #queue-session-banner.qsb-done .qsb-label{color:var(--green)}
 .qsb-meta{color:var(--muted);font-size:11px}
-.qsb-actions{display:flex;gap:6px;margin-left:auto;align-items:center}
+.qsb-actions{display:flex;gap:6px;margin-left:auto;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .qsb-btn{padding:2px 9px;font-size:11px;border-radius:3px;cursor:pointer;border:none;line-height:1.6}
 .qsb-resume{background:rgba(184,115,51,.18);color:var(--copper)}
 .qsb-resume:hover{background:rgba(184,115,51,.28)}
@@ -271,25 +292,25 @@ tbody td{padding:10px 14px;vertical-align:middle}
 .empty p{font-size:12px;max-width:360px;margin:0 auto}
 
 /* Review Panel */
-.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.36);backdrop-filter:blur(2px);z-index:300;opacity:0;pointer-events:none;transition:opacity .2s}
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);backdrop-filter:blur(3px);z-index:300;opacity:0;pointer-events:none;transition:opacity .2s}
 .panel-overlay.open{opacity:1;pointer-events:all}
-.panel{position:fixed;top:0;right:0;width:min(400px,30vw);height:100vh;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.98));border-left:1px solid var(--border);z-index:301;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 32px rgba(0,0,0,.42)}
+.panel{position:fixed;top:0;right:0;width:min(436px,32vw);height:100vh;background:linear-gradient(180deg,rgba(16,19,27,.98),rgba(9,11,16,.99));border-left:1px solid rgba(255,255,255,.06);z-index:301;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);box-shadow:-12px 0 48px rgba(0,0,0,.52),inset 1px 0 0 rgba(255,255,255,.03)}
 .panel-overlay.open .panel{transform:translateX(0)}
-.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0}
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01))}
 .panel-title{font-size:14px;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .panel-nav{display:flex;align-items:center;gap:8px}
 .panel-nav-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:var(--rs);font-size:12px;cursor:pointer;transition:.12s}
 .panel-nav-btn:hover{color:var(--text);border-color:var(--border-hi)}
 .panel-nav-btn:disabled{opacity:.3;cursor:not-allowed}
 .panel-pos{font-size:11px;color:var(--muted);font-family:var(--mono)}
-.panel-session-bar{padding:10px 20px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;flex-shrink:0}
+.panel-session-bar{padding:10px 18px;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(79,142,247,.05),rgba(255,255,255,.015));display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;flex-shrink:0}
 .panel-session-title{font-size:11px;font-weight:600;color:var(--text)}
 .panel-session-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
-.panel-session-chip{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;background:var(--surface2);border:1px solid var(--border);font-size:10px;color:var(--muted)}
-.panel-session-shortcuts{font-size:10px;color:var(--dim);line-height:1.5;text-align:right}
+.panel-session-chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;background:var(--surface2);border:1px solid var(--border);font-size:10px;color:var(--muted)}
+.panel-session-shortcuts{font-size:10px;color:var(--dim);line-height:1.5;text-align:right;max-width:230px}
 .panel-close{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:4px;line-height:1;border-radius:var(--rs);transition:.12s}
 .panel-close:hover{color:var(--text);background:var(--surface2)}
-.panel-body{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px}
+.panel-body{flex:1;overflow-y:auto;padding:16px 18px 18px;display:flex;flex-direction:column;gap:12px}
 .panel-section{display:flex;flex-direction:column;gap:5px}
 .panel-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
 .panel-meta{font-size:12px;color:var(--muted);display:flex;flex-direction:column;gap:3px}
@@ -318,7 +339,7 @@ tbody td{padding:10px 14px;vertical-align:middle}
 .panel-textarea:focus{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-glow)}
 .panel-flow-bar{padding:10px 20px 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0}
 .panel-flow-note{font-size:10px;color:var(--dim);margin-right:auto}
-.panel-footer{border-top:1px solid var(--border);padding:14px 20px;display:flex;gap:8px;flex-shrink:0;background:var(--surface)}
+.panel-footer{border-top:1px solid rgba(255,255,255,.06);padding:14px 20px;display:flex;gap:8px;flex-shrink:0;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01))}
 .panel-score-row{display:flex;align-items:center;gap:10px}
 .panel-reason{font-size:11px;color:var(--muted);font-style:italic;flex:1}
 
@@ -328,6 +349,9 @@ tbody td{padding:10px 14px;vertical-align:middle}
   .panel{width:min(92vw,440px)}
   .queue-workflow-head{flex-direction:column;align-items:flex-start}
   .queue-workflow-rail{justify-content:flex-start}
+  .queue-workframe{grid-template-columns:1fr}
+  .bulk-bar-head{min-width:0}
+  .bulk-bar-actions.state{margin-left:0}
 }
 
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .15s}
@@ -1301,12 +1325,31 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <div class="queue-workflow-copy">
     <div class="queue-workflow-kicker">Queue</div>
     <div class="queue-workflow-title">One lane, one send truth</div>
-    <div class="queue-workflow-sub">Ready now stays in the send lane, scheduled rows wait for their window, and due rows rejoin Send Approved instead of living in a separate state.</div>
+    <div class="queue-workflow-sub">Ready now stays in the send lane, scheduled rows wait for their window, checked rows act as the selected set, and due rows rejoin Send Approved instead of living in a separate state.</div>
   </div>
   <div class="queue-workflow-rail" aria-hidden="true">
     <span class="queue-rail-chip ready">Ready now lane</span>
+    <span class="queue-rail-chip selected">Selected set</span>
     <span class="queue-rail-chip scheduled">Scheduled waiting</span>
     <span class="queue-rail-chip sent">Sent + follow-up</span>
+  </div>
+</div>
+
+<div class="queue-workframe" aria-label="Queue scope overview">
+  <div class="queue-workframe-card selected">
+    <div class="qwc-label">Selected set</div>
+    <div class="qwc-value" id="queue-selected-value">0 rows</div>
+    <div class="qwc-sub" id="queue-selected-sub">Checked rows receive selected-set actions only.</div>
+  </div>
+  <div class="queue-workframe-card visible">
+    <div class="qwc-label">Visible scope</div>
+    <div class="qwc-value" id="queue-visible-value">All queue</div>
+    <div class="qwc-sub" id="queue-visible-sub">The current table view and lane focus.</div>
+  </div>
+  <div class="queue-workframe-card session">
+    <div class="qwc-label">Session</div>
+    <div class="qwc-value" id="queue-session-value">No active cohort</div>
+    <div class="qwc-sub" id="queue-session-sub">Panel review stays pinned until you close it.</div>
   </div>
 </div>
 
@@ -1434,28 +1477,40 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <div class="ftab ftab-aux" data-filter="no_email" onclick="setFilter('no_email',this)"><div class="ftab-top"><span>No Email</span><span class="ftab-count" id="lane-count-no_email">—</span></div><div class="ftab-sub" id="lane-sub-no_email">Use social or form fallback</div></div>
       <div class="ftab ftab-aux" data-filter="high_score" onclick="setFilter('high_score',this)"><div class="ftab-top"><span>High Score</span><span class="ftab-count" id="lane-count-high_score">—</span></div><div class="ftab-sub" id="lane-sub-high_score">Top-fit rows only</div></div>
     </div>
-    <div class="queue-outliner-foot">Queue overview and filter lanes live here. Stale and no-email stay separated under More. Keep the table moving; use the inspector for deep review.</div>
+    <div class="queue-outliner-foot">Queue overview and filter lanes live here. Checked rows drive selected-set actions; visible-scope recovery stays below. Keep the table moving; use the inspector for deep review.</div>
   </aside>
 
   <section class="queue-main">
     <div class="queue-ledger">
 <div class="bulk-bar" id="bulk-bar">
-  <strong id="bulk-count">0</strong> selected —
-  <span id="bulk-target-meta" style="font-size:11px;color:var(--muted)">checked rows are the active repair target</span>
-  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('refresh_evidence','selected')">Refresh Evidence</button>
-  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('regen_candidates','selected')">Regenerate Candidates</button>
-  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('repair_rebuild','selected')">Repair + Rebuild</button>
-  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('validate','selected')">Validate Drafts</button>
-  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('fix_invalid','selected')">Fix Invalid</button>
-  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('approve_fixed','selected')">Approve Fixed</button>
-  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkApprove()">Approve</button>
-  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkUnapprove()">Unapprove</button>
-  <button class="btn btn-ghost bulk-btn-unschedule" id="bulk-unschedule-btn" style="font-size:11px;padding:3px 9px" onclick="bulkUnschedule()">Unschedule</button>
-  <span style="display:inline-flex;align-items:center;gap:0;margin:0 1px">
-    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px;border-right:none;border-radius:3px 0 0 3px" onclick="bulkSchedule(document.getElementById('bulk-sched-mode').value)">🕐 Schedule</button><select id="bulk-sched-mode" title="Tomorrow = industry best time window, next business day" style="font-size:11px;padding:3px 5px;background:var(--surface2);border:1px solid var(--border);border-radius:0 3px 3px 0;color:var(--muted);cursor:pointer;height:26px;outline:none"><option value="1">Tomorrow</option><option value="clear">Clear Schedule</option></select>
-  </span>
-  <button class="btn btn-danger" style="font-size:11px;padding:3px 9px" onclick="bulkDelete()">Delete</button>
-  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px;margin-left:4px" onclick="clearSelection()">✕ Clear</button>
+  <div class="bulk-bar-head">
+    <strong id="bulk-count">0</strong>
+    <span class="bulk-bar-label">selected set</span>
+    <span id="bulk-target-meta" class="bulk-bar-meta">checked rows are the active repair target</span>
+  </div>
+  <div class="bulk-bar-scopes">
+    <span class="bulk-scope-chip selected" id="bulk-scope-selected">Selected set · 0</span>
+    <span class="bulk-scope-chip visible" id="bulk-scope-visible">Visible scope · All</span>
+    <span class="bulk-scope-chip session" id="bulk-scope-session">Session · none</span>
+  </div>
+  <div class="bulk-bar-actions repair">
+    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('refresh_evidence','selected')">Refresh Evidence</button>
+    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('regen_candidates','selected')">Regenerate Candidates</button>
+    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('repair_rebuild','selected')">Repair + Rebuild</button>
+    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('validate','selected')">Validate Drafts</button>
+    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('fix_invalid','selected')">Fix Invalid</button>
+    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('approve_fixed','selected')">Approve Fixed</button>
+  </div>
+  <div class="bulk-bar-actions state">
+    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkApprove()">Approve</button>
+    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkUnapprove()">Unapprove</button>
+    <button class="btn btn-ghost bulk-btn-unschedule" id="bulk-unschedule-btn" style="font-size:11px;padding:3px 9px" onclick="bulkUnschedule()">Unschedule</button>
+    <span style="display:inline-flex;align-items:center;gap:0;margin:0 1px">
+      <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px;border-right:none;border-radius:3px 0 0 3px" onclick="bulkSchedule(document.getElementById('bulk-sched-mode').value)">🕐 Schedule</button><select id="bulk-sched-mode" title="Tomorrow = industry best time window, next business day" style="font-size:11px;padding:3px 5px;background:var(--surface2);border:1px solid var(--border);border-radius:0 3px 3px 0;color:var(--muted);cursor:pointer;height:26px;outline:none"><option value="1">Tomorrow</option><option value="clear">Clear Schedule</option></select>
+    </span>
+    <button class="btn btn-danger" style="font-size:11px;padding:3px 9px" onclick="bulkDelete()">Delete</button>
+    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px;margin-left:4px" onclick="clearSelection()">✕ Clear</button>
+  </div>
 </div>
 
 <div class="main">
@@ -2530,11 +2585,11 @@ function _repairRowsForScope(scope) {
 }
 
 function _repairBarActions(scope) {
-  const title = scope === 'selected' ? 'Selected recovery' : 'Visible recovery';
+  const title = scope === 'selected' ? 'Selected-set recovery' : 'Visible-scope recovery';
   const rows = _repairRowsForScope(scope);
   const count = rows.length;
   const scopeMeta = scope === 'selected'
-    ? 'Checked rows are the active target'
+    ? 'Checked rows only'
     : `${_panelFilterLabel(currentFilter)} in view`;
   const buttons = [
     ['refresh_evidence', 'Refresh Evidence', ''],
@@ -4001,7 +4056,7 @@ function _queueTimelineNoteHtml() {
   if (currentFilter === 'active') {
     return {
       tone: 'ready',
-      html: `<strong>Actionable queue</strong> — grouped by status: ✓ Ready to Approve first, then ◎ Needs Observation, ↻ Stale Draft, ! Draft Repair, – No Email Path. Repair macros stay explicit, but no longer inspector-dependent.`,
+      html: `<strong>Actionable queue</strong> — grouped by status: ✓ Ready to Approve first, then ◎ Needs Observation, ↻ Stale Draft, ! Draft Repair, – No Email Path. Checked rows are the selected set; everything else stays in visible scope.`,
     };
   }
   if (currentFilter === 'draft_repair') {
@@ -4019,7 +4074,7 @@ function _queueTimelineNoteHtml() {
   if (currentFilter === 'all') {
     return {
       tone: 'scheduled',
-      html: `<strong>All queue:</strong> ready-now work appears first, then future-scheduled rows, then history. ${futureScheduled} future-scheduled • ${readyScheduled} scheduled row(s) have reached their send window and rejoin Ready Now.`,
+      html: `<strong>All queue:</strong> ready-now work appears first, then future-scheduled rows, then history. ${futureScheduled} future-scheduled • ${readyScheduled} scheduled row(s) have reached their send window and rejoin Ready Now. Checked rows remain separate from the visible scope.`,
     };
   }
   return null;
@@ -4057,6 +4112,7 @@ function escHtml(s) {
 function renderTable() {
   applyFiltersAndSort();
   _renderQueueTimelineNote();
+  _renderQueueFrame();
   _renderVisibleRepairBar();
   _renderRepairProgress();
   renderQueueOutliner();
@@ -4184,8 +4240,8 @@ function renderQueueOutliner() {
       active: 'Overview',
       needs_obs: 'Needs Obs',
       draft_repair: 'Draft Repair',
-      pending: 'To Approve',
-      approved: 'Ready to Send',
+      pending: 'Pending Review',
+      approved: 'Send Approved',
       scheduled: 'Scheduled',
       sent: 'Sent',
       replied: 'Replied',
@@ -4194,18 +4250,18 @@ function renderQueueOutliner() {
     tag.textContent = `${labels[currentFilter] || currentFilter} · ${filteredRows.length}`;
   }
   const laneSpecs = {
-    active:    { count: allRows.filter(r => isRowActionable(r)).length, signal: 'Ready-now work' },
+    active:    { count: allRows.filter(r => isRowActionable(r)).length, signal: 'Ready-now work and lane triage' },
     needs_obs: { count: allRows.filter(r => _pipelineCohort(r) === 'needs_obs').length, signal: 'Observation blocked' },
     draft_repair: { count: allRows.filter(r => _pipelineCohort(r) === 'draft_repair').length, signal: 'Validation blocked' },
-    pending:   { count: allRows.filter(r => isRowActionable(r) && r.draft_valid !== false && !r.send_ready).length, signal: 'Awaiting approval' },
-    approved:  { count: allRows.filter(r => isRowActionable(r) && r.send_ready).length, signal: 'Ready to send' },
-    scheduled: { count: allRows.filter(r => r.send_after && !r.sent_at).length, signal: 'Waiting window' },
-    sent:      { count: allRows.filter(r => !!r.sent_at).length, signal: 'Watch replies' },
-    replied:   { count: allRows.filter(r => r.replied === 'true').length, signal: 'Conversations' },
-    all:       { count: allRows.length, signal: 'All rows' },
-    stale:     { count: allRows.filter(r => !r.sent_at && r.draft_version !== status_draft_version).length, signal: 'Regenerate first' },
-    no_email:  { count: allRows.filter(r => !r.to_email || !r.to_email.includes('@')).length, signal: 'Social fallback' },
-    high_score:{ count: allRows.filter(r => parseInt(r.final_priority_score) >= 4).length, signal: 'Top fit rows' },
+    pending:   { count: allRows.filter(r => isRowActionable(r) && r.draft_valid !== false && !r.send_ready).length, signal: 'Waiting for approval' },
+    approved:  { count: allRows.filter(r => isRowActionable(r) && r.send_ready).length, signal: 'Send-ready lane' },
+    scheduled: { count: allRows.filter(r => r.send_after && !r.sent_at).length, signal: 'Waiting for its window' },
+    sent:      { count: allRows.filter(r => !!r.sent_at).length, signal: 'Reply watch and history' },
+    replied:   { count: allRows.filter(r => r.replied === 'true').length, signal: 'Conversation handoff' },
+    all:       { count: allRows.length, signal: 'Full queue scope' },
+    stale:     { count: allRows.filter(r => !r.sent_at && r.draft_version !== status_draft_version).length, signal: 'Regenerate before send' },
+    no_email:  { count: allRows.filter(r => !r.to_email || !r.to_email.includes('@')).length, signal: 'Social or form fallback' },
+    high_score:{ count: allRows.filter(r => parseInt(r.final_priority_score) >= 4).length, signal: 'Top-fit rows' },
   };
   Object.entries(laneSpecs).forEach(([key, spec]) => {
     const countEl = document.getElementById(`lane-count-${key}`);
@@ -6068,12 +6124,27 @@ function updateBulkBar() {
   const n = _selectedRows().length;
   const unscheduleBtn = document.getElementById('bulk-unschedule-btn');
   const meta = document.getElementById('bulk-target-meta');
+  const selectedChip = document.getElementById('bulk-scope-selected');
+  const visibleChip = document.getElementById('bulk-scope-visible');
+  const sessionChip = document.getElementById('bulk-scope-session');
   document.getElementById('bulk-count').textContent = n;
   if (meta) meta.textContent = n
     ? `${n} checked row${n === 1 ? '' : 's'} will receive selected-set actions`
-    : 'checked rows are the active repair target';
+    : 'checked rows are the active selected set';
+  if (selectedChip) selectedChip.textContent = n ? `Selected set · ${n}` : 'Selected set · none';
+  if (visibleChip) {
+    const visibleLabel = _queueFilterLabel(currentFilter);
+    visibleChip.textContent = `Visible scope · ${visibleLabel} · ${filteredRows.length}`;
+  }
+  if (sessionChip) {
+    const sessionLabel = _queueSession && !_queueSession.done
+      ? `${_queueSession.label || 'Review'} · ${_queueSession.pos + 1}/${_queueSession.rowKeys.length}`
+      : 'Session · none';
+    sessionChip.textContent = sessionLabel;
+  }
   if (unscheduleBtn) unscheduleBtn.style.display = n > 0 && _selectedHasScheduled() ? 'inline-flex' : 'none';
   document.getElementById('bulk-bar').classList.toggle('visible', n > 0);
+  _renderQueueFrame();
   _renderVisibleRepairBar();
 }
 function clearSelection() {
@@ -6092,6 +6163,56 @@ function toggleCheckAll(master) {
     else _selectedRowKeys.delete(key);
   });
   updateBulkBar();
+}
+
+function _queueFilterLabel(name) {
+  const labels = {
+    active: 'Ready Now',
+    needs_obs: 'Needs Observation',
+    draft_repair: 'Draft Repair',
+    pending: 'Pending',
+    approved: 'Ready to Send',
+    scheduled: 'Scheduled',
+    sent: 'Sent',
+    replied: 'Follow-Up',
+    stale: 'Stale',
+    no_email: 'No Email',
+    high_score: 'High Score',
+    all: 'All queue',
+  };
+  return labels[name] || 'Queue';
+}
+
+function _renderQueueFrame() {
+  const selectedCount = _selectedRows().length;
+  const selectedValue = document.getElementById('queue-selected-value');
+  const selectedSub = document.getElementById('queue-selected-sub');
+  const visibleValue = document.getElementById('queue-visible-value');
+  const visibleSub = document.getElementById('queue-visible-sub');
+  const sessionValue = document.getElementById('queue-session-value');
+  const sessionSub = document.getElementById('queue-session-sub');
+  if (selectedValue) selectedValue.textContent = selectedCount ? `${selectedCount} row${selectedCount === 1 ? '' : 's'}` : 'No rows selected';
+  if (selectedSub) selectedSub.textContent = selectedCount
+    ? 'Checked rows get selected-set actions; visible actions stay with the table.'
+    : 'Use checkboxes to build a selected set.';
+  if (visibleValue) visibleValue.textContent = `${_queueFilterLabel(currentFilter)} · ${filteredRows.length}`;
+  if (visibleSub) {
+    const note = currentFilter === 'active'
+      ? 'Ready Now leads this lane; due scheduled rows rejoin Send Approved.'
+      : currentFilter === 'scheduled'
+        ? 'Future rows wait for the send window; reached-window rows rejoin Ready Now.'
+        : 'This is the current visible scope in the queue table.';
+    visibleSub.textContent = note;
+  }
+  if (sessionValue) {
+    if (_queueSession && !_queueSession.done) {
+      sessionValue.textContent = _queueSession.label || 'Review session';
+      if (sessionSub) sessionSub.textContent = `${_queueSession.pos + 1}/${_queueSession.rowKeys.length} in set · panel review stays pinned until closed.`;
+    } else {
+      sessionValue.textContent = 'No active cohort';
+      if (sessionSub) sessionSub.textContent = 'Open a cohort session from the table or panel to pin a working set.';
+    }
+  }
 }
 
 async function runRepairAction(action, scope) {
