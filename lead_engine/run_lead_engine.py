@@ -14,6 +14,7 @@ from discovery.prospect_discovery_agent import (
 )
 from intelligence.website_scan_agent import scan_website, generate_lead_insight
 from outreach.email_draft_agent import draft_email, draft_social_messages, DRAFT_VERSION
+from stranded_drafted import classify_drafted_prospects
 from scoring.opportunity_scoring_agent import score_opportunity, compute_numeric_score
 from send.email_sender_agent import count_send_eligible_rows, is_real_send
 from datetime import date, timedelta
@@ -161,6 +162,94 @@ def _is_scannable_website(url: str) -> bool:
     return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
 
 
+def _build_pending_row(prospect: Dict[str, str], skip_scan: bool = False) -> Dict[str, str]:
+    website = prospect.get("website", "")
+    scan_result = {
+        "has_contact_form": False,
+        "has_chat_widget": False,
+        "has_online_booking_keywords": False,
+        "has_email_visible": False,
+    }
+
+    already_scanned = bool((prospect.get("automation_opportunity") or "").strip())
+    if not skip_scan and not already_scanned and _is_scannable_website(website):
+        scan_result = scan_website(website)
+    elif already_scanned:
+        scan_result["automation_opportunity"] = prospect.get("automation_opportunity", "unknown")
+
+    final_priority_score, scoring_reason = score_opportunity(prospect, scan_result)
+    subject, body = draft_email(prospect, final_priority_score)
+
+    try:
+        fb_draft, ig_draft, form_msg = draft_social_messages(prospect, body)
+    except Exception:
+        fb_draft, ig_draft, form_msg = "", "", ""
+
+    try:
+        insight_sentence, insight_signals = generate_lead_insight(scan_result)
+    except Exception:
+        insight_sentence, insight_signals = "", []
+
+    numeric_score = compute_numeric_score({
+        **prospect,
+        "to_email": prospect.get("to_email", "").strip(),
+        "contact_form_url": prospect.get("contact_form_url", "").strip(),
+        "facebook_url": prospect.get("facebook_url", "").strip(),
+        "instagram_url": prospect.get("instagram_url", "").strip(),
+        "automation_opportunity": scan_result.get("automation_opportunity", "unknown"),
+    })
+
+    new_row = {
+        "business_name":         prospect.get("business_name", "").strip(),
+        "city":                  prospect.get("city", "").strip(),
+        "state":                 prospect.get("state", "").strip(),
+        "website":               website.strip(),
+        "phone":                 prospect.get("phone", "").strip(),
+        "contact_method":        prospect.get("contact_method", "").strip(),
+        "industry":              prospect.get("industry", "").strip(),
+        "to_email":              prospect.get("to_email", "").strip(),
+        "subject":               subject,
+        "body":                  body,
+        "approved":              "false",
+        "sent_at":               "",
+        "approval_reason":       "",
+        "scoring_reason":        scoring_reason,
+        "final_priority_score":  str(final_priority_score),
+        "automation_opportunity": scan_result.get("automation_opportunity", "unknown"),
+        "do_not_contact":        prospect.get("do_not_contact", ""),
+        "draft_version":         DRAFT_VERSION,
+        "facebook_url":          prospect.get("facebook_url", "").strip(),
+        "instagram_url":         prospect.get("instagram_url", "").strip(),
+        "contact_form_url":      prospect.get("contact_form_url", "").strip(),
+        "social_channels":       prospect.get("social_channels", "").strip(),
+        "social_dm_text":        prospect.get("social_dm_text", "").strip(),
+        "facebook_dm_draft":     fb_draft,
+        "instagram_dm_draft":    ig_draft,
+        "contact_form_message":  form_msg,
+        "lead_insight_sentence": insight_sentence,
+        "lead_insight_signals":  "|".join(insight_signals) if isinstance(insight_signals, list) else str(insight_signals),
+        "opportunity_score":     str(numeric_score),
+        "last_contact_channel":  "",
+        "last_contacted_at":     "",
+        "contact_attempt_count": "0",
+        "contact_result":        "",
+        "next_followup_at":      "",
+        "campaign_key":          "",
+        "message_id":            "",
+        "replied":               "",
+        "replied_at":            "",
+        "reply_snippet":         "",
+        "conversation_notes":    "",
+        "conversation_next_step": "",
+    }
+
+    if safe_autopilot_eligible(new_row):
+        new_row["approved"] = "true"
+        new_row["approval_reason"] = "safe_autopilot"
+
+    return new_row
+
+
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run lead_engine CSV-to-draft pipeline.")
     parser.add_argument("--input", default=str(DEFAULT_PROSPECTS_CSV))
@@ -213,7 +302,8 @@ def _build_queue_dedupe_sets(
 
 def run(input_csv: str | Path = DEFAULT_PROSPECTS_CSV, limit: int = 0, skip_scan: bool = False) -> None:
     input_path = Path(input_csv)
-    prospects  = load_prospects_from_csv(input_path)
+    all_prospects = load_prospects_from_csv(input_path)
+    prospects  = list(all_prospects)
     if limit > 0:
         prospects = prospects[:limit]
 
@@ -223,6 +313,17 @@ def run(input_csv: str | Path = DEFAULT_PROSPECTS_CSV, limit: int = 0, skip_scan
 
     pending_rows = _read_pending_rows(DEFAULT_PENDING_CSV)
     existing_keys, existing_emails, existing_domains = _build_queue_dedupe_sets(pending_rows)
+    stranded_report = classify_drafted_prospects(
+        all_prospects,
+        pending_rows,
+        BASE_DIR / "scripts" / "gmail_sent_preserve_set_for_reset.csv",
+    )
+    stranded_count = len(stranded_report["recoverable"])
+    if stranded_count:
+        print(
+            f"[warning] {stranded_count} drafted leads have direct emails but are missing from pending_emails.csv. "
+            "Run python lead_engine/scripts/recover_stranded_drafted.py for audit/recovery."
+        )
 
     drafted = 0
     autopilot_approved = 0
@@ -370,6 +471,7 @@ def run(input_csv: str | Path = DEFAULT_PROSPECTS_CSV, limit: int = 0, skip_scan
         f"drafted={drafted} autopilot_approved={autopilot_approved} "
         f"skipped={skipped} skipped_duplicate={skipped_duplicate} "
         f"directory_skipped={directory_skipped} "
+        f"stranded_drafted_email={stranded_count} "
         f"approved-ready={approved_ready} contactability=[{contactability_summary}] "
         f"queue={DEFAULT_PENDING_CSV}"
     )
