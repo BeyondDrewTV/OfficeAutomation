@@ -53,6 +53,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .queue-command-strip{position:sticky;top:116px;z-index:130;display:flex;flex-direction:column;gap:10px;padding:14px 16px 12px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(15,17,23,.98),rgba(11,13,18,.95))}
+.queue-secondary-controls{border-top:1px solid var(--border);padding-top:10px}
+.queue-secondary-controls>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.queue-secondary-controls>summary::-webkit-details-marker{display:none}
+.queue-secondary-controls[open]>summary{color:var(--text)}
+.queue-secondary-hint{font-size:10px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--dim)}
+.queue-secondary-body{display:flex;flex-direction:column;gap:10px;padding-top:10px}
 .queue-shell{display:grid;grid-template-columns:minmax(235px,278px) minmax(0,1fr);gap:14px;padding:14px 16px 16px;align-items:start}
 .queue-outliner{position:sticky;top:10px;align-self:start;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.98));border:1px solid var(--border);border-radius:var(--r);padding:14px;box-shadow:var(--card-shadow)}
 .queue-outliner-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:12px}
@@ -234,7 +240,7 @@ tbody td{padding:10px 14px;vertical-align:middle}
 /* Review Panel */
 .panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.36);backdrop-filter:blur(2px);z-index:300;opacity:0;pointer-events:none;transition:opacity .2s}
 .panel-overlay.open{opacity:1;pointer-events:all}
-.panel{position:fixed;top:0;right:0;width:min(440px,34vw);height:100vh;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.98));border-left:1px solid var(--border);z-index:301;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 32px rgba(0,0,0,.42)}
+.panel{position:fixed;top:0;right:0;width:min(400px,30vw);height:100vh;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.98));border-left:1px solid var(--border);z-index:301;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 32px rgba(0,0,0,.42)}
 .panel-overlay.open .panel{transform:translateX(0)}
 .panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0}
 .panel-title{font-size:14px;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1285,67 +1291,72 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   </div>
 </div>
 
-<div class="discover-bar">
-  <div class="discover-inner">
-    <span class="discover-label">🔍 New Leads</span>
-    <select id="d-industry" class="d-input"><option value="">Loading…</option></select>
-    <div class="city-ac-wrap" style="display:inline-block">
-      <input id="d-city" class="d-input" type="text" placeholder="City" value="Rockford"
-             autocomplete="off" oninput="cityAcInput('d')" onfocus="cityAcInput('d')" onkeydown="cityAcKey(event,'d')"
-             onblur="cityAcCloseDelay('d')">
-      <div class="city-ac-list" id="d-city-ac">
-        <div class="city-ac-filters">
-          <span class="caf active" data-acf="d-all"    onclick="cityAcSetFilter('d','all',this)">All</span>
-          <span class="caf"        data-acf="d-due"    onclick="cityAcSetFilter('d','due',this)" style="color:var(--amber)">⚠ Due</span>
-          <span class="caf"        data-acf="d-never"  onclick="cityAcSetFilter('d','never',this)">● Never</span>
-          <span class="caf"        data-acf="d-nearby" onclick="cityAcSetFilter('d','nearby',this)">📍 Nearby</span>
+<details class="queue-secondary-controls">
+  <summary>
+    <span>Secondary controls</span>
+    <span class="queue-secondary-hint">Discover, search, send, and queue notes stay here unless needed.</span>
+  </summary>
+  <div class="queue-secondary-body">
+    <div class="discover-bar">
+      <div class="discover-inner">
+        <span class="discover-label">🔍 New Leads</span>
+        <select id="d-industry" class="d-input"><option value="">Loading…</option></select>
+        <div class="city-ac-wrap" style="display:inline-block">
+          <input id="d-city" class="d-input" type="text" placeholder="City" value="Rockford"
+                 autocomplete="off" oninput="cityAcInput('d')" onfocus="cityAcInput('d')" onkeydown="cityAcKey(event,'d')"
+                 onblur="cityAcCloseDelay('d')">
+          <div class="city-ac-list" id="d-city-ac">
+            <div class="city-ac-filters">
+              <span class="caf active" data-acf="d-all" onclick="cityAcSetFilter('d','all',this)">All</span>
+              <span class="caf" data-acf="d-due" onclick="cityAcSetFilter('d','due',this)" style="color:var(--amber)">⚠ Due</span>
+              <span class="caf" data-acf="d-never" onclick="cityAcSetFilter('d','never',this)">● Never</span>
+              <span class="caf" data-acf="d-nearby" onclick="cityAcSetFilter('d','nearby',this)">📍 Nearby</span>
+            </div>
+            <div id="d-city-ac-items"></div>
+          </div>
         </div>
-        <div id="d-city-ac-items"></div>
+        <input id="d-state" class="d-input d-state" type="text" placeholder="ST" value="IL" maxlength="2" oninput="cityAcInput('d')">
+        <input id="d-limit" class="d-input d-num" type="number" value="20" min="1" max="60">
+        <button id="btnDiscover" class="btn btn-primary" onclick="discoverLeads()"><span class="spin"></span>⚡ Discover + Draft</button>
+        <button id="btnTestKey" class="btn btn-ghost" onclick="testApiKey()">🔑 Test Key</button>
+        <button id="btnFollowup" class="btn btn-ghost" onclick="switchPage('followup',document.getElementById('nav-followup'))" title="Go to Follow-Up tab to generate and review follow-up drafts"><span class="spin"></span>🔁 Follow-Ups →</button>
+      </div>
+      <div id="api-key-notice" class="api-notice" style="display:none">
+        ⚠️ <strong>GOOGLE_PLACES_API_KEY not set.</strong> Add it to Launch Dashboard.bat
       </div>
     </div>
-    <input id="d-state" class="d-input d-state" type="text" placeholder="ST" value="IL" maxlength="2"
-           oninput="cityAcInput('d')">
-    <input id="d-limit" class="d-input d-num" type="number" value="20" min="1" max="60">
-    <button id="btnDiscover" class="btn btn-primary" onclick="discoverLeads()"><span class="spin"></span>⚡ Discover + Draft</button>
-    <button id="btnTestKey" class="btn btn-ghost" onclick="testApiKey()">🔑 Test Key</button>
-    <button id="btnFollowup" class="btn btn-ghost" onclick="switchPage('followup',document.getElementById('nav-followup'))" title="Go to Follow-Up tab to generate and review follow-up drafts"><span class="spin"></span>🔁 Follow-Ups →</button>
-  </div>
-  <div id="api-key-notice" class="api-notice" style="display:none">
-    ⚠️ <strong>GOOGLE_PLACES_API_KEY not set.</strong> Add it to Launch Dashboard.bat
-  </div>
-</div>
 
-<div class="toolbar">
-  <div class="toolbar-l">
-    <input class="search-box" id="searchBox" type="text" placeholder="Search name, email, city, phone…" oninput="renderTable()">
-    <span id="row-count" class="tag" style="font-size:10px"></span>
-  </div>
-  <div class="toolbar-r">
-    <select class="sort-select" id="sortSelect" onchange="renderTable()">
-      <option value="opp_desc">Opp Score ↓</option>
-      <option value="default">Sort: Default</option>
-      <option value="score_desc">Fit Score ↓</option>
-      <option value="score_asc">Fit Score ↑</option>
-      <option value="name_asc">Name A–Z</option>
-      <option value="name_desc">Name Z–A</option>
-    </select>
-    <button class="btn btn-ghost" onclick="approveAll()">✓ Approve All</button>
-    <button id="btnBulkRegen" class="btn btn-ghost" onclick="bulkRegenStale()" title="Regenerate all stale drafts using the observation agent — runs automatically in the background"><span class="spin"></span>↻ Regen Stale</button>
-    <button id="btnSendLive" class="btn btn-success" onclick="confirmSend()"><span class="spin"></span>▶ Send Approved</button>
-    <!-- Secondary actions: low-frequency utilities collapsed behind More -->
-    <div style="position:relative;display:inline-block" id="outreach-more-wrap">
-      <button class="btn btn-ghost" style="padding:6px 10px" onclick="const m=document.getElementById('outreach-more-menu');m.style.display=m.style.display==='none'?'block':'none'" title="Utilities">More ▾</button>
-      <div id="outreach-more-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);min-width:160px;z-index:250;box-shadow:0 6px 20px rgba(0,0,0,.4);padding:4px 0" onmouseleave="setTimeout(()=>document.getElementById('outreach-more-menu').style.display='none',200)">
-        <button id="btnSendDry"      class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="sendDryRun();document.getElementById('outreach-more-menu').classList.remove('open')"><span class="spin"></span>Preview Send</button>
-        <button id="btnCheckReplies" class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="checkReplies();document.getElementById('outreach-more-menu').classList.remove('open')" title="Poll Gmail inbox for replies"><span class="spin"></span>★ Check Replies</button>
-        <button id="btnCheckSent"   class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="checkSent();document.getElementById('outreach-more-menu').classList.remove('open')" title="Reconcile queue with Gmail Sent mail"><span class="spin"></span>↺ Check Sent</button>
+    <div class="toolbar">
+      <div class="toolbar-l">
+        <input class="search-box" id="searchBox" type="text" placeholder="Search name, email, city, phone…" oninput="renderTable()">
+        <span id="row-count" class="tag" style="font-size:10px"></span>
       </div>
+      <div class="toolbar-r">
+        <select class="sort-select" id="sortSelect" onchange="renderTable()">
+          <option value="opp_desc">Opp Score ↓</option>
+          <option value="default">Sort: Default</option>
+          <option value="score_desc">Fit Score ↓</option>
+          <option value="score_asc">Fit Score ↑</option>
+          <option value="name_asc">Name A–Z</option>
+          <option value="name_desc">Name Z–A</option>
+        </select>
+        <button class="btn btn-ghost" onclick="approveAll()">✓ Approve All</button>
+        <button id="btnBulkRegen" class="btn btn-ghost" onclick="bulkRegenStale()" title="Regenerate all stale drafts using the observation agent — runs automatically in the background"><span class="spin"></span>↻ Regen Stale</button>
+        <button id="btnSendLive" class="btn btn-success" onclick="confirmSend()"><span class="spin"></span>▶ Send Approved</button>
+        <div style="position:relative;display:inline-block" id="outreach-more-wrap">
+          <button class="btn btn-ghost" style="padding:6px 10px" onclick="const m=document.getElementById('outreach-more-menu');m.style.display=m.style.display==='none'?'block':'none'" title="Utilities">More ▾</button>
+          <div id="outreach-more-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);min-width:160px;z-index:250;box-shadow:0 6px 20px rgba(0,0,0,.4);padding:4px 0" onmouseleave="setTimeout(()=>document.getElementById('outreach-more-menu').style.display='none',200)">
+            <button id="btnSendDry" class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="sendDryRun();document.getElementById('outreach-more-menu').classList.remove('open')"><span class="spin"></span>Preview Send</button>
+            <button id="btnCheckReplies" class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="checkReplies();document.getElementById('outreach-more-menu').classList.remove('open')" title="Poll Gmail inbox for replies"><span class="spin"></span>★ Check Replies</button>
+            <button id="btnCheckSent" class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="checkSent();document.getElementById('outreach-more-menu').classList.remove('open')" title="Reconcile queue with Gmail Sent mail"><span class="spin"></span>↺ Check Sent</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="queue-timeline-note" class="queue-note"></div>
     </div>
   </div>
-</div>
-
-<div id="queue-timeline-note" class="queue-note"></div>
- </div>
+</details>
 
 <div class="queue-shell">
   <aside class="queue-outliner">
@@ -1366,14 +1377,13 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <div class="ftab" data-filter="scheduled" onclick="setFilter('scheduled',this)" style="color:var(--amber)" title="Emails approved and queued for a send window"><div class="ftab-top"><span>🕐 Scheduled / Waiting</span><span class="ftab-count" id="lane-count-scheduled">—</span></div><div class="ftab-sub" id="lane-sub-scheduled">Waiting on the send window</div></div>
       <div class="ftab" data-filter="sent" onclick="setFilter('sent',this)" title="Sent rows that need reply watching"><div class="ftab-top"><span>✉ Sent / Handoff</span><span class="ftab-count" id="lane-count-sent">—</span></div><div class="ftab-sub" id="lane-sub-sent">Monitor replies and follow-up handoff</div></div>
       <div class="ftab" data-filter="replied" onclick="setFilter('replied',this)" style="color:var(--copper)" title="Rows with replies or active conversations"><div class="ftab-top"><span>★ Replied / Conversations</span><span class="ftab-count" id="lane-count-replied">—</span></div><div class="ftab-sub" id="lane-sub-replied">Conversation handoff lives here</div></div>
-      <div class="ftab" data-filter="recovery" onclick="setFilter('recovery',this)" style="color:var(--amber)" title="Stale or no-email rows that need operator recovery"><div class="ftab-top"><span>↻ Exceptions / Recovery</span><span class="ftab-count" id="lane-count-recovery">—</span></div><div class="ftab-sub" id="lane-sub-recovery">Stale + no-email recovery lanes</div></div>
       <div class="ftab-more" onclick="toggleExtraFilters(this)">⋯ More</div>
       <div class="ftab ftab-aux" data-filter="all" onclick="setFilter('all',this)"><div class="ftab-top"><span>All</span><span class="ftab-count" id="lane-count-all">—</span></div><div class="ftab-sub" id="lane-sub-all">Everything in queue order</div></div>
       <div class="ftab ftab-aux" data-filter="stale" onclick="setFilter('stale',this)" style="color:var(--amber)" title="Rows with old copy — regenerate before sending"><div class="ftab-top"><span>⚠ Stale</span><span class="ftab-count" id="lane-count-stale">—</span></div><div class="ftab-sub" id="lane-sub-stale">Needs regeneration before send</div></div>
       <div class="ftab ftab-aux" data-filter="no_email" onclick="setFilter('no_email',this)"><div class="ftab-top"><span>No Email</span><span class="ftab-count" id="lane-count-no_email">—</span></div><div class="ftab-sub" id="lane-sub-no_email">Use social or form fallback</div></div>
       <div class="ftab ftab-aux" data-filter="high_score" onclick="setFilter('high_score',this)"><div class="ftab-top"><span>High Score</span><span class="ftab-count" id="lane-count-high_score">—</span></div><div class="ftab-sub" id="lane-sub-high_score">Top-fit rows only</div></div>
     </div>
-    <div class="queue-outliner-foot">Queue overview, filter lanes, and recovery work live here. Keep the table moving; use the inspector for deep review.</div>
+    <div class="queue-outliner-foot">Queue overview and filter lanes live here. Stale and no-email stay separated under More. Keep the table moving; use the inspector for deep review.</div>
   </aside>
 
   <section class="queue-main">
@@ -3489,16 +3499,6 @@ function applyFiltersAndSort() {
   else if (currentFilter === 'has_email')  rows = rows.filter(r => r.to_email && r.to_email.includes('@'));
   else if (currentFilter === 'no_email')   rows = rows.filter(r => !r.to_email || !r.to_email.includes('@'));
   else if (currentFilter === 'high_score') rows = rows.filter(r => parseInt(r.final_priority_score) >= 4);
-  else if (currentFilter === 'recovery')    {
-    rows = rows.filter(r => _pipelineCohort(r) === 'stale' || _pipelineCohort(r) === 'no_email');
-    rows.sort((a, b) => {
-      const bucket = (r) => _pipelineCohort(r) === 'stale' ? 0 : 1;
-      const delta = bucket(a) - bucket(b);
-      if (delta) return delta;
-      return (b.opp_score||parseInt(b.opportunity_score)||0) - (a.opp_score||parseInt(a.opportunity_score)||0);
-    });
-  }
-
   else if (currentFilter === 'all')  {
     // Keep actionable work at the top, then scheduled, then done history.
     rows.sort((a,b) => {
@@ -3660,15 +3660,9 @@ function _queueTimelineNoteHtml() {
       html: `<strong>Actionable queue</strong> — grouped by status: ✓ Ready to Approve first, then ◎ Needs Observation, ↻ Stale Draft, – No Email Path. Bulk-ready rows approve in one click. Each section shows the next action.`,
     };
   }
-  if (currentFilter === 'recovery') {
-    return {
-      tone: 'blocked',
-      html: `<strong>Recovery lanes:</strong> stale drafts and no-email rows need operator repair before they can re-enter normal queue flow. Keep the inspector open only when you need deeper review.`,
-    };
-  }
-  if (currentFilter === 'pending') {
-    return {
-      tone: 'pending',
+    if (currentFilter === 'pending') {
+      return {
+        tone: 'pending',
       html: `<strong>Pending queue:</strong> drafts still need approval before they can send or be meaningfully scheduled.`,
     };
   }
@@ -3842,7 +3836,6 @@ function renderQueueOutliner() {
       scheduled: 'Scheduled',
       sent: 'Sent',
       replied: 'Replied',
-      recovery: 'Recovery',
       all: 'All',
     };
     tag.textContent = `${labels[currentFilter] || currentFilter} · ${filteredRows.length}`;
@@ -3855,7 +3848,6 @@ function renderQueueOutliner() {
     scheduled: { count: allRows.filter(r => r.send_after && !r.sent_at).length, signal: 'Waiting window' },
     sent:      { count: allRows.filter(r => !!r.sent_at).length, signal: 'Watch replies' },
     replied:   { count: allRows.filter(r => r.replied === 'true').length, signal: 'Conversations' },
-    recovery:  { count: allRows.filter(r => _pipelineCohort(r) === 'stale' || _pipelineCohort(r) === 'no_email').length, signal: 'Stale + no email' },
     all:       { count: allRows.length, signal: 'All rows' },
     stale:     { count: allRows.filter(r => !r.sent_at && r.draft_version !== status_draft_version).length, signal: 'Regenerate first' },
     no_email:  { count: allRows.filter(r => !r.to_email || !r.to_email.includes('@')).length, signal: 'Social fallback' },
@@ -4255,6 +4247,10 @@ function closePanel(force) {
   panelRowKey = '';
   panelSessionLabel = '';
   panelOpenIntent = '';
+  window.setTimeout(() => {
+    const current = document.querySelector('#tbody tr.session-current');
+    if (current && current.scrollIntoView) current.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+  }, 0);
 }
 
 // Pass 37 — backdrop close with drag-select guard
@@ -4278,9 +4274,9 @@ function navigatePanel(dir) {
   const rows = _panelCurrentRows();
   const n = panelIdx + dir;
   if (n >= 0 && n < rows.length) {
-    openPanel(n, rows);
-    // Pass 132: keep queue-level session position in sync
-    if (_queueSession && !_queueSession.done) _qsUpdatePos(n);
+    openPanel(n, rows, panelSessionLabel);
+      // Pass 132: keep queue-level session position in sync
+      if (_queueSession && !_queueSession.done) _qsUpdatePos(n);
   } else if (dir > 0 && n >= rows.length && _queueSession && !_queueSession.done) {
     // Pass 132: hit end of session — surface completion state at table level
     _qsMarkDone();
