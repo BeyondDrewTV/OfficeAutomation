@@ -68,7 +68,7 @@ _SIGNATURE = (
     "\n\n"
     "Drew Yomantas\n"
     "Copperline\n"
-    "After-Hours Lead Capture for Service Businesses\n"
+    "AI outbound lead acquisition for service businesses\n"
     "drewyomantas@gmail.com"
 )
 _SIGNATURE_ANCHOR = "drewyomantas@gmail.com"
