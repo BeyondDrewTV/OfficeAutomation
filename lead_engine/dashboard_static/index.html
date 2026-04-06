@@ -224,11 +224,32 @@ tbody td{padding:10px 14px;vertical-align:middle}
 .status-sub.info{color:var(--dim)}
 .status-sub.blocked{color:#e74c3c}
 .status-sub.exact{color:var(--dim)}
+.status-sub.repair-ok{color:var(--green)}
+.status-sub.repair-warn{color:var(--amber)}
+.status-sub.repair-bad{color:#e74c3c}
 
 .row-acts{display:flex;gap:3px}
 .act{padding:4px 9px;border-radius:3px;font-size:11px;font-weight:500;border:none;cursor:pointer;transition:.12s;font-family:var(--sans)}
 .act-approve{background:var(--green-bg);color:var(--green)}.act-approve:hover{background:rgba(62,207,114,.22)}
 .act-unapprove{background:var(--amber-bg);color:var(--amber)}.act-unapprove:hover{background:rgba(245,166,35,.22)}
+.act-repair{background:rgba(79,142,247,.14);color:var(--blue)}.act-repair:hover{background:rgba(79,142,247,.24)}
+.act-review{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid var(--border)}
+.repair-toolbar,.repair-progress{margin:10px 16px 0;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,.025)}
+.repair-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.repair-toolbar[hidden],.repair-progress[hidden]{display:none!important}
+.repair-toolbar-head{display:flex;flex-direction:column;gap:2px;min-width:160px}
+.repair-toolbar-title{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.repair-toolbar-sub{font-size:11px;color:var(--dim)}
+.repair-toolbar-actions{display:flex;gap:6px;flex-wrap:wrap}
+.repair-mini-btn{padding:5px 9px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:11px;cursor:pointer}
+.repair-mini-btn.primary{background:rgba(79,142,247,.14);color:var(--blue);border-color:rgba(79,142,247,.28)}
+.repair-mini-btn.ok{background:rgba(62,207,114,.12);color:var(--green);border-color:rgba(62,207,114,.24)}
+.repair-mini-btn:disabled{opacity:.45;cursor:not-allowed}
+.repair-progress-grid{display:flex;gap:8px;flex-wrap:wrap}
+.repair-progress-stat{display:flex;flex-direction:column;gap:3px;min-width:72px;padding:8px 9px;border-radius:8px;background:var(--surface2);border:1px solid var(--border)}
+.repair-progress-stat strong{font-size:14px;color:var(--text)}
+.repair-progress-stat span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.repair-progress-note{font-size:11px;color:var(--dim);line-height:1.45}
 .act-edit{background:var(--surface3);color:var(--muted);border:1px solid var(--border)}.act-edit:hover{color:var(--text)}
 .act-del{background:var(--red-bg);color:var(--red)}.act-del:hover{background:rgba(245,101,101,.22)}
 
@@ -1354,6 +1375,8 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       </div>
 
       <div id="queue-timeline-note" class="queue-note"></div>
+      <div id="queue-visible-repair-bar" class="repair-toolbar" hidden></div>
+      <div id="queue-batch-progress" class="repair-progress" hidden></div>
     </div>
   </div>
 </details>
@@ -1372,6 +1395,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     <div class="filter-tabs">
       <div class="ftab active" data-filter="active" onclick="setFilter('active',this)" title="Queue overview — unsent leads needing attention"><div class="ftab-top"><span>⚡ Queue Overview</span><span class="ftab-count" id="lane-count-active">—</span></div><div class="ftab-sub" id="lane-sub-active">Ready-now work, ordered by urgency</div></div>
       <div class="ftab" data-filter="needs_obs" onclick="setFilter('needs_obs',this)" title="Rows missing an observation"><div class="ftab-top"><span>◎ Needs Observation</span><span class="ftab-count" id="lane-count-needs_obs">—</span></div><div class="ftab-sub" id="lane-sub-needs_obs">Observation-led first touch is blocked</div></div>
+      <div class="ftab" data-filter="draft_repair" onclick="setFilter('draft_repair',this)" title="Rows with invalid drafts that are not actually send-ready"><div class="ftab-top"><span>! Draft Repair</span><span class="ftab-count" id="lane-count-draft_repair">—</span></div><div class="ftab-sub" id="lane-sub-draft_repair">Validation truth blocks send</div></div>
       <div class="ftab" data-filter="pending" onclick="setFilter('pending',this)" title="Drafts waiting for approval"><div class="ftab-top"><span>● Ready to Approve</span><span class="ftab-count" id="lane-count-pending">—</span></div><div class="ftab-sub" id="lane-sub-pending">Review and approve before send</div></div>
       <div class="ftab" data-filter="approved" onclick="setFilter('approved',this)" title="Approved rows that can be sent now"><div class="ftab-top"><span>→ Ready to Send</span><span class="ftab-count" id="lane-count-approved">—</span></div><div class="ftab-sub" id="lane-sub-approved">Manual send gate stays intact</div></div>
       <div class="ftab" data-filter="scheduled" onclick="setFilter('scheduled',this)" style="color:var(--amber)" title="Emails approved and queued for a send window"><div class="ftab-top"><span>🕐 Scheduled / Waiting</span><span class="ftab-count" id="lane-count-scheduled">—</span></div><div class="ftab-sub" id="lane-sub-scheduled">Waiting on the send window</div></div>
@@ -1390,6 +1414,12 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     <div class="queue-ledger">
 <div class="bulk-bar" id="bulk-bar">
   <strong id="bulk-count">0</strong> selected —
+  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('refresh_evidence','selected')">Refresh Evidence</button>
+  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('regen_candidates','selected')">Regenerate Candidates</button>
+  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('repair_rebuild','selected')">Repair + Rebuild</button>
+  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('validate','selected')">Validate Drafts</button>
+  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('fix_invalid','selected')">Fix Invalid</button>
+  <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('approve_fixed','selected')">Approve Fixed</button>
   <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkApprove()">Approve</button>
   <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkUnapprove()">Unapprove</button>
   <button class="btn btn-ghost bulk-btn-unschedule" id="bulk-unschedule-btn" style="font-size:11px;padding:3px 9px" onclick="bulkUnschedule()">Unschedule</button>
@@ -1758,6 +1788,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
           </div>
           <div class="obs-regen-row">
             <button class="btn-regen" id="panel-regen-btn" onclick="panelRegenerateDraft()" disabled>↻ Regenerate Draft</button>
+            <button class="btn-regen" id="panel-fix-next-btn" onclick="panelFixAndNext()" style="display:none">Fix + Next</button>
           </div>
         </div>
       </details>
@@ -2215,6 +2246,8 @@ let _lastScheduledKeys = new Set(); // Pass 172-177: scheduled rows from last ap
 let _lastSentKeys = new Set();      // Pass 178-183: rows sent in last sendLive() — enables follow-up continuity strip
 let _panelMousedownOnBackdrop = false; // Pass 37: drag-close guard
 let status_draft_version = '';
+let _repairBatchState = null;
+let _repairRunInFlight = false;
 
 async function api(path, body) {
   const opts = body !== undefined
@@ -2277,6 +2310,258 @@ async function apiJson(path, methodOrBody, maybeBody) {
   if (typeof data.ok === 'undefined') data.ok = r.ok;
   data._httpStatus = r.status;
   return data;
+}
+
+function _rowIndex(row) {
+  if (!row) return -1;
+  if (Number.isInteger(row.index)) return row.index;
+  return allRows.indexOf(row);
+}
+
+function _mergeRowTruth(row, truth) {
+  if (!row || !truth) return row;
+  row.send_ready = !!truth.is_send_ready;
+  row.send_ready_blocked_reason = truth.blocked_reason || '';
+  row.send_ready_blocked_message = truth.blocked_message || '';
+  row.draft_valid = truth.draft_valid !== false;
+  row.draft_blocked_reason = truth.draft_blocked_reason || '';
+  row.draft_blocked_message = truth.draft_blocked_message || '';
+  return row;
+}
+
+function _setRowRepairResult(row, text, tone) {
+  if (!row) return;
+  row._repairResult = {
+    text: text || '',
+    tone: tone || 'warn',
+    ts: Date.now(),
+  };
+}
+
+function _repairResultClass(row) {
+  const tone = row?._repairResult?.tone || '';
+  if (tone === 'ok') return 'repair-ok';
+  if (tone === 'bad') return 'repair-bad';
+  return 'repair-warn';
+}
+
+async function _fetchRowTruth(row) {
+  const gi = _rowIndex(row);
+  if (gi < 0) return { ok: false, error: 'Cannot locate row - refresh queue first.' };
+  const truth = await apiJson('/api/queue_row_truth', {
+    index: gi,
+    business_name: row.business_name,
+  });
+  if (truth.ok) _mergeRowTruth(row, truth);
+  return truth;
+}
+
+async function _refreshEvidenceForRow(row) {
+  const gi = _rowIndex(row);
+  if (gi < 0) return { ok: false, error: 'Cannot locate row - refresh queue first.' };
+  const res = await apiJson('/api/refresh_observation_evidence', {
+    index: gi,
+    business_name: row.business_name,
+  });
+  const refresh = res.refresh || {};
+  Object.entries(refresh.row_updates || {}).forEach(([key, value]) => {
+    row[key] = value;
+  });
+  return res;
+}
+
+async function _generateCandidateForRow(row) {
+  const gi = _rowIndex(row);
+  if (gi < 0) return { ok: false, error: 'Cannot locate row - refresh queue first.' };
+  return apiJson('/api/generate_observation_candidate', {
+    index: gi,
+    business_name: row.business_name,
+  });
+}
+
+async function _regenerateDraftForRow(row, observation) {
+  const gi = _rowIndex(row);
+  if (gi < 0) return { ok: false, error: 'Cannot locate row - refresh queue first.' };
+  const res = await apiJson('/api/regenerate_draft', {
+    index: gi,
+    business_name: row.business_name,
+    observation,
+  });
+  if (res.ok) {
+    row.subject = res.subject || '';
+    row.body = res.body || '';
+    row.facebook_dm_draft = res.dm_draft || '';
+    row.instagram_dm_draft = res.dm_draft || '';
+    row.contact_form_message = res.dm_draft || '';
+    row.social_dm_text = res.dm_draft || '';
+    row.business_specific_observation = res.observation || observation || '';
+    row._savedObservationText = row.business_specific_observation;
+    row.draft_version = status_draft_version || row.draft_version;
+  }
+  return res;
+}
+
+async function _approveRowIfValid(row) {
+  const gi = _rowIndex(row);
+  if (gi < 0) return { ok: false, error: 'Cannot locate row - refresh queue first.' };
+  const res = await apiJson('/api/approve_row', { index: gi });
+  if (res.ok) row.approved = 'true';
+  return res;
+}
+
+async function _runRowRepairMacro(row, options) {
+  const opts = options || {};
+  const gi = _rowIndex(row);
+  if (gi < 0) return { ok: false, blocked_reason: 'row_missing', message: 'Cannot locate row - refresh queue first.' };
+
+  const steps = [];
+  let truth = await _fetchRowTruth(row);
+  if (!truth.ok) return { ok: false, blocked_reason: 'truth_error', message: truth.error || 'Truth check failed.', steps };
+
+  let observation = (row.business_specific_observation || '').trim();
+  let candidateText = '';
+  const needsObservation = !observation;
+  const needsRefresh = opts.forceRefresh || needsObservation || _pipelineCohort(row) === 'needs_obs';
+
+  if (needsRefresh) {
+    const refresh = await _refreshEvidenceForRow(row);
+    steps.push('evidence refreshed');
+    if (!refresh.ok && !refresh.blocked) {
+      return { ok: false, blocked_reason: refresh.blocked_reason || 'refresh_error', message: refresh.error || 'Evidence refresh failed.', steps };
+    }
+    if (refresh.ok || refresh.blocked) {
+      candidateText = (refresh.candidate_text || '').trim();
+    }
+    if (refresh.blocked && !candidateText) {
+      _setRowRepairResult(row, `blocked: ${refresh.blocked_message || 'weak context'}`, 'bad');
+      return { ok: false, blocked_reason: refresh.blocked_reason || 'weak_context', message: refresh.blocked_message || 'No candidate after evidence refresh.', steps };
+    }
+  }
+
+  if (!candidateText && (needsObservation || opts.forceCandidate || !truth.draft_valid)) {
+    const candidate = await _generateCandidateForRow(row);
+    steps.push('candidate checked');
+    if (!candidate.ok && !candidate.blocked) {
+      return { ok: false, blocked_reason: candidate.blocked_reason || 'candidate_error', message: candidate.error || 'Candidate generation failed.', steps };
+    }
+    if (candidate.blocked) {
+      _setRowRepairResult(row, `blocked: ${candidate.blocked_message || 'no candidate'}`, 'bad');
+      return { ok: false, blocked_reason: candidate.blocked_reason || 'no_candidate', message: candidate.blocked_message || 'No safe candidate.', steps };
+    }
+    candidateText = (candidate.candidate_text || '').trim();
+    if (candidateText) steps.push('candidate ready');
+  }
+
+  if (candidateText) {
+    observation = candidateText;
+    row.business_specific_observation = candidateText;
+    row._savedObservationText = candidateText;
+    steps.push('candidate applied');
+  }
+
+  if (!observation) {
+    _setRowRepairResult(row, 'blocked: no candidate', 'bad');
+    return { ok: false, blocked_reason: 'observation_missing', message: 'No observation or candidate available.', steps };
+  }
+
+  const regen = await _regenerateDraftForRow(row, observation);
+  if (!regen.ok) {
+    const msg = regen.error || regen.blocked_message || 'Draft regeneration failed.';
+    _setRowRepairResult(row, `blocked: ${msg}`, 'bad');
+    return { ok: false, blocked_reason: regen.blocked_reason || 'draft_invalid', message: msg, steps };
+  }
+  steps.push('draft regenerated');
+
+  truth = await _fetchRowTruth(row);
+  if (!truth.ok) {
+    _setRowRepairResult(row, 'blocked: truth check failed', 'bad');
+    return { ok: false, blocked_reason: 'truth_error', message: truth.error || 'Truth check failed.', steps };
+  }
+
+  if (!truth.draft_valid) {
+    const msg = truth.draft_blocked_message || truth.blocked_message || 'Draft still invalid.';
+    _setRowRepairResult(row, `invalid: ${msg}`, 'bad');
+    return { ok: false, blocked_reason: truth.draft_blocked_reason || 'draft_invalid', message: msg, steps };
+  }
+
+  const repairedMessage = truth.is_send_ready
+    ? 'repaired and ready to send'
+    : (String(row.approved || '').toLowerCase() === 'true'
+      ? 'repaired but not send-ready'
+      : 'repaired and ready for approval');
+  _setRowRepairResult(row, repairedMessage, truth.is_send_ready ? 'ok' : 'warn');
+  return { ok: true, truth, steps, message: repairedMessage };
+}
+
+function _repairRowsForScope(scope) {
+  if (scope === 'selected') return _selectedRows().filter(row => row && !row.sent_at);
+  return filteredRows.filter(row => row && !row.sent_at);
+}
+
+function _repairBarActions(scope) {
+  const title = scope === 'selected' ? 'Selected recovery' : 'Visible recovery';
+  const rows = _repairRowsForScope(scope);
+  const count = rows.length;
+  const buttons = [
+    ['refresh_evidence', 'Refresh Evidence', ''],
+    ['regen_candidates', 'Regenerate Candidates', ''],
+    ['repair_rebuild', scope === 'selected' ? 'Repair + Rebuild' : 'Use Best Candidate + Regenerate Draft', 'primary'],
+    ['validate', 'Validate Drafts', ''],
+    ['fix_invalid', 'Fix Invalid Drafts', ''],
+    ['approve_fixed', 'Approve Fixed Rows', 'ok'],
+  ];
+  return `
+    <div class="repair-toolbar-head">
+      <div class="repair-toolbar-title">${title}</div>
+      <div class="repair-toolbar-sub">${count} row${count === 1 ? '' : 's'} in scope</div>
+    </div>
+    <div class="repair-toolbar-actions">
+      ${buttons.map(([action, label, cls]) => `<button class="repair-mini-btn ${cls}" onclick="runRepairAction('${action}','${scope}')" ${count ? '' : 'disabled'}>${label}</button>`).join('')}
+    </div>
+  `;
+}
+
+function _renderVisibleRepairBar() {
+  const el = document.getElementById('queue-visible-repair-bar');
+  if (!el) return;
+  const visibleRows = _repairRowsForScope('visible');
+  const show = ['active', 'needs_obs', 'stale', 'draft_repair', 'pending', 'approved', 'all'].includes(currentFilter) && visibleRows.length > 0;
+  el.hidden = !show;
+  if (!show) {
+    el.innerHTML = '';
+    return;
+  }
+  el.innerHTML = _repairBarActions('visible');
+}
+
+function _renderRepairProgress() {
+  const el = document.getElementById('queue-batch-progress');
+  if (!el) return;
+  const state = _repairBatchState;
+  if (!state) {
+    el.hidden = true;
+    el.innerHTML = '';
+    return;
+  }
+  const counts = state.counts || {};
+  el.hidden = false;
+  el.innerHTML = `
+    <div class="repair-toolbar-head">
+      <div class="repair-toolbar-title">${state.label || 'Batch repair'}</div>
+      <div class="repair-toolbar-sub">${state.done || 0} of ${state.total || 0} processed</div>
+    </div>
+    <div class="repair-progress-grid">
+      <div class="repair-progress-stat"><strong>${state.total || 0}</strong><span>Total</span></div>
+      <div class="repair-progress-stat"><strong>${counts.repaired || 0}</strong><span>Repaired</span></div>
+      <div class="repair-progress-stat"><strong>${counts.blocked || 0}</strong><span>Blocked</span></div>
+      <div class="repair-progress-stat"><strong>${counts.invalid || 0}</strong><span>Invalid</span></div>
+      <div class="repair-progress-stat"><strong>${counts.no_candidate || 0}</strong><span>No Candidate</span></div>
+      <div class="repair-progress-stat"><strong>${counts.no_email || 0}</strong><span>No Email</span></div>
+      <div class="repair-progress-stat"><strong>${counts.approved || 0}</strong><span>Approved</span></div>
+      <div class="repair-progress-stat"><strong>${counts.fixable || 0}</strong><span>Fixable</span></div>
+    </div>
+    <div class="repair-progress-note">${escHtml(state.note || '')}</div>
+  `;
 }
 
 
@@ -2349,6 +2634,7 @@ function _leadStatusMeta(record) {
   if (r.isReplied) return { badgeClass: 'badge-replied', label: 'Replied',  title: 'Reply received',    subline: 'Conversation active',   detail: 'No send action needed',   tone: 'replied' };
   if (r.isSent)    return { badgeClass: 'badge-sent',    label: 'Sent',     title: 'Already sent',       subline: 'Completed send',         detail: 'No further queue action', tone: 'sent' };
   if (r.isStale)   return { badgeClass: 'badge-stale',   label: 'Stale',    title: 'Old copy - regenerate before sending', subline: 'Needs refresh before send', detail: 'Draft version is behind current prompt', tone: 'wait' };
+  if (r.draftValid === false) return { badgeClass: 'badge-bad', label: 'Repair', title: r.draftBlockedMessage || 'Draft is not send-ready', subline: 'Fix draft before send', detail: r.draftBlockedMessage || 'Validation is blocking send-readiness.', tone: 'blocked' };
   if (r.isScheduled && !r.isReadyScheduled) {
     const relative = r.sendAfter ? (typeof _formatSendAfter      === 'function' ? _formatSendAfter(r.sendAfter)      : r.sendAfter) : '';
     const exact    = r.sendAfter ? (typeof _formatSendAfterExact === 'function' ? _formatSendAfterExact(r.sendAfter) : r.sendAfter) : '';
@@ -2358,7 +2644,8 @@ function _leadStatusMeta(record) {
     const exact = r.sendAfter ? (typeof _formatSendAfterExact === 'function' ? _formatSendAfterExact(r.sendAfter) : r.sendAfter) : '';
     return { badgeClass: 'badge-ready', label: 'Ready Now', title: 'Scheduled window reached at ' + (exact || r.sendAfter), subline: 'Scheduled time reached', detail: (exact || '') + ' - included in Send Approved now', tone: 'ready' };
   }
-  if (r.isApproved) return { badgeClass: 'badge-approved', label: 'Approved', title: 'Approved and ready to send now', subline: 'Ready to send now', detail: 'Included in Send Approved immediately', tone: 'ready' };
+  if (r.isSendReady) return { badgeClass: 'badge-approved', label: 'Approved', title: 'Approved and ready to send now', subline: 'Ready to send now', detail: 'Included in Send Approved immediately', tone: 'ready' };
+  if (r.isApproved) return { badgeClass: 'badge-pending', label: 'Approved', title: r.sendReadyBlockedMessage || 'Approved but not send-ready', subline: 'Not ready to send', detail: r.sendReadyBlockedMessage || 'Approval is on file, but current validation truth is blocking send.', tone: 'wait' };
   return { badgeClass: 'badge-pending', label: 'Pending', title: 'Still needs operator approval', subline: 'Needs approval before send', detail: 'Not in Send Approved yet', tone: 'info' };
 }
 
@@ -2396,7 +2683,8 @@ function _leadHistoryItems(record) {
   if (!record) return [];
   const r = record;
   const items = [];
-  if (r.isApproved && !r.isSent) items.push({ tone: 'ready', label: 'approved' });
+  if (r.isSendReady && !r.isSent) items.push({ tone: 'ready', label: 'approved' });
+  else if (r.isApproved && !r.isSent) items.push({ tone: 'wait', label: 'approved but blocked' });
   if (r.isScheduled && !r.isReadyScheduled) {
     items.push({ tone: 'wait', label: 'scheduled ' + ((typeof _formatSendAfter === 'function' && r.sendAfter) ? _formatSendAfter(r.sendAfter) : 'later') });
   } else if (r.isReadyScheduled) {
@@ -2439,9 +2727,11 @@ function _leadNextActionContext(record) {
   if (record.isReplied) return { tone: 'info', text: record.nextAction, subtext: 'Conversation is active. Use the reply context below before changing queue state.' };
   if (record.isSent) return { tone: 'info', text: record.nextAction, subtext: 'Outreach already went out. Use the history cues here to decide follow-up.' };
   if (_leadNeedsDraftRefresh(record)) return { tone: 'wait', text: record.nextAction, subtext: 'Refresh the observation-led copy before treating this lead as ready to send.' };
+  if (record.draftValid === false) return { tone: 'blocked', text: record.nextAction, subtext: record.draftBlockedMessage || 'Draft validation is blocking send-readiness.' };
   if (record.isScheduled && !record.isReadyScheduled) return { tone: 'wait', text: record.nextAction, subtext: 'This row stays out of Send Approved until its scheduled window arrives.' };
   if (record.isReadyScheduled) return { tone: 'ready', text: record.nextAction, subtext: 'The scheduled window has arrived, so this row is send-ready again right now.' };
-  if (record.isApproved) return { tone: 'ready', text: record.nextAction, subtext: 'It is already in the ready-now queue. Send it now or move it into a later send window.' };
+  if (record.isSendReady) return { tone: 'ready', text: record.nextAction, subtext: 'It is already in the ready-now queue. Send it now or move it into a later send window.' };
+  if (record.isApproved) return { tone: 'wait', text: record.nextAction, subtext: record.sendReadyBlockedMessage || 'Approval exists, but current truth says this row still needs repair.' };
   if (!record.hasContact) return { tone: 'blocked', text: record.nextAction, subtext: 'No direct outreach route is available yet, so contact discovery comes first.' };
   return { tone: 'info', text: record.nextAction, subtext: 'This is the clearest shared next step from the current lead state.' };
 }
@@ -2488,7 +2778,17 @@ function _leadControlGuidance(record) {
     guidance.flowNote = 'Recommended first: ' + (record.nextAction || 'refresh this draft') + '.';
     return guidance;
   }
-  if (record.isApproved || record.isReadyScheduled) {
+  if (record.draftValid === false) {
+    guidance.panelApproveLabel = 'Fix Draft First';
+    guidance.panelApproveTitle = record.draftBlockedMessage || 'Repair the draft before approval or send.';
+    guidance.panelApproveClass = 'btn btn-ghost';
+    guidance.panelScheduleLabel = 'Fix Before Scheduling';
+    guidance.panelScheduleTitle = record.draftBlockedMessage || 'Repair the draft before scheduling.';
+    guidance.panelScheduleClass = 'btn btn-ghost';
+    guidance.flowNote = 'Recommended first: ' + (record.nextAction || 'repair this draft') + '.';
+    return guidance;
+  }
+  if (record.isSendReady || record.isReadyScheduled) {
     guidance.panelScheduleLabel = '🕐 Schedule Instead';
     guidance.panelScheduleTitle = 'Move this ready-now row into tomorrow morning\'s send window';
     guidance.flowNote = 'Ready now — the next queue step is ' + (record.nextAction || 'Send email') + '.';
@@ -2965,21 +3265,25 @@ function _pipelineCohort(row) {
   const hasEmail = !!(row.to_email && row.to_email.includes('@'));
   const isStale  = !row.sent_at && !!(row.draft_version) && row.draft_version !== status_draft_version;
   const hasObs   = !!(row.business_specific_observation || '').trim();
+  const draftInvalid = row.draft_valid === false;
   const isFallback = row.draft_type === 'industry_fallback';
   if (!hasEmail)            return 'no_email';
   if (isStale)              return 'stale';
   if (!hasObs && !isFallback) return 'needs_obs';
+  if (draftInvalid)         return 'draft_repair';
   return 'bulk_safe';
 }
 
 function _cohortHeaderHtml(key, count) {
   const approveCta = `<button class="act act-approve" onclick="event.stopPropagation();_cohortBulkApprove()" style="font-size:11px;padding:3px 10px">✓ Approve All Ready (${count})</button>`;
-  const regenCta   = `<div style="display:flex;gap:6px;align-items:center"><button class="act" onclick="event.stopPropagation();bulkRegenStale()" style="font-size:11px;padding:3px 10px;background:rgba(79,142,247,.12);color:var(--blue);border:none">↻ Regen All (${count})</button><button class="act" onclick="event.stopPropagation();_cohortStartSession('stale')" style="font-size:11px;padding:3px 10px;background:rgba(79,142,247,.08);color:var(--blue);border:1px solid rgba(79,142,247,.2)">→ Review Stale</button></div>`;
+  const regenCta   = `<div style="display:flex;gap:6px;align-items:center"><button class="act" onclick="event.stopPropagation();runRepairAction('repair_rebuild','visible')" style="font-size:11px;padding:3px 10px;background:rgba(79,142,247,.12);color:var(--blue);border:none">↻ Repair Visible (${count})</button><button class="act" onclick="event.stopPropagation();_cohortStartSession('stale')" style="font-size:11px;padding:3px 10px;background:rgba(79,142,247,.08);color:var(--blue);border:1px solid rgba(79,142,247,.2)">→ Review Stale</button></div>`;
+  const repairCta  = `<div style="display:flex;gap:6px;align-items:center"><button class="act act-repair" onclick="event.stopPropagation();runRepairAction('fix_invalid','visible')" style="font-size:11px;padding:3px 10px">Fix Invalid (${count})</button><button class="act" onclick="event.stopPropagation();_cohortStartSession('draft_repair')" style="font-size:11px;padding:3px 10px;background:rgba(231,76,60,.08);color:#e74c3c;border:1px solid rgba(231,76,60,.2)">→ Review Repair</button></div>`;
   const socialCta  = `<div style="display:flex;gap:6px;align-items:center"><button class="act" onclick="event.stopPropagation();_cohortStartSession('no_email')" style="font-size:11px;padding:3px 10px;background:rgba(100,116,139,.12);color:var(--dim);border:none">→ Review No-Email (${count})</button><button class="act" onclick="event.stopPropagation();_setWorkbenchMode('social')" style="font-size:11px;padding:3px 10px;background:rgba(100,116,139,.08);color:var(--dim);border:1px solid rgba(100,116,139,.2)">📲 Social DMs →</button></div>`;
   const meta = {
     bulk_safe: { label: 'Ready to Approve', color: 'var(--green)',  icon: '✓', cta: approveCta },
     needs_obs: { label: 'Needs Observation', color: 'var(--amber)', icon: '◎', cta: `<button class="act" onclick="event.stopPropagation();_cohortStartSession('needs_obs')" style="font-size:11px;padding:3px 10px;background:rgba(245,166,35,.12);color:var(--amber);border:none">→ Start Obs Review (${count})</button>` },
     stale:     { label: 'Stale Draft',       color: 'var(--blue)',  icon: '↻', cta: regenCta },
+    draft_repair: { label: 'Draft Repair',   color: '#e74c3c',      icon: '!', cta: repairCta },
     no_email:  { label: 'No Email Path',     color: 'var(--dim)',   icon: '–', cta: socialCta },
   };
   const m = meta[key] || { label: key, color: 'var(--dim)', icon: '?', cta: '' };
@@ -2995,40 +3299,17 @@ function _cohortHeaderHtml(key, count) {
 async function _rowDirectRegen(gi) {
   const row = allRows[gi];
   if (!row) return;
-  const obs = (row.business_specific_observation || '').trim();
-  if (!obs) { toast('No observation on file — open row to add one first', 'info'); return; }
-  toast(`Regenerating ${row.business_name}…`, 'info');
-  try {
-    const res = await apiJson('/api/regenerate_draft', {
-      index: gi,
-      business_name: row.business_name,
-      observation: obs,
-    });
-    if (res.ok) {
-      row.subject = res.subject;
-      row.body = res.body;
-      row.draft_version = status_draft_version;
-      if (res.dm_draft) {
-        row.facebook_dm_draft = row.instagram_dm_draft = row.contact_form_message = row.social_dm_text = res.dm_draft;
-      }
-      // Pass 138: advance session position past this repaired row, or mark done if last
-      if (_queueSession && !_queueSession.done) {
-        const nextPos = _queueSession.pos + 1;
-        if (nextPos < _queueSession.rowKeys.length) _qsUpdatePos(nextPos);
-        else _qsMarkDone();
-      }
-      // Pass 142-147: record graduation outcome — stale + has obs always becomes bulk_safe after regen
-      const _drPostCohort = _pipelineCohort(row);
-      const _drKey = _panelMakeKey(row);
-      _qsRecordOutcome(_drKey, _drPostCohort === 'bulk_safe' ? 'repaired' : 'blocked');
-      renderTable();
-      toast(_drPostCohort === 'bulk_safe' ? `✓ ${row.business_name} → Ready to Approve` : `Draft refreshed — ${row.business_name}`, 'ok');
-    } else {
-      toast('Regen failed: ' + (res.error || 'unknown'), 'err');
-    }
-  } catch(e) {
-    toast('Regen error: ' + String(e), 'err');
+  toast(`Repairing ${row.business_name}…`, 'info');
+  const result = await _runRowRepairMacro(row, { forceCandidate: !((row.business_specific_observation || '').trim()) });
+  const key = _panelMakeKey(row);
+  _qsRecordOutcome(key, result.ok ? 'repaired' : 'blocked');
+  if (_queueSession && !_queueSession.done) {
+    const nextPos = _queueSession.pos + 1;
+    if (nextPos < _queueSession.rowKeys.length) _qsUpdatePos(nextPos);
+    else _qsMarkDone();
   }
+  renderTable();
+  toast(result.ok ? `✓ ${row.business_name} repaired` : `${row.business_name} blocked: ${result.message || 'repair failed'}`, result.ok ? 'ok' : 'err');
 }
 
 // ── Pass 140: Inline obs repair — needs_obs rows can save + regen without drawer ─
@@ -3122,6 +3403,7 @@ function _cohortStartSession(cohortKey) {
   if (cohortKey === 'needs_obs') panelOpenIntent = 'refresh';
   const label = cohortKey === 'needs_obs' ? `Obs Review (${rows.length})`
     : cohortKey === 'stale' ? `Stale Review (${rows.length})`
+    : cohortKey === 'draft_repair' ? `Draft Repair (${rows.length})`
     : `No-Email Review (${rows.length})`;
   _qsStart(cohortKey, rows, label);
   openPanel(0, rows, label);
@@ -3214,7 +3496,7 @@ function _qsEnd() {
   // Pass 166-171: after an approved session closes, restore send-ready strip showing remaining ready-now count.
   // _lastApprovedCount was cleared by _qsStart — restore from live data so the strip reappears.
   if (_queueSession?.cohortKey === 'approved') {
-    _lastApprovedCount = (allRows || []).filter(r => r.approved === 'true' && !r.sent_at && r.to_email).length;
+    _lastApprovedCount = (allRows || []).filter(r => r.send_ready && !r.sent_at && r.to_email).length;
     if (_qsScheduledKeys.size > 0) _lastScheduledKeys = new Set(_qsScheduledKeys); // Pass 172-177: persist for waiting-state strip
   }
   _queueSession = null;
@@ -3231,12 +3513,15 @@ async function _qsApproveRepaired() {
   _lastApprovedKeys = new Set(); // Pass 160-165: reset before batch
   for (const key of keys) {
     const row = allRows.find(r => _panelMakeKey(r) === key);
-    if (!row || row.approved === 'true' || row.sent_at || !row.to_email) { skipped++; continue; }
-    const gi = allRows.indexOf(row);
-    await api('/api/approve_row', { index: gi });
-    row.approved = 'true';
-    _lastApprovedKeys.add(_panelMakeKey(row)); // Pass 160-165: track for review session
-    approved++;
+    if (!row || row.send_ready || row.sent_at || !row.to_email) { skipped++; continue; }
+    const res = await _approveRowIfValid(row);
+    if (res.ok) {
+      await _fetchRowTruth(row);
+      _lastApprovedKeys.add(_panelMakeKey(row));
+      approved++;
+    } else {
+      skipped++;
+    }
   }
   // Pass 154-159: record approved count before clearing state — drives send-readiness strip
   _lastApprovedCount = approved;
@@ -3296,7 +3581,7 @@ function _startScheduledSession() {
 // Pass 160-165: Open all currently-approved rows (from approved filter) as a panel review session.
 // Used from the approved filter CTA — reviews the full approved set, not just the freshly-approved batch.
 function _startApprovedSession() {
-  const rows = filteredRows.filter(r => r.approved === 'true' && !r.sent_at && r.to_email);
+  const rows = filteredRows.filter(r => r.send_ready && !r.sent_at && r.to_email);
   if (!rows.length) { toast('No approved rows to review', 'info'); return; }
   const label = `Approved Review (${rows.length})`;
   _qsStart('approved', rows, label);
@@ -3309,7 +3594,7 @@ function _startApprovedSession() {
 function _qsStartApprovedReview() {
   const rows = [..._lastApprovedKeys]
     .map(k => allRows.find(r => _panelMakeKey(r) === k))
-    .filter(r => r && !r.sent_at && r.to_email);
+    .filter(r => r && !r.sent_at && r.to_email && r.send_ready);
   if (!rows.length) { toast('No approved rows available to review', 'info'); return; }
   const label = `Approved Review (${rows.length})`;
   _qsStart('approved', rows, label);
@@ -3335,7 +3620,7 @@ function _renderQueueSessionBanner() {
   if (!qs && _lastRepairedKeys.size > 0) {
     const approveCount = [..._lastRepairedKeys].filter(k => {
       const r = allRows.find(row => _panelMakeKey(row) === k);
-      return r && r.approved !== 'true' && !r.sent_at && r.to_email;
+      return r && !r.send_ready && r.draft_valid !== false && !r.sent_at && r.to_email;
     }).length;
     banner.style.display = '';
     banner.className = 'qsb-harvest';
@@ -3347,7 +3632,7 @@ function _renderQueueSessionBanner() {
   }
   // Pass 154-159: send-readiness strip — appears after batch approval, persists until dismissed
   if (!qs && _lastApprovedCount > 0) {
-    const _sendCount = allRows.filter(r => r.approved === 'true' && !r.sent_at && r.to_email).length;
+    const _sendCount = allRows.filter(r => r.send_ready && !r.sent_at && r.to_email).length;
     banner.style.display = '';
     banner.className = 'qsb-send-ready';
     const _sendBtn = _sendCount > 0
@@ -3393,19 +3678,19 @@ function _renderQueueSessionBanner() {
     return;
   }
   banner.style.display = '';
-  const iconMap = { needs_obs: '◎', stale: '↻', no_email: '📲', approved: '●', scheduled: '⏱', sent: '✉' }; // Pass 160-165/172-177
+  const iconMap = { needs_obs: '◎', stale: '↻', draft_repair: '!', no_email: '📲', approved: '●', scheduled: '⏱', sent: '✉' };
   const icon = iconMap[qs.cohortKey] || '▸';
   const total = qs.rowKeys.length;
   if (qs.done) {
     // Suggest the highest-priority next cohort that still has live rows
-    const cohortOrder = ['needs_obs', 'stale', 'no_email'];
+    const cohortOrder = ['needs_obs', 'stale', 'draft_repair', 'no_email'];
     let nextHtml = '';
     for (const ck of cohortOrder) {
       if (ck === qs.cohortKey) continue;
       // Pass 137: use allRows (not filteredRows) so count is correct regardless of active filter
       const count = (allRows || []).filter(r => !r.sent_at && _pipelineCohort(r) === ck).length;
       if (count > 0) {
-        const lbl = ck === 'needs_obs' ? `Obs Review (${count})` : ck === 'stale' ? `Stale Review (${count})` : `No-Email Review (${count})`;
+        const lbl = ck === 'needs_obs' ? `Obs Review (${count})` : ck === 'stale' ? `Stale Review (${count})` : ck === 'draft_repair' ? `Draft Repair (${count})` : `No-Email Review (${count})`;
         nextHtml = `<button class="qsb-btn qsb-next" onclick="_qsEnd();_cohortStartSession('${ck}')">→ ${lbl}</button>`;
         break;
       }
@@ -3415,7 +3700,7 @@ function _renderQueueSessionBanner() {
     if (qs.cohortKey === 'approved') {
       // Pass 166-171: meaningful approved-session summary — how many scheduled, how many still ready to send now
       const _scheduledInSession = qs.outcomes?.scheduled || 0;
-      const _readyNow = (allRows || []).filter(r => r.approved === 'true' && !r.sent_at && !r.send_after && r.to_email).length;
+      const _readyNow = (allRows || []).filter(r => r.send_ready && !r.sent_at && !r.send_after && r.to_email).length;
       _doneOutcome = _scheduledInSession > 0
         ? `${_scheduledInSession} scheduled · ${_readyNow} ready now`
         : `${total} rows reviewed · ${_readyNow} ready now`;
@@ -3462,17 +3747,15 @@ function _setWorkbenchMode(mode) {
 }
 
 async function _cohortBulkApprove() {
-  const rows = filteredRows.filter(r => _pipelineCohort(r) === 'bulk_safe' && r.approved !== 'true');
+  const rows = filteredRows.filter(r => _pipelineCohort(r) === 'bulk_safe' && !r.send_ready);
   if (!rows.length) { toast('All ready rows already approved', 'ok'); return; }
   let done = 0;
   _lastApprovedKeys = new Set(); // Pass 160-165: reset before batch
   for (const row of rows) {
-    const gi = allRows.indexOf(row);
-    if (gi < 0) continue;
-    const res = await api('/api/approve_row', { global_idx: gi });
+    const res = await _approveRowIfValid(row);
     if (res.ok) {
-      allRows[gi] = { ...allRows[gi], ...res.row };
-      _lastApprovedKeys.add(_panelMakeKey(allRows[gi])); // Pass 160-165: track for review session
+      await _fetchRowTruth(row);
+      _lastApprovedKeys.add(_panelMakeKey(row)); // Pass 160-165: track for review session
       done++;
     }
   }
@@ -3490,8 +3773,9 @@ function applyFiltersAndSort() {
   if (currentFilter === 'active') {
     // Default view: unsent, unscheduled leads that aren't terminal — actionable now
     rows = rows.filter(r => isRowActionable(r));
-  } else if (currentFilter === 'pending')  rows = rows.filter(r => isRowActionable(r) && r.approved !== 'true');
-  else if (currentFilter === 'approved')   rows = rows.filter(r => isRowActionable(r) && r.approved === 'true');
+  } else if (currentFilter === 'pending')  rows = rows.filter(r => isRowActionable(r) && r.draft_valid !== false && !r.send_ready);
+  else if (currentFilter === 'approved')   rows = rows.filter(r => isRowActionable(r) && r.send_ready);
+  else if (currentFilter === 'draft_repair') rows = rows.filter(r => _pipelineCohort(r) === 'draft_repair');
   else if (currentFilter === 'sent')       rows = rows.filter(r => !!r.sent_at);
   else if (currentFilter === 'replied')    rows = rows.filter(r => r.replied === 'true');
   else if (currentFilter === 'needs_obs')  rows = rows.filter(r => _pipelineCohort(r) === 'needs_obs');
@@ -3543,8 +3827,9 @@ function statusBadge(row) {
   if (row.sent_at) return '<span class="badge badge-sent">✓ Sent</span>';
   if (!row.sent_at && status_draft_version && row.draft_version !== status_draft_version)
     return '<span class="badge badge-stale" title="Old copy — regenerate before sending">⚠ Stale</span>';
+  if (row.draft_valid === false) return '<span class="badge badge-bad">! Repair</span>';
   if (row.send_after && !row.sent_at) return `<span class="badge badge-scheduled" title="Scheduled: ${escHtml(row.send_after)}">🕐 Scheduled</span>`;
-  if (row.approved === 'true') return '<span class="badge badge-approved">● Approved</span>';
+  if (row.send_ready) return '<span class="badge badge-approved">● Approved</span>';
   return '<span class="badge badge-pending">○ Pending</span>';
 }
 
@@ -3555,8 +3840,10 @@ function _queueRowNextAction(row, meta) {
   if (!row.to_email || !row.to_email.includes('@')) return 'Use social or form fallback';
   if (cohort === 'needs_obs') return 'Add observation';
   if (cohort === 'stale') return (row.business_specific_observation || '').trim() ? 'Regenerate draft' : 'Add observation';
+  if (cohort === 'draft_repair') return 'Fix draft';
   if (row.send_after && !row.sent_at) return row.is_ready ? 'Ready to send now' : 'Wait for scheduled window';
-  if (row.approved === 'true') return 'Send Approved when ready';
+  if (row.send_ready) return 'Send Approved when ready';
+  if (row.approved === 'true') return 'Repair before send';
   if (meta?.label === 'Pending') return 'Approve row';
   if (meta?.label === 'Blocked') return 'Use recovery action';
   return 'Review the row';
@@ -3613,11 +3900,15 @@ function statusCellHtml(row) {
   const _scSubline = [meta.subline || '', _scSubExtra].filter(Boolean).join(' · ');
   const _scHistory = _leadHistoryChipsHtml(_scRecord, { className: 'status-history-row', max: 4 });
   const _nextAction = _queueRowNextAction(row, meta);
+  const _repairResult = row?._repairResult?.text
+    ? `<div class="status-sub ${_repairResultClass(row)}">${escHtml(row._repairResult.text)}</div>`
+    : '';
   return `<div class="status-stack">` +
     `<span class="badge ${meta.badgeClass}" title="${escHtml(meta.title || meta.label)}">${escHtml(meta.label)}</span>` +
     `<div class="status-sub ${meta.tone || 'info'}">${escHtml(_nextAction)}</div>` +
     `<div class="status-sub exact">${escHtml(_scSubline)}</div>` +
     (meta.detail ? `<div class="status-sub exact">${escHtml(meta.detail)}</div>` : '') +
+    _repairResult +
     _scHistory +
     `</div>`;
 }
@@ -3645,7 +3936,7 @@ function _queueTimelineNoteHtml() {
   if (currentFilter === 'approved') {
     // Pass 154-159: live send-ready count + explicit next-action guidance
     // Pass 160-165: added → Review (N) session CTA so operator can step through approved rows inline
-    const approvedSendReady = filteredRows.filter(r => r.approved === 'true' && !r.sent_at && r.to_email).length;
+    const approvedSendReady = filteredRows.filter(r => r.send_ready && !r.sent_at && r.to_email).length;
     const _reviewCta = approvedSendReady
       ? ` <button style="font-size:11px;padding:2px 8px;background:rgba(245,166,35,.12);color:var(--amber);border:1px solid rgba(245,166,35,.25);border-radius:var(--rs);cursor:pointer;vertical-align:middle" onclick="_startApprovedSession()" title="Step through these rows to review and schedule">→ Review (${approvedSendReady})</button>`
       : '';
@@ -3657,7 +3948,13 @@ function _queueTimelineNoteHtml() {
   if (currentFilter === 'active') {
     return {
       tone: 'ready',
-      html: `<strong>Actionable queue</strong> — grouped by status: ✓ Ready to Approve first, then ◎ Needs Observation, ↻ Stale Draft, – No Email Path. Bulk-ready rows approve in one click. Each section shows the next action.`,
+      html: `<strong>Actionable queue</strong> — grouped by status: ✓ Ready to Approve first, then ◎ Needs Observation, ↻ Stale Draft, ! Draft Repair, – No Email Path. Repair macros stay explicit, but no longer inspector-dependent.`,
+    };
+  }
+  if (currentFilter === 'draft_repair') {
+    return {
+      tone: 'pending',
+      html: `<strong>Draft repair queue:</strong> approved state is no longer enough. These rows are blocked by current validation truth until the draft is repaired.`,
     };
   }
     if (currentFilter === 'pending') {
@@ -3707,6 +4004,8 @@ function escHtml(s) {
 function renderTable() {
   applyFiltersAndSort();
   _renderQueueTimelineNote();
+  _renderVisibleRepairBar();
+  _renderRepairProgress();
   renderQueueOutliner();
   ccQueueRender(); // Pass 82: keep rail in sync
   _renderQueueSessionBanner(); // Pass 130-135: refresh session banner on every table render
@@ -3725,7 +4024,7 @@ function renderTable() {
   let _lastCohort = null, _cohortSizes = {};
   if (currentFilter === 'active') {
     filteredRows.forEach(r => { const c = _pipelineCohort(r); _cohortSizes[c] = (_cohortSizes[c]||0)+1; });
-    const _co = { bulk_safe:0, needs_obs:1, stale:2, no_email:3 };
+    const _co = { bulk_safe:0, needs_obs:1, stale:2, draft_repair:3, no_email:4 };
     filteredRows.sort((a, b) => (_co[_pipelineCohort(a)]??99) - (_co[_pipelineCohort(b)]??99));
   }
 
@@ -3760,6 +4059,7 @@ function renderTable() {
     const _pillKey = _panelMakeKey(row);
     const cohortPill = _rowCohort === 'needs_obs' ? `<span class="cohort-pill cp-needs-obs">◎ obs needed</span>`
       : _rowCohort === 'stale'    ? `<span class="cohort-pill cp-stale">↻ stale</span>`
+      : _rowCohort === 'draft_repair' ? `<span class="cohort-pill cp-stale">! repair</span>`
       : _rowCohort === 'no_email' ? `<span class="cohort-pill cp-no-email">– no email</span>`
       // Pass 142-147: repaired this session (active session)
       : (_qsRepairedKeys.size && _qsRepairedKeys.has(_pillKey)) ? `<span class="cohort-pill cp-repaired">✓ repaired</span>`
@@ -3772,17 +4072,16 @@ function renderTable() {
     } else if (_rowCohort === 'no_email') {
       _rowActionHtml = `<button class="act" onclick="event.stopPropagation();_setWorkbenchMode('social')" style="background:rgba(100,116,139,.12);color:var(--dim);border:none" title="Switch to Social DMs surface">📲 Social →</button><button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>`;
     } else if (_rowCohort === 'needs_obs') {
-      _rowActionHtml = `<button class="act act-edit" onclick="event.stopPropagation();openPanelForRefresh(${fi})" title="Open the inspector to add an observation">Add Obs</button><button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>`;
-    } else if (_rowCohort === 'stale') {
-      const _hasObs = !!(row.business_specific_observation || '').trim();
-      _rowActionHtml = `${_hasObs
-        ? `<button class="act" onclick="event.stopPropagation();_rowDirectRegen(${gi})" style="background:rgba(79,142,247,.12);color:var(--blue);border:none" title="Regenerate draft without opening drawer">↻ Regen</button>`
-        : `<button class="act act-edit" onclick="event.stopPropagation();openPanelForRefresh(${fi})" title="Open the inspector to add an observation">Add Obs</button>`}<button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>`;
+      _rowActionHtml = `<button class="act act-repair" onclick="event.stopPropagation();_rowDirectRegen(${gi})" title="Run the repair macro for this row">Fix Draft</button><button class="act act-review" onclick="openPanel(${fi})" style="opacity:.9;font-size:10px">Review</button>`;
+    } else if (_rowCohort === 'stale' || _rowCohort === 'draft_repair') {
+      _rowActionHtml = `<button class="act act-repair" onclick="event.stopPropagation();_rowDirectRegen(${gi})" title="Run the repair macro for this row">Repair + Rebuild</button><button class="act act-review" onclick="openPanel(${fi})" style="opacity:.9;font-size:10px">Review</button>`;
     } else {
-      const _appBtn = row.approved === 'true'
+      const _appBtn = row.send_ready
+        ? `<button class="act act-unapprove" onclick="event.stopPropagation();unapproveRow(${gi})">Undo</button>`
+        : row.approved === 'true'
         ? `<button class="act act-unapprove" onclick="event.stopPropagation();unapproveRow(${gi})">Undo</button>`
         : `<button class="act act-approve" onclick="event.stopPropagation();approveRow(${gi})">Approve</button>`;
-      _rowActionHtml = `${_appBtn}<button class="act act-edit" onclick="openPanel(${fi})" style="opacity:.55;font-size:10px">Review</button>`;
+      _rowActionHtml = `${_appBtn}<button class="act act-review" onclick="openPanel(${fi})" style="opacity:.9;font-size:10px">Review</button>`;
     }
 
     // Pass 131: highlight current session row so operator stays oriented at table level
@@ -3831,6 +4130,7 @@ function renderQueueOutliner() {
     const labels = {
       active: 'Overview',
       needs_obs: 'Needs Obs',
+      draft_repair: 'Draft Repair',
       pending: 'To Approve',
       approved: 'Ready to Send',
       scheduled: 'Scheduled',
@@ -3843,8 +4143,9 @@ function renderQueueOutliner() {
   const laneSpecs = {
     active:    { count: allRows.filter(r => isRowActionable(r)).length, signal: 'Ready-now work' },
     needs_obs: { count: allRows.filter(r => _pipelineCohort(r) === 'needs_obs').length, signal: 'Observation blocked' },
-    pending:   { count: allRows.filter(r => isRowActionable(r) && r.approved !== 'true').length, signal: 'Awaiting approval' },
-    approved:  { count: allRows.filter(r => isRowActionable(r) && r.approved === 'true').length, signal: 'Ready to send' },
+    draft_repair: { count: allRows.filter(r => _pipelineCohort(r) === 'draft_repair').length, signal: 'Validation blocked' },
+    pending:   { count: allRows.filter(r => isRowActionable(r) && r.draft_valid !== false && !r.send_ready).length, signal: 'Awaiting approval' },
+    approved:  { count: allRows.filter(r => isRowActionable(r) && r.send_ready).length, signal: 'Ready to send' },
     scheduled: { count: allRows.filter(r => r.send_after && !r.sent_at).length, signal: 'Waiting window' },
     sent:      { count: allRows.filter(r => !!r.sent_at).length, signal: 'Watch replies' },
     replied:   { count: allRows.filter(r => r.replied === 'true').length, signal: 'Conversations' },
@@ -3925,14 +4226,18 @@ async function fillPanel(row, fi, totalRows) {
       _blocker.style.display = '';
       _blocker.style.borderColor = 'var(--amber)';
       _blocker.style.color = 'var(--amber)';
-      _blocker.innerHTML = '<strong>◎ Missing observation</strong> — add one below to unlock approve';
+      _blocker.innerHTML = '<strong>◎ Missing observation</strong> — run Fix + Next or add one below to unlock approve';
       if (!panelOpenIntent) panelOpenIntent = 'refresh';
     } else if (_cohort === 'stale') {
       _blocker.style.display = '';
       _blocker.style.borderColor = 'var(--blue)';
       _blocker.style.color = 'var(--blue)';
-      // Pass 128: add inline regen action so operator can repair without scrolling
-      _blocker.innerHTML = '<strong>↻ Stale draft</strong> — regenerate to update <button onclick="panelRegenerateDraft()" style="margin-left:8px;padding:2px 8px;font-size:10px;background:rgba(79,142,247,.15);color:var(--blue);border:1px solid rgba(79,142,247,.3);border-radius:3px;cursor:pointer">↻ Regen now</button>';
+      _blocker.innerHTML = '<strong>↻ Stale draft</strong> — run Fix + Next to refresh evidence, rebuild the draft, and revalidate in one pass.';
+    } else if (_cohort === 'draft_repair') {
+      _blocker.style.display = '';
+      _blocker.style.borderColor = '#e74c3c';
+      _blocker.style.color = '#e74c3c';
+      _blocker.innerHTML = `<strong>! Draft invalid</strong> — ${escHtml(record.draftBlockedMessage || 'Current validation truth is blocking send-readiness.')}`;
     } else if (_cohort === 'no_email') {
       _blocker.style.display = '';
       _blocker.style.borderColor = 'var(--dim)';
@@ -3995,14 +4300,6 @@ async function fillPanel(row, fi, totalRows) {
   _panelPopulateObs(row);
   _panelConsumeOpenIntent(row);
 
-  // ── Pass 68: Auto-regen stale drafts silently on panel open ──────────────
-  // If draft is stale and row hasn't been sent, do the full agent chain in the
-  // background: generate obs candidate → apply it → regenerate draft.
-  // No scrolling, no clicking required. User sees a fresh draft on arrival.
-  if (!row.sent_at && _rowNeedsDraftRefresh(row)) {
-    setTimeout(() => _panelAutoRegenOnOpen(row), 400);
-  }
-
   // ── Schedule info block ───────────────────────────────────────────────────
   const schedEl = document.getElementById('panel-schedule-info');
   if (schedEl) {
@@ -4042,11 +4339,18 @@ async function fillPanel(row, fi, totalRows) {
       schedEl.className = 'panel-sched-info pending-review';
       schedEl.innerHTML =
         `<span class="sched-time">Add observation + regenerate draft</span>` +
-        `<div class="sched-sub">Included in Send Approved immediately.</div>` +
+        `<div class="sched-sub">Not send-ready until the draft validates cleanly.</div>` +
         `<button class="btn-sched-act" onclick="panelFocusObservation(true)">Add observation</button>` +
         (nextStaleIdx >= 0 ? '<button class="btn-sched-act" onclick="panelJumpNextStale()">Next stale</button>' : '');
       schedEl.style.display = '';
-    } else if (row.approved === 'true' && !row.sent_at) {
+    } else if (record.draftValid === false && !row.sent_at) {
+      schedEl.className = 'panel-sched-info pending-review';
+      schedEl.innerHTML =
+        `<span class="sched-time">Draft repair required</span>` +
+        `<div class="sched-sub">${escHtml(record.draftBlockedMessage || 'Current validation truth is blocking send-readiness.')}</div>` +
+        `<button class="btn-sched-act" onclick="panelFixAndNext(false)">Fix Draft</button>`;
+      schedEl.style.display = '';
+    } else if (row.send_ready && !row.sent_at) {
       schedEl.className = 'panel-sched-info ready-now';
       schedEl.innerHTML =
         `<span class="sched-time">Ready to send now</span>` +
@@ -4086,6 +4390,7 @@ async function fillPanel(row, fi, totalRows) {
   const ab = document.getElementById('panel-approve-btn');
   const ub = document.getElementById('panel-unapprove-btn');
   const sb = document.getElementById('panel-schedule-btn');
+  const fb = document.getElementById('panel-fix-next-btn');
   if (ab) {
     ab.textContent = controlGuidance.panelApproveLabel;
     ab.title = controlGuidance.panelApproveTitle;
@@ -4098,9 +4403,11 @@ async function fillPanel(row, fi, totalRows) {
     sb.className = controlGuidance.panelScheduleClass;
     sb.onclick = controlGuidance.panelScheduleAction === 'unschedule' ? panelUnschedule : panelScheduleTomorrow;
   }
+  if (fb) fb.style.display = (!row.sent_at && ['needs_obs', 'stale', 'draft_repair'].includes(_pipelineCohort(row))) ? '' : 'none';
   if (row.sent_at) { if (ab) ab.style.display='none'; if (ub) ub.style.display='none'; if(sb) sb.style.display='none'; }
-  else if (row.approved === 'true') { if (ab) ab.style.display='none'; if (ub) ub.style.display=''; if(sb) sb.style.display=''; }
-  else { if (ab) ab.style.display=''; if (ub) ub.style.display='none'; if(sb) sb.style.display=''; }
+  else if (record.draftValid === false) { if (ab) ab.style.display='none'; if (ub) ub.style.display = row.approved === 'true' ? '' : 'none'; if (sb) sb.style.display='none'; }
+  else if (row.send_ready) { if (ab) ab.style.display='none'; if (ub) ub.style.display=''; if(sb) sb.style.display=''; }
+  else { if (ab) ab.style.display=''; if (ub) ub.style.display = row.approved === 'true' ? '' : 'none'; if(sb) sb.style.display=''; }
   // Pass 46: Mark Contacted — show only for unsent rows that are not already contacted in memory
   const mcb = document.getElementById('panel-mark-contacted-btn');
   if (mcb) mcb.style.display = row.sent_at ? 'none' : '';
@@ -4994,6 +5301,37 @@ async function panelRegenerateAndNextStale() {
   return false;
 }
 
+async function panelFixAndNext(advance = true) {
+  const row = _panelCurrentRow();
+  if (!row || row.sent_at) return false;
+  const btn = document.getElementById('panel-fix-next-btn');
+  _btnPending(btn, advance ? 'Fixing...' : 'Fixing...');
+  try {
+    const result = await _runRowRepairMacro(row, { forceCandidate: true });
+    _qsRecordOutcome(_panelMakeKey(row), result.ok ? 'repaired' : 'blocked');
+    await _fetchRowTruth(row);
+    renderTable();
+    await fillPanel(row, panelIdx, _panelCurrentRows().length);
+    if (!result.ok) {
+      toast(result.message || 'Repair failed', 'err');
+      return false;
+    }
+    if (!advance) {
+      toast('Draft repaired', 'ok');
+      return true;
+    }
+    const rows = _panelCurrentRows();
+    const nextIdx = panelIdx + 1 < rows.length ? panelIdx + 1 : -1;
+    if (_panelAdvanceToIndex(nextIdx, 'Draft repaired — no more rows in this review set', true)) {
+      toast('Draft repaired — moved to next row', 'ok');
+      return true;
+    }
+    return true;
+  } finally {
+    _btnRestore(btn);
+  }
+}
+
 // ── Pass 49: Obs history load + toggle ───────────────────────────────────────
 
 async function _loadObsHistory(row) {
@@ -5294,14 +5632,18 @@ function _btnRestore(btn) {
 async function panelApprove() {
   const row = _panelCurrentRow(); if (!row) return;
   if (!row.to_email) { toast('Add a To Email first','err'); return; }
-  const gi = allRows.indexOf(row);
   const btn = document.getElementById('panel-approve-btn');
   _btnPending(btn, 'Approving...');
   try {
-    await api('/api/approve_row',{index:gi});
-    row.approved='true'; fillPanel(row,panelIdx,_panelCurrentRows().length); renderTable(); loadStats();
-    toast('Approved','ok');
-  } catch(e) { toast('Approve failed','err'); }
+    const res = await _approveRowIfValid(row);
+    if (!res.ok) {
+      toast(res.error || 'Approve failed', 'err');
+    } else {
+      await _fetchRowTruth(row);
+      fillPanel(row,panelIdx,_panelCurrentRows().length); renderTable(); loadStats();
+      toast('Approved','ok');
+    }
+  } catch(e) { toast(_operatorRequestError(e, 'Approve failed'), 'err'); }
   _btnRestore(btn);
 }
 
@@ -5547,8 +5889,10 @@ async function resetProspectStatus(businessName) {
 async function approveRow(gi) {
   const row = allRows[gi]; if (!row) return;
   if (!row.to_email) { toast('Add a To Email first','err'); return; }
-  await api('/api/approve_row',{index:gi});
-  row.approved='true'; renderTable(); loadStats(); toast('Approved ✓','ok');
+  const res = await _approveRowIfValid(row);
+  if (!res.ok) { toast(res.error || 'Approve failed', 'err'); return; }
+  await _fetchRowTruth(row);
+  renderTable(); loadStats(); toast('Approved ✓','ok');
 }
 
 async function unapproveRow(gi) {
@@ -5608,7 +5952,7 @@ async function bulkRegenStale() {
 }
 
 async function approveAll() {
-  const count = allRows.filter(r => r.approved !== 'true' && !r.sent_at).length;
+  const count = allRows.filter(r => !r.send_ready && r.draft_valid !== false && !r.sent_at && (r.to_email || '').trim()).length;
   if (!count) { toast('No pending unsent rows to approve', 'info'); return; }
   if (!confirm(`Approve ${count} pending unsent row(s)? This writes approval state to the queue.`)) return;
   const res = await api('/api/approve_all',{});
@@ -5618,7 +5962,7 @@ async function approveAll() {
 // ── Bulk ──────────────────────────────────────────────────────────────────────
 function getSelectedGIs() { return [...document.querySelectorAll('.row-chk:checked')].map(c=>parseInt(c.dataset.gi)); }
 function _bulkAllowedInCurrentFilter() {
-  return ['active', 'pending', 'approved', 'scheduled'].includes(currentFilter);
+  return ['active', 'needs_obs', 'stale', 'draft_repair', 'pending', 'approved', 'scheduled', 'all'].includes(currentFilter);
 }
 
 function _selectedRows() {
@@ -5658,15 +6002,141 @@ function clearSelection() {
 }
 function toggleCheckAll(master) { if (!_bulkAllowedInCurrentFilter()) return; document.querySelectorAll('.row-chk').forEach(c=>c.checked=master.checked); updateBulkBar(); }
 
+async function runRepairAction(action, scope) {
+  if (_repairRunInFlight) { toast('A repair batch is already running', 'info'); return; }
+  const rows = _repairRowsForScope(scope);
+  if (!rows.length) { toast(`No ${scope} rows available`, 'info'); return; }
+  const labels = {
+    refresh_evidence: 'Refresh Evidence',
+    regen_candidates: 'Regenerate Candidates',
+    repair_rebuild: 'Repair + Rebuild',
+    validate: 'Validate Drafts',
+    fix_invalid: 'Fix Invalid Drafts',
+    approve_fixed: 'Approve Fixed Rows',
+  };
+  _repairRunInFlight = true;
+  _repairBatchState = {
+    label: `${labels[action] || 'Repair'} · ${scope === 'selected' ? 'selected' : 'visible'}`,
+    total: rows.length,
+    done: 0,
+    counts: { repaired: 0, blocked: 0, invalid: 0, no_candidate: 0, no_email: 0, approved: 0, fixable: 0 },
+    note: 'Starting…',
+  };
+  _renderRepairProgress();
+  try {
+    for (const row of rows) {
+      let result = { ok: false, blocked_reason: '', message: '' };
+      try {
+        if (action === 'refresh_evidence') {
+          const res = await _refreshEvidenceForRow(row);
+          if (res.ok) {
+            _setRowRepairResult(row, 'evidence refreshed', 'warn');
+            result = { ok: true, message: 'evidence refreshed' };
+          } else if (res.blocked) {
+            _setRowRepairResult(row, `blocked: ${res.blocked_message || 'weak context'}`, 'bad');
+            result = { ok: false, blocked_reason: res.blocked_reason || 'weak_context', message: res.blocked_message || 'weak context' };
+          } else {
+            _setRowRepairResult(row, `blocked: ${res.error || 'refresh failed'}`, 'bad');
+            result = { ok: false, blocked_reason: res.blocked_reason || 'refresh_error', message: res.error || 'refresh failed' };
+          }
+        } else if (action === 'regen_candidates') {
+          const res = await _generateCandidateForRow(row);
+          if (res.ok && (res.candidate_text || '').trim()) {
+            _setRowRepairResult(row, 'candidate ready', 'warn');
+            result = { ok: true, message: 'candidate ready' };
+          } else {
+            _setRowRepairResult(row, `blocked: ${res.blocked_message || res.error || 'no candidate'}`, 'bad');
+            result = { ok: false, blocked_reason: res.blocked_reason || 'no_candidate', message: res.blocked_message || res.error || 'no candidate' };
+          }
+        } else if (action === 'validate') {
+          const truth = await _fetchRowTruth(row);
+          if (truth.ok && truth.draft_valid) {
+            const msg = truth.is_send_ready ? 'valid and send-ready' : 'valid and ready for approval';
+            _setRowRepairResult(row, msg, truth.is_send_ready ? 'ok' : 'warn');
+            result = { ok: true, message: msg };
+          } else {
+            const msg = truth.draft_blocked_message || truth.error || 'draft invalid';
+            _setRowRepairResult(row, `invalid: ${msg}`, 'bad');
+            result = { ok: false, blocked_reason: truth.draft_blocked_reason || 'draft_invalid', message: msg };
+          }
+        } else if (action === 'approve_fixed') {
+          const truth = await _fetchRowTruth(row);
+          if (!truth.ok) {
+            result = { ok: false, blocked_reason: 'truth_error', message: truth.error || 'truth check failed' };
+            _setRowRepairResult(row, `blocked: ${result.message}`, 'bad');
+          } else if (!(row.to_email || '').trim()) {
+            result = { ok: false, blocked_reason: 'no_email', message: 'No email on file.' };
+            _setRowRepairResult(row, 'blocked: no email', 'bad');
+          } else if (!truth.draft_valid) {
+            result = { ok: false, blocked_reason: truth.draft_blocked_reason || 'draft_invalid', message: truth.draft_blocked_message || 'Draft invalid.' };
+            _setRowRepairResult(row, `invalid: ${result.message}`, 'bad');
+          } else if (row.send_ready) {
+            result = { ok: true, message: 'already approved' };
+            _setRowRepairResult(row, 'already approved', 'ok');
+          } else {
+            const approved = await _approveRowIfValid(row);
+            if (approved.ok) {
+              await _fetchRowTruth(row);
+              result = { ok: true, message: 'approved' };
+              _setRowRepairResult(row, 'approved and ready to send', 'ok');
+              _repairBatchState.counts.approved += 1;
+            } else {
+              result = { ok: false, blocked_reason: approved.blocked_reason || 'approve_failed', message: approved.error || 'Approve failed.' };
+              _setRowRepairResult(row, `blocked: ${result.message}`, 'bad');
+            }
+          }
+        } else {
+          const shouldFix = action === 'repair_rebuild' || action === 'fix_invalid';
+          if (!shouldFix) continue;
+          if (action === 'fix_invalid' && row.draft_valid !== false) {
+            const truth = await _fetchRowTruth(row);
+            if (truth.ok && truth.draft_valid) {
+              _setRowRepairResult(row, 'already valid', 'ok');
+              result = { ok: true, message: 'already valid' };
+            } else {
+              result = await _runRowRepairMacro(row, { forceCandidate: true });
+            }
+          } else {
+            result = await _runRowRepairMacro(row, { forceCandidate: true });
+          }
+        }
+      } catch (err) {
+        result = { ok: false, blocked_reason: 'request_error', message: _operatorRequestError(err, 'Repair request failed.') };
+        _setRowRepairResult(row, `blocked: ${result.message}`, 'bad');
+      }
+
+      _repairBatchState.done += 1;
+      if (result.ok) {
+        if (action !== 'approve_fixed' || result.message !== 'already approved') _repairBatchState.counts.repaired += 1;
+        if (row.draft_valid && !row.send_ready) _repairBatchState.counts.fixable += 1;
+      } else {
+        _repairBatchState.counts.blocked += 1;
+        if (result.blocked_reason === 'draft_invalid') _repairBatchState.counts.invalid += 1;
+        if (result.blocked_reason === 'no_candidate' || result.blocked_reason === 'weak_context') _repairBatchState.counts.no_candidate += 1;
+        if (result.blocked_reason === 'no_email') _repairBatchState.counts.no_email += 1;
+      }
+      _repairBatchState.note = `${row.business_name}: ${result.message || 'done'}`;
+      _renderRepairProgress();
+    }
+
+    renderTable();
+    await loadStats();
+    const counts = _repairBatchState.counts;
+    toast(`${labels[action] || 'Repair'}: ${counts.repaired} repaired, ${counts.blocked} blocked${counts.approved ? `, ${counts.approved} approved` : ''}`, counts.blocked ? 'info' : 'ok');
+  } finally {
+    _repairRunInFlight = false;
+  }
+}
+
 async function bulkApprove() {
   const idxs = getSelectedGIs();
   if (!idxs.length) return;
   let okCount = 0;
   for (const i of idxs) {
     try {
-      const res = await api('/api/approve_row',{index:i});
+      const res = await _approveRowIfValid(allRows[i]);
       if (res.ok) {
-        if (allRows[i]) allRows[i].approved='true';
+        if (allRows[i]) await _fetchRowTruth(allRows[i]);
         okCount += 1;
       }
     } catch(e) {}
@@ -5787,9 +6257,9 @@ async function sendDryRun() {
 }
 
 function confirmSend() {
-  const ready = allRows.filter(r=>r.approved==='true'&&!r.sent_at&&r.to_email).length;
+  const ready = allRows.filter(r=>r.send_ready&&!r.sent_at&&r.to_email).length;
   document.getElementById('send-modal-msg').innerHTML =
-    `<strong>${ready} email${ready!==1?'s':''}</strong> will be sent from your Gmail account as Drew @ Copperline. Only approved rows with a <code>to_email</code> are included. This cannot be undone.`;
+    `<strong>${ready} email${ready!==1?'s':''}</strong> will be sent from your Gmail account as Drew @ Copperline. Only rows that are approved, valid, and currently send-ready are included. This cannot be undone.`;
   document.getElementById('send-modal').classList.add('open');
 }
 
@@ -5803,7 +6273,7 @@ async function sendLive() {
   try {
     // Pass 178-183: snapshot pre-send keys — /api/send_approved returns only counts, not identifiers
     const _preSendKeys = new Set(
-      (allRows || []).filter(r => r.approved === 'true' && !r.sent_at && r.to_email).map(r => _panelMakeKey(r))
+      (allRows || []).filter(r => r.send_ready && !r.sent_at && r.to_email).map(r => _panelMakeKey(r))
     );
     const res = await api('/api/send_approved',{send_live:true});
     if (res.ok) {
@@ -6605,8 +7075,8 @@ async function tpToggleLeads(city, state, industry, trEl) {
     } else {
       const sent   = leads.filter(l => l.sent_at).length;
       const replied = leads.filter(l => l.replied === 'true').length;
-      const approved = leads.filter(l => l.approved === 'true' && !l.sent_at).length;
-      const draft  = leads.filter(l => !l.sent_at && l.approved !== 'true').length;
+      const approved = leads.filter(l => l.send_ready && !l.sent_at).length;
+      const draft  = leads.filter(l => !l.sent_at && !l.send_ready).length;
 
       let html = '<td colspan="5" class="tp-ind-leads">'
         + '<div class="tp-ind-leads-hdr">'
@@ -6623,7 +7093,7 @@ async function tpToggleLeads(city, state, industry, trEl) {
           ? '<span class="tp-lead-badge tp-lead-replied">Replied</span>'
           : l.sent_at
           ? '<span class="tp-lead-badge tp-lead-sent">Sent</span>'
-          : l.approved === 'true'
+          : l.send_ready
           ? '<span class="tp-lead-badge tp-lead-approved">Approved</span>'
           : '<span class="tp-lead-badge tp-lead-draft">Draft</span>';
 
@@ -8371,7 +8841,7 @@ function qlfSearch(q) {
   container.innerHTML = matches.map((r, i) => {
     const badge = r.replied === 'true' ? '<span class="qlf-item-badge qlf-badge-replied">Replied</span>'
       : r.sent_at  ? '<span class="qlf-item-badge qlf-badge-sent">Sent</span>'
-      : r.approved === 'true' ? '<span class="qlf-item-badge qlf-badge-approved">Approved</span>'
+      : r.send_ready ? '<span class="qlf-item-badge qlf-badge-approved">Approved</span>'
       : '<span class="qlf-item-badge qlf-badge-pending">Draft</span>';
     const gi = allRows.indexOf(r);
     return `<div class="qlf-item" data-gi="${gi}" onclick="qlfJump(${gi})">
@@ -8469,7 +8939,7 @@ function _ccScopeMatchRow(row) {
 function _ccRenderScopeSummary() {
   if (!_ccTerrScope || !Array.isArray(allRows)) return;
   const scoped = allRows.filter(_ccScopeMatchRow);
-  const approved = scoped.filter(r => !r.sent_at && String(r.approved||'').toLowerCase()==='true').length;
+  const approved = scoped.filter(r => !r.sent_at && r.send_ready).length;
   const stale    = scoped.filter(r => _rowNeedsDraftRefresh(r)).length;
   const replied  = scoped.filter(r => String(r.replied||'').toLowerCase()==='true').length;
   const noEmail  = scoped.filter(r => !(r.to_email||'').trim()).length;
@@ -8543,7 +9013,7 @@ function ccClearTerritoryScope() {
 async function ccCmdApproveScoped() {
   // Approve eligible unsent scoped leads that have a draft and email
   if (!_ccTerrScope || !Array.isArray(allRows)) return;
-  const scoped = allRows.filter(r => _ccScopeMatchRow(r) && !r.sent_at && (r.to_email||'').trim() && (r.subject||'').trim() && String(r.approved||'').toLowerCase()!=='true');
+  const scoped = allRows.filter(r => _ccScopeMatchRow(r) && !r.sent_at && (r.to_email||'').trim() && (r.subject||'').trim() && r.draft_valid !== false && !r.send_ready);
   if (!scoped.length) { toast('No eligible leads to approve in this territory', 'info'); return; }
   const btn = document.getElementById('cc-cmd-approve-scoped');
   if (btn) { btn.disabled = true; btn.textContent = 'Approving…'; }
@@ -8684,8 +9154,8 @@ function ccQueueRender() {
 function ccQueueUpdateStats() {
   if (!Array.isArray(allRows)) return;
   const el = id => document.getElementById(id);
-  const approved = allRows.filter(r => !r.sent_at && String(r.approved||'').toLowerCase()==='true').length;
-  const pending  = allRows.filter(r => !r.sent_at && String(r.approved||'').toLowerCase()!=='true' && (r.subject||'').trim()).length;
+  const approved = allRows.filter(r => !r.sent_at && r.send_ready).length;
+  const pending  = allRows.filter(r => !r.sent_at && !r.send_ready && (r.subject||'').trim()).length;
   const sent     = allRows.filter(r => !!(r.sent_at||'').trim()).length;
   const replied  = allRows.filter(r => String(r.replied||'').toLowerCase()==='true').length;
   if (el('ccqr-s-approved')) el('ccqr-s-approved').textContent = approved;
@@ -8748,7 +9218,7 @@ async function _cdrShow(city, state, industry) {
     tbody.innerHTML = leads.map(lead => {
       const replied  = lead.replied  === 'true' || lead.replied  === true;
       const sent     = !!lead.sent_at;
-      const approved = lead.approved === 'true' || lead.approved === true;
+      const approved = lead.send_ready === true;
       const statusBadge = replied  ? '<span style="color:var(--green);font-weight:600">Replied</span>'
                         : sent     ? '<span style="color:var(--blue)">Sent</span>'
                         : approved ? '<span style="color:var(--amber)">Approved</span>'
@@ -9809,12 +10279,15 @@ async function _mrpDelete(biz, idx) {
 }
 
 async function _mrpBulkApprove() {
-  const toApprove = _mrpVisibleQueueRowsDeduped().filter(r => String(r.approved || '').toLowerCase() !== 'true' && !(r.sent_at || '').trim());
+  const toApprove = _mrpVisibleQueueRowsDeduped().filter(r => !r.send_ready && r.draft_valid !== false && !(r.sent_at || '').trim());
   if (!toApprove.length) { toast('No unapproved rows in visible set', 'err'); return; }
   if (!confirm('Approve ' + toApprove.length + ' visible lead(s)?')) return;
   let ok = 0, fail = 0;
   for (const row of toApprove) {
-    try { await api('/api/approve_row', { index: row.index }); ok++; }
+    try {
+      const res = await _approveRowIfValid(row);
+      if (res.ok) ok++; else fail++;
+    }
     catch(e) { fail++; }
   }
   await loadAll();
@@ -9823,7 +10296,7 @@ async function _mrpBulkApprove() {
 }
 
 async function _mrpBulkSchedule() {
-  const toSched = _mrpVisibleQueueRowsDeduped().filter(r => String(r.approved || '').toLowerCase() === 'true' && !(r.sent_at || '').trim() && !(r.send_after || '').trim());
+  const toSched = _mrpVisibleQueueRowsDeduped().filter(r => r.send_ready && !(r.sent_at || '').trim() && !(r.send_after || '').trim());
   if (!toSched.length) { toast('No approved+unscheduled rows in visible set', 'err'); return; }
   if (!confirm('Schedule ' + toSched.length + ' approved lead(s) for tomorrow?')) return;
   let ok = 0, fail = 0;
@@ -10467,7 +10940,7 @@ function _mapBoundaryPopulateSidebar(data) {
   const statusEl = document.getElementById('map-status');
   if (statusEl) {
     const sent = existingLeads.filter(r => r.sent_at).length;
-    const ready = existingLeads.filter(r => (r.approved === 'true') && !r.sent_at).length;
+    const ready = existingLeads.filter(r => r.send_ready && !r.sent_at).length;
     if (existingLeads.length > 0) {
       statusEl.textContent = `${shortName}: ${existingLeads.length} leads on file — ${sent} sent, ${ready} approved & ready. Click Search Territory to find more.`;
     }
@@ -11446,6 +11919,12 @@ function _leadRecord(input) {
   const isScheduled  = !!(row.send_after   || '').trim() && !isSent;
   const isReplied    = !!(String(row.replied  || '').toLowerCase() === 'true');
   const isDNC        = !!(String(row.do_not_contact || '').toLowerCase() === 'true');
+  const draftValid   = row.draft_valid !== false;
+  const draftBlockedReason = row.draft_blocked_reason || '';
+  const draftBlockedMessage = row.draft_blocked_message || '';
+  const isSendReady = !!row.send_ready && !isSent;
+  const sendReadyBlockedReason = row.send_ready_blocked_reason || '';
+  const sendReadyBlockedMessage = row.send_ready_blocked_message || '';
   const draftVersion = row.draft_version   || '';
   const isLegacyDraft = !!draftVersion && draftVersion !== 'v9';
   // Pass 42: isStale + isReadyScheduled for _leadStatusMeta
@@ -11458,8 +11937,10 @@ function _leadRecord(input) {
   if (isDNC)        { status = 'Do Not Contact'; statusTone = 'blocked'; }
   else if (isSent && isReplied) { status = 'Replied';     statusTone = 'replied'; }
   else if (isSent)  { status = 'Sent';           statusTone = 'sent'; }
+  else if (!draftValid) { status = 'Repair';     statusTone = 'blocked'; }
   else if (isScheduled) { status = 'Scheduled';  statusTone = 'scheduled'; }
-  else if (isApproved)  { status = 'Approved';   statusTone = 'approved'; }
+  else if (isSendReady) { status = 'Approved';   statusTone = 'approved'; }
+  else if (isApproved)  { status = 'Approved';   statusTone = 'pending'; }
   else if (row.subject) { status = 'Drafted';    statusTone = 'drafted'; }
   else              { status = 'Discovered';     statusTone = 'new'; }
 
@@ -11470,8 +11951,9 @@ function _leadRecord(input) {
   else if (isSent) nextAction = 'Wait for reply';
   else if (row.subject && !observation) nextAction = 'Add observation + regenerate draft';
   else if (row.subject && isLegacyDraft) nextAction = 'Regenerate draft before send';
+  else if (!draftValid) nextAction = 'Fix draft';
   else if (isScheduled) nextAction = 'Sending ' + (row.send_after ? _formatSendAfter(row.send_after) : 'soon');
-  else if (isApproved && hasEmail) nextAction = 'Send email';
+  else if (isSendReady && hasEmail) nextAction = 'Send email';
   else if (isApproved) nextAction = 'Send via ' + bestChannel;
   else if (row.subject) nextAction = 'Review + approve';
   else if (!hasContact) nextAction = 'Find contact info';
@@ -11504,8 +11986,10 @@ function _leadRecord(input) {
     // Qualification
     priorityScore, opportunityScore, scoringReason,
     // Workflow status
-    isSent, isApproved, isScheduled, isReplied, isDNC, isLegacyDraft,
+    isSent, isApproved, isScheduled, isReplied, isDNC, isLegacyDraft, isSendReady,
     isStale, isReadyScheduled,
+    draftValid, draftBlockedReason, draftBlockedMessage,
+    sendReadyBlockedReason, sendReadyBlockedMessage,
     status, statusTone, draftVersion, nextAction,
     // Draft
     subject, body, facebookDraft, observation,

@@ -80,6 +80,49 @@ def _append_signature(body: str) -> str:
     return body + _SIGNATURE
 
 
+def _draft_validation_state(row: Dict[str, str]) -> Dict[str, str | bool]:
+    subject = (row.get("subject") or "").strip()
+    body = (row.get("body") or "").strip()
+    observation = (row.get("business_specific_observation") or "").strip()
+
+    if not subject:
+        return {
+            "valid": False,
+            "reason": "subject_missing",
+            "message": "Subject must not be empty.",
+        }
+    if not body:
+        return {
+            "valid": False,
+            "reason": "draft_missing",
+            "message": "Draft body is missing.",
+        }
+    if not observation:
+        return {
+            "valid": False,
+            "reason": "observation_missing",
+            "message": "Draft generation blocked: no observation on file for this business.",
+        }
+
+    try:
+        from outreach.email_draft_agent import DraftInvalidError, validate_draft, validate_subject
+
+        validate_subject(subject)
+        validate_draft(body, observation)
+    except DraftInvalidError as exc:
+        return {
+            "valid": False,
+            "reason": "draft_invalid",
+            "message": str(exc),
+        }
+
+    return {
+        "valid": True,
+        "reason": "",
+        "message": "",
+    }
+
+
 def _send_email_via_gmail(to_email: str, subject: str, body: str) -> str:
     """Send via Gmail SMTP. Returns the Message-ID. Raises on failure."""
     import uuid
@@ -125,11 +168,11 @@ def _is_send_eligible(row: Dict[str, str]) -> bool:
       - do_not_contact is not "true"
       - send_after is either empty OR its scheduled time has passed (send protection)
     """
-    approved      = row.get("approved", "").strip().lower() == "true"
-    no_sent_at    = not (row.get("sent_at") or "").strip()
+    approved = row.get("approved", "").strip().lower() == "true"
+    no_sent_at = not (row.get("sent_at") or "").strip()
     no_message_id = not (row.get("message_id") or "").strip()
     has_recipient = bool((row.get("to_email") or "").strip())
-    opted_out     = row.get("do_not_contact", "").strip().lower() == "true"
+    opted_out = row.get("do_not_contact", "").strip().lower() == "true"
 
     # Send protection: if send_after is set, block send until that time has passed.
     # send_after is stored as a naive local ISO string (e.g. "2026-03-17T07:30:00").
@@ -143,7 +186,67 @@ def _is_send_eligible(row: Dict[str, str]) -> bool:
         except ValueError:
             pass  # malformed timestamp — don't block the send
 
-    return approved and no_sent_at and no_message_id and has_recipient and not opted_out
+    draft_state = _draft_validation_state(row)
+    return (
+        approved
+        and no_sent_at
+        and no_message_id
+        and has_recipient
+        and not opted_out
+        and bool(draft_state["valid"])
+    )
+
+
+def get_send_readiness(row: Dict[str, str]) -> Dict[str, str | bool]:
+    approved = row.get("approved", "").strip().lower() == "true"
+    sent_at = (row.get("sent_at") or "").strip()
+    message_id = (row.get("message_id") or "").strip()
+    to_email = (row.get("to_email") or "").strip()
+    opted_out = row.get("do_not_contact", "").strip().lower() == "true"
+    send_after_raw = (row.get("send_after") or "").strip()
+    scheduled_waiting = False
+    schedule_parse_error = False
+    if send_after_raw:
+        try:
+            scheduled_waiting = datetime.now() < datetime.fromisoformat(send_after_raw)
+        except ValueError:
+            schedule_parse_error = True
+    draft_state = _draft_validation_state(row)
+
+    blocked_reason = ""
+    blocked_message = ""
+    if sent_at:
+        blocked_reason = "already_sent"
+        blocked_message = "Already sent."
+    elif message_id:
+        blocked_reason = "already_sent"
+        blocked_message = "Message already sent."
+    elif opted_out:
+        blocked_reason = "do_not_contact"
+        blocked_message = "Lead is marked do not contact."
+    elif not approved:
+        blocked_reason = "not_approved"
+        blocked_message = "Approval required before send."
+    elif not to_email:
+        blocked_reason = "no_email"
+        blocked_message = "No email on file."
+    elif scheduled_waiting:
+        blocked_reason = "scheduled_waiting"
+        blocked_message = "Waiting for the scheduled send window."
+    elif not draft_state["valid"]:
+        blocked_reason = str(draft_state["reason"])
+        blocked_message = str(draft_state["message"])
+
+    return {
+        "is_send_ready": _is_send_eligible(row),
+        "blocked_reason": blocked_reason,
+        "blocked_message": blocked_message,
+        "draft_valid": bool(draft_state["valid"]),
+        "draft_blocked_reason": str(draft_state["reason"]),
+        "draft_blocked_message": str(draft_state["message"]),
+        "scheduled_waiting": scheduled_waiting,
+        "schedule_parse_error": schedule_parse_error,
+    }
 
 
 def _domain_has_mx(email: str, timeout: float = 3.0) -> bool:

@@ -35,7 +35,14 @@ except ImportError:
 
 from run_lead_engine import run as run_pipeline, DEFAULT_PENDING_CSV, DEFAULT_PROSPECTS_CSV
 from scoring.opportunity_scoring_agent import score_label as get_score_label, compute_numeric_score, score_priority_label
-from send.email_sender_agent import process_pending_emails, is_real_send, send_next_due_email, CSV_WRITE_LOCK, _is_send_eligible
+from send.email_sender_agent import (
+    process_pending_emails,
+    is_real_send,
+    send_next_due_email,
+    CSV_WRITE_LOCK,
+    _is_send_eligible,
+    get_send_readiness,
+)
 from intelligence.email_extractor_agent import enrich_prospects_with_emails
 from intelligence.observation_evidence_agent import refresh_observation_evidence
 from discovery.auto_prospect_agent import (
@@ -56,6 +63,7 @@ from outreach.reply_checker import check_for_replies, reconcile_sent_mail
 from outreach.email_draft_agent import DRAFT_VERSION as _CURRENT_DRAFT_VERSION
 from city_planner import CityPlanner
 import lead_memory as _lm  # Pass 44: durable lead memory + suppression registry
+from stranded_drafted import scan_stranded_drafted
 
 # ---------------------------------------------------------------------------
 # Load queue modules via direct file path — avoids collision with Python's
@@ -82,6 +90,7 @@ PENDING_CSV   = DEFAULT_PENDING_CSV
 PROSPECTS_CSV = DEFAULT_PROSPECTS_CSV
 SEARCH_HISTORY_FILE = BASE_DIR / "data" / "search_history.json"
 CITY_STORE_FILE     = BASE_DIR / "data" / "city_planner.json"
+GMAIL_SENT_CSV      = BASE_DIR / "scripts" / "gmail_sent_preserve_set_for_reset.csv"
 _city_planner = CityPlanner(CITY_STORE_FILE)
 
 
@@ -357,15 +366,18 @@ def api_status():
     stale = sum(1 for r in rows if not r.get("sent_at") and r.get("draft_version","") != _CURRENT_DRAFT_VERSION)
     sent_real   = sum(1 for r in rows if is_real_send(r))
     sent_logged = sum(1 for r in rows if (r.get("sent_at") or "").strip() and not (r.get("message_id") or "").strip())
+    stranded = scan_stranded_drafted(PROSPECTS_CSV, PENDING_CSV, GMAIL_SENT_CSV if GMAIL_SENT_CSV.exists() else None, sample_limit=5)
+    readiness = [get_send_readiness(r) for r in rows]
     return jsonify({
         "prospects_loaded":      _prospects_count(),
         "total_drafted":         len(rows),
-        "pending_approval":      sum(1 for r in rows if (r.get("approved") or "").lower() != "true" and not r.get("sent_at")),
-        "approved_unsent":       sum(1 for r in rows if (r.get("approved") or "").lower() == "true" and not r.get("sent_at")),
+        "pending_approval":      sum(1 for r, truth in zip(rows, readiness) if not r.get("sent_at") and truth.get("draft_valid") and not truth.get("is_send_ready")),
+        "approved_unsent":       sum(1 for r, truth in zip(rows, readiness) if not r.get("sent_at") and truth.get("is_send_ready")),
         "sent":                  sent_real,
         "sent_logged_only":      sent_logged,
         "replied":               sum(1 for r in rows if (r.get("replied") or "").lower() == "true"),
         "stale_drafts":          stale,
+        "stranded_drafted_missing_queue": stranded["recoverable_count"],
         "current_draft_version": _CURRENT_DRAFT_VERSION,
     })
 
@@ -402,6 +414,13 @@ def api_queue():
                 row["is_ready"] = False
         else:
             row["is_ready"] = False
+        readiness = get_send_readiness(row)
+        row["send_ready"] = readiness["is_send_ready"]
+        row["send_ready_blocked_reason"] = readiness["blocked_reason"]
+        row["send_ready_blocked_message"] = readiness["blocked_message"]
+        row["draft_valid"] = readiness["draft_valid"]
+        row["draft_blocked_reason"] = readiness["draft_blocked_reason"]
+        row["draft_blocked_message"] = readiness["draft_blocked_message"]
     return jsonify(rows)
 
 @app.route("/api/run_pipeline", methods=["POST"])
@@ -428,6 +447,21 @@ def api_approve_row():
     idx = request.json.get("index"); rows = _read_pending()
     if idx is None or not (0 <= idx < len(rows)):
         return jsonify({"ok": False, "error": "Invalid index"}), 400
+    readiness = get_send_readiness({**rows[idx], "approved": "true"})
+    if not readiness["draft_valid"]:
+        return jsonify({
+            "ok": False,
+            "blocked": True,
+            "blocked_reason": readiness["draft_blocked_reason"],
+            "error": readiness["draft_blocked_message"] or "Draft is not valid for approval.",
+        }), 422
+    if not (rows[idx].get("to_email") or "").strip():
+        return jsonify({
+            "ok": False,
+            "blocked": True,
+            "blocked_reason": "no_email",
+            "error": "Add a To Email before approval.",
+        }), 422
     rows[idx]["approved"] = "true"
     _write_pending(rows)
     try: _lm.record_event(rows[idx], _lm.EVT_APPROVED)
@@ -449,7 +483,12 @@ def api_unapprove_row():
 def api_approve_all():
     rows = _read_pending(); count = 0
     for row in rows:
-        if not row["sent_at"]: row["approved"] = "true"; count += 1
+        if row["sent_at"]:
+            continue
+        readiness = get_send_readiness({**row, "approved": "true"})
+        if readiness["draft_valid"] and (row.get("to_email") or "").strip():
+            row["approved"] = "true"
+            count += 1
     _write_pending(rows); return jsonify({"ok": True, "approved": count})
 
 @app.route("/api/send_approved", methods=["POST"])
@@ -1208,8 +1247,40 @@ def api_debug_scheduled_send_probe():
         "send_after_due": send_after_due,
         "send_after_parse_error": send_after_parse_error,
         "is_send_eligible": _is_send_eligible(row),
+        **get_send_readiness(row),
     }
     return jsonify(payload)
+
+
+@app.route("/api/queue_row_truth", methods=["POST"])
+def api_queue_row_truth():
+    d = request.json or {}
+    idx = d.get("index")
+    business_name = (d.get("business_name") or "").strip()
+
+    if idx is None or not isinstance(idx, int):
+        return jsonify({"ok": False, "error": "index is required and must be an integer"}), 400
+    if not business_name:
+        return jsonify({"ok": False, "error": "business_name is required"}), 400
+
+    rows = _read_pending()
+    if not (0 <= idx < len(rows)):
+        return jsonify({"ok": False, "error": "Invalid index"}), 400
+
+    row = rows[idx]
+    if row.get("business_name", "").strip().lower() != business_name.lower():
+        return jsonify({"ok": False, "error": "Row index/name mismatch"}), 409
+
+    readiness = get_send_readiness(row)
+    return jsonify({
+        "ok": True,
+        "index": idx,
+        "business_name": row.get("business_name", ""),
+        "approved": (row.get("approved") or "").strip().lower() == "true",
+        "to_email": row.get("to_email", ""),
+        "send_after": row.get("send_after", ""),
+        **readiness,
+    })
 
 @app.route("/api/social_queue")
 def api_social_queue():
