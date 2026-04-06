@@ -52,58 +52,73 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .btn.loading .spin{display:inline-block}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.queue-command-strip{position:sticky;top:116px;z-index:130;display:flex;flex-direction:column;gap:12px;padding:16px 16px 14px;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(14,17,24,.98),rgba(8,10,14,.97));box-shadow:0 20px 44px rgba(0,0,0,.16)}
-.queue-workflow-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:16px;padding:14px 16px;border:1px solid var(--border);border-radius:calc(var(--r) - 2px);background:linear-gradient(135deg,rgba(255,255,255,.03),rgba(255,255,255,.015));box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
-.queue-workflow-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
-.queue-workflow-kicker{font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--copper)}
-.queue-workflow-title{font-size:18px;font-weight:700;letter-spacing:-.03em;color:var(--text);line-height:1.15}
-.queue-workflow-sub{max-width:860px;font-size:12px;line-height:1.5;color:var(--muted)}
-.queue-workflow-rail{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:360px}
-.queue-rail-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
-.queue-rail-chip strong{font-family:var(--mono);font-size:11px;color:var(--text)}
-.queue-rail-chip.ready{border-color:rgba(62,207,114,.22);background:rgba(62,207,114,.1);color:var(--green)}
-.queue-rail-chip.selected{border-color:rgba(184,115,51,.24);background:rgba(184,115,51,.08);color:var(--copper)}
-.queue-rail-chip.scheduled{border-color:rgba(79,142,247,.22);background:rgba(79,142,247,.1);color:var(--blue)}
-.queue-rail-chip.sent{border-color:rgba(200,136,74,.2);background:rgba(200,136,74,.08);color:var(--copper)}
-.queue-rail-chip.followup{border-color:rgba(245,166,35,.18);background:rgba(245,166,35,.08);color:var(--amber)}
-.queue-workframe{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.queue-workframe-card{display:flex;flex-direction:column;gap:5px;padding:12px 14px;border-radius:14px;border:1px solid var(--border);background:rgba(255,255,255,.03);min-width:0}
-.queue-workframe-card .qwc-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
-.queue-workframe-card .qwc-value{font-size:16px;line-height:1.15;font-weight:700;color:var(--text);letter-spacing:-.01em}
-.queue-workframe-card .qwc-sub{font-size:11px;line-height:1.45;color:var(--muted)}
-.queue-workframe-card.selected{border-color:rgba(79,142,247,.22);background:rgba(79,142,247,.06)}
-.queue-workframe-card.visible{border-color:rgba(245,166,35,.18);background:rgba(245,166,35,.05)}
-.queue-workframe-card.session{border-color:rgba(184,115,51,.2);background:rgba(184,115,51,.06)}
-.queue-secondary-controls{border-top:1px solid var(--border);padding-top:10px}
-.queue-secondary-controls>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:4px 2px}
-.queue-secondary-controls>summary::-webkit-details-marker{display:none}
-.queue-secondary-controls[open]>summary{color:var(--text)}
+.queue-ops-shell{display:grid;gap:16px;padding:16px}
+.queue-ops-dock{position:sticky;top:116px;z-index:130;display:grid;gap:12px;padding:16px 18px;border:1px solid rgba(255,255,255,.06);border-radius:22px;background:linear-gradient(180deg,rgba(16,19,27,.98),rgba(9,11,16,.99));box-shadow:0 28px 58px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.03)}
+.queue-dock-top{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(320px,.9fr);gap:18px;align-items:start}
+.queue-command-cluster{display:grid;gap:12px;min-width:0}
+.queue-command-kicker{font-size:10px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--copper)}
+.queue-command-title{font-size:22px;font-weight:700;letter-spacing:-.04em;line-height:1.05;color:var(--text);max-width:460px}
+.queue-command-meta{font-size:12px;line-height:1.5;color:var(--muted);max-width:720px}
+.queue-toolbar{padding:0;border:none;background:none;justify-content:space-between}
+.queue-toolbar .toolbar-l,.queue-toolbar .toolbar-r{gap:8px}
+.queue-lane-switches{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.queue-filter-control{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--muted);cursor:pointer;transition:.14s;user-select:none;white-space:nowrap}
+.queue-filter-control:hover{color:var(--text);border-color:var(--border-hi);transform:translateY(-1px)}
+.queue-filter-control.active{color:var(--text);border-color:rgba(79,142,247,.3);background:rgba(79,142,247,.12);box-shadow:0 0 0 1px rgba(79,142,247,.08)}
+.queue-filter-control .count{font-family:var(--mono);font-size:10px;color:inherit;opacity:.82}
+.queue-scope-cluster{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.queue-scope-node{display:flex;flex-direction:column;gap:5px;padding:14px;border-radius:16px;border:1px solid rgba(255,255,255,.07);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015));min-width:0}
+.queue-scope-node .qwc-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.queue-scope-node .qwc-value{font-size:16px;line-height:1.15;font-weight:700;color:var(--text);letter-spacing:-.02em}
+.queue-scope-node .qwc-sub{font-size:11px;line-height:1.45;color:var(--muted)}
+.queue-scope-node.selected{border-color:rgba(79,142,247,.22);background:rgba(79,142,247,.06)}
+.queue-scope-node.visible{border-color:rgba(245,166,35,.22);background:rgba(245,166,35,.05)}
+.queue-scope-node.session{border-color:rgba(184,115,51,.24);background:rgba(184,115,51,.06)}
+.queue-ops-main{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(360px,.95fr);gap:16px;align-items:start}
+.queue-workboard{background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.98));border:1px solid rgba(255,255,255,.06);border-radius:22px;padding:18px;box-shadow:var(--card-shadow)}
+.queue-workboard-grid{display:grid;grid-template-columns:minmax(0,1.28fr) minmax(0,.9fr);grid-template-areas:"ready blocked" "scheduled follow";gap:14px}
+.queue-lane{display:grid;gap:12px;padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01))}
+.queue-lane.ready{grid-area:ready;border-color:rgba(62,207,114,.14);background:linear-gradient(180deg,rgba(62,207,114,.06),rgba(255,255,255,.01))}
+.queue-lane.blocked{grid-area:blocked}
+.queue-lane.scheduled{grid-area:scheduled;border-color:rgba(79,142,247,.16);background:linear-gradient(180deg,rgba(79,142,247,.06),rgba(255,255,255,.01))}
+.queue-lane.follow{grid-area:follow;border-color:rgba(200,136,74,.16);background:linear-gradient(180deg,rgba(200,136,74,.06),rgba(255,255,255,.01))}
+.queue-lane-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.queue-lane-kicker{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.queue-lane-title{font-size:18px;font-weight:700;letter-spacing:-.03em;color:var(--text);line-height:1.1}
+.queue-lane-sub{font-size:11px;line-height:1.5;color:var(--muted);margin-top:4px}
+.queue-lane-total{display:inline-flex;align-items:center;justify-content:center;min-width:42px;padding:7px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);font-family:var(--mono);font-size:12px;color:var(--text);background:rgba(0,0,0,.16)}
+.queue-lane-filters{display:flex;gap:8px;flex-wrap:wrap}
+.queue-lane-filters .queue-filter-control{padding:7px 10px}
+.queue-preview-list{display:grid;gap:8px}
+.queue-preview-card{display:grid;gap:6px;padding:11px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.05);background:rgba(5,7,10,.26);cursor:pointer;transition:transform .12s,border-color .12s,background .12s}
+.queue-preview-card:hover{transform:translateY(-1px);border-color:var(--border-hi);background:rgba(255,255,255,.045)}
+.queue-preview-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.queue-preview-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
+.queue-preview-meta{font-size:10px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+.queue-preview-note{font-size:11px;line-height:1.45;color:var(--muted)}
+.queue-preview-empty{padding:14px;border-radius:14px;border:1px dashed var(--border);font-size:11px;line-height:1.5;color:var(--muted)}
+.queue-lane-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;color:var(--muted)}
+.queue-lane-action{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);font-size:11px;font-weight:600;color:var(--text);cursor:pointer}
+.queue-inspector-dock{position:sticky;top:116px;min-height:calc(100vh - 172px);border:1px solid rgba(255,255,255,.06);border-radius:22px;background:linear-gradient(180deg,rgba(16,19,27,.98),rgba(9,11,16,.99));box-shadow:var(--card-shadow);overflow:hidden}
+.queue-inspector-empty{display:flex;flex-direction:column;gap:8px;padding:22px 20px;color:var(--muted)}
+.queue-inspector-kicker{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.queue-inspector-title{font-size:16px;font-weight:700;letter-spacing:-.02em;color:var(--text);line-height:1.25;max-width:280px}
+.queue-inspector-sub{font-size:12px;line-height:1.55;color:var(--muted);max-width:300px}
+.queue-inspector-dock.has-panel .queue-inspector-empty{display:none}
+.queue-detail-tray{background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.98));border:1px solid rgba(255,255,255,.06);border-radius:22px;overflow:hidden;box-shadow:var(--card-shadow)}
+.queue-tray-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.01))}
+.queue-tray-kicker{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.queue-tray-title{font-size:18px;font-weight:700;letter-spacing:-.03em;color:var(--text);line-height:1.1;margin-top:2px}
+.queue-tray-sub{font-size:12px;line-height:1.5;color:var(--muted);margin-top:4px;max-width:680px}
+.queue-utility-drawer{border-top:1px solid var(--border)}
+.queue-utility-drawer>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:12px 18px}
+.queue-utility-drawer>summary::-webkit-details-marker{display:none}
+.queue-utility-drawer[open]>summary{color:var(--text)}
 .queue-secondary-hint{font-size:10px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--dim)}
-.queue-secondary-body{display:flex;flex-direction:column;gap:12px;padding-top:10px}
-.queue-shell{display:grid;grid-template-columns:minmax(258px,300px) minmax(0,1fr);gap:16px;padding:14px 16px 16px;align-items:start}
-.queue-outliner{position:sticky;top:10px;align-self:start;background:linear-gradient(180deg,rgba(17,20,28,.98),rgba(9,11,16,.98));border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:14px;box-shadow:var(--card-shadow),inset 0 1px 0 rgba(255,255,255,.03);overflow:hidden}
-.queue-outliner-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
-.queue-outliner-kicker{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
-.queue-outliner-title{font-size:15px;font-weight:700;color:var(--text)}
-.queue-outliner-sub{font-size:11px;color:var(--muted);line-height:1.45;margin-top:3px;max-width:180px}
-.queue-outliner-foot{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.45}
-.queue-outliner .filter-tabs{display:flex;flex-direction:column;gap:8px;background:none;border:none;border-radius:0;padding:0}
-.queue-outliner .ftab{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:11px 12px;border-radius:12px;font-size:11px;background:linear-gradient(180deg,var(--surface2),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.05);color:var(--muted);min-height:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.02);transition:transform .12s,border-color .12s,background .12s,box-shadow .12s}
-.queue-outliner .ftab.active{background:linear-gradient(180deg,rgba(79,142,247,.12),rgba(79,142,247,.06));color:var(--text);border-color:rgba(79,142,247,.28);box-shadow:0 0 0 1px rgba(79,142,247,.06),inset 0 1px 0 rgba(255,255,255,.03)}
-.queue-outliner .ftab:hover:not(.active){color:var(--text);border-color:var(--border-hi);transform:translateX(1px)}
+.queue-secondary-body{display:flex;flex-direction:column;gap:12px;padding:0 18px 16px}
 .ftab-top{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;font-size:12px;font-weight:600}
 .ftab-count{font-family:var(--mono);font-size:11px;color:var(--dim)}
 .ftab-sub{font-size:10px;line-height:1.35;color:var(--dim)}
-.queue-outliner .ftab.active .ftab-count{color:var(--blue)}
-.queue-outliner .ftab-more{width:100%;text-align:center;margin-top:2px}
-.queue-main{min-width:0;display:flex;flex-direction:column;gap:12px}
-.queue-ledger{background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.98));border:1px solid rgba(255,255,255,.06);border-radius:18px;overflow:hidden;box-shadow:var(--card-shadow)}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(124px,1fr));border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.92))}
-.stat{padding:11px 14px;border-right:1px solid var(--border);display:flex;flex-direction:column;justify-content:space-between;min-height:62px;background:linear-gradient(180deg,rgba(255,255,255,.015),rgba(255,255,255,0))}
-.stat:last-child{border-right:none}
-.stat-n{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1}
-.stat-n.blue{color:var(--blue)}.stat-n.amber{color:var(--amber)}.stat-n.green{color:var(--green)}.stat-n.grey{color:var(--muted)}
-.stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:3px}
 
 .discover-bar{border-bottom:1px solid var(--border);padding:10px 16px;background:var(--surface)}
 .discover-inner{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
@@ -296,6 +311,8 @@ tbody td{padding:10px 14px;vertical-align:middle}
 .panel-overlay.open{opacity:1;pointer-events:all}
 .panel{position:fixed;top:0;right:0;width:min(436px,32vw);height:100vh;background:linear-gradient(180deg,rgba(16,19,27,.98),rgba(9,11,16,.99));border-left:1px solid rgba(255,255,255,.06);z-index:301;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .22s cubic-bezier(.4,0,.2,1);box-shadow:-12px 0 48px rgba(0,0,0,.52),inset 1px 0 0 rgba(255,255,255,.03)}
 .panel-overlay.open .panel{transform:translateX(0)}
+.panel-overlay.docked{position:static;inset:auto;background:none;backdrop-filter:none;opacity:1;pointer-events:none;z-index:auto}
+.panel.panel-docked{position:sticky;top:0;right:auto;width:100%;height:calc(100vh - 172px);transform:none;box-shadow:none;border-left:none;background:linear-gradient(180deg,rgba(16,19,27,.98),rgba(9,11,16,.99))}
 .panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01))}
 .panel-title{font-size:14px;font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .panel-nav{display:flex;align-items:center;gap:8px}
@@ -344,12 +361,13 @@ tbody td{padding:10px 14px;vertical-align:middle}
 .panel-reason{font-size:11px;color:var(--muted);font-style:italic;flex:1}
 
 @media (max-width: 1180px){
-  .queue-shell{grid-template-columns:1fr}
-  .queue-outliner{position:relative;top:auto}
+  .queue-dock-top{grid-template-columns:1fr}
+  .queue-scope-cluster{grid-template-columns:1fr}
+  .queue-ops-main{grid-template-columns:1fr}
+  .queue-workboard-grid{grid-template-columns:1fr;grid-template-areas:"ready" "blocked" "scheduled" "follow"}
+  .queue-inspector-dock{position:relative;top:auto;min-height:0}
   .panel{width:min(92vw,440px)}
-  .queue-workflow-head{flex-direction:column;align-items:flex-start}
-  .queue-workflow-rail{justify-content:flex-start}
-  .queue-workframe{grid-template-columns:1fr}
+  .panel.panel-docked{height:auto}
   .bulk-bar-head{min-width:0}
   .bulk-bar-actions.state{margin-left:0}
 }
@@ -1310,234 +1328,207 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <div class="sub-tab" data-parent="delivery" data-page="delivery-board" onclick="switchSubPage('delivery','delivery-board',this)" style="display:none">&#128230; Board</div>
 </nav>
 
-<!-- ══════════════ PAGE: OUTREACH ══════════════ -->
+<!-- PAGE: OUTREACH -->
 <div class="page" id="page-outreach">
 
-<div class="queue-command-strip">
-<div class="wb-mode-bar">
-  <button class="wb-mode-btn active" data-mode="outreach" onclick="_setWorkbenchMode('outreach')">📤 Email Queue</button>
-  <span class="wb-mode-sep"></span>
-  <button class="wb-mode-btn wb-mode-tool" data-mode="social" onclick="_setWorkbenchMode('social')">📲 Social DMs</button>
-  <button class="wb-mode-btn wb-mode-tool" data-mode="sprint" onclick="_setWorkbenchMode('sprint')">⚡ Focus Mode</button>
-</div>
-
-<div class="queue-workflow-head">
-  <div class="queue-workflow-copy">
-    <div class="queue-workflow-kicker">Queue</div>
-    <div class="queue-workflow-title">One lane, one send truth</div>
-    <div class="queue-workflow-sub">Ready now stays in the send lane, scheduled rows wait for their window, checked rows act as the selected set, and due rows rejoin Send Approved instead of living in a separate state.</div>
-  </div>
-  <div class="queue-workflow-rail" aria-hidden="true">
-    <span class="queue-rail-chip ready">Ready now lane</span>
-    <span class="queue-rail-chip selected">Selected set</span>
-    <span class="queue-rail-chip scheduled">Scheduled waiting</span>
-    <span class="queue-rail-chip sent">Sent + follow-up</span>
-  </div>
-</div>
-
-<div class="queue-workframe" aria-label="Queue scope overview">
-  <div class="queue-workframe-card selected">
-    <div class="qwc-label">Selected set</div>
-    <div class="qwc-value" id="queue-selected-value">0 rows</div>
-    <div class="qwc-sub" id="queue-selected-sub">Checked rows receive selected-set actions only.</div>
-  </div>
-  <div class="queue-workframe-card visible">
-    <div class="qwc-label">Visible scope</div>
-    <div class="qwc-value" id="queue-visible-value">All queue</div>
-    <div class="qwc-sub" id="queue-visible-sub">The current table view and lane focus.</div>
-  </div>
-  <div class="queue-workframe-card session">
-    <div class="qwc-label">Session</div>
-    <div class="qwc-value" id="queue-session-value">No active cohort</div>
-    <div class="qwc-sub" id="queue-session-sub">Panel review stays pinned until you close it.</div>
-  </div>
-</div>
-
-<!-- Pass 130-135: Queue session banner — shows active cohort session at table level, persists across panel open/close -->
-<div id="queue-session-banner" style="display:none"></div>
-
-<div class="stats">
-  <div class="stat" title="Total businesses in discovery pool (prospects.csv) — independent of outreach queue"><div class="stat-n blue" id="s-prospects">—</div><div class="stat-lbl">Discovered</div></div>
-  <div class="stat"><div class="stat-n blue" id="s-drafted">—</div><div class="stat-lbl">Drafted</div></div>
-  <div class="stat"><div class="stat-n amber" id="s-pending">—</div><div class="stat-lbl">Pending</div></div>
-  <div class="stat" style="cursor:pointer" onclick="setFilter('approved',document.querySelector('[data-filter=approved]'))" title="Click to view ready-now rows — approved rows that can send now">
-    <div class="stat-n green" id="s-approved">—</div><div class="stat-lbl">Ready Now ↗</div>
-  </div>
-  <div class="stat"><div class="stat-n grey" id="s-sent">—</div><div class="stat-lbl">Sent</div></div>
-  <div class="stat" title="Sent via log_contact (no SMTP message-id — not a confirmed send)"><div class="stat-n" id="s-logged" style="color:var(--muted)">—</div><div class="stat-lbl" style="color:var(--muted)">Logged Only</div></div>
-  <div class="stat" style="cursor:pointer" onclick="setFilter('replied',document.querySelector('[data-filter=replied]'))" title="Click to view replies">
-    <div class="stat-n" id="s-replied" style="color:var(--copper)">—</div>
-    <div class="stat-lbl" style="display:flex;align-items:center;gap:5px">
-      Replied
-      <span id="reply-pulse" style="display:none;width:7px;height:7px;border-radius:50%;background:var(--copper);box-shadow:0 0 8px var(--copper-glow);animation:pulse 1.4s ease-in-out infinite"></span>
+<div class="queue-ops-shell">
+  <section class="queue-ops-dock">
+    <div class="wb-mode-bar">
+      <button class="wb-mode-btn active" data-mode="outreach" onclick="_setWorkbenchMode('outreach')">Email Queue</button>
+      <span class="wb-mode-sep"></span>
+      <button class="wb-mode-btn wb-mode-tool" data-mode="social" onclick="_setWorkbenchMode('social')">Social DMs</button>
+      <button class="wb-mode-btn wb-mode-tool" data-mode="sprint" onclick="_setWorkbenchMode('sprint')">Focus Mode</button>
     </div>
-  </div>
-  <div class="stat" style="cursor:pointer" onclick="setFilter('stale',document.querySelector('[data-filter=stale]'))" title="Drafts with outdated copy — regenerate before sending">
-    <div class="stat-n" id="s-stale" style="color:var(--amber)">—</div>
-    <div class="stat-lbl">Stale Copy</div>
-  </div>
-  <div class="stat" style="cursor:pointer" onclick="setFilter('scheduled',document.querySelector('[data-filter=scheduled]'))" title="Rows waiting for their scheduled send window — click to view">
-    <div class="stat-n" id="s-scheduled" style="color:var(--blue)">—</div>
-    <div class="stat-lbl">Scheduled ↗</div>
-  </div>
-</div>
 
-<details class="queue-secondary-controls">
-  <summary>
-    <span>Secondary controls</span>
-    <span class="queue-secondary-hint">Discover, search, send, and queue notes stay here unless needed.</span>
-  </summary>
-  <div class="queue-secondary-body">
-    <div class="discover-bar">
-      <div class="discover-inner">
-        <span class="discover-label">🔍 New Leads</span>
-        <select id="d-industry" class="d-input"><option value="">Loading…</option></select>
-        <div class="city-ac-wrap" style="display:inline-block">
-          <input id="d-city" class="d-input" type="text" placeholder="City" value="Rockford"
-                 autocomplete="off" oninput="cityAcInput('d')" onfocus="cityAcInput('d')" onkeydown="cityAcKey(event,'d')"
-                 onblur="cityAcCloseDelay('d')">
-          <div class="city-ac-list" id="d-city-ac">
-            <div class="city-ac-filters">
-              <span class="caf active" data-acf="d-all" onclick="cityAcSetFilter('d','all',this)">All</span>
-              <span class="caf" data-acf="d-due" onclick="cityAcSetFilter('d','due',this)" style="color:var(--amber)">⚠ Due</span>
-              <span class="caf" data-acf="d-never" onclick="cityAcSetFilter('d','never',this)">● Never</span>
-              <span class="caf" data-acf="d-nearby" onclick="cityAcSetFilter('d','nearby',this)">📍 Nearby</span>
+    <div class="queue-dock-top">
+      <div class="queue-command-cluster">
+        <div>
+          <div class="queue-command-kicker">Queue Command Deck</div>
+          <div class="queue-command-title">Operate the live send lane</div>
+          <div class="queue-command-meta" id="queue-command-meta">Ready-now work stays central, scheduled rows graduate into send when their window arrives, and recovery actions stay attached to the active scope.</div>
+        </div>
+
+        <div class="toolbar queue-toolbar">
+          <div class="toolbar-l">
+            <input class="search-box" id="searchBox" type="text" placeholder="Search name, email, city, phone..." oninput="renderTable()">
+            <span id="row-count" class="tag" style="font-size:10px"></span>
+            <select class="sort-select" id="sortSelect" onchange="renderTable()">
+              <option value="opp_desc">Opp Score Desc</option>
+              <option value="default">Sort: Default</option>
+              <option value="score_desc">Fit Score Desc</option>
+              <option value="score_asc">Fit Score Asc</option>
+              <option value="name_asc">Name A-Z</option>
+              <option value="name_desc">Name Z-A</option>
+            </select>
+          </div>
+          <div class="toolbar-r">
+            <button class="btn btn-ghost" onclick="approveAll()">Approve All</button>
+            <button id="btnBulkRegen" class="btn btn-ghost" onclick="bulkRegenStale()" title="Regenerate all stale drafts using the observation agent and runs automatically in the background"><span class="spin"></span>Regen Stale</button>
+            <button id="btnSendLive" class="btn btn-success" onclick="confirmSend()"><span class="spin"></span>Send Approved</button>
+            <div style="position:relative;display:inline-block" id="outreach-more-wrap">
+              <button class="btn btn-ghost" style="padding:6px 10px" onclick="const m=document.getElementById('outreach-more-menu');m.style.display=m.style.display==='none'?'block':'none'" title="Utilities">More</button>
+              <div id="outreach-more-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);min-width:160px;z-index:250;box-shadow:0 6px 20px rgba(0,0,0,.4);padding:4px 0" onmouseleave="setTimeout(()=>document.getElementById('outreach-more-menu').style.display='none',200)">
+                <button id="btnSendDry" class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="sendDryRun();document.getElementById('outreach-more-menu').classList.remove('open')"><span class="spin"></span>Preview Send</button>
+                <button id="btnCheckReplies" class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="checkReplies();document.getElementById('outreach-more-menu').classList.remove('open')" title="Poll Gmail inbox for replies"><span class="spin"></span>Check Replies</button>
+                <button id="btnCheckSent" class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="checkSent();document.getElementById('outreach-more-menu').classList.remove('open')" title="Reconcile queue with Gmail Sent mail"><span class="spin"></span>Check Sent</button>
+              </div>
             </div>
-            <div id="d-city-ac-items"></div>
           </div>
         </div>
-        <input id="d-state" class="d-input d-state" type="text" placeholder="ST" value="IL" maxlength="2" oninput="cityAcInput('d')">
-        <input id="d-limit" class="d-input d-num" type="number" value="20" min="1" max="60">
-        <button id="btnDiscover" class="btn btn-primary" onclick="discoverLeads()"><span class="spin"></span>⚡ Discover + Draft</button>
-        <button id="btnTestKey" class="btn btn-ghost" onclick="testApiKey()">🔑 Test Key</button>
-        <button id="btnFollowup" class="btn btn-ghost" onclick="switchPage('followup',document.getElementById('nav-followup'))" title="Go to Follow-Up tab to generate and review follow-up drafts"><span class="spin"></span>🔁 Follow-Ups →</button>
-      </div>
-      <div id="api-key-notice" class="api-notice" style="display:none">
-        ⚠️ <strong>GOOGLE_PLACES_API_KEY not set.</strong> Add it to Launch Dashboard.bat
-      </div>
-    </div>
 
-    <div class="toolbar">
-      <div class="toolbar-l">
-        <input class="search-box" id="searchBox" type="text" placeholder="Search name, email, city, phone…" oninput="renderTable()">
-        <span id="row-count" class="tag" style="font-size:10px"></span>
-      </div>
-      <div class="toolbar-r">
-        <select class="sort-select" id="sortSelect" onchange="renderTable()">
-          <option value="opp_desc">Opp Score ↓</option>
-          <option value="default">Sort: Default</option>
-          <option value="score_desc">Fit Score ↓</option>
-          <option value="score_asc">Fit Score ↑</option>
-          <option value="name_asc">Name A–Z</option>
-          <option value="name_desc">Name Z–A</option>
-        </select>
-        <button class="btn btn-ghost" onclick="approveAll()">✓ Approve All</button>
-        <button id="btnBulkRegen" class="btn btn-ghost" onclick="bulkRegenStale()" title="Regenerate all stale drafts using the observation agent — runs automatically in the background"><span class="spin"></span>↻ Regen Stale</button>
-        <button id="btnSendLive" class="btn btn-success" onclick="confirmSend()"><span class="spin"></span>▶ Send Approved</button>
-        <div style="position:relative;display:inline-block" id="outreach-more-wrap">
-          <button class="btn btn-ghost" style="padding:6px 10px" onclick="const m=document.getElementById('outreach-more-menu');m.style.display=m.style.display==='none'?'block':'none'" title="Utilities">More ▾</button>
-          <div id="outreach-more-menu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);min-width:160px;z-index:250;box-shadow:0 6px 20px rgba(0,0,0,.4);padding:4px 0" onmouseleave="setTimeout(()=>document.getElementById('outreach-more-menu').style.display='none',200)">
-            <button id="btnSendDry" class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="sendDryRun();document.getElementById('outreach-more-menu').classList.remove('open')"><span class="spin"></span>Preview Send</button>
-            <button id="btnCheckReplies" class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="checkReplies();document.getElementById('outreach-more-menu').classList.remove('open')" title="Poll Gmail inbox for replies"><span class="spin"></span>★ Check Replies</button>
-            <button id="btnCheckSent" class="btn btn-ghost" style="display:block;width:100%;text-align:left;border:none;border-radius:0;padding:7px 14px;font-size:12px" onclick="checkSent();document.getElementById('outreach-more-menu').classList.remove('open')" title="Reconcile queue with Gmail Sent mail"><span class="spin"></span>↺ Check Sent</button>
-          </div>
+        <div class="queue-lane-switches">
+          <div class="queue-filter-control active" data-filter="active" onclick="setFilter('active',this)">Overview <span class="count" id="lane-count-active">--</span></div>
+          <div class="queue-filter-control" data-filter="approved" onclick="setFilter('approved',this)">Ready Now <span class="count" id="lane-count-approved">--</span></div>
+          <div class="queue-filter-control" data-filter="pending" onclick="setFilter('pending',this)">Pending <span class="count" id="lane-count-pending">--</span></div>
+          <div class="queue-filter-control" data-filter="needs_obs" onclick="setFilter('needs_obs',this)">Needs Obs <span class="count" id="lane-count-needs_obs">--</span></div>
+          <div class="queue-filter-control" data-filter="draft_repair" onclick="setFilter('draft_repair',this)">Repair <span class="count" id="lane-count-draft_repair">--</span></div>
+          <div class="queue-filter-control" data-filter="scheduled" onclick="setFilter('scheduled',this)">Scheduled <span class="count" id="lane-count-scheduled">--</span></div>
+          <div class="queue-filter-control" data-filter="sent" onclick="setFilter('sent',this)">Sent <span class="count" id="lane-count-sent">--</span></div>
+          <div class="queue-filter-control" data-filter="replied" onclick="setFilter('replied',this)">Follow-Up <span class="count" id="lane-count-replied">--</span></div>
+          <div class="queue-filter-control" data-filter="all" onclick="setFilter('all',this)">All Queue <span class="count" id="lane-count-all">--</span></div>
         </div>
       </div>
 
-      <div id="queue-timeline-note" class="queue-note"></div>
-      <div id="queue-visible-repair-bar" class="repair-toolbar" hidden></div>
-      <div id="queue-batch-progress" class="repair-progress" hidden></div>
+      <div class="queue-scope-cluster" aria-label="Queue scope overview">
+        <div class="queue-scope-node selected">
+          <div class="qwc-label">Selected set</div>
+          <div class="qwc-value" id="queue-selected-value">0 rows</div>
+          <div class="qwc-sub" id="queue-selected-sub">Checked rows receive selected-set actions only.</div>
+        </div>
+        <div class="queue-scope-node visible">
+          <div class="qwc-label">Visible scope</div>
+          <div class="qwc-value" id="queue-visible-value">All queue</div>
+          <div class="qwc-sub" id="queue-visible-sub">The current tray view and lane focus.</div>
+        </div>
+        <div class="queue-scope-node session">
+          <div class="qwc-label">Session</div>
+          <div class="qwc-value" id="queue-session-value">No active cohort</div>
+          <div class="qwc-sub" id="queue-session-sub">Panel review stays pinned until you close it.</div>
+        </div>
+      </div>
     </div>
+
+    <div id="queue-session-banner" style="display:none"></div>
+    <div id="queue-timeline-note" class="queue-note"></div>
+    <div id="queue-visible-repair-bar" class="repair-toolbar" hidden></div>
+    <div id="queue-batch-progress" class="repair-progress" hidden></div>
+  </section>
+
+  <div class="queue-ops-main">
+    <section class="queue-workboard">
+      <div class="queue-workboard-grid" id="queue-workboard"></div>
+    </section>
+
+    <aside class="queue-inspector-dock" id="queue-inspector-dock">
+      <div class="queue-inspector-empty" id="queue-inspector-empty">
+        <div class="queue-inspector-kicker">Inspector</div>
+        <div class="queue-inspector-title">Focus a row to review copy, schedule, or repair without leaving Queue.</div>
+        <div class="queue-inspector-sub">Desktop keeps the active row docked here as part of the Queue surface. Smaller screens fall back to the overlay.</div>
+      </div>
+    </aside>
   </div>
-</details>
 
-<div class="queue-shell">
-  <aside class="queue-outliner">
-    <div class="queue-outliner-head">
+  <section class="queue-detail-tray">
+    <div class="queue-tray-head">
       <div>
-        <div class="queue-outliner-kicker">Work Modes</div>
-        <div class="queue-outliner-title">Queue outliner</div>
-        <div class="queue-outliner-sub">Glance here first. Pick the lane, then work the table.</div>
+        <div class="queue-tray-kicker">Detail Tray</div>
+        <div class="queue-tray-title" id="queue-tray-title">Queue ledger</div>
+        <div class="queue-tray-sub" id="queue-tray-sub">Visible scope, selected-set actions, and full row detail stay here.</div>
       </div>
-      <span class="tag" id="queue-outliner-tag">—</span>
+      <span class="tag" id="queue-tray-tag">0 rows</span>
     </div>
 
-    <div class="filter-tabs">
-      <div class="ftab active" data-filter="active" onclick="setFilter('active',this)" title="Queue overview — ready-now leads needing attention"><div class="ftab-top"><span>⚡ Ready Now</span><span class="ftab-count" id="lane-count-active">—</span></div><div class="ftab-sub" id="lane-sub-active">Ready-now work, ordered by urgency</div></div>
-      <div class="ftab" data-filter="needs_obs" onclick="setFilter('needs_obs',this)" title="Rows missing an observation"><div class="ftab-top"><span>◎ Needs Observation</span><span class="ftab-count" id="lane-count-needs_obs">—</span></div><div class="ftab-sub" id="lane-sub-needs_obs">Observation-led first touch is blocked</div></div>
-      <div class="ftab" data-filter="draft_repair" onclick="setFilter('draft_repair',this)" title="Rows with invalid drafts that are not actually send-ready"><div class="ftab-top"><span>! Draft Repair</span><span class="ftab-count" id="lane-count-draft_repair">—</span></div><div class="ftab-sub" id="lane-sub-draft_repair">Validation truth blocks send</div></div>
-      <div class="ftab" data-filter="pending" onclick="setFilter('pending',this)" title="Drafts waiting for approval"><div class="ftab-top"><span>● Pending</span><span class="ftab-count" id="lane-count-pending">—</span></div><div class="ftab-sub" id="lane-sub-pending">Review and approve before send</div></div>
-      <div class="ftab" data-filter="approved" onclick="setFilter('approved',this)" title="Approved rows that can be sent now"><div class="ftab-top"><span>→ Ready to Send</span><span class="ftab-count" id="lane-count-approved">—</span></div><div class="ftab-sub" id="lane-sub-approved">Due scheduled rows return here too</div></div>
-      <div class="ftab" data-filter="scheduled" onclick="setFilter('scheduled',this)" style="color:var(--amber)" title="Rows approved and queued for a send window"><div class="ftab-top"><span>🕐 Scheduled</span><span class="ftab-count" id="lane-count-scheduled">—</span></div><div class="ftab-sub" id="lane-sub-scheduled">Waiting for the send window</div></div>
-      <div class="ftab" data-filter="sent" onclick="setFilter('sent',this)" title="Sent rows that need reply watching"><div class="ftab-top"><span>✉ Sent</span><span class="ftab-count" id="lane-count-sent">—</span></div><div class="ftab-sub" id="lane-sub-sent">Monitor replies and hand off follow-up</div></div>
-      <div class="ftab" data-filter="replied" onclick="setFilter('replied',this)" style="color:var(--copper)" title="Rows with replies or active conversations"><div class="ftab-top"><span>★ Follow-Up</span><span class="ftab-count" id="lane-count-replied">—</span></div><div class="ftab-sub" id="lane-sub-replied">Conversation handoff lives here</div></div>
-      <div class="ftab-more" onclick="toggleExtraFilters(this)">⋯ More</div>
-      <div class="ftab ftab-aux" data-filter="all" onclick="setFilter('all',this)"><div class="ftab-top"><span>All</span><span class="ftab-count" id="lane-count-all">—</span></div><div class="ftab-sub" id="lane-sub-all">Everything in queue order</div></div>
-      <div class="ftab ftab-aux" data-filter="stale" onclick="setFilter('stale',this)" style="color:var(--amber)" title="Rows with old copy — regenerate before sending"><div class="ftab-top"><span>⚠ Stale</span><span class="ftab-count" id="lane-count-stale">—</span></div><div class="ftab-sub" id="lane-sub-stale">Needs regeneration before send</div></div>
-      <div class="ftab ftab-aux" data-filter="no_email" onclick="setFilter('no_email',this)"><div class="ftab-top"><span>No Email</span><span class="ftab-count" id="lane-count-no_email">—</span></div><div class="ftab-sub" id="lane-sub-no_email">Use social or form fallback</div></div>
-      <div class="ftab ftab-aux" data-filter="high_score" onclick="setFilter('high_score',this)"><div class="ftab-top"><span>High Score</span><span class="ftab-count" id="lane-count-high_score">—</span></div><div class="ftab-sub" id="lane-sub-high_score">Top-fit rows only</div></div>
-    </div>
-    <div class="queue-outliner-foot">Queue overview and filter lanes live here. Checked rows drive selected-set actions; visible-scope recovery stays below. Keep the table moving; use the inspector for deep review.</div>
-  </aside>
+    <details class="queue-utility-drawer">
+      <summary>
+        <span>Utilities</span>
+        <span class="queue-secondary-hint">Discovery and follow-up controls stay tucked here until you need them.</span>
+      </summary>
+      <div class="queue-secondary-body">
+        <div class="discover-bar">
+          <div class="discover-inner">
+            <span class="discover-label">New Leads</span>
+            <select id="d-industry" class="d-input"><option value="">Loading...</option></select>
+            <div class="city-ac-wrap" style="display:inline-block">
+              <input id="d-city" class="d-input" type="text" placeholder="City" value="Rockford"
+                     autocomplete="off" oninput="cityAcInput('d')" onfocus="cityAcInput('d')" onkeydown="cityAcKey(event,'d')"
+                     onblur="cityAcCloseDelay('d')">
+              <div class="city-ac-list" id="d-city-ac">
+                <div class="city-ac-filters">
+                  <span class="caf active" data-acf="d-all" onclick="cityAcSetFilter('d','all',this)">All</span>
+                  <span class="caf" data-acf="d-due" onclick="cityAcSetFilter('d','due',this)" style="color:var(--amber)">Due</span>
+                  <span class="caf" data-acf="d-never" onclick="cityAcSetFilter('d','never',this)">Never</span>
+                  <span class="caf" data-acf="d-nearby" onclick="cityAcSetFilter('d','nearby',this)">Nearby</span>
+                </div>
+                <div id="d-city-ac-items"></div>
+              </div>
+            </div>
+            <input id="d-state" class="d-input d-state" type="text" placeholder="ST" value="IL" maxlength="2" oninput="cityAcInput('d')">
+            <input id="d-limit" class="d-input d-num" type="number" value="20" min="1" max="60">
+            <button id="btnDiscover" class="btn btn-primary" onclick="discoverLeads()"><span class="spin"></span>Discover + Draft</button>
+            <button id="btnTestKey" class="btn btn-ghost" onclick="testApiKey()">Test Key</button>
+            <button id="btnFollowup" class="btn btn-ghost" onclick="switchPage('followup',document.getElementById('nav-followup'))" title="Go to Follow-Up tab to generate and review follow-up drafts"><span class="spin"></span>Follow-Ups</button>
+          </div>
+          <div id="api-key-notice" class="api-notice" style="display:none">
+            Notice: <strong>GOOGLE_PLACES_API_KEY not set.</strong> Add it to Launch Dashboard.bat
+          </div>
+        </div>
+      </div>
+    </details>
 
-  <section class="queue-main">
-    <div class="queue-ledger">
-<div class="bulk-bar" id="bulk-bar">
-  <div class="bulk-bar-head">
-    <strong id="bulk-count">0</strong>
-    <span class="bulk-bar-label">selected set</span>
-    <span id="bulk-target-meta" class="bulk-bar-meta">checked rows are the active repair target</span>
-  </div>
-  <div class="bulk-bar-scopes">
-    <span class="bulk-scope-chip selected" id="bulk-scope-selected">Selected set · 0</span>
-    <span class="bulk-scope-chip visible" id="bulk-scope-visible">Visible scope · All</span>
-    <span class="bulk-scope-chip session" id="bulk-scope-session">Session · none</span>
-  </div>
-  <div class="bulk-bar-actions repair">
-    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('refresh_evidence','selected')">Refresh Evidence</button>
-    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('regen_candidates','selected')">Regenerate Candidates</button>
-    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('repair_rebuild','selected')">Repair + Rebuild</button>
-    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('validate','selected')">Validate Drafts</button>
-    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('fix_invalid','selected')">Fix Invalid</button>
-    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('approve_fixed','selected')">Approve Fixed</button>
-  </div>
-  <div class="bulk-bar-actions state">
-    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkApprove()">Approve</button>
-    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkUnapprove()">Unapprove</button>
-    <button class="btn btn-ghost bulk-btn-unschedule" id="bulk-unschedule-btn" style="font-size:11px;padding:3px 9px" onclick="bulkUnschedule()">Unschedule</button>
-    <span style="display:inline-flex;align-items:center;gap:0;margin:0 1px">
-      <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px;border-right:none;border-radius:3px 0 0 3px" onclick="bulkSchedule(document.getElementById('bulk-sched-mode').value)">🕐 Schedule</button><select id="bulk-sched-mode" title="Tomorrow = industry best time window, next business day" style="font-size:11px;padding:3px 5px;background:var(--surface2);border:1px solid var(--border);border-radius:0 3px 3px 0;color:var(--muted);cursor:pointer;height:26px;outline:none"><option value="1">Tomorrow</option><option value="clear">Clear Schedule</option></select>
-    </span>
-    <button class="btn btn-danger" style="font-size:11px;padding:3px 9px" onclick="bulkDelete()">Delete</button>
-    <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px;margin-left:4px" onclick="clearSelection()">✕ Clear</button>
-  </div>
-</div>
+    <div class="bulk-bar" id="bulk-bar">
+      <div class="bulk-bar-head">
+        <strong id="bulk-count">0</strong>
+        <span class="bulk-bar-label">selected set</span>
+        <span id="bulk-target-meta" class="bulk-bar-meta">checked rows are the active repair target</span>
+      </div>
+      <div class="bulk-bar-scopes">
+        <span class="bulk-scope-chip selected" id="bulk-scope-selected">Selected set · 0</span>
+        <span class="bulk-scope-chip visible" id="bulk-scope-visible">Visible scope · All</span>
+        <span class="bulk-scope-chip session" id="bulk-scope-session">Session · none</span>
+      </div>
+      <div class="bulk-bar-actions repair">
+        <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('refresh_evidence','selected')">Refresh Evidence</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('regen_candidates','selected')">Regenerate Candidates</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('repair_rebuild','selected')">Repair + Rebuild</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('validate','selected')">Validate Drafts</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('fix_invalid','selected')">Fix Invalid</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="runRepairAction('approve_fixed','selected')">Approve Fixed</button>
+      </div>
+      <div class="bulk-bar-actions state">
+        <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkApprove()">Approve</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px" onclick="bulkUnapprove()">Unapprove</button>
+        <button class="btn btn-ghost bulk-btn-unschedule" id="bulk-unschedule-btn" style="font-size:11px;padding:3px 9px" onclick="bulkUnschedule()">Unschedule</button>
+        <span style="display:inline-flex;align-items:center;gap:0;margin:0 1px">
+          <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px;border-right:none;border-radius:3px 0 0 3px" onclick="bulkSchedule(document.getElementById('bulk-sched-mode').value)">Schedule</button><select id="bulk-sched-mode" title="Tomorrow = industry best time window, next business day" style="font-size:11px;padding:3px 5px;background:var(--surface2);border:1px solid var(--border);border-radius:0 3px 3px 0;color:var(--muted);cursor:pointer;height:26px;outline:none"><option value="1">Tomorrow</option><option value="clear">Clear Schedule</option></select>
+        </span>
+        <button class="btn btn-danger" style="font-size:11px;padding:3px 9px" onclick="bulkDelete()">Delete</button>
+        <button class="btn btn-ghost" style="font-size:11px;padding:3px 9px;margin-left:4px" onclick="clearSelection()">Clear</button>
+      </div>
+    </div>
 
-<div class="main">
-  <div class="table-wrap">
-    <table id="queue-table">
-      <thead>
-        <tr>
-          <th class="td-chk"><input type="checkbox" id="chk-all" onchange="toggleCheckAll(this)"></th>
-          <th class="td-biz">Business</th>
-          <th class="td-email">Email / Channels</th>
-          <th class="td-subject">Subject</th>
-          <th class="td-score">Fit</th>
-          <th style="width:90px;white-space:nowrap">Opp</th>
-          <th class="td-status">Status</th>
-          <th class="td-actions">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    <div id="empty-state" class="empty" style="display:none">
-      <div class="empty-icon">📭</div>
-      <h3>No leads in queue</h3>
-      <p>Use <strong>Discover + Draft</strong> to find local service businesses and generate outreach emails</p>
-    </div>
-  </div>
-</div>
-    </div>
+    <div class="main">
+      <div class="table-wrap">
+        <table id="queue-table">
+          <thead>
+            <tr>
+              <th class="td-chk"><input type="checkbox" id="chk-all" onchange="toggleCheckAll(this)"></th>
+              <th class="td-biz">Business</th>
+              <th class="td-email">Email / Channels</th>
+              <th class="td-subject">Subject</th>
+              <th class="td-score">Fit</th>
+              <th style="width:90px;white-space:nowrap">Opp</th>
+              <th class="td-status">Status</th>
+              <th class="td-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div id="empty-state" class="empty" style="display:none">
+          <div class="empty-icon">Empty</div>
+          <h3>No leads in queue</h3>
+          <p>Use <strong>Discover + Draft</strong> from Utilities to add new businesses and generate outreach emails.</p>
+        </div>
+      </div>
     </div>
   </section>
 </div>
@@ -4113,11 +4104,12 @@ function renderTable() {
   applyFiltersAndSort();
   _renderQueueTimelineNote();
   _renderQueueFrame();
+  _renderQueueWorkboard();
   _renderVisibleRepairBar();
   _renderRepairProgress();
-  renderQueueOutliner();
   ccQueueRender(); // Pass 82: keep rail in sync
   _renderQueueSessionBanner(); // Pass 130-135: refresh session banner on every table render
+  _syncQueueInspectorDock();
   const tbody = document.getElementById('tbody');
   const empty = document.getElementById('empty-state');
   document.getElementById('row-count').textContent = filteredRows.length + ' rows';
@@ -4220,8 +4212,8 @@ function renderTable() {
 
 function setFilter(name, el) {
   currentFilter = name;
-  document.querySelectorAll('.filter-tabs .ftab').forEach(t => t.classList.remove('active'));
-  if (el) el.classList.add('active');
+  document.querySelectorAll('.queue-filter-control[data-filter]').forEach(t => t.classList.toggle('active', t.dataset.filter === name));
+  if (el && el.classList) el.classList.add('active');
   updateBulkSafety();
   renderTable();
 }
@@ -4233,43 +4225,211 @@ function toggleExtraFilters(btn) {
   if (btn) btn.textContent = on ? '⋯ Less' : '⋯ More';
 }
 
-function renderQueueOutliner() {
-  const tag = document.getElementById('queue-outliner-tag');
-  if (tag) {
-    const labels = {
-      active: 'Overview',
-      needs_obs: 'Needs Obs',
-      draft_repair: 'Draft Repair',
-      pending: 'Pending Review',
-      approved: 'Send Approved',
-      scheduled: 'Scheduled',
-      sent: 'Sent',
-      replied: 'Replied',
-      all: 'All',
-    };
-    tag.textContent = `${labels[currentFilter] || currentFilter} · ${filteredRows.length}`;
-  }
-  const laneSpecs = {
-    active:    { count: allRows.filter(r => isRowActionable(r)).length, signal: 'Ready-now work and lane triage' },
-    needs_obs: { count: allRows.filter(r => _pipelineCohort(r) === 'needs_obs').length, signal: 'Observation blocked' },
-    draft_repair: { count: allRows.filter(r => _pipelineCohort(r) === 'draft_repair').length, signal: 'Validation blocked' },
-    pending:   { count: allRows.filter(r => isRowActionable(r) && r.draft_valid !== false && !r.send_ready).length, signal: 'Waiting for approval' },
-    approved:  { count: allRows.filter(r => isRowActionable(r) && r.send_ready).length, signal: 'Send-ready lane' },
-    scheduled: { count: allRows.filter(r => r.send_after && !r.sent_at).length, signal: 'Waiting for its window' },
-    sent:      { count: allRows.filter(r => !!r.sent_at).length, signal: 'Reply watch and history' },
-    replied:   { count: allRows.filter(r => r.replied === 'true').length, signal: 'Conversation handoff' },
-    all:       { count: allRows.length, signal: 'Full queue scope' },
-    stale:     { count: allRows.filter(r => !r.sent_at && r.draft_version !== status_draft_version).length, signal: 'Regenerate before send' },
-    no_email:  { count: allRows.filter(r => !r.to_email || !r.to_email.includes('@')).length, signal: 'Social or form fallback' },
-    high_score:{ count: allRows.filter(r => parseInt(r.final_priority_score) >= 4).length, signal: 'Top-fit rows' },
-  };
-  Object.entries(laneSpecs).forEach(([key, spec]) => {
-    const countEl = document.getElementById(`lane-count-${key}`);
-    if (countEl) countEl.textContent = String(spec.count);
-    const subEl = document.getElementById(`lane-sub-${key}`);
-    if (subEl) subEl.textContent = spec.signal;
+function _queueSortRows(rows) {
+  return [...(rows || [])].sort((a, b) => {
+    const bo = b.opp_score || parseInt(b.opportunity_score) || 0;
+    const ao = a.opp_score || parseInt(a.opportunity_score) || 0;
+    if (bo !== ao) return bo - ao;
+    return (parseInt(b.final_priority_score) || 0) - (parseInt(a.final_priority_score) || 0);
   });
 }
+
+function _queuePreviewRowsFor(groupKey) {
+  const rows = allRows || [];
+  if (groupKey === 'ready') return _queueSortRows(rows.filter(r => isRowActionable(r) && (r.send_ready || (r.draft_valid !== false && !r.send_ready))));
+  if (groupKey === 'blocked') return _queueSortRows(rows.filter(r => ['needs_obs', 'draft_repair', 'stale', 'no_email'].includes(_pipelineCohort(r))));
+  if (groupKey === 'scheduled') return _queueSortRows(rows.filter(r => r.send_after && !r.sent_at));
+  if (groupKey === 'follow') return _queueSortRows(rows.filter(r => r.replied === 'true' || !!r.sent_at));
+  return [];
+}
+
+function _queueLaneMetrics() {
+  const rows = allRows || [];
+  return {
+    active: rows.filter(r => isRowActionable(r)).length,
+    approved: rows.filter(r => isRowActionable(r) && r.send_ready).length,
+    pending: rows.filter(r => isRowActionable(r) && r.draft_valid !== false && !r.send_ready).length,
+    needs_obs: rows.filter(r => _pipelineCohort(r) === 'needs_obs').length,
+    draft_repair: rows.filter(r => _pipelineCohort(r) === 'draft_repair').length,
+    scheduled: rows.filter(r => r.send_after && !r.sent_at).length,
+    sent: rows.filter(r => !!r.sent_at).length,
+    replied: rows.filter(r => r.replied === 'true').length,
+    all: rows.length,
+    stale: rows.filter(r => !r.sent_at && r.draft_version !== status_draft_version).length,
+    no_email: rows.filter(r => !r.to_email || !r.to_email.includes('@')).length,
+  };
+}
+
+function _queuePreviewCardHtml(row, groupKey) {
+  const gi = allRows.indexOf(row);
+  const meta = _queueStateMeta(row);
+  const scheduleNote = row.send_after && !row.sent_at
+    ? (row.is_ready ? 'Due now for send' : `Waiting until ${escHtml(_formatSendAfter(row.send_after))}`)
+    : '';
+  return `<div class="queue-preview-card" onclick="_openQueuePreview('${groupKey}', ${gi})">
+    <div class="queue-preview-top">
+      <div>
+        <div class="queue-preview-name">${escHtml(row.business_name || 'Unknown')}</div>
+        <div class="queue-preview-meta">
+          <span>${escHtml(row.city || '')}${row.state ? ', ' + escHtml(row.state) : ''}</span>
+          <span>${statusBadge(row)}</span>
+        </div>
+      </div>
+      <span class="tag">${parseInt(row.final_priority_score) || 0}</span>
+    </div>
+    <div class="queue-preview-note">${escHtml(_queueRowNextAction(row, meta))}${scheduleNote ? ` · ${scheduleNote}` : ''}</div>
+  </div>`;
+}
+
+function _queueLaneHtml(opts) {
+  const preview = opts.rows.length
+    ? opts.rows.slice(0, opts.limit || 4).map(row => _queuePreviewCardHtml(row, opts.groupKey)).join('')
+    : `<div class="queue-preview-empty">${opts.emptyText}</div>`;
+  return `<section class="queue-lane ${opts.className}">
+    <div class="queue-lane-head">
+      <div>
+        <div class="queue-lane-kicker">${opts.kicker}</div>
+        <div class="queue-lane-title">${opts.title}</div>
+        <div class="queue-lane-sub">${opts.sub}</div>
+      </div>
+      <div class="queue-lane-total">${opts.total}</div>
+    </div>
+    <div class="queue-lane-filters">${opts.filters}</div>
+    <div class="queue-preview-list">${preview}</div>
+    <div class="queue-lane-footer">
+      <span>${opts.footer}</span>
+      <span class="queue-lane-action" onclick="setFilter('${opts.primaryFilter}', document.querySelector('.queue-filter-control[data-filter=${opts.primaryFilter}]'))">Open ${opts.primaryLabel}</span>
+    </div>
+  </section>`;
+}
+
+function _renderQueueWorkboard() {
+  const host = document.getElementById('queue-workboard');
+  if (!host) return;
+  const m = _queueLaneMetrics();
+  ['active','approved','pending','needs_obs','draft_repair','scheduled','sent','replied','all'].forEach(key => {
+    const el = document.getElementById(`lane-count-${key}`);
+    if (el) el.textContent = String(m[key] ?? 0);
+  });
+  const readyRows = _queuePreviewRowsFor('ready');
+  const blockedRows = _queuePreviewRowsFor('blocked');
+  const scheduledRows = _queuePreviewRowsFor('scheduled');
+  const followRows = _queuePreviewRowsFor('follow');
+  const dueScheduled = (allRows || []).filter(r => r.send_after && !r.sent_at && r.is_ready).length;
+  const waitingScheduled = Math.max(0, m.scheduled - dueScheduled);
+  host.innerHTML =
+    _queueLaneHtml({
+      className: 'ready',
+      groupKey: 'ready',
+      kicker: 'Primary lane',
+      title: 'Ready Now',
+      sub: 'Sendable work and pending approvals stay in one dominant operating lane.',
+      total: m.approved + m.pending,
+      filters: `
+        <div class="queue-filter-control${currentFilter === 'approved' ? ' active' : ''}" data-filter="approved" onclick="setFilter('approved',this)">Send Approved <span class="count">${m.approved}</span></div>
+        <div class="queue-filter-control${currentFilter === 'pending' ? ' active' : ''}" data-filter="pending" onclick="setFilter('pending',this)">Pending Review <span class="count">${m.pending}</span></div>
+        <div class="queue-filter-control${currentFilter === 'active' ? ' active' : ''}" data-filter="active" onclick="setFilter('active',this)">Overview <span class="count">${m.active}</span></div>`,
+      rows: readyRows,
+      limit: 5,
+      emptyText: 'No rows need action right now.',
+      footer: dueScheduled ? `${dueScheduled} reached-window scheduled row${dueScheduled === 1 ? '' : 's'} already graduated into this lane.` : 'Nothing due from schedule is stranded outside the send lane.',
+      primaryFilter: 'approved',
+      primaryLabel: 'Ready Now'
+    }) +
+    _queueLaneHtml({
+      className: 'blocked',
+      groupKey: 'blocked',
+      kicker: 'Recovery lane',
+      title: 'Blocked',
+      sub: 'Observation gaps, invalid drafts, stale copy, and no-email fallbacks are grouped as one recovery family.',
+      total: blockedRows.length,
+      filters: `
+        <div class="queue-filter-control${currentFilter === 'needs_obs' ? ' active' : ''}" data-filter="needs_obs" onclick="setFilter('needs_obs',this)">Needs Obs <span class="count">${m.needs_obs}</span></div>
+        <div class="queue-filter-control${currentFilter === 'draft_repair' ? ' active' : ''}" data-filter="draft_repair" onclick="setFilter('draft_repair',this)">Repair <span class="count">${m.draft_repair}</span></div>
+        <div class="queue-filter-control${currentFilter === 'stale' ? ' active' : ''}" data-filter="stale" onclick="setFilter('stale',this)">Stale <span class="count">${m.stale}</span></div>
+        <div class="queue-filter-control${currentFilter === 'no_email' ? ' active' : ''}" data-filter="no_email" onclick="setFilter('no_email',this)">No Email <span class="count">${m.no_email}</span></div>`,
+      rows: blockedRows,
+      emptyText: 'Recovery work is clear right now.',
+      footer: blockedRows.length ? 'Fix the blockers here before they rejoin the live lane.' : 'No repair or fallback backlog is building.',
+      primaryFilter: 'needs_obs',
+      primaryLabel: 'Blocked'
+    }) +
+    _queueLaneHtml({
+      className: 'scheduled',
+      groupKey: 'scheduled',
+      kicker: 'Timed lane',
+      title: 'Scheduled',
+      sub: 'Future windows wait here; reached windows become ready-now work instead of a separate state.',
+      total: m.scheduled,
+      filters: `
+        <div class="queue-filter-control${currentFilter === 'scheduled' ? ' active' : ''}" data-filter="scheduled" onclick="setFilter('scheduled',this)">Waiting Window <span class="count">${waitingScheduled}</span></div>
+        <div class="queue-filter-control${currentFilter === 'approved' ? ' active' : ''}" data-filter="approved" onclick="setFilter('approved',this)">Due Now <span class="count">${dueScheduled}</span></div>`,
+      rows: scheduledRows,
+      emptyText: 'No future or due scheduled rows are in queue.',
+      footer: waitingScheduled ? `${waitingScheduled} row${waitingScheduled === 1 ? '' : 's'} still waiting on time.` : 'The schedule queue is clear or already due.',
+      primaryFilter: 'scheduled',
+      primaryLabel: 'Scheduled'
+    }) +
+    _queueLaneHtml({
+      className: 'follow',
+      groupKey: 'follow',
+      kicker: 'Downstream lane',
+      title: 'Follow-Up',
+      sub: 'Sent history and replies stay close enough to monitor without taking over the queue surface.',
+      total: m.sent,
+      filters: `
+        <div class="queue-filter-control${currentFilter === 'sent' ? ' active' : ''}" data-filter="sent" onclick="setFilter('sent',this)">Sent Watch <span class="count">${m.sent - m.replied}</span></div>
+        <div class="queue-filter-control${currentFilter === 'replied' ? ' active' : ''}" data-filter="replied" onclick="setFilter('replied',this)">Replied <span class="count">${m.replied}</span></div>`,
+      rows: followRows,
+      emptyText: 'No sent or replied rows are waiting on follow-up attention.',
+      footer: m.replied ? `${m.replied} live conversation${m.replied === 1 ? '' : 's'} need handoff clarity.` : 'Reply watch is quiet right now.',
+      primaryFilter: 'replied',
+      primaryLabel: 'Follow-Up'
+    });
+}
+
+function _openQueuePreview(groupKey, gi) {
+  const rows = _queuePreviewRowsFor(groupKey);
+  const row = allRows[gi];
+  if (!row || !rows.length) return;
+  const idx = Math.max(0, rows.indexOf(row));
+  const labels = { ready: 'Ready Now', blocked: 'Blocked', scheduled: 'Scheduled', follow: 'Follow-Up' };
+  openPanel(idx, rows, labels[groupKey] || 'Queue');
+}
+
+function _shouldDockQueueInspector() {
+  const page = document.getElementById('page-outreach');
+  return !!(page && page.classList.contains('active') && window.innerWidth > 1180);
+}
+
+function _syncQueueInspectorDock() {
+  const overlay = document.getElementById('panel-overlay');
+  const panel = document.getElementById('review-panel');
+  const dock = document.getElementById('queue-inspector-dock');
+  const empty = document.getElementById('queue-inspector-empty');
+  if (!overlay || !panel || !dock) return;
+  const shouldDock = _shouldDockQueueInspector();
+  if (shouldDock) {
+    if (panel.parentElement !== dock) dock.appendChild(panel);
+    overlay.classList.remove('open');
+    overlay.classList.add('docked');
+    panel.classList.add('panel-docked');
+    const hasPanel = panelIdx >= 0;
+    panel.style.display = hasPanel ? '' : 'none';
+    dock.classList.toggle('has-panel', hasPanel);
+    if (empty) empty.style.display = hasPanel ? 'none' : '';
+  } else {
+    if (panel.parentElement !== overlay) overlay.appendChild(panel);
+    overlay.classList.remove('docked');
+    panel.classList.remove('panel-docked');
+    panel.style.display = '';
+    dock.classList.remove('has-panel');
+    if (empty) empty.style.display = '';
+    overlay.classList.toggle('open', panelIdx >= 0);
+  }
+}
+
+window.addEventListener('resize', _syncQueueInspectorDock);
 
 // ── Review Panel ──────────────────────────────────────────────────────────────
 function openPanelForRefresh(fi, rowsCtx, sessionLabel) {
@@ -4292,7 +4452,9 @@ function openPanel(fi, rowsCtx, sessionLabel) {
   fillPanel(row, panelIdx, panelRows.length);
   const body = document.querySelector('#review-panel .panel-body');
   if (body) body.scrollTop = 0;
-  document.getElementById('panel-overlay').classList.add('open');
+  const overlay = document.getElementById('panel-overlay');
+  if (overlay && !_shouldDockQueueInspector()) overlay.classList.add('open');
+  _syncQueueInspectorDock();
 }
 
 function panelFocusObservation(selectAll) {
@@ -4663,6 +4825,7 @@ function closePanel(force) {
   panelRowKey = '';
   panelSessionLabel = '';
   panelOpenIntent = '';
+  _syncQueueInspectorDock();
   window.setTimeout(() => {
     const current = document.querySelector('#tbody tr.session-current');
     if (current && current.scrollIntoView) current.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
@@ -6191,6 +6354,10 @@ function _renderQueueFrame() {
   const visibleSub = document.getElementById('queue-visible-sub');
   const sessionValue = document.getElementById('queue-session-value');
   const sessionSub = document.getElementById('queue-session-sub');
+  const trayTitle = document.getElementById('queue-tray-title');
+  const traySub = document.getElementById('queue-tray-sub');
+  const trayTag = document.getElementById('queue-tray-tag');
+  const commandMeta = document.getElementById('queue-command-meta');
   if (selectedValue) selectedValue.textContent = selectedCount ? `${selectedCount} row${selectedCount === 1 ? '' : 's'}` : 'No rows selected';
   if (selectedSub) selectedSub.textContent = selectedCount
     ? 'Checked rows get selected-set actions; visible actions stay with the table.'
@@ -6212,6 +6379,22 @@ function _renderQueueFrame() {
       sessionValue.textContent = 'No active cohort';
       if (sessionSub) sessionSub.textContent = 'Open a cohort session from the table or panel to pin a working set.';
     }
+  }
+  if (trayTitle) trayTitle.textContent = `${_queueFilterLabel(currentFilter)} ledger`;
+  if (trayTag) trayTag.textContent = `${filteredRows.length} rows`;
+  if (traySub) {
+    traySub.textContent = currentFilter === 'approved'
+      ? 'Only rows that can send now are visible here, including reached-window scheduled rows.'
+      : currentFilter === 'scheduled'
+        ? 'Future scheduled rows stay visible here while due rows graduate back into Ready Now.'
+        : 'The tray holds the full ledger for the visible scope while the workboard handles macro triage.';
+  }
+  if (commandMeta) {
+    commandMeta.textContent = currentFilter === 'scheduled'
+      ? 'Future windows wait here; once the window is reached, the row becomes Ready Now and returns to Send Approved.'
+      : currentFilter === 'approved'
+        ? 'This lane is the real send contract: if it is visible here, it is send-ready now.'
+        : 'Ready-now work stays central, scheduled rows graduate into send when their window arrives, and recovery actions stay attached to the active scope.';
   }
 }
 
@@ -7008,6 +7191,7 @@ function switchSubPage(parent, name, el) {
   if (el) el.classList.add('active');
 
   _runPageHooks(name);
+  _syncQueueInspectorDock();
 }
 
 // Legacy shim — existing code calls switchPage(name, el) in many places
@@ -7040,6 +7224,7 @@ function switchPage(name, el) {
   });
 
   _runPageHooks(name);
+  _syncQueueInspectorDock();
 }
 
 // ==================================================================
