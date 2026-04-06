@@ -447,7 +447,17 @@ def validate_subject(subject: str) -> None:
         raise DraftInvalidError("Subject uses too many words.")
     if "!" in subj:
         raise DraftInvalidError("Subject must not use hype punctuation.")
-    hits = [p for p in _SUBJECT_BANNED_PHRASES if p in subj]
+    # Short tokens ("ai", "roi") must be matched at word boundaries to avoid
+    # false positives on substrings (e.g. "voicemail" contains "ai").
+    _SUBJECT_WORD_BOUNDARY_TOKENS = {"ai", "roi"}
+    hits = []
+    for p in _SUBJECT_BANNED_PHRASES:
+        if p in _SUBJECT_WORD_BOUNDARY_TOKENS:
+            if re.search(r"\b" + re.escape(p) + r"\b", subj):
+                hits.append(p)
+        else:
+            if p in subj:
+                hits.append(p)
     if hits:
         raise DraftInvalidError(f"Banned phrase(s) in subject: {hits}")
 
@@ -499,7 +509,7 @@ _ANGLE_KEYWORDS: List[Tuple[str, List[str]]] = [
     ]),
     ("inquiry_routing", [
         "contact form", "form", "chat", "message", "messages",
-        "text", "texting",
+        "text", "texting", "inquiry",
     ]),
     ("callback_recovery", [
         "phone", "phones", "call", "calls", "callback", "callbacks",
@@ -583,6 +593,7 @@ def _build_observation_opener(obs: str) -> str:
         ("site is explicit about ", "your site is focused on "),
         ("site pushes ", "you're pushing "),
         ("site lists ", "you're listing "),
+        ("site leans ", "you lean "),
         ("site has ", "you have "),
         ("site advertises ", "you're advertising "),
     ]
@@ -646,7 +657,7 @@ def _build_consequence_sentence(obs: str, angle: str) -> str:
 
     if any(p in o for p in (
         "no confirmation", "no immediate", "nothing back",
-        "no next step", "no acknowledgment", "unclear",
+        "no next step", "no acknowledgment",
     )) and any(p in o for p in ("form", "submit", "contact", "inquiry")):
         return "When there's no confirmation after a form submission, most people assume it didn't go through and move on."
 
@@ -715,7 +726,13 @@ def _build_offer_sentence(obs: str, angle: str, variant: int) -> str:
     Must read like a person talking, not a resume bullet.
     """
 
-    if angle == "callback_recovery":
+    if angle == "service_requests":
+        variants = [
+            "I work with owners to find where bookings and appointment requests are slipping and build something specific to handle the intake side. I set it up and keep it running.",
+            "I look at how new bookings and scheduling requests are actually being handled and build something around the gaps I find. I maintain it from there.",
+            "I work directly with owners to find where appointments are going quiet and put something in place to catch them. Built around how they take on work, not a generic fix.",
+        ]
+    elif angle == "callback_recovery":
         variants = [
             "I work with owners one on one to find where calls and follow-through are dropping. Then I build something specific to that operation and keep it running.",
             "I look at how the incoming work is actually being handled and build something around the gaps I find. I set it up and maintain it from there.",
