@@ -1,18 +1,22 @@
 ﻿# Copperline — Claude Startup Contract
 
-Read this first. Then read AI_CONTROL_PANEL.md, PROJECT_STATE.md, CURRENT_BUILD.md, PROTECTED_SYSTEMS.md.
+Read this first. Then read PROJECT_STATE.md, CURRENT_BUILD.md, PROTECTED_SYSTEMS.md.
 
 ---
 
 ## Startup Read Order
 
 1. This file (CLAUDE.md)
-2. AI_CONTROL_PANEL.md -- active guardrails + current pass state
-3. PROJECT_STATE.md -- live implementation truth
-4. CURRENT_BUILD.md -- approved scope for this session
-5. PROTECTED_SYSTEMS.md -- what must not be touched
+2. PROJECT_STATE.md -- live implementation truth
+3. CURRENT_BUILD.md -- approved scope for this session
+4. PROTECTED_SYSTEMS.md -- what must not be touched
 
 Do not write code before completing this read order.
+
+Reference only (not required startup reading):
+- AI_CONTROL_PANEL.md -- pipeline-specific constraints and high-risk file list
+- AI_DEV_STANDARDS.md -- engineering rules and pass discipline
+- COPPERLINE_OVERVIEW.md -- durable system overview
 
 ---
 
