@@ -1377,6 +1377,12 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .da-stack-box{border:1px solid rgba(79,142,247,.24);background:rgba(79,142,247,.08);border-radius:var(--rs);padding:12px}
 .da-stack-line{font-size:12px;font-weight:600;color:var(--text);line-height:1.5}
 .da-stack-meta{margin-top:5px;font-size:11px;color:var(--muted);line-height:1.5}
+.da-answer-grid{display:grid;gap:10px}
+.da-answer-row{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:start}
+.da-answer-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.da-answer-copy{font-size:12px;color:var(--text);line-height:1.6}
+.da-answer-copy strong{font-weight:700}
+.da-answer-subtle{font-size:11px;color:var(--muted);line-height:1.6}
 .da-checklist{display:flex;flex-direction:column;gap:8px}
 .da-check{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text)}
 .da-check input{margin-top:2px}
@@ -1388,9 +1394,27 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .da-status{font-size:11px;color:var(--muted);line-height:1.5}
 .da-note{min-height:78px}
 .da-touch{display:flex;flex-direction:column;gap:8px}
+.da-price-range{font-size:18px;font-family:var(--mono);font-weight:700;color:var(--text);line-height:1.2}
+.da-price-help{font-size:11px;color:var(--muted);line-height:1.6;margin-top:4px}
+.da-primary-wrap{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.da-primary-btn{width:100%;justify-content:center;font-size:13px;padding:10px 14px}
+.da-secondary-row{display:flex;gap:8px;flex-wrap:wrap}
+.da-gates{display:grid;gap:8px;margin-top:12px}
+.da-gate{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface2)}
+.da-gate-copy{min-width:0}
+.da-gate-title{font-size:11px;font-weight:600;color:var(--text)}
+.da-gate-detail{font-size:10px;color:var(--muted);line-height:1.5;margin-top:2px}
+.da-gate-status{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding-top:1px;white-space:nowrap}
+.da-gate-status.ok{color:var(--green)}
+.da-gate-status.wait{color:var(--amber)}
+.da-gate-status.block{color:var(--red)}
+.da-gate-inline{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11px;color:var(--muted)}
+.da-gate-inline input{margin-top:0}
+.da-blocker{margin-top:10px;padding:9px 10px;border-radius:var(--rs);background:rgba(245,166,35,.08);border:1px solid rgba(245,166,35,.2);font-size:11px;color:var(--muted);line-height:1.6}
 @media(max-width:920px){
   .da-grid{grid-template-columns:1fr}
   .da-grid-2,.da-grid-3{grid-template-columns:1fr}
+  .da-answer-row{grid-template-columns:1fr}
 }
 .db-wrap{max-width:1200px;margin:0 auto;padding:28px}
 .db-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
@@ -1411,7 +1435,12 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .db-card:hover{border-color:var(--border-hi)}
 .db-card-name{font-size:13px;font-weight:600;margin-bottom:2px}
 .db-card-meta{font-size:11px;color:var(--muted);margin-bottom:8px}
-.db-card-pkg{font-family:var(--mono);font-size:10px;color:var(--blue);background:var(--blue-glow);border:1px solid rgba(79,142,247,.2);border-radius:var(--rs);padding:2px 7px;display:inline-block;margin-bottom:6px}
+.db-legal-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 10px}
+.db-legal-chip{font-size:10px;color:var(--muted);padding:2px 7px;border-radius:10px;border:1px solid var(--border);background:var(--surface3)}
+.db-next-step{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06)}
+.db-next-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.db-next-copy{font-size:11px;color:var(--text);line-height:1.5;margin-top:4px}
+.db-blocker{font-size:10px;color:var(--amber);line-height:1.5;margin-top:5px}
 .db-readiness{display:flex;flex-direction:column;gap:3px}
 .db-readiness-bar{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden;margin-bottom:4px}
 .db-readiness-fill{height:100%;background:var(--green);border-radius:2px;transition:width .3s}
@@ -9254,6 +9283,20 @@ const _DA_MODULE_PRICING = {
 let _daPendingLead = null;
 let _daActiveKey = '';
 let _daSaveTimer = null;
+const _DA_STAGE_LABELS = {
+  call_booked: 'Consultation Saved',
+  proposal_ready: 'Estimate in Progress',
+  won: 'Client Approved',
+  deployment_pending: 'Activation Pending',
+  live: 'Live',
+};
+const _DA_PRIMARY_ACTIONS = {
+  save: 'Save Consultation',
+  estimate: 'Create Estimate',
+  convert: 'Convert to Client',
+  deploy: 'Launch Deployment',
+  access: 'Request Access',
+};
 
 function _daDefaultState() {
   return {
@@ -9278,6 +9321,9 @@ function _daDefaultState() {
       estimate_or_job_status_problem: false,
       wants_ongoing_support: false,
     },
+    readiness: {
+      vendor_access_collected: false,
+    },
     profile: {
       core_offer: '',
       bundle_key: '',
@@ -9290,7 +9336,7 @@ function _daDefaultState() {
       invoice_status: '',
       deposit_status: '',
       offer_notes: '',
-      stage: 'discovered',
+      stage: 'call_booked',
     },
   };
 }
@@ -9357,9 +9403,12 @@ function _daReadState() {
     invoice_status: document.getElementById('da-invoice-status')?.value || '',
     deposit_status: document.getElementById('da-deposit-status')?.value || '',
     offer_notes: document.getElementById('da-offer-notes')?.value || '',
-    stage: document.getElementById('da-stage')?.value || 'discovered',
+    stage: document.getElementById('da-stage')?.value || 'call_booked',
   };
-  return { snapshot, discovery, profile };
+  const readiness = {
+    vendor_access_collected: !!document.getElementById('da-access-collected')?.checked,
+  };
+  return { snapshot, discovery, readiness, profile };
 }
 
 function _daDiscoverySelectionCount(discovery) {
@@ -9408,12 +9457,116 @@ function _daRecommendationFromState(state) {
   const basePrice = _DA_BUNDLE_PRICING[bundle_key] || _DA_CORE_PRICING[core_offer] || 0;
   const modulePrice = moduleSet.reduce((sum, key) => sum + (_DA_MODULE_PRICING[key] || 0), 0);
   const recommendedPrice = basePrice + modulePrice;
-  return { core_offer, bundle_key, selected_modules: moduleSet, reason, recommendedPrice };
+  const packageLabel = bundle_key ? _cvBundleLabel(bundle_key) : _cvCoreOfferLabel(core_offer);
+  const includes = bundle_key
+    ? [packageLabel, _cvCoreOfferLabel(core_offer)]
+    : [_cvCoreOfferLabel(core_offer)];
+  return {
+    core_offer,
+    bundle_key,
+    selected_modules: moduleSet,
+    reason,
+    recommendedPrice,
+    packageLabel,
+    includes,
+  };
+}
+
+function _daPricingGuidance(state, rec) {
+  const issueCount = _daDiscoverySelectionCount(state.discovery);
+  const exact = rec.recommendedPrice || 0;
+  const spread = issueCount >= 5 ? 350 : issueCount >= 3 ? 250 : issueCount >= 2 ? 175 : 100;
+  const low = Math.max(150, Math.round((exact - spread) / 25) * 25);
+  const high = Math.max(low, Math.round((exact + spread) / 25) * 25);
+  const narrow = high - low <= 150;
+  const label = narrow ? `$${low}-$${high} tight range` : `$${low}-$${high} suggested range`;
+  const why = narrow
+    ? 'The scope looks fairly defined, so the range stays tight unless the call uncovers extra setup work.'
+    : 'The range leaves room for mixed cleanup, setup, and access complexity without forcing a number too early on the call.';
+  return { low, high, label, why };
+}
+
+function _daDeploymentGates(state, rec) {
+  const readiness = state.readiness || {};
+  const estimateDone = state.profile.pricing_mode === 'live_quote'
+    ? true
+    : ['proposal_ready', 'won', 'deployment_pending', 'live'].includes(state.profile.stage);
+  const agreementDone = state.profile.agreement_status === 'signed';
+  const billingDone = state.profile.deposit_status === 'received' || state.profile.invoice_status === 'paid';
+  const accessDone = !!readiness.vendor_access_collected;
+  const monthlyRelevant = state.discovery.wants_ongoing_support || (rec.selected_modules || []).includes('mobile_admin_workflow_helper');
+  const monthlyDone = monthlyRelevant ? (document.getElementById('da-monthly-support')?.value || '') !== '' : true;
+  const items = [
+    {
+      key: 'estimate',
+      title: 'Estimate / proposal status',
+      done: estimateDone,
+      detail: state.profile.pricing_mode === 'formal_estimate'
+        ? (estimateDone ? 'Formal estimate path is set for this handoff.' : 'Formal estimate is still the next sales step before deployment.')
+        : 'Live quote path selected.',
+    },
+    {
+      key: 'agreement',
+      title: 'Agreement status',
+      done: agreementDone,
+      detail: agreementDone ? 'Agreement is signed.' : 'Agreement still needs to be signed before launch.',
+    },
+    {
+      key: 'billing',
+      title: 'Invoice / deposit status',
+      done: billingDone,
+      detail: billingDone ? 'Payment gate is covered.' : 'Invoice or deposit still needs to be secured.',
+    },
+    {
+      key: 'access',
+      title: 'Access status',
+      done: accessDone,
+      detail: accessDone ? 'Vendor / account access has been collected.' : 'Access still needs to be requested and confirmed.',
+    },
+    {
+      key: 'monthly',
+      title: 'Monthly support decision',
+      done: monthlyDone,
+      detail: monthlyRelevant
+        ? ((document.getElementById('da-monthly-support')?.value || '') === 'true'
+          ? 'Monthly support is included.'
+          : ((document.getElementById('da-monthly-support')?.value || '') === 'false'
+            ? 'Monthly support is not included.'
+            : 'Monthly support still needs a clear yes or no.'))
+        : 'Not needed for this stack.',
+    },
+  ];
+  const blockers = items.filter((item) => !item.done && item.key !== 'monthly');
+  return {
+    items,
+    blockers,
+    launchReady: blockers.length === 0 && ['won', 'deployment_pending'].includes(state.profile.stage),
+  };
+}
+
+function _daPrimaryAction(state, gates) {
+  const hasSavedRecord = !!_daActiveKey;
+  if (!hasSavedRecord) return { key: 'save', label: _DA_PRIMARY_ACTIONS.save, disabled: false };
+  if (state.profile.pricing_mode === 'formal_estimate' && !['proposal_ready', 'won', 'deployment_pending', 'live'].includes(state.profile.stage)) {
+    return { key: 'estimate', label: _DA_PRIMARY_ACTIONS.estimate, disabled: false };
+  }
+  if (!['won', 'deployment_pending', 'live'].includes(state.profile.stage)) {
+    return { key: 'convert', label: _DA_PRIMARY_ACTIONS.convert, disabled: false };
+  }
+  if (!gates.items.find((item) => item.key === 'access')?.done) {
+    return { key: 'access', label: _DA_PRIMARY_ACTIONS.access, disabled: false };
+  }
+  return {
+    key: 'deploy',
+    label: _DA_PRIMARY_ACTIONS.deploy,
+    disabled: !gates.launchReady,
+  };
 }
 
 function _daFillForm(state, meta = {}) {
   const snapshot = state.snapshot || {};
   const discovery = state.discovery || {};
+  const readiness = state.readiness || {};
   const profile = state.profile || {};
   const recommendation = meta.recommendation || _daRecommendationFromState(state);
 
@@ -9446,13 +9599,14 @@ function _daFillForm(state, meta = {}) {
   setVal('da-bundle-key', profile.bundle_key || recommendation.bundle_key || '');
   setVal('da-price', profile.price || '');
   setVal('da-pricing-mode', profile.pricing_mode || 'live_quote');
-  setVal('da-monthly-support', String(!!profile.monthly_support));
+  setVal('da-monthly-support', profile.monthly_support === true ? 'true' : (profile.monthly_support === false ? 'false' : ''));
   setVal('da-monthly-fee', profile.monthly_fee || '');
   setVal('da-agreement-status', profile.agreement_status || '');
   setVal('da-invoice-status', profile.invoice_status || '');
   setVal('da-deposit-status', profile.deposit_status || '');
   setVal('da-offer-notes', profile.offer_notes || '');
-  setVal('da-stage', profile.stage || 'discovered');
+  setVal('da-stage', _DA_STAGE_LABELS[profile.stage] ? profile.stage : 'call_booked');
+  setChecked('da-access-collected', readiness.vendor_access_collected || !!profile.readiness?.vendor_access_collected);
 
   const selectedModules = new Set(profile.selected_modules || recommendation.selected_modules || []);
   ['missed_call_recovery','follow_up_reminder_setup','review_request_system','estimate_job_status_communication','client_approval_estimate_portal','mobile_admin_workflow_helper']
@@ -9464,20 +9618,57 @@ function _daFillForm(state, meta = {}) {
 function daRender() {
   const state = _daReadState();
   const rec = _daRecommendationFromState(state);
+  const pricing = _daPricingGuidance(state, rec);
+  const gates = _daDeploymentGates(state, rec);
+  const primary = _daPrimaryAction(state, gates);
   const selectedCount = _daDiscoverySelectionCount(state.discovery);
   const discoveryCountEl = document.getElementById('da-discovery-count');
   if (discoveryCountEl) discoveryCountEl.textContent = `${selectedCount} selected`;
 
-  const coreLabel = _cvCoreOfferLabel(rec.core_offer);
-  const bundleLabel = rec.bundle_key ? _cvBundleLabel(rec.bundle_key) : 'No bundle';
   const moduleLabels = _cvSelectedModuleLabels(rec.selected_modules || []);
-  const line = [coreLabel, rec.bundle_key ? bundleLabel : null].filter(Boolean).join(' · ') || 'No recommendation yet.';
-  const recLine = document.getElementById('da-rec-line');
-  const recMeta = document.getElementById('da-rec-meta');
+  const recPackage = document.getElementById('da-rec-package');
+  const recIncludes = document.getElementById('da-rec-includes');
+  const recModules = document.getElementById('da-rec-modules');
+  const recReason = document.getElementById('da-rec-reason');
   const priceBadge = document.getElementById('da-price-badge');
-  if (recLine) recLine.textContent = line;
-  if (recMeta) recMeta.textContent = rec.reason + (moduleLabels.length ? ` Modules: ${moduleLabels.join(' · ')}.` : '');
-  if (priceBadge) priceBadge.textContent = rec.recommendedPrice ? `Recommended $${rec.recommendedPrice}` : 'Recommendation only';
+  if (recPackage) recPackage.innerHTML = rec.packageLabel ? `<strong>${escHtml(rec.packageLabel)}</strong>` : 'No recommendation yet.';
+  if (recIncludes) recIncludes.textContent = rec.includes.join(' + ') || 'Fill the call inputs to guide the recommendation.';
+  if (recModules) recModules.textContent = moduleLabels.length ? moduleLabels.join(' · ') : 'No specialty modules suggested right now.';
+  if (recReason) recReason.textContent = rec.reason || 'Fill the call inputs to guide the recommendation.';
+  if (priceBadge) priceBadge.textContent = pricing.label;
+
+  const rangeEl = document.getElementById('da-price-range');
+  const priceHelp = document.getElementById('da-price-help');
+  if (rangeEl) rangeEl.textContent = pricing.label;
+  if (priceHelp) priceHelp.textContent = pricing.why;
+
+  const gatesEl = document.getElementById('da-gates');
+  if (gatesEl) {
+    gatesEl.innerHTML = gates.items.map((item) => {
+      const statusClass = item.done ? 'ok' : (item.key === 'monthly' ? 'wait' : 'block');
+      return `<div class="da-gate">
+        <div class="da-gate-copy">
+          <div class="da-gate-title">${escHtml(item.title)}</div>
+          <div class="da-gate-detail">${escHtml(item.detail)}</div>
+        </div>
+        <div class="da-gate-status ${statusClass}">${item.done ? 'ready' : (item.key === 'monthly' ? 'decide' : 'waiting')}</div>
+      </div>`;
+    }).join('');
+  }
+
+  const blockerEl = document.getElementById('da-launch-blockers');
+  if (blockerEl) {
+    blockerEl.textContent = gates.blockers.length
+      ? `Before deployment: ${gates.blockers.map((item) => item.title).join(' · ')}.`
+      : 'Launch path is clear once the client is approved.';
+  }
+
+  const primaryBtn = document.getElementById('da-primary-cta');
+  if (primaryBtn) {
+    primaryBtn.textContent = primary.label;
+    primaryBtn.disabled = !!primary.disabled;
+    primaryBtn.dataset.action = primary.key;
+  }
 
   const tag = document.getElementById('da-key-tag');
   if (tag) tag.textContent = _daActiveKey || 'Unsaved';
@@ -9489,10 +9680,11 @@ function _daSnapshotPayload() {
   const chosenCore = state.profile.core_offer || rec.core_offer;
   const chosenBundle = state.profile.bundle_key || rec.bundle_key;
   const chosenModules = state.profile.selected_modules.length ? state.profile.selected_modules : rec.selected_modules;
-  const price = (state.profile.price || '').trim() || String(rec.recommendedPrice || '');
+  const price = (state.profile.price || '').trim();
   return {
     snapshot: state.snapshot,
     discovery: state.discovery,
+    readiness: state.readiness,
     core_offer: chosenCore,
     bundle_key: chosenBundle,
     selected_modules: chosenModules,
@@ -9504,7 +9696,7 @@ function _daSnapshotPayload() {
     invoice_status: state.profile.invoice_status,
     deposit_status: state.profile.deposit_status,
     offer_notes: state.profile.offer_notes || rec.reason,
-    stage: state.profile.stage || 'discovered',
+    stage: state.profile.stage || 'call_booked',
   };
 }
 
@@ -9561,13 +9753,15 @@ async function daSaveNow(extraPatch = {}) {
         deposit_status: res.delivery_profile.deposit_status || profile.deposit_status,
         offer_notes: res.delivery_profile.offer_notes || profile.offer_notes,
         stage: res.delivery_profile.stage || profile.stage,
+        readiness: res.delivery_profile.readiness || profile.readiness || {},
       },
+      readiness: res.delivery_profile.readiness || state.readiness,
     }, { recommendation: _daRecommendationFromState(state) });
   }
   const badge = document.getElementById('da-status');
   if (badge) badge.textContent = `Saved ${_daActiveKey}`;
   const saveNote = document.getElementById('da-save-note');
-  if (saveNote) saveNote.textContent = `Saved ${_cvCoreOfferLabel(_daReadState().profile.core_offer || _daRecommendationFromState(_daReadState()).core_offer)} stack to durable delivery memory.`;
+  if (saveNote) saveNote.textContent = `Saved ${_daRecommendationFromState(_daReadState()).packageLabel || 'activation'} to durable delivery memory.`;
   if ((res.delivery_profile?.stage || '').match(/^(won|deployment_pending|live)$/)) {
     loadDeliveryBoard();
   }
@@ -9595,13 +9789,13 @@ function daUseRecommendation() {
   setVal('da-bundle-key', rec.bundle_key);
   ['missed_call_recovery','follow_up_reminder_setup','review_request_system','estimate_job_status_communication','client_approval_estimate_portal','mobile_admin_workflow_helper']
     .forEach((key) => setChecked(`da-module-${key}`, (rec.selected_modules || []).includes(key)));
-  if (!((document.getElementById('da-price')?.value || '').trim())) {
-    setVal('da-price', rec.recommendedPrice ? String(rec.recommendedPrice) : '');
-  }
   daScheduleSave();
 }
 
 async function daAction(action) {
+  const state = _daReadState();
+  const rec = _daRecommendationFromState(state);
+  const gates = _daDeploymentGates(state, rec);
   const patch = {};
   if (action === 'follow_up') {
     patch.stage = 'call_booked';
@@ -9613,9 +9807,15 @@ async function daAction(action) {
   } else if (action === 'convert') {
     patch.stage = 'won';
   } else if (action === 'deploy') {
+    if (!gates.launchReady) {
+      toast('Launch is gated until agreement, billing, and access are covered', 'err');
+      const status = document.getElementById('da-save-note');
+      if (status) status.textContent = `Blocked: ${gates.blockers.map((item) => item.title).join(' · ')}.`;
+      daRender();
+      return;
+    }
     patch.stage = 'deployment_pending';
   } else if (action === 'access') {
-    patch.stage = 'deployment_pending';
     patch.offer_notes = `${document.getElementById('da-offer-notes')?.value || ''}${document.getElementById('da-offer-notes')?.value ? '\n' : ''}Access requested during call.`;
   } else if (action === 'agreement') {
     patch.agreement_status = 'needs_agreement';
@@ -9628,6 +9828,14 @@ async function daAction(action) {
     const status = document.getElementById('da-save-note');
     if (status) status.textContent = `Action saved: ${action.replace('_', ' ')}.`;
   }
+}
+
+function daRunPrimaryAction() {
+  const state = _daReadState();
+  const rec = _daRecommendationFromState(state);
+  const gates = _daDeploymentGates(state, rec);
+  const primary = _daPrimaryAction(state, gates);
+  return daAction(primary.key);
 }
 
 async function daOpenBoard() {
@@ -14888,6 +15096,23 @@ function renderDeliveryBoard(data) {
   });
 }
 
+function _dbBlockersFromRow(row) {
+  const blockers = [];
+  if (row.agreement_status !== 'signed') blockers.push('agreement');
+  if (row.deposit_status !== 'received' && row.invoice_status !== 'paid') blockers.push('billing');
+  if (!(row.readiness && row.readiness.vendor_access_collected)) blockers.push('access');
+  return blockers;
+}
+
+function _dbNextStep(row) {
+  const blockers = _dbBlockersFromRow(row);
+  if (blockers.includes('agreement')) return { next: 'Get signed agreement', blocker: 'Agreement is still open.' };
+  if (blockers.includes('billing')) return { next: 'Collect invoice or deposit', blocker: 'Money gate is still open.' };
+  if (blockers.includes('access')) return { next: 'Request account access', blocker: 'Vendor access is not on file yet.' };
+  if ((row.readiness_pct || 0) < 100) return { next: 'Finish readiness checklist', blocker: 'Operational setup is still in progress.' };
+  return { next: row.stage === 'live' ? 'Monitor live delivery' : 'Ready for go-live handoff', blocker: '' };
+}
+
 function buildDbCard(row) {
   const card = document.createElement('div');
   card.className = 'db-card';
@@ -14895,16 +15120,18 @@ function buildDbCard(row) {
   const coreLabel = row.core_offer ? (_cvCoreOfferLabel(row.core_offer)) : 'Unassigned core offer';
   const bundleLabel = row.bundle_key ? _cvBundleLabel(row.bundle_key) : '';
   const moduleLabels = Array.isArray(row.selected_modules) ? row.selected_modules.map((key) => _cvModuleLabel(key)) : [];
-  const stackHtml = `<div class="db-card-stack">${escHtml(coreLabel)}${bundleLabel ? ` · ${escHtml(bundleLabel)}` : ''}</div>`;
+  const soldLabel = bundleLabel || coreLabel;
+  const stackHtml = `<div class="db-card-stack">${escHtml(soldLabel)}</div><div class="db-card-subtle">${escHtml(bundleLabel ? `Includes ${coreLabel}` : coreLabel)}</div>`;
   const moduleHtml = moduleLabels.length
     ? `<div class="db-card-mods">${escHtml(moduleLabels.join(' · '))}</div>`
     : `<div class="db-card-subtle">Specialty modules stay under the core offer.</div>`;
-  const priceHtml = row.price ? `<span>Price: ${escHtml(row.price)}</span>` : '';
-  const supportHtml = row.monthly_support ? `<span>Support: ${escHtml(row.monthly_fee || 'monthly')}</span>` : '';
-  const agreementHtml = row.agreement_status ? `<span>Agreement: ${escHtml(row.agreement_status)}</span>` : '';
-  const invoiceHtml = row.invoice_status ? `<span>Invoice: ${escHtml(row.invoice_status)}</span>` : '';
-  const depositHtml = row.deposit_status ? `<span>Deposit: ${escHtml(row.deposit_status)}</span>` : '';
-  const statusHtml = [priceHtml, supportHtml, agreementHtml, invoiceHtml, depositHtml].filter(Boolean).join(' · ');
+  const priceHtml = row.price ? `<span class="db-legal-chip">Price ${escHtml(row.price)}</span>` : '';
+  const supportHtml = row.monthly_support ? `<span class="db-legal-chip">Support ${escHtml(row.monthly_fee || 'monthly')}</span>` : '';
+  const agreementHtml = row.agreement_status ? `<span class="db-legal-chip">Agreement ${escHtml(row.agreement_status)}</span>` : '';
+  const invoiceHtml = row.invoice_status ? `<span class="db-legal-chip">Invoice ${escHtml(row.invoice_status)}</span>` : '';
+  const depositHtml = row.deposit_status ? `<span class="db-legal-chip">Deposit ${escHtml(row.deposit_status)}</span>` : '';
+  const statusHtml = [priceHtml, supportHtml, agreementHtml, invoiceHtml, depositHtml].filter(Boolean).join('');
+  const next = _dbNextStep(row);
   const checksHtml = _READINESS_KEYS.map(k => {
     const done = row.readiness && row.readiness[k];
     return `<div class="db-check${done?' done':''}" data-key="${k}" data-lead-key="${row.key}">
@@ -14915,11 +15142,17 @@ function buildDbCard(row) {
 
   card.innerHTML = `
     <div class="db-card-name">${row.business_name || '—'}</div>
-    <div class="db-card-meta">${[row.city, statusHtml || null].filter(Boolean).join(' · ') || '&nbsp;'}</div>
+    <div class="db-card-meta">${row.city || '&nbsp;'}</div>
     ${stackHtml}
     ${moduleHtml}
+    <div class="db-legal-row">${statusHtml || '<span class="db-legal-chip">No legal / money status set yet</span>'}</div>
     <div class="db-readiness-bar"><div class="db-readiness-fill" style="width:${pct}%"></div></div>
     <div class="db-readiness">${checksHtml}</div>
+    <div class="db-next-step">
+      <div class="db-next-label">Next step</div>
+      <div class="db-next-copy">${escHtml(next.next)}</div>
+      ${next.blocker ? `<div class="db-blocker">${escHtml(next.blocker)}</div>` : ''}
+    </div>
     <select class="db-card-stage-sel" onchange="moveDbCard(event,'${row.key}')" data-lead-key="${row.key}">
       <option value="">— Move stage —</option>
       <option value="won"${row.stage==='won'?' selected':''}>Won</option>
@@ -14975,7 +15208,7 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
     <div class="da-actions">
       <button class="btn btn-ghost" onclick="loadDeliveryActivation()">↻ Refresh</button>
       <button class="btn btn-ghost" onclick="daOpenBoard()">📦 Open Board</button>
-      <button class="btn btn-primary" onclick="daSaveOnly()">Save / Upsert Client</button>
+      <button class="btn btn-ghost" onclick="daSaveOnly()">Save Record</button>
     </div>
   </div>
 
@@ -15051,13 +15284,29 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
         <div class="da-card-hdr">
           <div>
             <div class="da-card-title">Stage 3 · Recommendation</div>
-            <div class="da-card-sub">Best-fit core offer first, bundle second, modules only when they matter.</div>
+            <div class="da-card-sub">One commercial answer you can read back on the call without mentally rebuilding the package.</div>
           </div>
           <button class="btn btn-ghost" style="font-size:11px" onclick="daUseRecommendation()">Use Recommendation</button>
         </div>
         <div class="da-stack-box">
-          <div class="da-stack-line" id="da-rec-line">No recommendation yet.</div>
-          <div class="da-stack-meta" id="da-rec-meta">Fill the snapshot and discovery fields to guide the stack.</div>
+          <div class="da-answer-grid">
+            <div class="da-answer-row">
+              <div class="da-answer-label">Recommended offer</div>
+              <div class="da-answer-copy" id="da-rec-package">No recommendation yet.</div>
+            </div>
+            <div class="da-answer-row">
+              <div class="da-answer-label">What it includes</div>
+              <div class="da-answer-copy" id="da-rec-includes">Fill the snapshot and discovery fields to guide the recommendation.</div>
+            </div>
+            <div class="da-answer-row">
+              <div class="da-answer-label">Suggested modules</div>
+              <div class="da-answer-copy" id="da-rec-modules">No specialty modules suggested right now.</div>
+            </div>
+            <div class="da-answer-row">
+              <div class="da-answer-label">Why this fits</div>
+              <div class="da-answer-subtle" id="da-rec-reason">Fill the snapshot and discovery fields to guide the stack.</div>
+            </div>
+          </div>
         </div>
         <div style="margin-top:10px" class="da-grid-2">
           <div>
@@ -15100,9 +15349,14 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
         <div class="da-card-hdr">
           <div>
             <div class="da-card-title">Pricing + Handoff</div>
-            <div class="da-card-sub">Use a live quote when it is obvious. Switch to a formal estimate when the call is still fuzzy.</div>
+            <div class="da-card-sub">Give the operator a safe pricing read, then guide the next step without overcommitting too early.</div>
           </div>
           <span class="tag" id="da-price-badge">Recommendation only</span>
+        </div>
+        <div>
+          <div class="da-mini">Suggested price guidance</div>
+          <div class="da-price-range" id="da-price-range">Recommendation only</div>
+          <div class="da-price-help" id="da-price-help">The range tightens or widens based on how mixed the scope sounds on the call.</div>
         </div>
         <div class="da-grid-2">
           <div>
@@ -15113,12 +15367,13 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
             </select>
           </div>
           <div>
-            <label class="da-mini">Exact Quote Override</label>
-            <input class="form-input" id="da-price" type="text" placeholder="Leave blank to use the recommendation" oninput="daScheduleSave()">
+            <label class="da-mini">Quoted Amount Override</label>
+            <input class="form-input" id="da-price" type="text" placeholder="Optional exact quote if you want to state it live" oninput="daScheduleSave()">
           </div>
           <div>
             <label class="da-mini">Monthly Support</label>
             <select class="form-select" id="da-monthly-support" onchange="daScheduleSave()">
+              <option value="">Decide later</option>
               <option value="false">No</option>
               <option value="true">Yes</option>
             </select>
@@ -15157,25 +15412,30 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
           <div>
             <label class="da-mini">Stage</label>
             <select class="form-select" id="da-stage" onchange="daScheduleSave()">
-              <option value="discovered">Discovered</option>
-              <option value="drafted">Drafted</option>
-              <option value="contacted">Contacted</option>
-              <option value="replied">Replied</option>
-              <option value="call_booked">Call Booked</option>
-              <option value="proposal_ready">Proposal Ready</option>
-              <option value="won">Won</option>
-              <option value="deployment_pending">Deployment Pending</option>
+              <option value="call_booked">Consultation Saved</option>
+              <option value="proposal_ready">Estimate in Progress</option>
+              <option value="won">Client Approved</option>
+              <option value="deployment_pending">Activation Pending</option>
               <option value="live">Live</option>
             </select>
           </div>
         </div>
+        <div class="da-gate-inline">
+          <input type="checkbox" id="da-access-collected" onchange="daScheduleSave()">
+          <label for="da-access-collected">Access already collected</label>
+        </div>
         <div style="margin-top:12px">
-          <div class="da-mini">Quick Actions</div>
-          <div class="da-actions">
+          <div class="da-mini">Activation Gates</div>
+          <div class="da-gates" id="da-gates"></div>
+          <div class="da-blocker" id="da-launch-blockers">Launch path is clear once the client is approved.</div>
+        </div>
+        <div class="da-primary-wrap">
+          <button class="btn btn-primary da-primary-btn" id="da-primary-cta" onclick="daRunPrimaryAction()">Save Consultation</button>
+          <div class="da-secondary-row">
             <button class="btn btn-ghost" onclick="daAction('follow_up')">Mark follow-up needed</button>
-            <button class="btn btn-ghost" onclick="daAction('estimate')">Create estimate / proposal draft</button>
-            <button class="btn btn-primary" onclick="daAction('convert')">Convert to client</button>
-            <button class="btn btn-secondary" onclick="daAction('deploy')">Launch deployment</button>
+            <button class="btn btn-ghost" onclick="daAction('estimate')">Create estimate</button>
+            <button class="btn btn-ghost" onclick="daAction('convert')">Convert to client</button>
+            <button class="btn btn-ghost" onclick="daAction('deploy')">Launch deployment</button>
             <button class="btn btn-ghost" onclick="daAction('access')">Request access</button>
             <button class="btn btn-ghost" onclick="daAction('agreement')">Mark agreement pending</button>
             <button class="btn btn-ghost" onclick="daAction('billing')">Mark invoice / deposit pending</button>
