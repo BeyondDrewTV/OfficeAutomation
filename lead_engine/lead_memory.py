@@ -457,7 +457,8 @@ def get_delivery_profile(row: dict) -> dict:
     Return saved delivery profile metadata for a lead.
 
     The returned dict can include:
-      package_key, offer_notes, stage, readiness{...}, updated_at
+      core_offer, bundle_key, selected_modules, price, agreement_status,
+      invoice_status, offer_notes, stage, readiness{...}, updated_at
 
     Returns {} when not set.
     """

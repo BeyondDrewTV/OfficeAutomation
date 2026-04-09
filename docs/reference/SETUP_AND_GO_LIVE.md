@@ -34,7 +34,8 @@ That's it. You just sent cold outreach. Do this every week in a new city or indu
 
 - Open the **🔁 Follow-Up** tab — overdue leads are flagged in red
 - Click **✉ Follow-Up Email** to log and re-engage
-- Check **💬 Conversations** for any replies — respond fast, that's where deals happen
+- Check **💬 Conversations** for any replies — respond fast, that is where the core offer, bundle, and modules get selected
+- Move won work into **Delivery** for the post-yes handoff
 
 ---
 

@@ -1327,12 +1327,54 @@ def api_sprint_next():
     lead["priority_label"]=lead.get("opp_priority",score_priority_label(lead.get("opp_score",0)))
     return jsonify({"ok":True,"lead":lead,"remaining":len(cands)-1})
 
-_DELIVERY_PACKAGE_KEYS = {
-    "missed_call_recovery",
-    "lead_intake_routing",
-    "followup_reactivation",
-    "review_request_system",
-    "estimate_job_status_communication",
+_DELIVERY_CORE_OFFERS = {
+    "presence_refresh": "Presence Refresh",
+    "starter_website": "Starter Website",
+    "lead_contact_setup": "Lead & Contact Setup",
+}
+_DELIVERY_BUNDLES = {
+    "basic_cleanup": {"label": "Basic Cleanup", "core_offer": "presence_refresh"},
+    "presence_website": {"label": "Presence + Website", "core_offer": "starter_website"},
+    "full_starter_package": {"label": "Full Starter Package", "core_offer": "lead_contact_setup"},
+}
+_DELIVERY_SPECIALTY_MODULES = {
+    "missed_call_recovery": "Missed Call Recovery",
+    "follow_up_reminder_setup": "Follow-Up & Reminder Setup",
+    "review_request_system": "Review Request System",
+    "estimate_job_status_communication": "Estimate & Job Status Communication",
+    "client_approval_estimate_portal": "Client Approval / Estimate Portal",
+    "mobile_admin_workflow_helper": "Mobile Admin / owner workflow helper",
+}
+_DELIVERY_CORE_KEYS = set(_DELIVERY_CORE_OFFERS)
+_DELIVERY_BUNDLE_KEYS = set(_DELIVERY_BUNDLES)
+_DELIVERY_SPECIALTY_KEYS = set(_DELIVERY_SPECIALTY_MODULES)
+_DELIVERY_BUNDLE_BY_CORE = {bundle["core_offer"]: key for key, bundle in _DELIVERY_BUNDLES.items()}
+_LEGACY_PACKAGE_STACKS = {
+    "missed_call_recovery": {
+        "core_offer": "lead_contact_setup",
+        "bundle_key": "full_starter_package",
+        "selected_modules": ["missed_call_recovery"],
+    },
+    "lead_intake_routing": {
+        "core_offer": "lead_contact_setup",
+        "bundle_key": "full_starter_package",
+        "selected_modules": ["mobile_admin_workflow_helper"],
+    },
+    "followup_reactivation": {
+        "core_offer": "lead_contact_setup",
+        "bundle_key": "full_starter_package",
+        "selected_modules": ["follow_up_reminder_setup"],
+    },
+    "review_request_system": {
+        "core_offer": "presence_refresh",
+        "bundle_key": "basic_cleanup",
+        "selected_modules": ["review_request_system"],
+    },
+    "estimate_job_status_communication": {
+        "core_offer": "lead_contact_setup",
+        "bundle_key": "full_starter_package",
+        "selected_modules": ["estimate_job_status_communication"],
+    },
 }
 _DELIVERY_STAGES = {
     "discovered",
@@ -1358,12 +1400,49 @@ _DELIVERY_READINESS_KEYS = (
 def _delivery_profile_default(row: dict | None = None) -> dict:
     is_replied = ((row or {}).get("replied") or "").strip().lower() == "true"
     return {
-        "package_key": "",
+        "core_offer": "",
+        "bundle_key": "",
+        "selected_modules": [],
+        "price": "",
+        "agreement_status": "",
+        "invoice_status": "",
         "offer_notes": "",
         "stage": "replied" if is_replied else "discovered",
         "readiness": {k: False for k in _DELIVERY_READINESS_KEYS},
         "updated_at": "",
     }
+
+
+def _legacy_stack_for_package(package_key: str) -> dict:
+    return dict(_LEGACY_PACKAGE_STACKS.get(package_key or "", {}))
+
+
+def _normalize_selected_modules(value) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    seen = set()
+    modules = []
+    for item in value:
+        if not isinstance(item, str):
+            continue
+        key = item.strip().lower()
+        if key in _DELIVERY_SPECIALTY_KEYS and key not in seen:
+            seen.add(key)
+            modules.append(key)
+    return modules
+
+
+def _finalize_delivery_stack_patch(clean_patch: dict, current_profile: dict) -> tuple[dict, str | None]:
+    merged = dict(current_profile or {})
+    merged.update(clean_patch)
+    bundle_key = (merged.get("bundle_key") or "").strip().lower()
+    core_offer = (merged.get("core_offer") or "").strip().lower()
+    if bundle_key:
+        bundle_core = _DELIVERY_BUNDLES[bundle_key]["core_offer"]
+        if core_offer and core_offer != bundle_core:
+            return clean_patch, "bundle_key does not match core_offer"
+        clean_patch["core_offer"] = core_offer or bundle_core
+    return clean_patch, None
 
 
 def _normalize_delivery_profile(raw_profile: dict | None, row: dict | None = None) -> dict:
@@ -1372,8 +1451,42 @@ def _normalize_delivery_profile(raw_profile: dict | None, row: dict | None = Non
         return base
 
     package_key = (raw_profile.get("package_key") or "").strip().lower()
-    if package_key in _DELIVERY_PACKAGE_KEYS:
-        base["package_key"] = package_key
+    legacy_stack = _legacy_stack_for_package(package_key)
+
+    core_offer = (raw_profile.get("core_offer") or "").strip().lower()
+    if core_offer in _DELIVERY_CORE_KEYS:
+        base["core_offer"] = core_offer
+
+    bundle_key = (raw_profile.get("bundle_key") or "").strip().lower()
+    if bundle_key in _DELIVERY_BUNDLE_KEYS:
+        base["bundle_key"] = bundle_key
+
+    if not base["core_offer"] and base["bundle_key"]:
+        base["core_offer"] = _DELIVERY_BUNDLES[base["bundle_key"]]["core_offer"]
+
+    if not base["core_offer"] and legacy_stack.get("core_offer"):
+        base["core_offer"] = legacy_stack["core_offer"]
+    if not base["bundle_key"] and legacy_stack.get("bundle_key"):
+        base["bundle_key"] = legacy_stack["bundle_key"]
+
+    selected_modules = _normalize_selected_modules(raw_profile.get("selected_modules"))
+    if not selected_modules and legacy_stack.get("selected_modules"):
+        selected_modules = _normalize_selected_modules(legacy_stack["selected_modules"])
+    base["selected_modules"] = selected_modules
+
+    price = raw_profile.get("price")
+    if isinstance(price, (int, float)):
+        base["price"] = str(price)
+    elif isinstance(price, str):
+        base["price"] = price.strip()
+
+    agreement_status = raw_profile.get("agreement_status")
+    if isinstance(agreement_status, str):
+        base["agreement_status"] = agreement_status.strip()
+
+    invoice_status = raw_profile.get("invoice_status")
+    if isinstance(invoice_status, str):
+        base["invoice_status"] = invoice_status.strip()
 
     offer_notes = raw_profile.get("offer_notes")
     if isinstance(offer_notes, str):
@@ -1438,12 +1551,60 @@ def api_update_delivery_profile():
         return jsonify({"ok": False, "error": "profile must be an object"}), 400
 
     clean_patch: dict = {}
+    current_profile = _normalize_delivery_profile(_lm.get_delivery_profile(rows[idx]), rows[idx])
 
     if "package_key" in patch:
         package_key = (patch.get("package_key") or "").strip().lower()
-        if package_key and package_key not in _DELIVERY_PACKAGE_KEYS:
-            return jsonify({"ok": False, "error": "Invalid package_key"}), 400
-        clean_patch["package_key"] = package_key
+        if package_key:
+            legacy_stack = _legacy_stack_for_package(package_key)
+            if not legacy_stack:
+                return jsonify({"ok": False, "error": "Invalid package_key"}), 400
+            clean_patch.update(legacy_stack)
+
+    if "core_offer" in patch:
+        core_offer = (patch.get("core_offer") or "").strip().lower()
+        if core_offer and core_offer not in _DELIVERY_CORE_KEYS:
+            return jsonify({"ok": False, "error": "Invalid core_offer"}), 400
+        clean_patch["core_offer"] = core_offer
+
+    if "bundle_key" in patch:
+        bundle_key = (patch.get("bundle_key") or "").strip().lower()
+        if bundle_key and bundle_key not in _DELIVERY_BUNDLE_KEYS:
+            return jsonify({"ok": False, "error": "Invalid bundle_key"}), 400
+        clean_patch["bundle_key"] = bundle_key
+
+    if "selected_modules" in patch:
+        selected_modules = patch.get("selected_modules")
+        if not isinstance(selected_modules, list):
+            return jsonify({"ok": False, "error": "selected_modules must be an array"}), 400
+        for item in selected_modules:
+            if not isinstance(item, str) or item.strip().lower() not in _DELIVERY_SPECIALTY_KEYS:
+                return jsonify({"ok": False, "error": "selected_modules contains invalid values"}), 400
+        clean_modules = _normalize_selected_modules(selected_modules)
+        clean_patch["selected_modules"] = clean_modules
+
+    if "price" in patch:
+        price = patch.get("price")
+        if isinstance(price, (int, float)):
+            clean_patch["price"] = str(price)
+        elif isinstance(price, str):
+            clean_patch["price"] = price.strip()[:80]
+        elif price in (None, ""):
+            clean_patch["price"] = ""
+        else:
+            return jsonify({"ok": False, "error": "price must be a string or number"}), 400
+
+    if "agreement_status" in patch:
+        agreement_status = patch.get("agreement_status")
+        if not isinstance(agreement_status, str):
+            return jsonify({"ok": False, "error": "agreement_status must be a string"}), 400
+        clean_patch["agreement_status"] = agreement_status.strip()[:40]
+
+    if "invoice_status" in patch:
+        invoice_status = patch.get("invoice_status")
+        if not isinstance(invoice_status, str):
+            return jsonify({"ok": False, "error": "invoice_status must be a string"}), 400
+        clean_patch["invoice_status"] = invoice_status.strip()[:40]
 
     if "offer_notes" in patch:
         offer_notes = patch.get("offer_notes")
@@ -1468,9 +1629,12 @@ def api_update_delivery_profile():
             clean_readiness[key] = bool(value)
         clean_patch["readiness"] = clean_readiness
 
+    clean_patch, error = _finalize_delivery_stack_patch(clean_patch, current_profile)
+    if error:
+        return jsonify({"ok": False, "error": error}), 400
+
     if not clean_patch:
-        current = _normalize_delivery_profile(_lm.get_delivery_profile(rows[idx]), rows[idx])
-        return jsonify({"ok": True, "delivery_profile": current})
+        return jsonify({"ok": True, "delivery_profile": current_profile})
 
     record = _lm.update_delivery_profile(rows[idx], clean_patch)
     if not record:
@@ -1511,7 +1675,12 @@ def api_delivery_board():
             "website":       record.get("website", ""),
             "phone":         record.get("phone", ""),
             "stage":         stage,
-            "package_key":   profile.get("package_key", ""),
+            "core_offer":    profile.get("core_offer", ""),
+            "bundle_key":    profile.get("bundle_key", ""),
+            "selected_modules": profile.get("selected_modules", []),
+            "price":         profile.get("price", ""),
+            "agreement_status": profile.get("agreement_status", ""),
+            "invoice_status": profile.get("invoice_status", ""),
             "offer_notes":   profile.get("offer_notes", ""),
             "readiness":     readiness,
             "readiness_pct": round(completed / total_keys * 100) if total_keys else 0,
@@ -1540,7 +1709,7 @@ def api_update_delivery_profile_by_key():
     Update delivery profile fields for a lead identified by lead_key string.
     Used by the delivery board where only the key (not a queue row) is available.
 
-    Input:  { key, profile: { stage?, package_key?, offer_notes?, readiness? } }
+    Input:  { key, profile: { stage?, core_offer?, bundle_key?, selected_modules?, price?, agreement_status?, invoice_status?, offer_notes?, readiness? } }
     Output: { ok, delivery_profile }
     """
     d     = request.json or {}
@@ -1553,12 +1722,61 @@ def api_update_delivery_profile_by_key():
         return jsonify({"ok": False, "error": "profile must be an object"}), 400
 
     clean_patch: dict = {}
+    record = _lm.get_all_records().get(key)
+    current_profile = _normalize_delivery_profile(record.get("delivery_profile") if isinstance(record, dict) else None, record if isinstance(record, dict) else None)
 
     if "package_key" in patch:
         package_key = (patch.get("package_key") or "").strip().lower()
-        if package_key and package_key not in _DELIVERY_PACKAGE_KEYS:
-            return jsonify({"ok": False, "error": "Invalid package_key"}), 400
-        clean_patch["package_key"] = package_key
+        if package_key:
+            legacy_stack = _legacy_stack_for_package(package_key)
+            if not legacy_stack:
+                return jsonify({"ok": False, "error": "Invalid package_key"}), 400
+            clean_patch.update(legacy_stack)
+
+    if "core_offer" in patch:
+        core_offer = (patch.get("core_offer") or "").strip().lower()
+        if core_offer and core_offer not in _DELIVERY_CORE_KEYS:
+            return jsonify({"ok": False, "error": "Invalid core_offer"}), 400
+        clean_patch["core_offer"] = core_offer
+
+    if "bundle_key" in patch:
+        bundle_key = (patch.get("bundle_key") or "").strip().lower()
+        if bundle_key and bundle_key not in _DELIVERY_BUNDLE_KEYS:
+            return jsonify({"ok": False, "error": "Invalid bundle_key"}), 400
+        clean_patch["bundle_key"] = bundle_key
+
+    if "selected_modules" in patch:
+        selected_modules = patch.get("selected_modules")
+        if not isinstance(selected_modules, list):
+            return jsonify({"ok": False, "error": "selected_modules must be an array"}), 400
+        for item in selected_modules:
+            if not isinstance(item, str) or item.strip().lower() not in _DELIVERY_SPECIALTY_KEYS:
+                return jsonify({"ok": False, "error": "selected_modules contains invalid values"}), 400
+        clean_modules = _normalize_selected_modules(selected_modules)
+        clean_patch["selected_modules"] = clean_modules
+
+    if "price" in patch:
+        price = patch.get("price")
+        if isinstance(price, (int, float)):
+            clean_patch["price"] = str(price)
+        elif isinstance(price, str):
+            clean_patch["price"] = price.strip()[:80]
+        elif price in (None, ""):
+            clean_patch["price"] = ""
+        else:
+            return jsonify({"ok": False, "error": "price must be a string or number"}), 400
+
+    if "agreement_status" in patch:
+        agreement_status = patch.get("agreement_status")
+        if not isinstance(agreement_status, str):
+            return jsonify({"ok": False, "error": "agreement_status must be a string"}), 400
+        clean_patch["agreement_status"] = agreement_status.strip()[:40]
+
+    if "invoice_status" in patch:
+        invoice_status = patch.get("invoice_status")
+        if not isinstance(invoice_status, str):
+            return jsonify({"ok": False, "error": "invoice_status must be a string"}), 400
+        clean_patch["invoice_status"] = invoice_status.strip()[:40]
 
     if "offer_notes" in patch:
         offer_notes = patch.get("offer_notes")
@@ -1582,6 +1800,10 @@ def api_update_delivery_profile_by_key():
                 continue
             clean_readiness[rkey] = bool(value)
         clean_patch["readiness"] = clean_readiness
+
+    clean_patch, error = _finalize_delivery_stack_patch(clean_patch, current_profile)
+    if error:
+        return jsonify({"ok": False, "error": error}), 400
 
     if not clean_patch:
         return jsonify({"ok": False, "error": "No valid fields in profile patch"}), 400

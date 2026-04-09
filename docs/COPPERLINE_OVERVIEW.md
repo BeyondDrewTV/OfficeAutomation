@@ -2,15 +2,13 @@
 
 ## What Copperline Is
 
-## What Copperline Is
+Copperline is the internal outbound acquisition engine for Drew's local business digital presence + customer flow offer. It is not a product catalog. It is the system Drew built to find, contact, and convert local service business owners into fixed-price project work.
 
-Copperline is the internal outbound acquisition engine for a one-person workflow consulting practice. It is not a product — it is the system Drew built to find, contact, and convert local service business owners into consulting clients.
+What is being sold through this pipeline: a free consultation, a simple recommendation, and then project work. The commercial layer stays clean at the top level: core offers and bundles lead the conversation, and specialty modules sit underneath as delivery pieces when they strengthen the job.
 
-What is being sold through this pipeline: a personalized one-on-one engagement. Drew gets on a call with the owner or relevant decision-maker, walks through how the business actually operates, identifies the operational gaps or friction points that could be automated or improved, and builds a custom implementation plan. If the owner wants to move forward, Drew builds and maintains whatever makes sense for their specific operation — for a monthly fee.
+The cold emails produced by this system are not product pitches. They are soft asks for a conversation. The voice is casual, specific to that business, and never mentions pricing or a menu of systems.
 
-The cold emails produced by this system are NOT product pitches. They are soft asks for a conversation. The voice is casual, specific to that business, and never mentions products, pricing, or "solutions." The missed-call texting service is one possible deliverable Drew might build for a client — it is not what is being sold.
-
-The system handles the full acquisition loop: discovery → outreach → follow-up → conversation → custom plan → implementation → monthly maintenance.
+The system handles the full acquisition loop: discovery -> outreach -> follow-up -> conversation -> recommendation -> project work -> delivery modules.
 
 ---
 
@@ -18,14 +16,15 @@ The system handles the full acquisition loop: discovery → outreach → follow-
 
 ```
 discover businesses via map
-  → create prospect record in prospects.csv
-    → generate cold email draft
-      → review draft in dashboard
-        → approve and send via Gmail
-          → log contact attempt
-            → follow-up scheduled automatically
-              → close client
-                → deploy missed-call texting system
+  -> create prospect record in prospects.csv
+    -> generate cold email draft
+      -> review draft in dashboard
+        -> approve and send via Gmail
+          -> log contact attempt
+            -> follow-up scheduled automatically
+              -> move into Conversations
+                -> package the core offer, bundle, and modules
+                  -> hand off to Delivery
 ```
 
 ---
@@ -35,7 +34,7 @@ discover businesses via map
 - Dashboard is the command center for all operations
 - No hidden background automation without operator awareness
 - Email sending is manual until draft quality is proven reliable
-- Minimize CLI usage — all actions happen in the dashboard
+- Keep the commercial front door simple
 - Cold emails must sound human, under ~90 words, soft ask
 
 ---
@@ -45,7 +44,7 @@ discover businesses via map
 ```
 OfficeAutomation/
 ├── lead_engine/
-│   ├── run_lead_engine.py          # Core engine — protected
+│   ├── run_lead_engine.py          # Core engine - protected
 │   ├── dashboard_server.py         # Flask API
 │   ├── dashboard_static/
 │   │   └── index.html              # Full frontend (single file)

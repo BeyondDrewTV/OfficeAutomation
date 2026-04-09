@@ -26,8 +26,8 @@ Copperline is the live contractor-outreach system inside OfficeAutomation. It di
 
 - Command Center: territory map, discovery, queue rail
 - Pipeline / Queue: repair, approve, schedule, review
-- Conversations: reply handling and commercial follow-through
-- Delivery: downstream service handoff board
+- Conversations: reply handling and commercial stack selection
+- Delivery: downstream post-yes handoff board
 
 ## Queue Truth That Matters
 

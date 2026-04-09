@@ -12,6 +12,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 :root{
@@ -826,15 +828,21 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cv-item-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
 .cv-chip{display:inline-flex;align-items:center;padding:1px 7px;border-radius:10px;font-size:9px;font-weight:700;letter-spacing:.03em;background:var(--surface3);color:var(--muted);border:1px solid var(--border)}
 .cv-chip.offer{background:rgba(184,115,51,.13);color:var(--copper);border-color:rgba(184,115,51,.25)}
+.cv-chip.bundle{background:rgba(79,142,247,.13);color:var(--blue);border-color:rgba(79,142,247,.25)}
+.cv-chip.module{background:rgba(62,207,114,.12);color:var(--green);border-color:rgba(62,207,114,.22)}
 .cv-chip.stage{background:rgba(79,142,247,.15);color:var(--blue);border-color:rgba(79,142,247,.28)}
 .cv-offer-block{border:1px solid rgba(79,142,247,.26);background:rgba(79,142,247,.08);border-radius:var(--rs);padding:12px 14px}
 .cv-offer-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
 .cv-offer-sub{font-size:11px;color:var(--muted);margin-top:2px}
 .cv-offer-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 @media(max-width:700px){.cv-offer-grid{grid-template-columns:1fr}}
+.cv-stack-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+@media(max-width:860px){.cv-stack-grid{grid-template-columns:1fr}}
 .cv-mini-label{display:block;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .cv-select{width:100%;padding:7px 9px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:12px;outline:none}
 .cv-select:focus{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-glow)}
+.cv-module-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+@media(max-width:700px){.cv-module-grid{grid-template-columns:1fr}}
 .cv-readiness-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
 @media(max-width:700px){.cv-readiness-list{grid-template-columns:1fr}}
 .cv-rdy-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text);padding:5px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs)}
@@ -842,6 +850,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cv-readiness-progress{height:5px;background:var(--surface3);border-radius:999px;margin-top:8px;overflow:hidden}
 .cv-readiness-fill{height:100%;background:var(--blue);transition:width .16s ease}
 .cv-readiness-count{font-size:10px;color:var(--muted);margin-top:6px}
+.db-card-stack{margin-top:6px;font-size:11px;color:var(--text);font-weight:600;line-height:1.5}
+.db-card-mods{margin-top:4px;font-size:10px;color:var(--muted);line-height:1.5}
+.db-card-subtle{margin-top:4px;font-size:10px;color:var(--muted);line-height:1.5}
 /* ── Pass 66: Command Bar ─────────────────────────────────────────── */
 .cmd-bar{display:flex;align-items:center;gap:10px;padding:12px 16px;background:linear-gradient(135deg,rgba(12,14,20,.98),rgba(18,22,32,.95));border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;flex-wrap:wrap;box-shadow:0 4px 24px rgba(0,0,0,.4)}
 .cmd-territory{display:flex;align-items:center;gap:8px;flex:1;min-width:180px;padding:7px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);transition:.15s}
@@ -929,18 +940,24 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cc-shell-mode.active{background:rgba(79,142,247,.16);color:#dbeafe;box-shadow:inset 0 0 0 1px rgba(79,142,247,.28)}
 .cc-shell-mode.is-future{opacity:.5;cursor:default}
 .cc-shell-scope{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);min-width:0}
+.cc-shell-posture{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;border:1px solid rgba(79,142,247,.22);background:rgba(79,142,247,.08);font-size:10px;color:#dbeafe;font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
 .cc-shell-scope-dot{color:var(--copper);font-size:11px}
 .cc-shell-scope-text{font-size:11px;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
 .cc-shell-scope-meta{font-size:10px;color:var(--dim);font-family:var(--mono);white-space:nowrap}
-.cc-main-row{display:flex;flex:1;min-height:0;overflow:hidden;padding:10px 10px 0;gap:10px}
+.cc-main-row{display:grid;grid-template-columns:minmax(176px,192px) minmax(0,1fr);gap:10px;flex:1;min-height:0;overflow:hidden;padding:10px 10px 0;align-items:stretch;position:relative}
+.cc-wrap.mode-territory .cc-tp-pane{display:flex}
+.cc-wrap.mode-territory .cc-journal-pane,.cc-wrap.mode-territory .cc-ops-dossier{display:flex}
+.cc-wrap.mode-territory .cc-ops-drawer{display:flex}
 .cc-wrap.mode-operations .cc-tp-pane{display:none}
 .cc-wrap.mode-operations .cc-journal-pane,.cc-wrap.mode-operations .cc-ops-dossier{display:flex}
 .cc-wrap.mode-operations .cc-ops-drawer{display:flex}
-.cc-wrap.mode-territory .cc-journal-pane,.cc-wrap.mode-territory .cc-ops-dossier,.cc-wrap.mode-territory .cc-ops-drawer{display:none}
-.cc-wrap.mode-territory .cc-tp-pane{display:flex}
-.cc-wrap.mode-focus .cc-journal-pane{width:220px}
+.cc-wrap.mode-focus .cc-journal-pane{width:192px}
 .cc-wrap.mode-focus .cc-ops-dossier{width:420px}
-.cc-journal-pane{width:258px;flex-shrink:0;display:none;flex-direction:column;background:linear-gradient(180deg,rgba(19,24,33,.98),rgba(13,17,24,.97));border:1px solid rgba(255,255,255,.07);border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.26)}
+.cc-wrap.state-survey .cc-journal-pane{width:176px}
+.cc-wrap.state-territory .cc-journal-pane{width:184px}
+.cc-wrap.state-front .cc-journal-pane{width:192px}
+.cc-wrap.state-business .cc-journal-pane{width:176px}
+.cc-journal-pane{width:176px;flex-shrink:0;display:none;flex-direction:column;background:linear-gradient(180deg,rgba(19,24,33,.98),rgba(13,17,24,.97));border:1px solid rgba(255,255,255,.07);border-radius:18px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.26);transition:width .18s ease,opacity .18s ease}
 .cc-journal-head{padding:12px 13px 10px;border-bottom:1px solid rgba(255,255,255,.06)}
 .cc-journal-kicker{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--copper)}
 .cc-journal-title{font-size:16px;font-weight:700;color:#f4f7fb;margin-top:4px}
@@ -958,13 +975,14 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cc-journal-note{font-size:10px;color:var(--muted);line-height:1.45}
 .cc-journal-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px;color:var(--dim)}
 .cc-journal-meta strong{color:var(--text);font-weight:700}
-.cc-map-pane{flex:1;min-width:480px;display:flex;flex-direction:column;padding:0;box-sizing:border-box;min-height:0;gap:8px}
-.cc-map-pane #map-layout{flex:1;min-height:0;height:100%}
-.cc-map-pane .map-page-wrap{padding:0;flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.cc-map-pane{flex:1;min-width:0;display:flex;flex-direction:column;padding:0;box-sizing:border-box;min-height:0;gap:8px;position:relative}
+.cc-map-pane .map-page-wrap{padding:0;flex:1;display:flex;flex-direction:column;min-height:0;overflow:visible;position:relative}
+.cc-map-shell{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;overflow:visible}
+.cc-map-pane #map-layout{flex:1;min-height:0;height:100%;position:relative}
 .cc-map-pane #map-status{flex-shrink:0;padding:3px 4px;font-size:10px}
 .cc-map-pane #map-territory-legend,.cc-map-pane #map-history{display:none!important}
 .cc-map-pane .cmd-bar{border-radius:16px 16px 12px 12px;margin-bottom:0;padding:8px 12px;background:linear-gradient(180deg,rgba(22,28,38,.98),rgba(14,18,26,.96));border:1px solid rgba(255,255,255,.08);box-shadow:0 12px 28px rgba(0,0,0,.24)}
-.cc-ops-runway{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.cc-ops-runway{position:absolute;left:12px;right:12px;top:56px;z-index:140;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;pointer-events:auto}
 .cc-runway-card{padding:9px 10px;border-radius:14px;background:linear-gradient(180deg,rgba(27,33,45,.96),rgba(17,22,30,.94));border:1px solid rgba(255,255,255,.08);box-shadow:0 10px 24px rgba(0,0,0,.18)}
 .cc-runway-card.ready{background:linear-gradient(180deg,rgba(26,49,35,.96),rgba(15,30,21,.94));border-color:rgba(62,207,114,.2)}
 .cc-runway-card.warn{background:linear-gradient(180deg,rgba(52,38,20,.96),rgba(27,21,14,.94));border-color:rgba(245,166,35,.22)}
@@ -979,7 +997,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cc-runway-card.clickable:hover{border-color:rgba(255,255,255,.15);transform:translateY(-1px)}
 .cc-runway-card.active{box-shadow:inset 0 0 0 1px rgba(79,142,247,.28)}
 /* Territory planner — supporting role, not competing */
-.cc-tp-pane{width:280px;flex-shrink:0;display:none;flex-direction:column;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.97));overflow:hidden}
+.cc-tp-pane{width:280px;flex-shrink:0;display:none;flex-direction:column;border:1px solid rgba(255,255,255,.07);border-radius:18px;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.97));overflow:hidden;position:absolute;right:10px;top:10px;bottom:10px;z-index:120}
 .cc-tp-header{padding:8px 12px 7px;border-top:2px solid var(--copper);border-bottom:1px solid var(--border);flex-shrink:0}
 .cc-tp-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text);margin-bottom:5px}
 .cc-tp-addrow{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
@@ -989,7 +1007,11 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cc-tp-body{flex:1;overflow-y:auto;padding:6px 8px 40px}
 .cc-tp-body .tp-card{margin-bottom:8px}
 .tp-card.cc-selected{border-color:var(--copper)!important;box-shadow:0 0 0 1px var(--copper),0 4px 16px rgba(184,115,51,.2)!important}
-.cc-ops-dossier{width:360px;flex-shrink:0;display:none;flex-direction:column;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:linear-gradient(180deg,rgba(17,23,33,.98),rgba(12,16,23,.97));overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.22)}
+.cc-wrap.state-survey .cc-ops-dossier{width:300px}
+.cc-wrap.state-territory .cc-ops-dossier{width:420px}
+.cc-wrap.state-front .cc-ops-dossier{width:420px}
+.cc-wrap.state-business .cc-ops-dossier{width:560px}
+.cc-ops-dossier{width:300px;flex-shrink:0;display:none;flex-direction:column;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:linear-gradient(180deg,rgba(17,23,33,.98),rgba(12,16,23,.97));overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.22);transition:width .18s ease,opacity .18s ease;position:absolute;right:10px;top:10px;bottom:10px;z-index:120}
 .cc-dossier-head{padding:12px 13px 10px;border-bottom:1px solid rgba(255,255,255,.06)}
 .cc-dossier-kicker{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue)}
 .cc-dossier-title{font-size:16px;font-weight:700;color:#f4f7fb;margin-top:4px}
@@ -1000,7 +1022,10 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .cc-dossier-dock{flex:1;min-height:0;display:flex;flex-direction:column}
 .cc-dossier-empty{flex:1;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:22px 18px;color:var(--muted);gap:8px}
 .cc-dossier-empty strong{font-size:15px;color:#f3f6fb}
-.cc-ops-drawer{display:none;flex-shrink:0;flex-direction:column;min-height:210px;max-height:34vh;margin:10px 10px 0;border:1px solid rgba(255,255,255,.08);border-radius:18px 18px 0 0;background:linear-gradient(180deg,rgba(18,23,32,.98),rgba(13,17,24,.98));overflow:hidden;box-shadow:0 -8px 22px rgba(0,0,0,.18)}
+.cc-ops-drawer{display:none;position:absolute;left:12px;right:12px;bottom:12px;z-index:170;flex-direction:column;min-height:210px;max-height:min(34vh,320px);border:1px solid rgba(255,255,255,.08);border-radius:18px 18px 14px 14px;background:linear-gradient(180deg,rgba(18,23,32,.98),rgba(13,17,24,.98));overflow:hidden;box-shadow:0 -8px 22px rgba(0,0,0,.18);transition:transform .18s ease,opacity .18s ease,box-shadow .18s ease}
+.cc-wrap.state-survey .cc-ops-drawer{transform:translateY(calc(100% - 44px));opacity:.94}
+.cc-wrap.state-territory .cc-ops-drawer{transform:translateY(calc(100% - 44px));opacity:.96}
+.cc-wrap.state-front .cc-ops-drawer,.cc-wrap.state-business .cc-ops-drawer,.cc-ops-drawer.is-open{transform:none;opacity:1}
 .cc-drawer-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.06)}
 .cc-drawer-title{font-size:15px;font-weight:700;color:#f4f7fb}
 .cc-drawer-meta{font-size:11px;color:var(--muted);line-height:1.45;margin-top:3px}
@@ -1078,8 +1103,32 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .tp-ind-row-clickable:hover td{background:rgba(184,115,51,.06)}
 .map-page-wrap{width:100%;padding:12px 16px 0;box-sizing:border-box}
 /* Pass 83: single canonical #map-layout — CC uses .cc-map-pane override */
-#map-layout{display:flex;gap:0;align-items:stretch;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;height:calc(100vh - 230px);min-height:480px;box-shadow:var(--card-shadow)}
-#map-container{flex:1;height:100%;min-height:480px;min-width:0;overflow:hidden}
+#map-layout{display:flex;gap:0;align-items:stretch;border:1px solid rgba(127,153,192,.14);border-radius:18px;overflow:hidden;height:calc(100vh - 230px);min-height:480px;box-shadow:0 20px 60px rgba(0,0,0,.38), inset 0 0 0 1px rgba(255,255,255,.02);background:linear-gradient(180deg,rgba(9,13,20,.96),rgba(6,9,15,.98))}
+#map-container{position:relative;flex:1;height:100%;min-height:480px;min-width:0;overflow:hidden;background:
+  radial-gradient(circle at 18% 20%, rgba(62,207,114,.06), transparent 28%),
+  radial-gradient(circle at 78% 28%, rgba(79,142,247,.08), transparent 34%),
+  linear-gradient(180deg, #06111b 0%, #081019 32%, #060b12 100%)}
+#map-container::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:
+  linear-gradient(115deg, rgba(255,255,255,.03), transparent 24%, transparent 76%, rgba(255,255,255,.025)),
+  repeating-linear-gradient(135deg, rgba(160,181,214,.028) 0 1px, transparent 1px 26px),
+  radial-gradient(circle at 50% 120%, rgba(0,0,0,.55), transparent 52%);
+  opacity:.7;mix-blend-mode:screen}
+#map-container::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:
+  linear-gradient(180deg, rgba(3,7,13,.08), rgba(3,7,13,.36) 50%, rgba(0,0,0,.52)),
+  radial-gradient(circle at 50% 50%, transparent 48%, rgba(0,0,0,.46) 100%);
+}
+#map-base-gl{position:absolute;inset:0;z-index:0}
+#map-base-gl .maplibregl-canvas{filter:saturate(.84) contrast(1.12) brightness(.9)}
+#map-base-gl .maplibregl-control-container{display:none}
+#map-container .leaflet-pane,
+#map-container .leaflet-top,
+#map-container .leaflet-bottom{z-index:2}
+#map-container .leaflet-control-container{z-index:3}
+#map-container .leaflet-container{background:transparent}
+#map-container.hybrid-map .leaflet-pane.leaflet-tile-pane{opacity:0}
+#map-container .leaflet-pane.leaflet-shadow-pane{opacity:.35}
+#map-container .leaflet-pane.leaflet-overlay-pane path{vector-effect:non-scaling-stroke}
+#map-container .leaflet-pane.leaflet-marker-pane{filter:drop-shadow(0 10px 18px rgba(0,0,0,.35))}
 #map-results-panel{width:340px;flex-shrink:0;background:linear-gradient(180deg,var(--surface),rgba(9,11,16,.97));border-left:1px solid var(--border);display:none;flex-direction:column;height:100%}
 #map-results-panel.visible{display:flex}
 .mrp-hdr{padding:11px 14px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.07em;flex-shrink:0;background:linear-gradient(180deg,var(--surface2),var(--surface))}
@@ -1288,6 +1337,15 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .map-legend{position:absolute;bottom:28px;left:12px;z-index:500;background:rgba(8,10,16,.92);border:1px solid rgba(184,115,51,.2);border-radius:8px;padding:10px 12px;pointer-events:none;backdrop-filter:blur(4px)}
 .map-legend-row{display:flex;align-items:center;gap:8px;margin-top:5px;font-size:11px;color:var(--text)}
 .map-legend-dot{width:11px;height:11px;border-radius:3px;flex-shrink:0;box-shadow:0 0 5px currentColor}
+.maplibre-ops-legend{position:absolute;left:18px;bottom:22px;z-index:4;display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;background:rgba(6,10,16,.76);border:1px solid rgba(127,153,192,.16);backdrop-filter:blur(10px);box-shadow:0 12px 28px rgba(0,0,0,.28)}
+.maplibre-ops-legend-title{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8ea2c8}
+.maplibre-ops-legend-scale{display:flex;align-items:center;gap:7px}
+.maplibre-ops-legend-dot{width:9px;height:9px;border-radius:50%;box-shadow:0 0 16px currentColor}
+.maplibre-ops-legend-dot.ready{color:#3ecf72;background:#3ecf72}
+.maplibre-ops-legend-dot.wait{color:#4f8ef7;background:#4f8ef7}
+.maplibre-ops-legend-dot.block{color:#f5a623;background:#f5a623}
+.maplibre-ops-legend-dot.follow{color:#c8884a;background:#c8884a}
+.maplibre-ops-legend-copy{font-size:10px;color:#d7dfef;letter-spacing:.03em}
 .tools-stub p{font-size:13px;line-height:1.7}
 /* ── Global Lead Finder (Ctrl+K) ──────────────────────────────────── */
 .qlf-item{display:flex;align-items:flex-start;gap:12px;padding:10px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.04);transition:background .1s}
@@ -1990,6 +2048,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     <span class="cc-shell-scope-dot">◈</span>
     <span class="cc-shell-scope-text" id="cc-shell-scope-text">Global queue</span>
     <span class="cc-shell-scope-meta" id="cc-shell-scope-meta">all rows</span>
+    <span class="cc-shell-posture" id="cc-shell-posture">Survey posture</span>
   </div>
 </div>
 <div class="cc-main-row">
@@ -2008,6 +2067,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <!-- LEFT: Map pane — full map experience -->
   <div class="cc-map-pane">
     <div class="map-page-wrap" style="flex:1;display:flex;flex-direction:column">
+      <div class="cc-map-shell">
       <!-- Command bar -->
       <div class="cmd-bar" id="cmd-bar">
         <div class="cmd-territory" id="cmd-territory">
@@ -2065,7 +2125,18 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       </div>
       <!-- Map + results panel -->
       <div id="map-layout">
-        <div id="map-container"></div>
+        <div id="map-container">
+          <div id="map-base-gl" aria-hidden="true"></div>
+          <div class="maplibre-ops-legend" id="maplibre-ops-legend" aria-hidden="true">
+            <span class="maplibre-ops-legend-title">Pressure</span>
+            <div class="maplibre-ops-legend-scale">
+              <span class="maplibre-ops-legend-dot ready"></span><span class="maplibre-ops-legend-copy">ready</span>
+              <span class="maplibre-ops-legend-dot wait"></span><span class="maplibre-ops-legend-copy">front</span>
+              <span class="maplibre-ops-legend-dot block"></span><span class="maplibre-ops-legend-copy">blocked</span>
+              <span class="maplibre-ops-legend-dot follow"></span><span class="maplibre-ops-legend-copy">follow-up</span>
+            </div>
+          </div>
+        </div>
         <div id="map-results-panel">
           <div class="mrp-hdr">Results <span id="mrp-count"></span></div>
           <div class="mrp-controls" id="mrp-controls">
@@ -2103,7 +2174,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
         </div>
         <span id="map-zoom-hint" class="cc-map-statusbar-right"></span>
       </div>
-      <div class="cc-map-territory-note" id="cc-map-territory-note">Global map pressure. Select a territory to collapse the journal, runway, and drawer to that operating front.</div>
+      <div class="cc-map-territory-note" id="cc-map-territory-note">Global map pressure. Select a territory to lock the rail, pressure strip, and command shelf to that operating front.</div>
       <div id="map-territory-legend"></div>
       <div id="map-history">
         <div class="mh-hdr">
@@ -2111,6 +2182,24 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
           <button class="mh-clear" onclick="_mapClearHistory()">Clear history</button>
         </div>
         <div class="mh-list" id="mh-list"></div>
+      </div>
+      <div class="cc-ops-drawer" id="cc-ops-drawer">
+        <div class="cc-drawer-head">
+          <div>
+            <div class="cc-drawer-title" id="cc-drawer-title">Operational slice</div>
+            <div class="cc-drawer-meta" id="cc-drawer-meta">Current front for the active journal entry.</div>
+          </div>
+          <div class="cc-drawer-controls">
+            <button class="cc-drawer-chip active" id="cc-drawer-mode-slice" onclick="ccSetDrawerMode('slice')">Current slice</button>
+            <button class="cc-drawer-chip" id="cc-drawer-mode-selected" onclick="ccSetDrawerMode('selected')">Selected set</button>
+            <input class="cc-drawer-search" id="cc-ops-search" type="text" placeholder="Search current theater…" oninput="ccQueueRender()">
+            <button class="cc-cmd-btn cc-cmd-btn-ghost" onclick="switchParent('pipeline',document.querySelector('[data-parent=pipeline]'))" title="Open the full Queue page">Queue →</button>
+          </div>
+        </div>
+        <div class="cc-drawer-body" id="cc-ops-drawer-body">
+          <div class="cc-drawer-empty">Loading current slice…</div>
+        </div>
+      </div>
       </div>
     </div>
   </div>
@@ -2176,26 +2265,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
       <div>Pick a business from the drawer or map results to open the full review dossier inside Command Center.</div>
     </div>
   </aside>
-
 </div><!-- /cc-main-row -->
-
-<div class="cc-ops-drawer" id="cc-ops-drawer">
-  <div class="cc-drawer-head">
-    <div>
-      <div class="cc-drawer-title" id="cc-drawer-title">Operational slice</div>
-      <div class="cc-drawer-meta" id="cc-drawer-meta">Current front for the active journal entry.</div>
-    </div>
-    <div class="cc-drawer-controls">
-      <button class="cc-drawer-chip active" id="cc-drawer-mode-slice" onclick="ccSetDrawerMode('slice')">Current slice</button>
-      <button class="cc-drawer-chip" id="cc-drawer-mode-selected" onclick="ccSetDrawerMode('selected')">Selected set</button>
-      <input class="cc-drawer-search" id="cc-ops-search" type="text" placeholder="Search current theater…" oninput="ccQueueRender()">
-      <button class="cc-cmd-btn cc-cmd-btn-ghost" onclick="switchParent('pipeline',document.querySelector('[data-parent=pipeline]'))" title="Open the full Queue page">Queue →</button>
-    </div>
-  </div>
-  <div class="cc-drawer-body" id="cc-ops-drawer-body">
-    <div class="cc-drawer-empty">Loading current slice…</div>
-  </div>
-</div>
 
 <!-- Pass 102: Post-run drilldown summary panel -->
 <div id="cc-discover-results" style="display:none;flex-shrink:0;max-height:280px;overflow-y:auto;background:var(--surface);border-top:1px solid rgba(184,115,51,.25);border-bottom:1px solid var(--border)">
@@ -8483,12 +8553,67 @@ function spOpenReview(idx) {
 // ==================================================================
 // CONVERSATIONS  (cv*)  — Part 6
 // ==================================================================
-const COPPERLINE_OFFER_PACKAGES = [
+const COPPERLINE_CORE_OFFERS = [
+  { key: 'presence_refresh', label: 'Presence Refresh', summary: 'Look trustworthy online and get found.' },
+  { key: 'starter_website', label: 'Starter Website', summary: 'A simple site that explains the business and gets calls.' },
+  { key: 'lead_contact_setup', label: 'Lead & Contact Setup', summary: 'Capture, route, and follow up on inquiries.' },
+];
+const COPPERLINE_BUNDLES = [
+  { key: 'basic_cleanup', label: 'Basic Cleanup', coreOffer: 'presence_refresh' },
+  { key: 'presence_website', label: 'Presence + Website', coreOffer: 'starter_website' },
+  { key: 'full_starter_package', label: 'Full Starter Package', coreOffer: 'lead_contact_setup' },
+];
+const COPPERLINE_SPECIALTY_MODULES = [
   { key: 'missed_call_recovery', label: 'Missed Call Recovery' },
-  { key: 'lead_intake_routing', label: 'Lead Intake + Routing' },
-  { key: 'followup_reactivation', label: 'Follow-Up Reactivation' },
+  { key: 'follow_up_reminder_setup', label: 'Follow-Up & Reminder Setup' },
   { key: 'review_request_system', label: 'Review Request System' },
-  { key: 'estimate_job_status_communication', label: 'Estimate / Job Status Communication' },
+  { key: 'estimate_job_status_communication', label: 'Estimate & Job Status Communication' },
+  { key: 'client_approval_estimate_portal', label: 'Client Approval / Estimate Portal' },
+  { key: 'mobile_admin_workflow_helper', label: 'Mobile Admin / owner workflow helper' },
+];
+const COPPERLINE_CORE_LABELS = Object.fromEntries(COPPERLINE_CORE_OFFERS.map((item) => [item.key, item.label]));
+const COPPERLINE_BUNDLE_LABELS = Object.fromEntries(COPPERLINE_BUNDLES.map((item) => [item.key, item.label]));
+const COPPERLINE_BUNDLE_CORE = Object.fromEntries(COPPERLINE_BUNDLES.map((item) => [item.key, item.coreOffer]));
+const COPPERLINE_MODULE_LABELS = Object.fromEntries(COPPERLINE_SPECIALTY_MODULES.map((item) => [item.key, item.label]));
+const COPPERLINE_MODULE_KEYS = new Set(COPPERLINE_SPECIALTY_MODULES.map((item) => item.key));
+const COPPERLINE_LEGACY_STACKS = {
+  missed_call_recovery: {
+    core_offer: 'lead_contact_setup',
+    bundle_key: 'full_starter_package',
+    selected_modules: ['missed_call_recovery', 'follow_up_reminder_setup'],
+  },
+  lead_intake_routing: {
+    core_offer: 'lead_contact_setup',
+    bundle_key: 'full_starter_package',
+    selected_modules: ['mobile_admin_workflow_helper'],
+  },
+  followup_reactivation: {
+    core_offer: 'lead_contact_setup',
+    bundle_key: 'full_starter_package',
+    selected_modules: ['follow_up_reminder_setup'],
+  },
+  review_request_system: {
+    core_offer: 'presence_refresh',
+    bundle_key: 'basic_cleanup',
+    selected_modules: ['review_request_system'],
+  },
+  estimate_job_status_communication: {
+    core_offer: 'lead_contact_setup',
+    bundle_key: 'full_starter_package',
+    selected_modules: ['estimate_job_status_communication'],
+  },
+};
+const COPPERLINE_AGREEMENT_STATUSES = [
+  { key: '', label: 'Unset' },
+  { key: 'needs_agreement', label: 'Needs agreement' },
+  { key: 'sent', label: 'Agreement sent' },
+  { key: 'signed', label: 'Signed' },
+];
+const COPPERLINE_INVOICE_STATUSES = [
+  { key: '', label: 'Unset' },
+  { key: 'not_invoiced', label: 'Not invoiced' },
+  { key: 'sent', label: 'Invoice sent' },
+  { key: 'paid', label: 'Paid' },
 ];
 const COPPERLINE_CONVERSION_STAGES = [
   'discovered',
@@ -8525,7 +8650,12 @@ let _cvActive = null;
 
 function _cvDefaultDeliveryProfile(row) {
   const base = {
-    package_key: '',
+    core_offer: '',
+    bundle_key: '',
+    selected_modules: [],
+    price: '',
+    agreement_status: '',
+    invoice_status: '',
     offer_notes: '',
     stage: (String(row?.replied || '').toLowerCase() === 'true') ? 'replied' : 'discovered',
     readiness: {},
@@ -8535,16 +8665,52 @@ function _cvDefaultDeliveryProfile(row) {
   return base;
 }
 
+function _cvLegacyStack(packageKey) {
+  return packageKey && COPPERLINE_LEGACY_STACKS[packageKey] ? { ...COPPERLINE_LEGACY_STACKS[packageKey] } : null;
+}
+
+function _cvNormalizeModules(value) {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set();
+  const modules = [];
+  value.forEach((item) => {
+    if (typeof item !== 'string') return;
+    const key = item.trim().toLowerCase();
+    if (!COPPERLINE_MODULE_KEYS.has(key) || seen.has(key)) return;
+    seen.add(key);
+    modules.push(key);
+  });
+  return modules;
+}
+
 function _cvNormalizeDeliveryProfile(profile, row) {
   const normalized = _cvDefaultDeliveryProfile(row);
   if (!profile || typeof profile !== 'object') return normalized;
 
-  const packageKeys = new Set(COPPERLINE_OFFER_PACKAGES.map((p) => p.key));
+  const legacyStack = _cvLegacyStack(typeof profile.package_key === 'string' ? profile.package_key.trim().toLowerCase() : '');
   const stageKeys = new Set(COPPERLINE_CONVERSION_STAGES);
 
-  if (typeof profile.package_key === 'string' && packageKeys.has(profile.package_key)) {
-    normalized.package_key = profile.package_key;
+  if (typeof profile.core_offer === 'string') {
+    const coreOffer = profile.core_offer.trim().toLowerCase();
+    if (COPPERLINE_CORE_LABELS[coreOffer]) normalized.core_offer = coreOffer;
   }
+
+  if (typeof profile.bundle_key === 'string') {
+    const bundleKey = profile.bundle_key.trim().toLowerCase();
+    if (COPPERLINE_BUNDLE_LABELS[bundleKey]) normalized.bundle_key = bundleKey;
+  }
+
+  if (!normalized.core_offer && normalized.bundle_key) normalized.core_offer = COPPERLINE_BUNDLE_CORE[normalized.bundle_key] || '';
+  if (!normalized.core_offer && legacyStack?.core_offer) normalized.core_offer = legacyStack.core_offer;
+  if (!normalized.bundle_key && legacyStack?.bundle_key) normalized.bundle_key = legacyStack.bundle_key;
+
+  const selectedModules = _cvNormalizeModules(profile.selected_modules);
+  normalized.selected_modules = selectedModules.length ? selectedModules : _cvNormalizeModules(legacyStack?.selected_modules || []);
+
+  if (typeof profile.price === 'number') normalized.price = String(profile.price);
+  if (typeof profile.price === 'string') normalized.price = profile.price.trim();
+  if (typeof profile.agreement_status === 'string') normalized.agreement_status = profile.agreement_status.trim();
+  if (typeof profile.invoice_status === 'string') normalized.invoice_status = profile.invoice_status.trim();
   if (typeof profile.offer_notes === 'string') normalized.offer_notes = profile.offer_notes;
   if (typeof profile.stage === 'string' && stageKeys.has(profile.stage)) normalized.stage = profile.stage;
   if (typeof profile.updated_at === 'string') normalized.updated_at = profile.updated_at;
@@ -8556,9 +8722,73 @@ function _cvNormalizeDeliveryProfile(profile, row) {
   return normalized;
 }
 
-function _cvOfferLabel(key) {
-  const pkg = COPPERLINE_OFFER_PACKAGES.find((p) => p.key === key);
-  return pkg ? pkg.label : 'Unassigned';
+function _cvCoreOfferLabel(key) {
+  return COPPERLINE_CORE_LABELS[key] || 'Unassigned core offer';
+}
+
+function _cvBundleLabel(key) {
+  return COPPERLINE_BUNDLE_LABELS[key] || 'No bundle';
+}
+
+function _cvModuleLabel(key) {
+  return COPPERLINE_MODULE_LABELS[key] || key;
+}
+
+function _cvSelectedModuleLabels(keys) {
+  return (keys || []).map((key) => _cvModuleLabel(key));
+}
+
+function _cvRecommendedStack(row) {
+  const combined = [
+    row?.industry || '',
+    row?.reply_snippet || '',
+    row?.lead_insight_sentence || '',
+    row?.conversation_notes || '',
+    row?.conversation_next_step || '',
+    row?.business_specific_observation || '',
+  ].join(' ').toLowerCase();
+  const hasWebsite = !!String(row?.website || '').trim();
+
+  if (/(missed call|voicemail|after[- ]hours|can'?t answer|call back)/.test(combined)) {
+    return {
+      core_offer: 'lead_contact_setup',
+      bundle_key: 'full_starter_package',
+      selected_modules: ['missed_call_recovery', 'follow_up_reminder_setup'],
+    };
+  }
+  if (/(estimate|job status|eta|reschedul|status update|text update)/.test(combined)) {
+    return {
+      core_offer: 'lead_contact_setup',
+      bundle_key: 'full_starter_package',
+      selected_modules: ['estimate_job_status_communication'],
+    };
+  }
+  if (/(review|google review|rating|testimonial)/.test(combined)) {
+    return {
+      core_offer: 'presence_refresh',
+      bundle_key: 'basic_cleanup',
+      selected_modules: ['review_request_system'],
+    };
+  }
+  if (/(website|homepage|site|online presence|look legit|look professional|find you online)/.test(combined) || !hasWebsite) {
+    return {
+      core_offer: 'starter_website',
+      bundle_key: 'presence_website',
+      selected_modules: ['mobile_admin_workflow_helper'],
+    };
+  }
+  if (/(intake|dispatch|routing|lead intake|front desk|book(ing)? calls?)/.test(combined)) {
+    return {
+      core_offer: 'lead_contact_setup',
+      bundle_key: 'full_starter_package',
+      selected_modules: ['mobile_admin_workflow_helper', 'follow_up_reminder_setup'],
+    };
+  }
+  return {
+    core_offer: 'lead_contact_setup',
+    bundle_key: 'full_starter_package',
+    selected_modules: ['follow_up_reminder_setup'],
+  };
 }
 
 function _cvStageLabel(stage) {
@@ -8570,27 +8800,6 @@ function _cvReadinessStats(profile) {
   const total = COPPERLINE_READINESS_CHECKLIST.length;
   const done = COPPERLINE_READINESS_CHECKLIST.reduce((acc, item) => acc + (readiness[item.key] ? 1 : 0), 0);
   return { done, total, pct: total ? Math.round((done / total) * 100) : 0 };
-}
-
-function _cvRecommendedOffer(row) {
-  const combined = [
-    row?.industry || '',
-    row?.reply_snippet || '',
-    row?.lead_insight_sentence || '',
-    row?.conversation_notes || '',
-    row?.conversation_next_step || '',
-    row?.business_specific_observation || '',
-  ].join(' ').toLowerCase();
-
-  if (/(missed call|voicemail|after[- ]hours|can'?t answer|call back)/.test(combined)) return 'missed_call_recovery';
-  if (/(intake|dispatch|routing|lead intake|front desk|book(ing)? calls?)/.test(combined)) return 'lead_intake_routing';
-  if (/(follow[- ]?up|reactivat|old lead|stale lead|quote follow[- ]?up)/.test(combined)) return 'followup_reactivation';
-  if (/(review|google review|rating|testimonial)/.test(combined)) return 'review_request_system';
-  if (/(estimate|job status|eta|reschedul|status update|text update)/.test(combined)) return 'estimate_job_status_communication';
-
-  const industry = (row?.industry || '').toLowerCase();
-  if (['plumbing', 'hvac', 'electrical', 'garage_door', 'locksmith', 'roofing'].includes(industry)) return 'missed_call_recovery';
-  return 'lead_intake_routing';
 }
 
 function _cvApplyDeliveryPatch(i, patch) {
@@ -8612,7 +8821,7 @@ let _cvDeliverySaveTimer = null;
 async function _cvSaveDeliveryNow(idx, i, patch, rerenderPanel) {
     const res = await api('/api/update_delivery_profile', { index: idx, profile: patch });
     if (!res?.ok) {
-      toast('Offer/deployment save failed: ' + (res?.error || 'unknown error'), 'err');
+      toast('Offer stack save failed: ' + (res?.error || 'unknown error'), 'err');
       return;
     }
     if (_cvData[i]) _cvData[i].delivery_profile = _cvNormalizeDeliveryProfile(res.delivery_profile, _cvData[i]);
@@ -8667,13 +8876,19 @@ function _cvRenderList() {
     const isCur = _cvActive === i;
     const profile = _cvNormalizeDeliveryProfile(r.delivery_profile, r);
     const stage = _cvStageLabel(profile.stage);
-    const offer = profile.package_key ? _cvOfferLabel(profile.package_key) : 'No package';
+    const coreLabel = profile.core_offer ? _cvCoreOfferLabel(profile.core_offer) : 'No core offer';
+    const bundleLabel = profile.bundle_key ? _cvBundleLabel(profile.bundle_key) : '';
+    const moduleCount = profile.selected_modules && profile.selected_modules.length
+      ? `${profile.selected_modules.length} module${profile.selected_modules.length === 1 ? '' : 's'}`
+      : 'No modules';
     return `<div class="cv-item${isCur ? ' active' : ''}" onclick="cvSelect(${i})">
       <div class="cv-item-name">${escHtml(r.business_name)}</div>
       <div class="cv-item-meta">${escHtml(r.city)}, ${escHtml(r.state)}${r.industry ? ' · ' + escHtml(r.industry) : ''}</div>
       <div class="cv-item-tags">
         <span class="cv-chip stage">${escHtml(stage)}</span>
-        <span class="cv-chip offer">${escHtml(offer)}</span>
+        <span class="cv-chip offer">${escHtml(coreLabel)}</span>
+        ${bundleLabel ? `<span class="cv-chip bundle">${escHtml(bundleLabel)}</span>` : ''}
+        <span class="cv-chip module">${escHtml(moduleCount)}</span>
       </div>
       ${r.reply_snippet ? `<div class="cv-item-snippet">↩ ${escHtml(r.reply_snippet.substring(0, 70))}</div>` : ''}
       <div class="cv-item-ts">${ts}</div>
@@ -8695,11 +8910,24 @@ function _cvRenderPanel(r, i) {
   const notes = r.conversation_notes || '';
   const next = r.conversation_next_step || '';
   const profile = _cvNormalizeDeliveryProfile(r.delivery_profile, r);
-  const recommendedOffer = _cvRecommendedOffer(r);
+  const recommendedStack = _cvRecommendedStack(r);
   const readinessStats = _cvReadinessStats(profile);
 
-  const packageOptions = ['<option value="">Select package…</option>']
-    .concat(COPPERLINE_OFFER_PACKAGES.map((pkg) => `<option value="${pkg.key}"${profile.package_key === pkg.key ? ' selected' : ''}>${escHtml(pkg.label)}</option>`))
+  const coreOfferOptions = ['<option value="">Select core offer…</option>']
+    .concat(COPPERLINE_CORE_OFFERS.map((offer) => `<option value="${offer.key}"${profile.core_offer === offer.key ? ' selected' : ''}>${escHtml(offer.label)}</option>`))
+    .join('');
+  const bundleOptions = ['<option value="">No bundle</option>']
+    .concat(COPPERLINE_BUNDLES.map((bundle) => `<option value="${bundle.key}"${profile.bundle_key === bundle.key ? ' selected' : ''}>${escHtml(bundle.label)}</option>`))
+    .join('');
+  const priceValue = escHtml(profile.price || '');
+  const agreementOptions = COPPERLINE_AGREEMENT_STATUSES
+    .map((status) => `<option value="${status.key}"${profile.agreement_status === status.key ? ' selected' : ''}>${escHtml(status.label)}</option>`)
+    .join('');
+  const invoiceOptions = COPPERLINE_INVOICE_STATUSES
+    .map((status) => `<option value="${status.key}"${profile.invoice_status === status.key ? ' selected' : ''}>${escHtml(status.label)}</option>`)
+    .join('');
+  const moduleRows = COPPERLINE_SPECIALTY_MODULES
+    .map((item) => `<label class="cv-rdy-item"><input type="checkbox" id="cv-mod-${item.key}-${i}" ${profile.selected_modules.includes(item.key) ? 'checked' : ''} onchange="cvToggleModule(${idx},${i},'${item.key}')"> ${escHtml(item.label)}</label>`)
     .join('');
   const stageOptions = COPPERLINE_CONVERSION_STAGES
     .map((stage) => `<option value="${stage}"${profile.stage === stage ? ' selected' : ''}>${escHtml(_cvStageLabel(stage))}</option>`)
@@ -8735,25 +8963,48 @@ function _cvRenderPanel(r, i) {
       <div class="cv-offer-block">
         <div class="cv-offer-head">
           <div>
-            <div class="cv-section-label">Offer + Deployment Readiness</div>
-            <div class="cv-offer-sub">Best-fit recommendation: <strong>${escHtml(_cvOfferLabel(recommendedOffer))}</strong></div>
+            <div class="cv-section-label">Offer Stack + Deployment Readiness</div>
+            <div class="cv-offer-sub">Best-fit recommendation: <strong>${escHtml(_cvCoreOfferLabel(recommendedStack.core_offer))}</strong>${recommendedStack.bundle_key ? ` + ${escHtml(_cvBundleLabel(recommendedStack.bundle_key))}` : ''}</div>
           </div>
-          <button class="btn btn-ghost" style="font-size:11px" onclick="cvUseRecommendedOffer(${idx},${i},'${recommendedOffer}')">Use Recommendation</button>
+          <button class="btn btn-ghost" style="font-size:11px" onclick="cvUseRecommendedStack(${idx},${i})">Use Recommendation</button>
         </div>
-        <div class="cv-offer-grid">
+        <div class="cv-stack-grid">
           <div>
-            <label class="cv-mini-label">Package</label>
-            <select id="cv-package-${i}" class="cv-select" onchange="cvSavePackage(${idx},${i})">${packageOptions}</select>
+            <label class="cv-mini-label">Core Offer</label>
+            <select id="cv-core-${i}" class="cv-select" onchange="cvSaveCoreOffer(${idx},${i})">${coreOfferOptions}</select>
           </div>
           <div>
-            <label class="cv-mini-label">Lifecycle Stage</label>
-            <select id="cv-stage-${i}" class="cv-select" onchange="cvSaveStage(${idx},${i})">${stageOptions}</select>
+            <label class="cv-mini-label">Bundle</label>
+            <select id="cv-bundle-${i}" class="cv-select" onchange="cvSaveBundle(${idx},${i})">${bundleOptions}</select>
           </div>
+          <div>
+            <label class="cv-mini-label">Price</label>
+            <input id="cv-price-${i}" class="cv-select" style="padding:7px 9px" type="text" value="${priceValue}" placeholder="$750" oninput="cvSavePrice(${idx},${i})">
+          </div>
+        </div>
+        <div class="cv-stack-grid" style="grid-template-columns:1fr 1fr; margin-top:8px">
+          <div>
+            <label class="cv-mini-label">Agreement Status</label>
+            <select id="cv-agreement-${i}" class="cv-select" onchange="cvSaveAgreementStatus(${idx},${i})">${agreementOptions}</select>
+          </div>
+          <div>
+            <label class="cv-mini-label">Invoice Status</label>
+            <select id="cv-invoice-${i}" class="cv-select" onchange="cvSaveInvoiceStatus(${idx},${i})">${invoiceOptions}</select>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <div class="cv-mini-label">Specialty Modules</div>
+          <div class="cv-module-grid">${moduleRows}</div>
+          <div class="cv-stack-summary">${profile.selected_modules && profile.selected_modules.length ? _cvSelectedModuleLabels(profile.selected_modules).join(' · ') : 'Modules stay optional and sit under the core offer.'}</div>
         </div>
         <div style="margin-top:10px">
           <label class="cv-mini-label">Offer Notes</label>
           <textarea id="cv-offer-notes-${i}" class="cv-textarea" style="min-height:70px" placeholder="Scope, constraints, pricing context, or objections…"
             oninput="cvSaveOfferNotes(${idx},${i})">${escHtml(profile.offer_notes || '')}</textarea>
+        </div>
+        <div style="margin-top:10px">
+          <label class="cv-mini-label">Lifecycle Stage</label>
+          <select id="cv-stage-${i}" class="cv-select" onchange="cvSaveStage(${idx},${i})">${stageOptions}</select>
         </div>
         <div style="margin-top:10px">
           <div class="cv-mini-label">Deployment Readiness</div>
@@ -8802,18 +9053,76 @@ function cvSaveNextStep(idx, i) {
   _cvSaveTimer = setTimeout(() => api('/api/update_conversation', { index: idx, next_step: val }), 600);
 }
 
-function cvUseRecommendedOffer(idx, i, packageKey) {
-  const sel = document.getElementById(`cv-package-${i}`);
-  if (!sel) return;
-  sel.value = packageKey;
-  cvSavePackage(idx, i);
+function cvUseRecommendedStack(idx, i) {
+  const stack = _cvRecommendedStack(_cvData[i] || {});
+  const coreSel = document.getElementById(`cv-core-${i}`);
+  const bundleSel = document.getElementById(`cv-bundle-${i}`);
+  const priceSel = document.getElementById(`cv-price-${i}`);
+  const agreementSel = document.getElementById(`cv-agreement-${i}`);
+  const invoiceSel = document.getElementById(`cv-invoice-${i}`);
+  const patch = {
+    core_offer: stack.core_offer || '',
+    bundle_key: stack.bundle_key || '',
+    selected_modules: Array.isArray(stack.selected_modules) ? stack.selected_modules : [],
+  };
+  if (coreSel) coreSel.value = stack.core_offer || '';
+  if (bundleSel) bundleSel.value = stack.bundle_key || '';
+  if (priceSel && typeof stack.price === 'string') priceSel.value = stack.price;
+  if (agreementSel && typeof stack.agreement_status === 'string') agreementSel.value = stack.agreement_status;
+  if (invoiceSel && typeof stack.invoice_status === 'string') invoiceSel.value = stack.invoice_status;
+  _cvApplyDeliveryPatch(i, patch);
+  _cvQueueDeliverySave(idx, i, patch, { rerenderPanel: true });
+  _cvRenderList();
 }
 
-function cvSavePackage(idx, i) {
-  const packageKey = document.getElementById(`cv-package-${i}`)?.value || '';
-  _cvApplyDeliveryPatch(i, { package_key: packageKey });
-  _cvQueueDeliverySave(idx, i, { package_key: packageKey }, { rerenderPanel: false });
+function cvSaveCoreOffer(idx, i) {
+  const coreOffer = document.getElementById(`cv-core-${i}`)?.value || '';
+  const bundleSel = document.getElementById(`cv-bundle-${i}`);
+  const next = { core_offer: coreOffer };
+  if (!coreOffer) {
+    if (bundleSel) bundleSel.value = '';
+    next.bundle_key = '';
+  } else {
+    const currentBundle = bundleSel?.value || '';
+    if (currentBundle && COPPERLINE_BUNDLE_CORE[currentBundle] !== coreOffer) {
+      if (bundleSel) bundleSel.value = '';
+      next.bundle_key = '';
+    }
+  }
+  _cvApplyDeliveryPatch(i, next);
+  _cvQueueDeliverySave(idx, i, next, { rerenderPanel: false });
   _cvRenderList();
+}
+
+function cvSaveBundle(idx, i) {
+  const bundleKey = document.getElementById(`cv-bundle-${i}`)?.value || '';
+  const next = { bundle_key: bundleKey };
+  if (bundleKey) {
+    next.core_offer = COPPERLINE_BUNDLE_CORE[bundleKey] || '';
+    const coreSel = document.getElementById(`cv-core-${i}`);
+    if (coreSel && next.core_offer) coreSel.value = next.core_offer;
+  }
+  _cvApplyDeliveryPatch(i, next);
+  _cvQueueDeliverySave(idx, i, next, { rerenderPanel: false });
+  _cvRenderList();
+}
+
+function cvSavePrice(idx, i) {
+  const price = document.getElementById(`cv-price-${i}`)?.value || '';
+  _cvApplyDeliveryPatch(i, { price });
+  _cvQueueDeliverySave(idx, i, { price }, { rerenderPanel: false, debounce: true });
+}
+
+function cvSaveAgreementStatus(idx, i) {
+  const agreementStatus = document.getElementById(`cv-agreement-${i}`)?.value || '';
+  _cvApplyDeliveryPatch(i, { agreement_status: agreementStatus });
+  _cvQueueDeliverySave(idx, i, { agreement_status: agreementStatus }, { rerenderPanel: false });
+}
+
+function cvSaveInvoiceStatus(idx, i) {
+  const invoiceStatus = document.getElementById(`cv-invoice-${i}`)?.value || '';
+  _cvApplyDeliveryPatch(i, { invoice_status: invoiceStatus });
+  _cvQueueDeliverySave(idx, i, { invoice_status: invoiceStatus }, { rerenderPanel: false });
 }
 
 function cvSaveStage(idx, i) {
@@ -8827,6 +9136,16 @@ function cvSaveOfferNotes(idx, i) {
   const offerNotes = document.getElementById(`cv-offer-notes-${i}`)?.value || '';
   _cvApplyDeliveryPatch(i, { offer_notes: offerNotes });
   _cvQueueDeliverySave(idx, i, { offer_notes: offerNotes }, { rerenderPanel: false, debounce: true });
+}
+
+function cvSaveModules(idx, i) {
+  const selected = COPPERLINE_SPECIALTY_MODULES
+    .filter((item) => document.getElementById(`cv-mod-${item.key}-${i}`)?.checked)
+    .map((item) => item.key);
+  _cvApplyDeliveryPatch(i, { selected_modules: selected });
+  _cvQueueDeliverySave(idx, i, { selected_modules: selected }, { rerenderPanel: false });
+  _cvRenderList();
+  if (_cvData[i]) _cvRenderPanel(_cvData[i], i);
 }
 
 function cvToggleReadiness(idx, i, key) {
@@ -9694,12 +10013,69 @@ function _ccUpdateScopeChrome() {
   if (scopeMeta) scopeMeta.textContent = `${scoped.length} row${scoped.length === 1 ? '' : 's'}`;
   const front = _ccSliceByKey(_ccOpsSlice);
   if (note) note.textContent = _ccTerrScope
-    ? `${_ccTerrScope.name} is active. ${front.label} is the current front, so map pressure, runway, and drawer are locked to that territory until you clear scope.`
-    : `${front.label} is the current front. Select a territory to collapse the journal, runway, and drawer to that operating front.`;
+    ? `${_ccTerrScope.name} is active. ${front.label} is the current front, so the rail, pressure strip, and command shelf stay locked to that territory until you clear scope.`
+    : `${front.label} is the current front. Select a territory to lock the rail, pressure strip, and command shelf to that operating front.`;
   if (pill) pill.style.display = _ccTerrScope ? '' : 'none';
   if (pillName) pillName.textContent = _ccTerrScope ? _ccTerrScope.name : '';
   if (approveScoped) approveScoped.style.display = _ccTerrScope ? '' : 'none';
   if (regenScoped) regenScoped.style.display = _ccTerrScope ? '' : 'none';
+}
+
+function ccUpdateShellPosture() {
+  const wrap = document.getElementById('cc-wrap');
+  const posture = document.getElementById('cc-shell-posture');
+  const note = document.getElementById('cc-shell-note');
+  if (!wrap) return;
+  const hasTerritory = !!_ccTerrScope;
+  const hasFront = hasTerritory && _ccOpsSlice && _ccOpsSlice !== 'follow';
+  const hasBusiness = panelIdx >= 0;
+  const nextState = hasBusiness ? 'business' : hasFront ? 'front' : hasTerritory ? 'territory' : 'survey';
+  ['state-survey', 'state-territory', 'state-front', 'state-business'].forEach(cls => wrap.classList.remove(cls));
+  wrap.classList.add(`state-${nextState}`);
+  if (posture) {
+    posture.textContent =
+      nextState === 'business' ? 'Business decision posture' :
+      nextState === 'front' ? 'Front posture' :
+      nextState === 'territory' ? 'Territory posture' :
+      'Survey posture';
+  }
+  if (note) {
+    note.textContent =
+      nextState === 'business'
+        ? 'Decision posture is open. The dossier expands while the map stays visible behind the active business.'
+        : nextState === 'front'
+          ? 'Front posture is active. Queue pressure, territory overlays, and the shelf all lock to the selected front.'
+          : nextState === 'territory'
+            ? 'Territory posture is active. The map stays dominant while surrounding surfaces tighten to the selected area.'
+            : 'Survey posture keeps the map broad and the command surfaces compact until a territory or front is selected.';
+  }
+  if (wrap) wrap.classList.toggle('has-territory', hasTerritory);
+  if (wrap) wrap.classList.toggle('has-front', hasFront);
+  if (wrap) wrap.classList.toggle('has-business', hasBusiness);
+}
+
+let _ccMapResizeRaf = 0;
+function ccInvalidateMapSize() {
+  if (!_mapInstance) return;
+  if (_ccMapResizeRaf) cancelAnimationFrame(_ccMapResizeRaf);
+  _ccMapResizeRaf = requestAnimationFrame(() => {
+    _ccMapResizeRaf = 0;
+    if (_mapInstance) _mapInstance.invalidateSize(true);
+    if (_mapGlInstance && _mapGlReady) {
+      _mapGlInstance.resize();
+      _mapSyncHybridCamera();
+      _mapSyncTheaterRenderer();
+    }
+  });
+}
+
+function ccUpdateDrawerShelfState() {
+  const drawer = document.getElementById('cc-ops-drawer');
+  if (!drawer) return;
+  const query = _ccOpsSearchValue();
+  const selectedRows = _selectedRows();
+  const shouldOpen = panelIdx >= 0 || _ccDrawerMode === 'selected' || !!query || selectedRows.length > 0;
+  drawer.classList.toggle('is-open', shouldOpen);
 }
 
 function ccScopeToTerritory(data) {
@@ -9781,15 +10157,19 @@ function ccSetMode(mode, el) {
   const wrap = document.getElementById('cc-wrap');
   const title = document.getElementById('cc-shell-title');
   const note = document.getElementById('cc-shell-note');
-  if (wrap) wrap.className = `cc-wrap mode-${mode === 'focus' ? 'focus' : mode}`;
+  if (wrap) {
+    ['mode-territory', 'mode-operations', 'mode-focus'].forEach(cls => wrap.classList.remove(cls));
+    wrap.classList.add(`mode-${mode === 'focus' ? 'focus' : mode}`);
+  }
   document.querySelectorAll('.cc-shell-mode[data-cc-mode]').forEach(btn => btn.classList.toggle('active', btn.dataset.ccMode === _ccMode));
   if (title) title.textContent = _ccMode === 'territory' ? 'Territory View' : 'Operations Theater';
   if (note) note.textContent = _ccMode === 'territory'
     ? 'Map planning and territory expansion stay centered here while the queue remains secondary.'
     : 'Map-anchored queue pressure, territory context, and dossier review in one shell.';
+  ccUpdateShellPosture();
   _syncQueueInspectorDock();
   ccQueueRender();
-  requestAnimationFrame(() => { if (_mapInstance) _mapInstance.invalidateSize(true); });
+  ccInvalidateMapSize();
 }
 
 function ccSetDrawerMode(mode) {
@@ -9799,6 +10179,7 @@ function ccSetDrawerMode(mode) {
     return;
   }
   _ccDrawerMode = mode;
+  ccUpdateDrawerShelfState();
   ccQueueRender();
 }
 
@@ -9891,6 +10272,7 @@ function _ccRenderRunway() {
   const scoped = _ccScopedRows();
   const futureScheduled = scoped.filter(row => !!(row.send_after || '').trim() && !row.sent_at && !row.is_ready);
   const dueNow = scoped.filter(row => !!(row.send_after || '').trim() && !row.sent_at && row.is_ready && row.send_ready);
+  const replyWaiting = scoped.filter(row => String(row.replied || '').toLowerCase() === 'true' && !row.sent_at).length;
   const dueSoon = futureScheduled.filter(row => {
     const sendAt = _ccParseSendAfterLocal(row.send_after);
     if (!sendAt) return false;
@@ -9898,7 +10280,6 @@ function _ccRenderRunway() {
     return mins > 0 && mins <= 120;
   });
   const blockedScheduled = futureScheduled.filter(row => ['needs_obs', 'draft_repair', 'no_email'].includes(_pipelineCohort(row)));
-  const readyNow = scoped.filter(row => !row.sent_at && row.send_ready && row.to_email).length;
   const nextDue = futureScheduled
     .slice()
     .sort((a, b) => String(a.send_after || '').localeCompare(String(b.send_after || '')))[0];
@@ -9922,9 +10303,9 @@ function _ccRenderRunway() {
       <div class="cc-runway-note">${blockedScheduled.length ? `${blockedTerritories || 1} territor${blockedTerritories === 1 ? 'y is' : 'ies are'} carrying blocked schedule pressure.` : 'Scheduled rows are currently clean.'}</div>
     </div>
     <div class="cc-runway-card clickable ${_ccOpsSlice === 'follow' ? 'active' : ''}" onclick="ccSetSlice('follow')">
-      <div class="cc-runway-label">Ready now</div>
-      <div class="cc-runway-value">${readyNow}</div>
-      <div class="cc-runway-note">${readyNow ? 'Rows are currently eligible in the live send lane across the active map scope.' : 'No rows are send-ready in this scope.'}</div>
+      <div class="cc-runway-label">Replies waiting</div>
+      <div class="cc-runway-value">${replyWaiting}</div>
+      <div class="cc-runway-note">${replyWaiting ? 'Live conversations are waiting for follow-up in the active theater.' : 'No live replies are waiting in this scope.'}</div>
     </div>`;
 }
 
@@ -9976,11 +10357,16 @@ function ccQueueRender() {
   if (_ccMode !== 'territory' && _mapInstance && !_mapTerritoryData) {
     _mapLoadTerritoryOverlay();
   }
+  ccUpdateShellPosture();
+  ccUpdateDrawerShelfState();
   _ccUpdateScopeChrome();
   _ccRenderRunway();
   _ccRenderJournal();
   _ccRenderDrawer();
   _ccRenderDossierPresence();
+  _syncQueueInspectorDock();
+  if (_mapUseHybridRenderer()) _mapSyncTheaterRenderer();
+  ccInvalidateMapSize();
 }
 
 function ccQueueOpenRow(gi) {
@@ -10283,6 +10669,296 @@ let _mapInstance    = null;   // Leaflet map object
 let _mapClusterGroup = null;  // MarkerClusterGroup for result markers
 let _mapPanelActiveKey = '';
 let _mapPanelTriageFilter = 'all';
+let _mapRendererMode = 'hybrid-gl';
+let _mapGlInstance = null;
+let _mapGlReady = false;
+let _mapGlPendingSync = false;
+
+const _MAP_GL_GLYPHS = 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf';
+const _MAP_GL_TILES = [
+  'https://a.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png',
+  'https://b.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png',
+  'https://c.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png',
+  'https://d.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
+];
+
+function _mapUseHybridRenderer() {
+  return _mapRendererMode === 'hybrid-gl' && typeof maplibregl !== 'undefined';
+}
+
+function _mapFeatureCollection(features) {
+  return { type: 'FeatureCollection', features: Array.isArray(features) ? features : [] };
+}
+
+function _mapCirclePolygon(lat, lng, radiusM, steps = 24) {
+  const points = [];
+  const safeRadius = Math.max(900, radiusM || 1200);
+  const cosLat = Math.max(0.2, Math.cos((lat * Math.PI) / 180));
+  for (let i = 0; i <= steps; i += 1) {
+    const theta = (Math.PI * 2 * i) / steps;
+    const dLat = (safeRadius * Math.sin(theta)) / 111320;
+    const dLng = (safeRadius * Math.cos(theta)) / (111320 * cosLat);
+    points.push([lng + dLng, lat + dLat]);
+  }
+  return points;
+}
+
+function _mapEllipsePolygon(lat, lng, radiusLatM, radiusLngM, steps = 28) {
+  const points = [];
+  const safeLatRadius = Math.max(900, radiusLatM || 1200);
+  const safeLngRadius = Math.max(900, radiusLngM || 1200);
+  const cosLat = Math.max(0.2, Math.cos((lat * Math.PI) / 180));
+  for (let i = 0; i <= steps; i += 1) {
+    const theta = (Math.PI * 2 * i) / steps;
+    const dLat = (safeLatRadius * Math.sin(theta)) / 111320;
+    const dLng = (safeLngRadius * Math.cos(theta)) / (111320 * cosLat);
+    points.push([lng + dLng, lat + dLat]);
+  }
+  return points;
+}
+
+function _mapCurrentPanelRow() {
+  const rows = typeof _panelCurrentRows === 'function' ? _panelCurrentRows() : [];
+  if (!Array.isArray(rows) || panelIdx < 0 || panelIdx >= rows.length) return null;
+  return rows[panelIdx] || null;
+}
+
+function _mapRowCoords(row) {
+  const lat = parseFloat(row?.lat || 0);
+  const lng = parseFloat(row?.lng || 0);
+  if (Number.isFinite(lat) && Number.isFinite(lng) && (lat || lng)) return { lat, lng };
+  const territory = (_tpData || []).find(entry =>
+    _ccNormalizeCityName(entry?.display_name || entry?.city || '') === _ccNormalizeCityName(row?.city || '')
+  );
+  return territory ? _ccTerritoryPointCoords(territory) : null;
+}
+
+function _mapBuildMacroRegionFeatures() {
+  return US_SALES_REGIONS.map(region => {
+    const [[s, w], [n, e]] = region.bounds;
+    const centerLat = region.center[0];
+    const centerLng = region.center[1];
+    const latRadiusM = Math.max(180000, ((n - s) * 111320) * 0.42);
+    const lngRadiusM = Math.max(180000, ((e - w) * 111320 * Math.max(0.2, Math.cos((centerLat * Math.PI) / 180))) * 0.42);
+    return {
+      type: 'Feature',
+      properties: { name: region.name, color: region.color },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [_mapEllipsePolygon(centerLat, centerLng, latRadiusM, lngRadiusM)]
+      }
+    };
+  });
+}
+
+function _mapBuildMacroRegionLabels() {
+  return US_SALES_REGIONS.map(region => ({
+    type: 'Feature',
+    properties: { name: region.name },
+    geometry: { type: 'Point', coordinates: [region.center[1], region.center[0]] }
+  }));
+}
+
+function _mapBuildTerritorySurfaceFeatures(cells) {
+  const features = [];
+  (cells || []).forEach(cell => {
+    const lat = parseFloat(cell.center_lat || 0);
+    const lng = parseFloat(cell.center_lng || 0);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng) || (!lat && !lng)) return;
+    const stats = _mapTerritoryCellStats(cell, _mapTerritorySelectedIndustry());
+    if (!_mapTerritoryCellRelevant(cell, stats)) return;
+    const tone = _mapTerritoryTone(stats);
+    const opsMetrics = _ccCellMetrics(cell);
+    const scoped = _ccCellMatchesScope(cell);
+    const radiusM = Math.max(
+      parseFloat(cell.radius_m || cell.recommended_radius_m || 1600),
+      (Math.abs(parseFloat(cell.max_lat || 0) - parseFloat(cell.min_lat || 0)) * 111320 * 0.68) || 1600
+    );
+    const emphasis = Math.min(1, ((opsMetrics.frontCount || 0) / 4) + (scoped ? 0.38 : 0));
+    const fill = scoped ? '#4f8ef7' : (opsMetrics.frontCount ? _ccOpsTone(_ccOpsSlice).color : tone.color);
+    features.push({
+      type: 'Feature',
+      properties: {
+        key: cell.key,
+        label: _mapTerritoryCellLabel(cell),
+        fill,
+        line: fill,
+        opacity: scoped ? 0.34 : opsMetrics.frontCount ? Math.min(0.28, 0.1 + emphasis * 0.12) : Math.max(0.06, tone.fillOpacity * 0.9),
+        weight: scoped ? 2.6 : opsMetrics.frontCount ? Math.min(2.8, 1 + emphasis * 1.2) : (tone.key === 'next' ? 1.8 : 0.9),
+      },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [_mapCirclePolygon(lat, lng, radiusM * (scoped ? 1.15 : 1))]
+      }
+    });
+  });
+  return features;
+}
+
+function _mapBuildPressureFeatures(bounds) {
+  const features = [];
+  const tone = _ccOpsTone(_ccOpsSlice);
+  (_tpData || []).forEach(entry => {
+    const coords = _ccTerritoryPointCoords(entry);
+    if (!coords) return;
+    if (bounds && !bounds.contains([coords.lat, coords.lng])) return;
+    const metrics = _ccTerritoryPointMetrics(entry);
+    if (!(metrics.frontCount || metrics.active || metrics.dueSoon || metrics.blockedScheduled)) return;
+    const cityName = String(entry.display_name || '').trim() || 'Territory';
+    const isScoped = _ccTerrScope && _ccNormalizeCityName(_ccTerrScope.city || _ccTerrScope.name) === _ccNormalizeCityName(cityName);
+    const pressure = Math.max(metrics.frontCount, metrics.active, metrics.blockedScheduled, metrics.dueSoon ? 1 : 0);
+    features.push({
+      type: 'Feature',
+      properties: {
+        name: cityName,
+        frontCount: metrics.frontCount,
+        ready: metrics.dueNow,
+        blocked: metrics.blockers,
+        follow: metrics.follow,
+        active: metrics.active,
+        pressure,
+        color: tone.color,
+        glow: isScoped ? 0.98 : 0.75,
+        radius: 18 + (pressure * 5),
+        halo: 32 + (pressure * 9),
+        label: `${cityName} · ${metrics.frontCount} ${tone.label.toLowerCase()}`
+      },
+      geometry: { type: 'Point', coordinates: [coords.lng, coords.lat] }
+    });
+  });
+  return features.sort((a, b) => b.properties.pressure - a.properties.pressure).slice(0, 40);
+}
+
+function _mapBuildScopeFeatures() {
+  const features = [];
+  if (_ccTerrScope?.bbox?.length === 4) {
+    const [minLat, maxLat, minLng, maxLng] = _ccTerrScope.bbox.map(v => parseFloat(v));
+    features.push({
+      type: 'Feature',
+      properties: { name: _ccTerrScope.name || 'Selected territory' },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[[minLng, minLat], [maxLng, minLat], [maxLng, maxLat], [minLng, maxLat], [minLng, minLat]]]
+      }
+    });
+  } else if (_ccTerrScope) {
+    const entry = (_tpData || []).find(item =>
+      _ccNormalizeCityName(item?.display_name || item?.city || '') === _ccNormalizeCityName(_ccTerrScope.city || _ccTerrScope.name)
+    );
+    const coords = entry ? _ccTerritoryPointCoords(entry) : null;
+    if (coords) {
+      features.push({
+        type: 'Feature',
+        properties: { name: _ccTerrScope.name || 'Selected territory' },
+        geometry: { type: 'Polygon', coordinates: [_mapCirclePolygon(coords.lat, coords.lng, 7600, 32)] }
+      });
+    }
+  }
+  return features;
+}
+
+function _mapBuildBusinessFocusFeatures() {
+  const row = _mapCurrentPanelRow();
+  if (!row) return [];
+  const coords = _mapRowCoords(row);
+  if (!coords) return [];
+  return [{
+    type: 'Feature',
+    properties: { name: row.business_name || 'Selected business', city: row.city || '', state: row.state || '' },
+    geometry: { type: 'Point', coordinates: [coords.lng, coords.lat] }
+  }];
+}
+
+function _mapBuildTheaterStyle() {
+  return {
+    version: 8,
+    glyphs: _MAP_GL_GLYPHS,
+    sources: {
+      atlasRaster: { type: 'raster', tiles: _MAP_GL_TILES, tileSize: 256, attribution: '© OpenStreetMap © CARTO' },
+      macroRegions: { type: 'geojson', data: _mapFeatureCollection([]) },
+      macroLabels: { type: 'geojson', data: _mapFeatureCollection([]) },
+      territorySurface: { type: 'geojson', data: _mapFeatureCollection([]) },
+      pressureSurface: { type: 'geojson', data: _mapFeatureCollection([]) },
+      scopeSurface: { type: 'geojson', data: _mapFeatureCollection([]) },
+      businessFocus: { type: 'geojson', data: _mapFeatureCollection([]) }
+    },
+    layers: [
+      { id: 'atlas-background', type: 'background', paint: { 'background-color': '#06111a' } },
+      { id: 'atlas-raster', type: 'raster', source: 'atlasRaster', paint: { 'raster-opacity': 0.46, 'raster-saturation': -0.78, 'raster-contrast': 0.32, 'raster-brightness-min': 0.08, 'raster-brightness-max': 0.62 } },
+      { id: 'macro-region-fill', type: 'fill', source: 'macroRegions', paint: { 'fill-color': ['get', 'color'], 'fill-opacity': 0.065 } },
+      { id: 'macro-region-line', type: 'line', source: 'macroRegions', paint: { 'line-color': ['get', 'color'], 'line-width': 1.1, 'line-opacity': 0.18 } },
+      { id: 'territory-surface-fill', type: 'fill', source: 'territorySurface', paint: { 'fill-color': ['coalesce', ['get', 'fill'], '#4f8ef7'], 'fill-opacity': ['coalesce', ['get', 'opacity'], 0.1] } },
+      { id: 'territory-surface-line', type: 'line', source: 'territorySurface', paint: { 'line-color': ['coalesce', ['get', 'line'], '#4f8ef7'], 'line-width': ['coalesce', ['get', 'weight'], 1], 'line-opacity': 0.42 } },
+      { id: 'pressure-halo', type: 'circle', source: 'pressureSurface', paint: { 'circle-color': ['coalesce', ['get', 'color'], '#4f8ef7'], 'circle-radius': ['coalesce', ['get', 'halo'], 24], 'circle-opacity': ['*', ['coalesce', ['get', 'glow'], 0.7], 0.16], 'circle-blur': 0.8 } },
+      { id: 'pressure-core', type: 'circle', source: 'pressureSurface', paint: { 'circle-color': ['coalesce', ['get', 'color'], '#4f8ef7'], 'circle-radius': ['coalesce', ['get', 'radius'], 12], 'circle-opacity': 0.7, 'circle-stroke-width': 1.2, 'circle-stroke-color': 'rgba(240,244,255,.3)', 'circle-blur': 0.18 } },
+      { id: 'scope-surface-fill', type: 'fill', source: 'scopeSurface', paint: { 'fill-color': '#4f8ef7', 'fill-opacity': 0.12 } },
+      { id: 'scope-surface-line', type: 'line', source: 'scopeSurface', paint: { 'line-color': '#9dc1ff', 'line-width': 2.3, 'line-opacity': 0.52 } },
+      { id: 'business-focus-halo', type: 'circle', source: 'businessFocus', paint: { 'circle-color': '#c8884a', 'circle-radius': 24, 'circle-opacity': 0.18, 'circle-blur': 0.65 } },
+      { id: 'business-focus-core', type: 'circle', source: 'businessFocus', paint: { 'circle-color': '#ffd2a8', 'circle-radius': 8, 'circle-opacity': 0.95, 'circle-stroke-color': '#c8884a', 'circle-stroke-width': 2.4 } },
+      { id: 'macro-labels', type: 'symbol', source: 'macroLabels', layout: { 'text-field': ['get', 'name'], 'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'], 'text-size': 18, 'text-letter-spacing': 0.22, 'text-transform': 'uppercase' }, paint: { 'text-color': '#adc3ea', 'text-opacity': 0.38, 'text-halo-color': '#05111c', 'text-halo-width': 1.8 } }
+    ]
+  };
+}
+
+function _mapSetGlSourceData(sourceId, data) {
+  if (!_mapGlInstance || !_mapGlReady) return;
+  const source = _mapGlInstance.getSource(sourceId);
+  if (source && typeof source.setData === 'function') source.setData(data);
+}
+
+function _mapSyncHybridCamera() {
+  if (!_mapInstance || !_mapGlInstance || !_mapGlReady) return;
+  const center = _mapInstance.getCenter();
+  _mapGlInstance.jumpTo({
+    center: [center.lng, center.lat],
+    zoom: _mapInstance.getZoom(),
+    bearing: 0,
+    pitch: 0
+  });
+}
+
+function _mapSyncTheaterRenderer(cells) {
+  if (!_mapUseHybridRenderer()) return;
+  if (!_mapGlReady) {
+    _mapGlPendingSync = true;
+    return;
+  }
+  const bounds = _mapInstance ? _mapInstance.getBounds() : null;
+  const visibleCells = Array.isArray(cells) ? cells : ((_mapTerritoryData && Array.isArray(_mapTerritoryData.cells))
+    ? _mapTerritoryData.cells.filter(cell => _mapTerritoryIntersects(cell, bounds))
+    : []);
+  _mapSetGlSourceData('macroRegions', _mapFeatureCollection(_mapBuildMacroRegionFeatures()));
+  _mapSetGlSourceData('macroLabels', _mapFeatureCollection(_mapBuildMacroRegionLabels()));
+  _mapSetGlSourceData('territorySurface', _mapFeatureCollection(_mapBuildTerritorySurfaceFeatures(visibleCells)));
+  _mapSetGlSourceData('pressureSurface', _mapFeatureCollection(_mapBuildPressureFeatures(bounds)));
+  _mapSetGlSourceData('scopeSurface', _mapFeatureCollection(_mapBuildScopeFeatures()));
+  _mapSetGlSourceData('businessFocus', _mapFeatureCollection(_mapBuildBusinessFocusFeatures()));
+  _mapSyncHybridCamera();
+}
+
+function _mapInitHybridRenderer() {
+  if (!_mapUseHybridRenderer() || _mapGlInstance) return;
+  const container = document.getElementById('map-base-gl');
+  if (!container) return;
+  _mapGlInstance = new maplibregl.Map({
+    container,
+    style: _mapBuildTheaterStyle(),
+    center: [MAP_DEFAULT_LNG, MAP_DEFAULT_LAT],
+    zoom: MAP_DEFAULT_ZOOM,
+    interactive: false,
+    attributionControl: false,
+    fadeDuration: 0
+  });
+  _mapGlInstance.once('load', () => {
+    _mapGlReady = true;
+    _mapSyncHybridCamera();
+    _mapSyncTheaterRenderer();
+    if (_mapGlPendingSync) {
+      _mapGlPendingSync = false;
+      _mapSyncTheaterRenderer();
+    }
+  });
+}
 
 function _mapClearResultMarkers() {
   if (_mapClusterGroup) _mapClusterGroup.clearLayers();
@@ -11311,47 +11987,50 @@ function _mapShowRegions() {
   _mapRegionsVisible = true;
   US_SALES_REGIONS.forEach(region => {
     const [[s, w], [n, e]] = region.bounds;
+    const visualHidden = _mapUseHybridRenderer();
     // Draw as a rectangle polygon
     const poly = L.rectangle([[s, w], [n, e]], {
       color: region.color,
-      weight: 2.5,
-      opacity: 0.9,
+      weight: visualHidden ? 0.01 : 2.5,
+      opacity: visualHidden ? 0.01 : 0.9,
       fillColor: region.color,
-      fillOpacity: 0.04,
+      fillOpacity: visualHidden ? 0.01 : 0.04,
       dashArray: null,
       className: 'map-region-poly',
     }).addTo(_mapInstance);
 
-    // Label in center
-    const label = L.divIcon({
-      className: '',
-      html: `<div style="
-        background:transparent;
-        color:${region.color};
-        border:none;
-        border-radius:6px;
-        padding:5px 11px;
-        font-size:12px;
-        font-weight:700;
-        white-space:nowrap;
-        letter-spacing:.08em;
-        font-family:'DM Sans',system-ui,sans-serif;
-        text-shadow:0 1px 4px rgba(0,0,0,.7);
-        pointer-events:none;
-        text-transform:uppercase;
-      ">${region.name}</div>`,
-      iconAnchor: [50, 14],
-      iconSize: [100, 28],
-    });
-    const marker = L.marker(region.center, { icon: label, interactive: false })
-      .addTo(_mapInstance);
+    let marker = null;
+    if (!visualHidden) {
+      const label = L.divIcon({
+        className: '',
+        html: `<div style="
+          background:transparent;
+          color:${region.color};
+          border:none;
+          border-radius:6px;
+          padding:5px 11px;
+          font-size:12px;
+          font-weight:700;
+          white-space:nowrap;
+          letter-spacing:.08em;
+          font-family:'DM Sans',system-ui,sans-serif;
+          text-shadow:0 1px 4px rgba(0,0,0,.7);
+          pointer-events:none;
+          text-transform:uppercase;
+        ">${region.name}</div>`,
+        iconAnchor: [50, 14],
+        iconSize: [100, 28],
+      });
+      marker = L.marker(region.center, { icon: label, interactive: false }).addTo(_mapInstance);
+    }
 
     poly.on('click', () => _mapSelectRegion(region));
-    poly.on('mouseover', () => poly.setStyle({ fillOpacity: 0.10, dashArray: '6 4', weight: 3 }));
-    poly.on('mouseout',  () => poly.setStyle({ fillOpacity: 0.04, dashArray: null, weight: 2.5 }));
+    poly.on('mouseover', () => poly.setStyle({ fillOpacity: visualHidden ? 0.02 : 0.10, dashArray: visualHidden ? null : '6 4', weight: visualHidden ? 0.4 : 3 }));
+    poly.on('mouseout',  () => poly.setStyle({ fillOpacity: visualHidden ? 0.01 : 0.04, dashArray: null, weight: visualHidden ? 0.01 : 2.5 }));
     poly.bindTooltip(`<strong>${region.name}</strong><br>Click to explore`, { sticky: true });
 
-    _mapRegionLayers.push(poly, marker);
+    _mapRegionLayers.push(poly);
+    if (marker) _mapRegionLayers.push(marker);
   });
 
   const statusEl = document.getElementById('map-status');
@@ -11517,6 +12196,7 @@ function _mapClearCoverageGlows() {
 function _mapDrawCoverageFill(territoryData) {
   if (!_mapInstance) return;
   _mapClearCoverageGlows();
+  if (_mapUseHybridRenderer()) return;
   if (!territoryData || !territoryData.cells || !territoryData.cells.length) return;
 
   const glowGroup  = L.layerGroup().addTo(_mapInstance);
@@ -11611,7 +12291,7 @@ function _mapAddRtsSearchGlow(lat, lng, radiusM, hasLeads) {
 }
 
 function _mapAddLegend() {
-  if (!_mapInstance || document.getElementById('map-coverage-legend')) return;
+  if (!_mapInstance || _mapUseHybridRenderer() || document.getElementById('map-coverage-legend')) return;
   const legend = L.control({ position: 'bottomleft' });
   legend.onAdd = () => {
     const div = L.DomUtil.create('div', 'map-legend');
@@ -12334,6 +13014,10 @@ function _mapRenderOperationsPressure(cells) {
   const layer = _mapEnsureOpsLayer();
   if (!layer) return;
   layer.clearLayers();
+  if (_mapUseHybridRenderer()) {
+    _mapSyncTheaterRenderer(cells);
+    return;
+  }
   if (_ccMode === 'territory' || !_mapTerritoryVisible || !Array.isArray(cells) || !cells.length) return;
   const tone = _ccOpsTone(_ccOpsSlice);
   const bounds = _mapInstance ? _mapInstance.getBounds() : null;
@@ -12518,6 +13202,7 @@ function _mapRenderTerritoryOverlay() {
   _mapTerritoryCellsByKey = new Map();
 
   if (!_mapTerritoryVisible || !_mapTerritoryData || !Array.isArray(_mapTerritoryData.cells)) {
+    if (_mapUseHybridRenderer()) _mapSyncTheaterRenderer([]);
     _mapRenderTerritoryLegend(null);
     _mapRefreshTerritoryButtons();
     return;
@@ -12576,6 +13261,13 @@ function _mapRenderTerritoryOverlay() {
     a.searchCount - b.searchCount
   );
 
+  if (_mapUseHybridRenderer()) {
+    _mapSyncTheaterRenderer(Array.from(_mapTerritoryCellsByKey.values()));
+    _mapRenderTerritoryLegend(summary);
+    _mapRefreshTerritoryButtons();
+    return;
+  }
+
   _mapRenderOperationsPressure(Array.from(_mapTerritoryCellsByKey.values()));
   _mapRenderTerritoryLegend(summary);
   _mapRefreshTerritoryButtons();
@@ -12598,8 +13290,10 @@ async function _mapLoadTerritoryOverlay(force) {
     }
     _mapTerritoryData = res;
     _mapRenderTerritoryOverlay();
-    _mapDrawCoverageFill(res);  // Pass 66: draw coverage fill from territory data
-    _mapAddLegend();             // Pass 66: add map legend once
+    if (!_mapUseHybridRenderer()) {
+      _mapDrawCoverageFill(res);  // Pass 66: draw coverage fill from territory data
+      _mapAddLegend();             // Pass 66: add map legend once
+    }
     return _mapTerritoryData;
   } catch (err) {
     const wrap = document.getElementById('map-territory-legend');
@@ -13492,7 +14186,14 @@ function mapClearCircle() {
 function _mapInit() {
   if (_mapInstance) {
     // Map already created — just fix sizing on tab re-visit
-    setTimeout(() => { _mapInstance.invalidateSize(true); _mapUpdateZoomHint(); }, 50);
+    setTimeout(() => {
+      _mapInstance.invalidateSize(true);
+      _mapUpdateZoomHint();
+      if (_mapUseHybridRenderer()) {
+        _mapSyncHybridCamera();
+        _mapSyncTheaterRenderer();
+      }
+    }, 50);
     setTimeout(() => { _mapInstance.invalidateSize(true); }, 300);
     return;
   }
@@ -13502,26 +14203,45 @@ function _mapInit() {
   }
   const container = document.getElementById('map-container');
   if (!container) return;
-  _mapInstance = L.map('map-container', { zoomControl: true }).setView([MAP_DEFAULT_LAT, MAP_DEFAULT_LNG], MAP_DEFAULT_ZOOM);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: 'abcd',
-    maxZoom: 19,
-  }).addTo(_mapInstance);
+  container.classList.toggle('hybrid-map', _mapUseHybridRenderer());
+  _mapInstance = L.map('map-container', { zoomControl: true, maxZoom: 19, minZoom: 3 }).setView([MAP_DEFAULT_LAT, MAP_DEFAULT_LNG], MAP_DEFAULT_ZOOM);
+  if (_mapUseHybridRenderer()) {
+    _mapInitHybridRenderer();
+  } else {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      subdomains: 'abcd',
+      maxZoom: 19,
+    }).addTo(_mapInstance);
+  }
   _mapClusterGroup = L.markerClusterGroup();
   _mapInstance.addLayer(_mapClusterGroup);
   // Staggered invalidateSize to handle tab-visibility timing
-  setTimeout(() => { _mapInstance.invalidateSize(true); }, 50);
+  setTimeout(() => {
+    _mapInstance.invalidateSize(true);
+    if (_mapUseHybridRenderer()) {
+      _mapSyncHybridCamera();
+      _mapSyncTheaterRenderer();
+    }
+  }, 50);
   setTimeout(() => { _mapInstance.invalidateSize(true); }, 200);
   setTimeout(() => {
     _mapInstance.invalidateSize(true);
     _mapUpdateZoomHint();
     _mapShowRegions(); // Pass 65: show US regions on first load
+    if (_mapUseHybridRenderer()) {
+      _mapSyncHybridCamera();
+      _mapSyncTheaterRenderer();
+    }
   }, 600);
   _mapInstance.on('moveend zoomend', () => {
     _mapRenderTerritoryOverlay();
     _mapUpdateZoomHint();
     _mapHandleZoomRegions();
+    if (_mapUseHybridRenderer()) {
+      _mapSyncHybridCamera();
+      _mapSyncTheaterRenderer();
+    }
   });
   _mapInstance.on('click', (e) => {
     // Pass 64: click → reverse geocode → highlight county/city/neighborhood boundary
@@ -13662,9 +14382,17 @@ function buildDbCard(row) {
   const card = document.createElement('div');
   card.className = 'db-card';
   const pct = row.readiness_pct || 0;
-  const pkgHtml = row.package_key
-    ? `<div class="db-card-pkg">${row.package_key.replace(/_/g,' ')}</div>`
-    : '';
+  const coreLabel = row.core_offer ? (_cvCoreOfferLabel(row.core_offer)) : 'Unassigned core offer';
+  const bundleLabel = row.bundle_key ? _cvBundleLabel(row.bundle_key) : '';
+  const moduleLabels = Array.isArray(row.selected_modules) ? row.selected_modules.map((key) => _cvModuleLabel(key)) : [];
+  const stackHtml = `<div class="db-card-stack">${escHtml(coreLabel)}${bundleLabel ? ` · ${escHtml(bundleLabel)}` : ''}</div>`;
+  const moduleHtml = moduleLabels.length
+    ? `<div class="db-card-mods">${escHtml(moduleLabels.join(' · '))}</div>`
+    : `<div class="db-card-subtle">Specialty modules stay under the core offer.</div>`;
+  const priceHtml = row.price ? `<span>Price: ${escHtml(row.price)}</span>` : '';
+  const agreementHtml = row.agreement_status ? `<span>Agreement: ${escHtml(row.agreement_status)}</span>` : '';
+  const invoiceHtml = row.invoice_status ? `<span>Invoice: ${escHtml(row.invoice_status)}</span>` : '';
+  const statusHtml = [priceHtml, agreementHtml, invoiceHtml].filter(Boolean).join(' · ');
   const checksHtml = _READINESS_KEYS.map(k => {
     const done = row.readiness && row.readiness[k];
     return `<div class="db-check${done?' done':''}" data-key="${k}" data-lead-key="${row.key}">
@@ -13675,8 +14403,9 @@ function buildDbCard(row) {
 
   card.innerHTML = `
     <div class="db-card-name">${row.business_name || '—'}</div>
-    <div class="db-card-meta">${[row.city, row.package_key?'':null].filter(Boolean).join(' · ') || '&nbsp;'}</div>
-    ${pkgHtml}
+    <div class="db-card-meta">${[row.city, statusHtml || null].filter(Boolean).join(' · ') || '&nbsp;'}</div>
+    ${stackHtml}
+    ${moduleHtml}
     <div class="db-readiness-bar"><div class="db-readiness-fill" style="width:${pct}%"></div></div>
     <div class="db-readiness">${checksHtml}</div>
     <select class="db-card-stage-sel" onchange="moveDbCard(event,'${row.key}')" data-lead-key="${row.key}">
@@ -13728,7 +14457,7 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
   <div class="db-hdr">
     <div>
       <h2>&#128230; Delivery Board</h2>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px">Won clients in deployment pipeline — track readiness to go live</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Post-yes handoff hub — track the sold stack and readiness to go live</div>
     </div>
     <button class="btn btn-ghost" onclick="loadDeliveryBoard()" id="db-refresh-btn">&#8635; Refresh</button>
   </div>
