@@ -591,6 +591,74 @@ def update_delivery_profile_by_key(
         return None
 
 
+def upsert_delivery_profile_by_key(
+    key: str,
+    profile_patch: dict,
+    *,
+    identity: dict | None = None,
+    operator: str = "operator",
+) -> Optional[dict]:
+    """
+    Create or update a delivery profile using the lead key directly.
+
+    This is used by the deploy activation flow for manual client creation.
+    It stays inside lead memory and does not touch queue/send state.
+    """
+    if not isinstance(key, str) or not key:
+        raise ValueError("key must be a non-empty string")
+    if not isinstance(profile_patch, dict):
+        raise ValueError("profile_patch must be a dict")
+    if identity is not None and not isinstance(identity, dict):
+        raise ValueError("identity must be a dict when provided")
+
+    ts = _now_iso()
+
+    try:
+        with _lock:
+            data = _load()
+            record = data.get(key)
+            if record is None:
+                record = {
+                    "key": key,
+                    "history": [],
+                    "business_name": _norm((identity or {}).get("business_name") or (identity or {}).get("name") or ""),
+                    "city": _norm((identity or {}).get("city") or ""),
+                    "website": _norm((identity or {}).get("website") or ""),
+                    "phone": _norm((identity or {}).get("phone") or ""),
+                }
+            elif identity:
+                record["business_name"] = _norm(identity.get("business_name") or identity.get("name") or "") or record.get("business_name", "")
+                record["city"] = _norm(identity.get("city") or "") or record.get("city", "")
+                record["website"] = _norm(identity.get("website") or "") or record.get("website", "")
+                record["phone"] = _norm(identity.get("phone") or "") or record.get("phone", "")
+
+            current = record.get("delivery_profile")
+            if not isinstance(current, dict):
+                current = {}
+            merged = dict(current)
+
+            for field, value in profile_patch.items():
+                if (
+                    isinstance(value, dict)
+                    and isinstance(merged.get(field), dict)
+                ):
+                    nested = dict(merged[field])
+                    nested.update(value)
+                    merged[field] = nested
+                else:
+                    merged[field] = value
+
+            merged["updated_at"] = ts
+            merged["updated_by"] = operator
+            record["delivery_profile"] = merged
+            record["last_updated"] = ts
+            data[key] = record
+            _save(data)
+            return record
+    except Exception:
+        return None
+
+
 # ---------------------------------------------------------------------------
 # Observation quality grading — deterministic, no AI required
 # ---------------------------------------------------------------------------

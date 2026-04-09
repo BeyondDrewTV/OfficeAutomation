@@ -1395,18 +1395,126 @@ _DELIVERY_READINESS_KEYS = (
     "testing_pending",
     "live",
 )
+_DEPLOY_SNAPSHOT_KEYS = (
+    "business_name",
+    "contact_name",
+    "phone",
+    "email",
+    "category",
+    "website",
+    "google_presence",
+    "facebook_presence",
+    "notes",
+)
+_DEPLOY_DISCOVERY_KEYS = (
+    "poor_or_missing_website",
+    "weak_google_facebook_presence",
+    "no_clear_contact_flow",
+    "missed_calls",
+    "weak_follow_up",
+    "wants_more_reviews",
+    "estimate_or_job_status_problem",
+    "wants_ongoing_support",
+)
+_DEPLOY_QUOTE_MODES = {"live_quote", "formal_estimate"}
+_DEPLOY_MONTHLY_SUPPORT_STATES = {True, False}
+_DEPLOY_DEFAULT_NOTES = ""
+
+
+def _coerce_bool(value) -> bool:
+    return str(value).strip().lower() in {"1", "true", "yes", "on", "__yes__"}
+
+
+def _normalize_snapshot(value: dict | None) -> dict:
+    base = {k: "" for k in _DEPLOY_SNAPSHOT_KEYS}
+    base["google_presence"] = False
+    base["facebook_presence"] = False
+    if not isinstance(value, dict):
+        return base
+    for key in _DEPLOY_SNAPSHOT_KEYS:
+        if key in {"google_presence", "facebook_presence"}:
+            base[key] = _coerce_bool(value.get(key))
+        elif isinstance(value.get(key), str):
+            base[key] = value.get(key, "").strip()
+    return base
+
+
+def _normalize_discovery(value: dict | None) -> dict:
+    base = {k: False for k in _DEPLOY_DISCOVERY_KEYS}
+    if not isinstance(value, dict):
+        return base
+    for key in _DEPLOY_DISCOVERY_KEYS:
+        if key in value:
+            base[key] = _coerce_bool(value.get(key))
+    return base
+
+
+def _deploy_task_templates(profile: dict | None) -> list[str]:
+    profile = profile if isinstance(profile, dict) else {}
+    tasks: list[str] = []
+    core_offer = (profile.get("core_offer") or "").strip().lower()
+    bundle_key = (profile.get("bundle_key") or "").strip().lower()
+    modules = _normalize_selected_modules(profile.get("selected_modules"))
+    if core_offer == "presence_refresh":
+        tasks += [
+            "Refresh Google Business Profile",
+            "Refresh Facebook / local presence",
+            "Tighten photos, hours, and about copy",
+        ]
+    elif core_offer == "starter_website":
+        tasks += [
+            "Draft the one-page site",
+            "Collect photos and service list",
+            "Connect the contact flow",
+        ]
+    elif core_offer == "lead_contact_setup":
+        tasks += [
+            "Map the intake flow",
+            "Set follow-up reminders",
+            "Route new leads to the owner",
+        ]
+
+    if bundle_key == "basic_cleanup":
+        tasks.append("Trim the presence cleanup to the fast wins")
+    elif bundle_key == "presence_website":
+        tasks += ["Tie the site back to the business profiles"]
+    elif bundle_key == "full_starter_package":
+        tasks += ["Confirm the full starter stack is ready for handoff"]
+
+    module_tasks = {
+        "missed_call_recovery": "Set missed-call response and text-back",
+        "follow_up_reminder_setup": "Set follow-up timing and reminders",
+        "review_request_system": "Set review request trigger and copy",
+        "estimate_job_status_communication": "Set estimate / job status updates",
+        "client_approval_estimate_portal": "Set the approval path and portal",
+        "mobile_admin_workflow_helper": "Confirm the mobile admin workflow",
+    }
+    for module in modules:
+        task = module_tasks.get(module)
+        if task:
+            tasks.append(task)
+    if _coerce_bool(profile.get("monthly_support")):
+        tasks.append("Confirm monthly support scope")
+    return list(dict.fromkeys(tasks))
 
 
 def _delivery_profile_default(row: dict | None = None) -> dict:
     is_replied = ((row or {}).get("replied") or "").strip().lower() == "true"
     return {
+        "snapshot": {k: (False if k in {"google_presence", "facebook_presence"} else "") for k in _DEPLOY_SNAPSHOT_KEYS},
+        "discovery": {k: False for k in _DEPLOY_DISCOVERY_KEYS},
         "core_offer": "",
         "bundle_key": "",
         "selected_modules": [],
         "price": "",
+        "pricing_mode": "live_quote",
+        "monthly_support": False,
+        "monthly_fee": "",
         "agreement_status": "",
         "invoice_status": "",
+        "deposit_status": "",
         "offer_notes": "",
+        "activation_tasks": [],
         "stage": "replied" if is_replied else "discovered",
         "readiness": {k: False for k in _DELIVERY_READINESS_KEYS},
         "updated_at": "",
@@ -1445,6 +1553,32 @@ def _finalize_delivery_stack_patch(clean_patch: dict, current_profile: dict) -> 
     return clean_patch, None
 
 
+def _finalize_activation_patch(clean_patch: dict, current_profile: dict) -> dict:
+    merged = dict(current_profile or {})
+    merged.update(clean_patch)
+    if "snapshot" in merged and isinstance(merged["snapshot"], dict):
+        clean_patch["snapshot"] = _normalize_snapshot(merged["snapshot"])
+    if "discovery" in merged and isinstance(merged["discovery"], dict):
+        clean_patch["discovery"] = _normalize_discovery(merged["discovery"])
+
+    pricing_mode = (merged.get("pricing_mode") or "").strip().lower()
+    if pricing_mode in _DEPLOY_QUOTE_MODES:
+        clean_patch["pricing_mode"] = pricing_mode
+    elif "pricing_mode" in clean_patch:
+        clean_patch["pricing_mode"] = "live_quote"
+
+    if "monthly_support" in merged:
+        clean_patch["monthly_support"] = _coerce_bool(merged.get("monthly_support"))
+    if "monthly_fee" in merged:
+        monthly_fee = merged.get("monthly_fee")
+        clean_patch["monthly_fee"] = str(monthly_fee).strip() if monthly_fee is not None else ""
+    if "deposit_status" in merged:
+        clean_patch["deposit_status"] = (merged.get("deposit_status") or "").strip()
+
+    clean_patch["activation_tasks"] = _deploy_task_templates(merged)
+    return clean_patch
+
+
 def _normalize_delivery_profile(raw_profile: dict | None, row: dict | None = None) -> dict:
     base = _delivery_profile_default(row)
     if not isinstance(raw_profile, dict):
@@ -1474,11 +1608,35 @@ def _normalize_delivery_profile(raw_profile: dict | None, row: dict | None = Non
         selected_modules = _normalize_selected_modules(legacy_stack["selected_modules"])
     base["selected_modules"] = selected_modules
 
+    snapshot = raw_profile.get("snapshot")
+    if isinstance(snapshot, dict):
+        base["snapshot"] = _normalize_snapshot(snapshot)
+
+    discovery = raw_profile.get("discovery")
+    if isinstance(discovery, dict):
+        base["discovery"] = _normalize_discovery(discovery)
+
     price = raw_profile.get("price")
     if isinstance(price, (int, float)):
         base["price"] = str(price)
     elif isinstance(price, str):
         base["price"] = price.strip()
+
+    pricing_mode = (raw_profile.get("pricing_mode") or "").strip().lower()
+    if pricing_mode in _DEPLOY_QUOTE_MODES:
+        base["pricing_mode"] = pricing_mode
+
+    monthly_support = raw_profile.get("monthly_support")
+    if isinstance(monthly_support, bool):
+        base["monthly_support"] = monthly_support
+    elif monthly_support is not None:
+        base["monthly_support"] = _coerce_bool(monthly_support)
+
+    monthly_fee = raw_profile.get("monthly_fee")
+    if isinstance(monthly_fee, (int, float)):
+        base["monthly_fee"] = str(monthly_fee)
+    elif isinstance(monthly_fee, str):
+        base["monthly_fee"] = monthly_fee.strip()
 
     agreement_status = raw_profile.get("agreement_status")
     if isinstance(agreement_status, str):
@@ -1488,9 +1646,17 @@ def _normalize_delivery_profile(raw_profile: dict | None, row: dict | None = Non
     if isinstance(invoice_status, str):
         base["invoice_status"] = invoice_status.strip()
 
+    deposit_status = raw_profile.get("deposit_status")
+    if isinstance(deposit_status, str):
+        base["deposit_status"] = deposit_status.strip()
+
     offer_notes = raw_profile.get("offer_notes")
     if isinstance(offer_notes, str):
         base["offer_notes"] = offer_notes
+
+    activation_tasks = raw_profile.get("activation_tasks")
+    if isinstance(activation_tasks, list):
+        base["activation_tasks"] = [task for task in activation_tasks if isinstance(task, str) and task.strip()]
 
     stage = (raw_profile.get("stage") or "").strip().lower()
     if stage in _DELIVERY_STAGES:
@@ -1633,6 +1799,8 @@ def api_update_delivery_profile():
     if error:
         return jsonify({"ok": False, "error": error}), 400
 
+    clean_patch = _finalize_activation_patch(clean_patch, current_profile)
+
     if not clean_patch:
         return jsonify({"ok": True, "delivery_profile": current_profile})
 
@@ -1679,8 +1847,11 @@ def api_delivery_board():
             "bundle_key":    profile.get("bundle_key", ""),
             "selected_modules": profile.get("selected_modules", []),
             "price":         profile.get("price", ""),
+            "monthly_support": profile.get("monthly_support", False),
+            "monthly_fee":   profile.get("monthly_fee", ""),
             "agreement_status": profile.get("agreement_status", ""),
             "invoice_status": profile.get("invoice_status", ""),
+            "deposit_status": profile.get("deposit_status", ""),
             "offer_notes":   profile.get("offer_notes", ""),
             "readiness":     readiness,
             "readiness_pct": round(completed / total_keys * 100) if total_keys else 0,
@@ -1805,6 +1976,8 @@ def api_update_delivery_profile_by_key():
     if error:
         return jsonify({"ok": False, "error": error}), 400
 
+    clean_patch = _finalize_activation_patch(clean_patch, current_profile)
+
     if not clean_patch:
         return jsonify({"ok": False, "error": "No valid fields in profile patch"}), 400
 
@@ -1814,6 +1987,174 @@ def api_update_delivery_profile_by_key():
 
     profile = _normalize_delivery_profile(record.get("delivery_profile"))
     return jsonify({"ok": True, "delivery_profile": profile})
+
+
+@app.route("/api/deploy_activation", methods=["GET", "POST"])
+def api_deploy_activation():
+    if request.method == "GET":
+        d = request.args
+    else:
+        d = request.json or {}
+
+    identity = d.get("identity") if isinstance(d.get("identity"), dict) else {}
+    key = (d.get("key") or "").strip()
+    if not key and identity:
+        try:
+            key = _lm.lead_key(identity)
+        except Exception:
+            key = ""
+
+    if not key:
+        return jsonify({"ok": False, "error": "key or identity is required"}), 400
+
+    record = _lm.get_all_records().get(key)
+    current_profile = _normalize_delivery_profile(
+        record.get("delivery_profile") if isinstance(record, dict) else None,
+        record if isinstance(record, dict) else identity,
+    )
+
+    if request.method == "GET":
+        return jsonify({
+            "ok": True,
+            "key": key,
+            "exists": bool(record),
+            "identity": {
+                "business_name": (record or {}).get("business_name", identity.get("business_name", "")),
+                "city": (record or {}).get("city", identity.get("city", "")),
+                "website": (record or {}).get("website", identity.get("website", "")),
+                "phone": (record or {}).get("phone", identity.get("phone", "")),
+            },
+            "delivery_profile": current_profile,
+        })
+
+    patch = d.get("profile")
+    if not isinstance(patch, dict):
+        return jsonify({"ok": False, "error": "profile must be an object"}), 400
+
+    clean_patch: dict = {}
+
+    if "snapshot" in patch:
+        snapshot = patch.get("snapshot")
+        if not isinstance(snapshot, dict):
+            return jsonify({"ok": False, "error": "snapshot must be an object"}), 400
+        clean_patch["snapshot"] = _normalize_snapshot(snapshot)
+
+    if "discovery" in patch:
+        discovery = patch.get("discovery")
+        if not isinstance(discovery, dict):
+            return jsonify({"ok": False, "error": "discovery must be an object"}), 400
+        clean_patch["discovery"] = _normalize_discovery(discovery)
+
+    if "core_offer" in patch:
+        core_offer = (patch.get("core_offer") or "").strip().lower()
+        if core_offer and core_offer not in _DELIVERY_CORE_KEYS:
+            return jsonify({"ok": False, "error": "Invalid core_offer"}), 400
+        clean_patch["core_offer"] = core_offer
+
+    if "bundle_key" in patch:
+        bundle_key = (patch.get("bundle_key") or "").strip().lower()
+        if bundle_key and bundle_key not in _DELIVERY_BUNDLE_KEYS:
+            return jsonify({"ok": False, "error": "Invalid bundle_key"}), 400
+        clean_patch["bundle_key"] = bundle_key
+
+    if "selected_modules" in patch:
+        selected_modules = patch.get("selected_modules")
+        if not isinstance(selected_modules, list):
+            return jsonify({"ok": False, "error": "selected_modules must be an array"}), 400
+        for item in selected_modules:
+            if not isinstance(item, str) or item.strip().lower() not in _DELIVERY_SPECIALTY_KEYS:
+                return jsonify({"ok": False, "error": "selected_modules contains invalid values"}), 400
+        clean_patch["selected_modules"] = _normalize_selected_modules(selected_modules)
+
+    if "price" in patch:
+        price = patch.get("price")
+        if isinstance(price, (int, float)):
+            clean_patch["price"] = str(price)
+        elif isinstance(price, str):
+            clean_patch["price"] = price.strip()[:80]
+        elif price in (None, ""):
+            clean_patch["price"] = ""
+        else:
+            return jsonify({"ok": False, "error": "price must be a string or number"}), 400
+
+    if "pricing_mode" in patch:
+        pricing_mode = (patch.get("pricing_mode") or "").strip().lower()
+        if pricing_mode and pricing_mode not in _DEPLOY_QUOTE_MODES:
+            return jsonify({"ok": False, "error": "Invalid pricing_mode"}), 400
+        clean_patch["pricing_mode"] = pricing_mode
+
+    if "monthly_support" in patch:
+        clean_patch["monthly_support"] = _coerce_bool(patch.get("monthly_support"))
+
+    if "monthly_fee" in patch:
+        monthly_fee = patch.get("monthly_fee")
+        if isinstance(monthly_fee, (int, float)):
+            clean_patch["monthly_fee"] = str(monthly_fee)
+        elif isinstance(monthly_fee, str):
+            clean_patch["monthly_fee"] = monthly_fee.strip()[:40]
+        elif monthly_fee in (None, ""):
+            clean_patch["monthly_fee"] = ""
+        else:
+            return jsonify({"ok": False, "error": "monthly_fee must be a string or number"}), 400
+
+    if "agreement_status" in patch:
+        agreement_status = patch.get("agreement_status")
+        if not isinstance(agreement_status, str):
+            return jsonify({"ok": False, "error": "agreement_status must be a string"}), 400
+        clean_patch["agreement_status"] = agreement_status.strip()[:40]
+
+    if "invoice_status" in patch:
+        invoice_status = patch.get("invoice_status")
+        if not isinstance(invoice_status, str):
+            return jsonify({"ok": False, "error": "invoice_status must be a string"}), 400
+        clean_patch["invoice_status"] = invoice_status.strip()[:40]
+
+    if "deposit_status" in patch:
+        deposit_status = patch.get("deposit_status")
+        if not isinstance(deposit_status, str):
+            return jsonify({"ok": False, "error": "deposit_status must be a string"}), 400
+        clean_patch["deposit_status"] = deposit_status.strip()[:40]
+
+    if "offer_notes" in patch:
+        offer_notes = patch.get("offer_notes")
+        if not isinstance(offer_notes, str):
+            return jsonify({"ok": False, "error": "offer_notes must be a string"}), 400
+        clean_patch["offer_notes"] = offer_notes[:2000]
+
+    if "stage" in patch:
+        stage = (patch.get("stage") or "").strip().lower()
+        if stage and stage not in _DELIVERY_STAGES:
+            return jsonify({"ok": False, "error": "Invalid stage"}), 400
+        clean_patch["stage"] = stage
+
+    if "readiness" in patch:
+        readiness = patch.get("readiness")
+        if not isinstance(readiness, dict):
+            return jsonify({"ok": False, "error": "readiness must be an object"}), 400
+        clean_readiness = {}
+        for key_name, value in readiness.items():
+            if key_name not in _DELIVERY_READINESS_KEYS:
+                continue
+            clean_readiness[key_name] = bool(value)
+        clean_patch["readiness"] = clean_readiness
+
+    clean_patch, error = _finalize_delivery_stack_patch(clean_patch, current_profile)
+    if error:
+        return jsonify({"ok": False, "error": error}), 400
+
+    clean_patch = _finalize_activation_patch(clean_patch, current_profile)
+
+    record = _lm.upsert_delivery_profile_by_key(key, clean_patch, identity=identity)
+    if not record:
+        return jsonify({"ok": False, "error": "Failed to upsert delivery profile"}), 500
+
+    profile = _normalize_delivery_profile(record.get("delivery_profile"), record)
+    return jsonify({"ok": True, "key": key, "delivery_profile": profile, "identity": {
+        "business_name": record.get("business_name", ""),
+        "city": record.get("city", ""),
+        "website": record.get("website", ""),
+        "phone": record.get("phone", ""),
+    }})
 
 
 # ── Follow-up status helpers (Pass 22) ───────────────────────────────────────

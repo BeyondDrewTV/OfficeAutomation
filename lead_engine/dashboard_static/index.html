@@ -1362,6 +1362,36 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .qlf-empty{padding:32px 16px;text-align:center;color:var(--dim);font-size:13px}
 .qlf-match{color:var(--copper);font-weight:700}
 /* ── Pass 86: Delivery Board ─────────────────────────────────────────────── */
+.da-wrap{max-width:1200px;margin:0 auto;padding:28px}
+.da-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+.da-hdr h2{font-size:16px;font-weight:600}
+.da-hdr-sub{font-size:11px;color:var(--muted);margin-top:2px;max-width:680px;line-height:1.6}
+.da-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;align-items:start}
+.da-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.da-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.da-card-title{font-size:13px;font-weight:600}
+.da-card-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5}
+.da-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.da-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.da-mini{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px}
+.da-stack-box{border:1px solid rgba(79,142,247,.24);background:rgba(79,142,247,.08);border-radius:var(--rs);padding:12px}
+.da-stack-line{font-size:12px;font-weight:600;color:var(--text);line-height:1.5}
+.da-stack-meta{margin-top:5px;font-size:11px;color:var(--muted);line-height:1.5}
+.da-checklist{display:flex;flex-direction:column;gap:8px}
+.da-check{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text)}
+.da-check input{margin-top:2px}
+.da-check small{display:block;color:var(--muted);font-size:10px;line-height:1.4;margin-top:2px}
+.da-pill-row{display:flex;gap:6px;flex-wrap:wrap}
+.da-pill{font-size:10px;padding:2px 7px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--muted)}
+.da-pill.active{color:var(--blue);border-color:rgba(79,142,247,.28);background:var(--blue-glow)}
+.da-actions{display:flex;gap:8px;flex-wrap:wrap}
+.da-status{font-size:11px;color:var(--muted);line-height:1.5}
+.da-note{min-height:78px}
+.da-touch{display:flex;flex-direction:column;gap:8px}
+@media(max-width:920px){
+  .da-grid{grid-template-columns:1fr}
+  .da-grid-2,.da-grid-3{grid-template-columns:1fr}
+}
 .db-wrap{max-width:1200px;margin:0 auto;padding:28px}
 .db-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
 .db-hdr h2{font-size:16px;font-weight:600}
@@ -1441,6 +1471,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <div class="sub-tab" data-parent="tools" data-page="tools"       onclick="switchSubPage('tools','tools',this)">⚙ Tools</div>
   <div class="sub-tab" data-parent="tools" data-page="lead-memory" onclick="switchSubPage('tools','lead-memory',this)">🧠 Lead Memory</div>
   <!-- Delivery sub-tabs -->
+  <div class="sub-tab" data-parent="delivery" data-page="deploy-activation" onclick="switchSubPage('delivery','deploy-activation',this)">🚀 Deploy Activation</div>
   <div class="sub-tab" data-parent="delivery" data-page="delivery-board" onclick="switchSubPage('delivery','delivery-board',this)" style="display:none">&#128230; Board</div>
 </nav>
 
@@ -7277,7 +7308,7 @@ const _parentDefaults = {
   clients:   'mc-clients',
   health:    'health',
   tools:     'tools',
-  delivery:  'delivery-board',
+  delivery:  'deploy-activation',
 };
 
 // Which pages show together (health shows both page-health AND page-exceptions)
@@ -7293,7 +7324,7 @@ const _parentLastPage = {
   clients:   'mc-clients',
   health:    'health',
   tools:     'tools',
-  delivery:  'delivery-board',
+  delivery:  'deploy-activation',
 };
 
 function _activatePage(name) {
@@ -7319,6 +7350,8 @@ function _runPageHooks(name) {
   if (name === 'social')        socialLoad();
   if (name === 'sprint')        sprintLoad();
   if (name === 'conversations') convLoad();
+  if (name === 'deploy-activation') loadDeliveryActivation();
+  if (name === 'delivery-board') loadDeliveryBoard();
   if (name === 'health')        { healthLoad(); exceptionsLoad(); }
   if (name === 'lead-memory')   loadLeadMemory();  // Pass 44
   if (name === 'map' || name === 'command-center') {
@@ -7342,7 +7375,6 @@ function _runPageHooks(name) {
 }
 
 function switchParent(parent, el) {
-  if (parent === 'delivery') { setTimeout(loadDeliveryBoard, 0); }
   // Update top-nav active state
   document.querySelectorAll('#top-nav .nav-tab').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
@@ -8949,6 +8981,7 @@ function _cvRenderPanel(r, i) {
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <button class="btn btn-ghost" style="font-size:11px" onclick="cvOpenInOutreach(${idx})">Open in Outreach →</button>
+        <button class="btn btn-ghost" style="font-size:11px" onclick="cvOpenInDeploy(${idx})">Open in Deploy →</button>
       </div>
     </div>
     <div class="cv-panel-body">
@@ -9198,6 +9231,483 @@ function cvOpenInOutreach(idx) {
     const fi = filteredRows.indexOf(row);
     if (fi >= 0) openPanel(fi);
   }, 200);
+}
+
+const _DA_CORE_PRICING = {
+  presence_refresh: 450,
+  starter_website: 1200,
+  lead_contact_setup: 850,
+};
+const _DA_BUNDLE_PRICING = {
+  basic_cleanup: 350,
+  presence_website: 1250,
+  full_starter_package: 1650,
+};
+const _DA_MODULE_PRICING = {
+  missed_call_recovery: 150,
+  follow_up_reminder_setup: 100,
+  review_request_system: 100,
+  estimate_job_status_communication: 200,
+  client_approval_estimate_portal: 200,
+  mobile_admin_workflow_helper: 100,
+};
+let _daPendingLead = null;
+let _daActiveKey = '';
+let _daSaveTimer = null;
+
+function _daDefaultState() {
+  return {
+    snapshot: {
+      business_name: '',
+      contact_name: '',
+      phone: '',
+      email: '',
+      category: '',
+      website: '',
+      google_presence: false,
+      facebook_presence: false,
+      notes: '',
+    },
+    discovery: {
+      poor_or_missing_website: false,
+      weak_google_facebook_presence: false,
+      no_clear_contact_flow: false,
+      missed_calls: false,
+      weak_follow_up: false,
+      wants_more_reviews: false,
+      estimate_or_job_status_problem: false,
+      wants_ongoing_support: false,
+    },
+    profile: {
+      core_offer: '',
+      bundle_key: '',
+      selected_modules: [],
+      price: '',
+      pricing_mode: 'live_quote',
+      monthly_support: false,
+      monthly_fee: '',
+      agreement_status: '',
+      invoice_status: '',
+      deposit_status: '',
+      offer_notes: '',
+      stage: 'discovered',
+    },
+  };
+}
+
+function _daDiscoveryKeys() {
+  return [
+    ['poor_or_missing_website', 'Poor or missing website'],
+    ['weak_google_facebook_presence', 'Weak Google/Facebook presence'],
+    ['no_clear_contact_flow', 'No clear contact flow'],
+    ['missed_calls', 'Missed calls'],
+    ['weak_follow_up', 'Weak follow-up'],
+    ['wants_more_reviews', 'Wants more reviews'],
+    ['estimate_or_job_status_problem', 'Estimate / job-status problem'],
+    ['wants_ongoing_support', 'Wants ongoing support'],
+  ];
+}
+
+function _daSelectedModules() {
+  return [
+    'missed_call_recovery',
+    'follow_up_reminder_setup',
+    'review_request_system',
+    'estimate_job_status_communication',
+    'client_approval_estimate_portal',
+    'mobile_admin_workflow_helper',
+  ].filter((key) => document.getElementById(`da-module-${key}`)?.checked);
+}
+
+function _daReadState() {
+  const snapshot = {
+    business_name: document.getElementById('da-business-name')?.value || '',
+    contact_name: document.getElementById('da-contact-name')?.value || '',
+    phone: document.getElementById('da-phone')?.value || '',
+    email: document.getElementById('da-email')?.value || '',
+    category: document.getElementById('da-category')?.value || '',
+    website: document.getElementById('da-website')?.value || '',
+    google_presence: !!document.getElementById('da-google')?.checked,
+    facebook_presence: !!document.getElementById('da-facebook')?.checked,
+    notes: document.getElementById('da-notes')?.value || '',
+  };
+  const discovery = {};
+  const discoveryIdMap = {
+    poor_or_missing_website: 'da-weak-website',
+    weak_google_facebook_presence: 'da-weak-presence',
+    no_clear_contact_flow: 'da-no-flow',
+    missed_calls: 'da-missed-calls',
+    weak_follow_up: 'da-weak-followup',
+    wants_more_reviews: 'da-more-reviews',
+    estimate_or_job_status_problem: 'da-estimate-problem',
+    wants_ongoing_support: 'da-ongoing-support',
+  };
+  _daDiscoveryKeys().forEach(([key]) => {
+    discovery[key] = !!document.getElementById(discoveryIdMap[key])?.checked;
+  });
+  const profile = {
+    core_offer: document.getElementById('da-core-offer')?.value || '',
+    bundle_key: document.getElementById('da-bundle-key')?.value || '',
+    selected_modules: _daSelectedModules(),
+    price: document.getElementById('da-price')?.value || '',
+    pricing_mode: document.getElementById('da-pricing-mode')?.value || 'live_quote',
+    monthly_support: (document.getElementById('da-monthly-support')?.value || 'false') === 'true',
+    monthly_fee: document.getElementById('da-monthly-fee')?.value || '',
+    agreement_status: document.getElementById('da-agreement-status')?.value || '',
+    invoice_status: document.getElementById('da-invoice-status')?.value || '',
+    deposit_status: document.getElementById('da-deposit-status')?.value || '',
+    offer_notes: document.getElementById('da-offer-notes')?.value || '',
+    stage: document.getElementById('da-stage')?.value || 'discovered',
+  };
+  return { snapshot, discovery, profile };
+}
+
+function _daDiscoverySelectionCount(discovery) {
+  return Object.values(discovery || {}).filter(Boolean).length;
+}
+
+function _daRecommendationFromState(state) {
+  const snapshot = state.snapshot || {};
+  const discovery = state.discovery || {};
+  const selected = [];
+  const hasWebsite = !!String(snapshot.website || '').trim();
+  const issueCount = _daDiscoverySelectionCount(discovery);
+  const weakPresence = discovery.weak_google_facebook_presence || discovery.poor_or_missing_website || !hasWebsite;
+  const intakePain = discovery.no_clear_contact_flow || discovery.weak_follow_up;
+  const broad = issueCount >= 3 || (weakPresence && intakePain) || discovery.wants_ongoing_support;
+  let core_offer = '';
+  let bundle_key = '';
+  let reason = '';
+
+  if (broad) {
+    core_offer = 'lead_contact_setup';
+    bundle_key = 'full_starter_package';
+    reason = 'Multiple issues are showing up, so the full starter stack fits best.';
+  } else if (!hasWebsite && weakPresence) {
+    core_offer = 'starter_website';
+    bundle_key = 'presence_website';
+    reason = 'No site plus weak presence points to Presence + Website.';
+  } else if (weakPresence && !intakePain && !discovery.missed_calls && !discovery.estimate_or_job_status_problem && !discovery.wants_ongoing_support) {
+    core_offer = 'presence_refresh';
+    bundle_key = 'basic_cleanup';
+    reason = 'Presence is the main issue, so Presence Refresh is the cleanest fit.';
+  } else {
+    core_offer = 'lead_contact_setup';
+    reason = 'The intake / follow-up layer is the strongest fit.';
+  }
+
+  if (discovery.missed_calls) {
+    selected.push('missed_call_recovery');
+    if (discovery.weak_follow_up) selected.push('follow_up_reminder_setup');
+  }
+  if (discovery.weak_follow_up && !selected.includes('follow_up_reminder_setup')) selected.push('follow_up_reminder_setup');
+  if (discovery.wants_more_reviews) selected.push('review_request_system');
+  if (discovery.estimate_or_job_status_problem) selected.push('estimate_job_status_communication');
+  if (discovery.no_clear_contact_flow || discovery.wants_ongoing_support) selected.push('mobile_admin_workflow_helper');
+  const moduleSet = [...new Set(selected)];
+  const basePrice = _DA_BUNDLE_PRICING[bundle_key] || _DA_CORE_PRICING[core_offer] || 0;
+  const modulePrice = moduleSet.reduce((sum, key) => sum + (_DA_MODULE_PRICING[key] || 0), 0);
+  const recommendedPrice = basePrice + modulePrice;
+  return { core_offer, bundle_key, selected_modules: moduleSet, reason, recommendedPrice };
+}
+
+function _daFillForm(state, meta = {}) {
+  const snapshot = state.snapshot || {};
+  const discovery = state.discovery || {};
+  const profile = state.profile || {};
+  const recommendation = meta.recommendation || _daRecommendationFromState(state);
+
+  const setVal = (id, value) => { const el = document.getElementById(id); if (el) el.value = value; };
+  const setChecked = (id, value) => { const el = document.getElementById(id); if (el) el.checked = !!value; };
+
+  setVal('da-business-name', snapshot.business_name || '');
+  setVal('da-contact-name', snapshot.contact_name || '');
+  setVal('da-phone', snapshot.phone || '');
+  setVal('da-email', snapshot.email || '');
+  setVal('da-category', snapshot.category || '');
+  setVal('da-website', snapshot.website || '');
+  setChecked('da-google', snapshot.google_presence);
+  setChecked('da-facebook', snapshot.facebook_presence);
+  setVal('da-notes', snapshot.notes || '');
+
+  const discoveryIdMap = {
+    poor_or_missing_website: 'da-weak-website',
+    weak_google_facebook_presence: 'da-weak-presence',
+    no_clear_contact_flow: 'da-no-flow',
+    missed_calls: 'da-missed-calls',
+    weak_follow_up: 'da-weak-followup',
+    wants_more_reviews: 'da-more-reviews',
+    estimate_or_job_status_problem: 'da-estimate-problem',
+    wants_ongoing_support: 'da-ongoing-support',
+  };
+  _daDiscoveryKeys().forEach(([key]) => setChecked(discoveryIdMap[key], discovery[key]));
+
+  setVal('da-core-offer', profile.core_offer || recommendation.core_offer || '');
+  setVal('da-bundle-key', profile.bundle_key || recommendation.bundle_key || '');
+  setVal('da-price', profile.price || '');
+  setVal('da-pricing-mode', profile.pricing_mode || 'live_quote');
+  setVal('da-monthly-support', String(!!profile.monthly_support));
+  setVal('da-monthly-fee', profile.monthly_fee || '');
+  setVal('da-agreement-status', profile.agreement_status || '');
+  setVal('da-invoice-status', profile.invoice_status || '');
+  setVal('da-deposit-status', profile.deposit_status || '');
+  setVal('da-offer-notes', profile.offer_notes || '');
+  setVal('da-stage', profile.stage || 'discovered');
+
+  const selectedModules = new Set(profile.selected_modules || recommendation.selected_modules || []);
+  ['missed_call_recovery','follow_up_reminder_setup','review_request_system','estimate_job_status_communication','client_approval_estimate_portal','mobile_admin_workflow_helper']
+    .forEach((key) => setChecked(`da-module-${key}`, selectedModules.has(key)));
+
+  daRender();
+}
+
+function daRender() {
+  const state = _daReadState();
+  const rec = _daRecommendationFromState(state);
+  const selectedCount = _daDiscoverySelectionCount(state.discovery);
+  const discoveryCountEl = document.getElementById('da-discovery-count');
+  if (discoveryCountEl) discoveryCountEl.textContent = `${selectedCount} selected`;
+
+  const coreLabel = _cvCoreOfferLabel(rec.core_offer);
+  const bundleLabel = rec.bundle_key ? _cvBundleLabel(rec.bundle_key) : 'No bundle';
+  const moduleLabels = _cvSelectedModuleLabels(rec.selected_modules || []);
+  const line = [coreLabel, rec.bundle_key ? bundleLabel : null].filter(Boolean).join(' · ') || 'No recommendation yet.';
+  const recLine = document.getElementById('da-rec-line');
+  const recMeta = document.getElementById('da-rec-meta');
+  const priceBadge = document.getElementById('da-price-badge');
+  if (recLine) recLine.textContent = line;
+  if (recMeta) recMeta.textContent = rec.reason + (moduleLabels.length ? ` Modules: ${moduleLabels.join(' · ')}.` : '');
+  if (priceBadge) priceBadge.textContent = rec.recommendedPrice ? `Recommended $${rec.recommendedPrice}` : 'Recommendation only';
+
+  const tag = document.getElementById('da-key-tag');
+  if (tag) tag.textContent = _daActiveKey || 'Unsaved';
+}
+
+function _daSnapshotPayload() {
+  const state = _daReadState();
+  const rec = _daRecommendationFromState(state);
+  const chosenCore = state.profile.core_offer || rec.core_offer;
+  const chosenBundle = state.profile.bundle_key || rec.bundle_key;
+  const chosenModules = state.profile.selected_modules.length ? state.profile.selected_modules : rec.selected_modules;
+  const price = (state.profile.price || '').trim() || String(rec.recommendedPrice || '');
+  return {
+    snapshot: state.snapshot,
+    discovery: state.discovery,
+    core_offer: chosenCore,
+    bundle_key: chosenBundle,
+    selected_modules: chosenModules,
+    price,
+    pricing_mode: state.profile.pricing_mode,
+    monthly_support: state.profile.monthly_support,
+    monthly_fee: state.profile.monthly_fee,
+    agreement_status: state.profile.agreement_status,
+    invoice_status: state.profile.invoice_status,
+    deposit_status: state.profile.deposit_status,
+    offer_notes: state.profile.offer_notes || rec.reason,
+    stage: state.profile.stage || 'discovered',
+  };
+}
+
+async function daSaveNow(extraPatch = {}) {
+  const state = _daReadState();
+  const payload = _daSnapshotPayload();
+  const identity = payload.snapshot || {};
+  const hasIdentity = ['business_name', 'website', 'phone'].some((key) => String(identity[key] || '').trim());
+  if (!hasIdentity && !_daPendingLead && !_daActiveKey) {
+    daRender();
+    return;
+  }
+
+  const profile = { ...payload, ...extraPatch };
+  if (extraPatch.stage) profile.stage = extraPatch.stage;
+  if (extraPatch.agreement_status) profile.agreement_status = extraPatch.agreement_status;
+  if (extraPatch.invoice_status) profile.invoice_status = extraPatch.invoice_status;
+  if (extraPatch.deposit_status) profile.deposit_status = extraPatch.deposit_status;
+
+  const key = _daActiveKey || _leadKey({
+    business_name: identity.business_name || '',
+    website: identity.website || '',
+    phone: identity.phone || '',
+  }) || '';
+  const res = await api('/api/deploy_activation', {
+    key,
+    identity,
+    profile,
+  });
+  if (!res?.ok) {
+    toast('Deploy save failed: ' + (res?.error || 'unknown error'), 'err');
+    return;
+  }
+
+  _daActiveKey = res.key || key;
+  if (res.identity) {
+    const tag = document.getElementById('da-key-tag');
+    if (tag) tag.textContent = _daActiveKey;
+  }
+  if (res.delivery_profile) {
+    _daFillForm({
+      snapshot: { ..._daDefaultState().snapshot, ...(res.delivery_profile.snapshot || {}), ...identity },
+      discovery: res.delivery_profile.discovery || state.discovery,
+      profile: {
+        core_offer: res.delivery_profile.core_offer || profile.core_offer,
+        bundle_key: res.delivery_profile.bundle_key || profile.bundle_key,
+        selected_modules: res.delivery_profile.selected_modules || profile.selected_modules,
+        price: res.delivery_profile.price || profile.price,
+        pricing_mode: res.delivery_profile.pricing_mode || profile.pricing_mode,
+        monthly_support: !!res.delivery_profile.monthly_support,
+        monthly_fee: res.delivery_profile.monthly_fee || profile.monthly_fee,
+        agreement_status: res.delivery_profile.agreement_status || profile.agreement_status,
+        invoice_status: res.delivery_profile.invoice_status || profile.invoice_status,
+        deposit_status: res.delivery_profile.deposit_status || profile.deposit_status,
+        offer_notes: res.delivery_profile.offer_notes || profile.offer_notes,
+        stage: res.delivery_profile.stage || profile.stage,
+      },
+    }, { recommendation: _daRecommendationFromState(state) });
+  }
+  const badge = document.getElementById('da-status');
+  if (badge) badge.textContent = `Saved ${_daActiveKey}`;
+  const saveNote = document.getElementById('da-save-note');
+  if (saveNote) saveNote.textContent = `Saved ${_cvCoreOfferLabel(_daReadState().profile.core_offer || _daRecommendationFromState(_daReadState()).core_offer)} stack to durable delivery memory.`;
+  if ((res.delivery_profile?.stage || '').match(/^(won|deployment_pending|live)$/)) {
+    loadDeliveryBoard();
+  }
+  return res;
+}
+
+function daScheduleSave() {
+  clearTimeout(_daSaveTimer);
+  _daSaveTimer = setTimeout(() => daSaveNow(), 450);
+  daRender();
+}
+
+async function daSaveOnly() {
+  clearTimeout(_daSaveTimer);
+  return daSaveNow();
+}
+
+function daUseRecommendation() {
+  const state = _daReadState();
+  const rec = _daRecommendationFromState(state);
+  const setVal = (id, value) => { const el = document.getElementById(id); if (el) el.value = value; };
+  const setChecked = (id, value) => { const el = document.getElementById(id); if (el) el.checked = !!value; };
+
+  setVal('da-core-offer', rec.core_offer);
+  setVal('da-bundle-key', rec.bundle_key);
+  ['missed_call_recovery','follow_up_reminder_setup','review_request_system','estimate_job_status_communication','client_approval_estimate_portal','mobile_admin_workflow_helper']
+    .forEach((key) => setChecked(`da-module-${key}`, (rec.selected_modules || []).includes(key)));
+  if (!((document.getElementById('da-price')?.value || '').trim())) {
+    setVal('da-price', rec.recommendedPrice ? String(rec.recommendedPrice) : '');
+  }
+  daScheduleSave();
+}
+
+async function daAction(action) {
+  const patch = {};
+  if (action === 'follow_up') {
+    patch.stage = 'call_booked';
+    patch.offer_notes = `${document.getElementById('da-offer-notes')?.value || ''}${document.getElementById('da-offer-notes')?.value ? '\n' : ''}Follow-up needed after the call.`;
+  } else if (action === 'estimate') {
+    patch.stage = 'proposal_ready';
+    patch.pricing_mode = 'formal_estimate';
+    patch.agreement_status = 'needs_agreement';
+  } else if (action === 'convert') {
+    patch.stage = 'won';
+  } else if (action === 'deploy') {
+    patch.stage = 'deployment_pending';
+  } else if (action === 'access') {
+    patch.stage = 'deployment_pending';
+    patch.offer_notes = `${document.getElementById('da-offer-notes')?.value || ''}${document.getElementById('da-offer-notes')?.value ? '\n' : ''}Access requested during call.`;
+  } else if (action === 'agreement') {
+    patch.agreement_status = 'needs_agreement';
+  } else if (action === 'billing') {
+    patch.invoice_status = 'not_invoiced';
+    patch.deposit_status = 'pending';
+  }
+  const res = await daSaveNow(patch);
+  if (res?.ok) {
+    const status = document.getElementById('da-save-note');
+    if (status) status.textContent = `Action saved: ${action.replace('_', ' ')}.`;
+  }
+}
+
+async function daOpenBoard() {
+  switchSubPage('delivery', 'delivery-board', document.querySelector('[data-page="delivery-board"]'));
+}
+
+function _daPrefillFromRow(row) {
+  const profile = _cvNormalizeDeliveryProfile(row?.delivery_profile, row);
+  return {
+    snapshot: {
+      business_name: row?.business_name || '',
+      contact_name: row?.contact_name || '',
+      phone: row?.phone || '',
+      email: row?.to_email || '',
+      category: row?.industry || '',
+      website: row?.website || '',
+      google_presence: !!row?.website,
+      facebook_presence: !!row?.facebook_url,
+      notes: row?.lead_insight_sentence || row?.conversation_notes || '',
+    },
+    discovery: {
+      poor_or_missing_website: !String(row?.website || '').trim(),
+      weak_google_facebook_presence: !row?.website || !(row?.facebook_url || row?.instagram_url),
+      no_clear_contact_flow: !row?.to_email && !(row?.contact_form_url || row?.facebook_url || row?.instagram_url),
+      missed_calls: /missed call|voicemail|call back/i.test(`${row?.reply_snippet || ''} ${row?.conversation_notes || ''}`),
+      weak_follow_up: /follow[- ]up|follow through|check back/i.test(`${row?.reply_snippet || ''} ${row?.conversation_notes || ''}`),
+      wants_more_reviews: /review/i.test(`${row?.reply_snippet || ''} ${row?.conversation_notes || ''}`),
+      estimate_or_job_status_problem: /estimate|job status|quote|update/i.test(`${row?.reply_snippet || ''} ${row?.conversation_notes || ''}`),
+      wants_ongoing_support: /ongoing|support|maintenance|stay on/i.test(`${row?.reply_snippet || ''} ${row?.conversation_notes || ''}`),
+    },
+    profile,
+  };
+}
+
+async function loadDeliveryActivation() {
+  const status = document.getElementById('da-status');
+  if (status) status.textContent = 'Loading deploy activation…';
+  const seed = _daPendingLead || (_daActiveKey ? { key: _daActiveKey } : null);
+  _daPendingLead = null;
+
+  let payload = seed && (seed.business_name || seed.website || seed.phone)
+    ? _daPrefillFromRow(seed)
+    : _daDefaultState();
+  try {
+    if (seed) {
+      const seedKey = seed.key || _leadKey(seed) || '';
+      const query = seedKey
+        ? `?key=${encodeURIComponent(seedKey)}`
+        : '';
+      const res = await fetch(`/api/deploy_activation${query}`);
+      const data = await res.json();
+      if (data.ok) {
+        _daActiveKey = data.key || _daActiveKey;
+        payload.snapshot = { ...payload.snapshot, ...(data.delivery_profile?.snapshot || {}), ...(data.identity || {}) };
+        payload.discovery = { ...payload.discovery, ...(data.delivery_profile?.discovery || {}) };
+        payload.profile = { ...payload.profile, ...(data.delivery_profile || {}) };
+      }
+    } else if (_daActiveKey) {
+      const res = await fetch(`/api/deploy_activation?key=${encodeURIComponent(_daActiveKey)}`);
+      const data = await res.json();
+      if (data.ok) {
+        payload.snapshot = { ...payload.snapshot, ...(data.delivery_profile?.snapshot || {}), ...(data.identity || {}) };
+        payload.discovery = { ...payload.discovery, ...(data.delivery_profile?.discovery || {}) };
+        payload.profile = { ...payload.profile, ...(data.delivery_profile || {}) };
+      }
+    }
+  } catch (_) {
+    if (_daPendingLead) payload = _daPrefillFromRow(_daPendingLead);
+  }
+
+  _daFillForm(payload);
+  const tag = document.getElementById('da-key-tag');
+  if (tag) tag.textContent = _daActiveKey || 'Unsaved';
+  if (status) status.textContent = _daActiveKey ? `Loaded ${_daActiveKey}` : 'No client loaded yet.';
+  return payload;
+}
+
+function cvOpenInDeploy(idx) {
+  _daPendingLead = _cvData[idx] ? { ..._cvData[idx] } : null;
+  switchSubPage('delivery', 'deploy-activation', document.querySelector('[data-page="deploy-activation"]'));
 }
 
 
@@ -14390,9 +14900,11 @@ function buildDbCard(row) {
     ? `<div class="db-card-mods">${escHtml(moduleLabels.join(' · '))}</div>`
     : `<div class="db-card-subtle">Specialty modules stay under the core offer.</div>`;
   const priceHtml = row.price ? `<span>Price: ${escHtml(row.price)}</span>` : '';
+  const supportHtml = row.monthly_support ? `<span>Support: ${escHtml(row.monthly_fee || 'monthly')}</span>` : '';
   const agreementHtml = row.agreement_status ? `<span>Agreement: ${escHtml(row.agreement_status)}</span>` : '';
   const invoiceHtml = row.invoice_status ? `<span>Invoice: ${escHtml(row.invoice_status)}</span>` : '';
-  const statusHtml = [priceHtml, agreementHtml, invoiceHtml].filter(Boolean).join(' · ');
+  const depositHtml = row.deposit_status ? `<span>Deposit: ${escHtml(row.deposit_status)}</span>` : '';
+  const statusHtml = [priceHtml, supportHtml, agreementHtml, invoiceHtml, depositHtml].filter(Boolean).join(' · ');
   const checksHtml = _READINESS_KEYS.map(k => {
     const done = row.readiness && row.readiness[k];
     return `<div class="db-check${done?' done':''}" data-key="${k}" data-lead-key="${row.key}">
@@ -14450,6 +14962,231 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
 
 </script>
 
+
+<!-- ══════════════ PAGE: DEPLOY ACTIVATION ══════════════ -->
+<div class="page" id="page-deploy-activation">
+<div class="da-wrap">
+  <div class="da-hdr">
+    <div>
+      <h2>🚀 Deploy Activation</h2>
+      <div class="da-hdr-sub">Free consultation to simple recommendation to project work. Keep the call moving, capture the smallest useful snapshot, and hand the right stack into delivery without hopping tabs.</div>
+      <div class="da-status" id="da-status" style="margin-top:8px">No client loaded yet.</div>
+    </div>
+    <div class="da-actions">
+      <button class="btn btn-ghost" onclick="loadDeliveryActivation()">↻ Refresh</button>
+      <button class="btn btn-ghost" onclick="daOpenBoard()">📦 Open Board</button>
+      <button class="btn btn-primary" onclick="daSaveOnly()">Save / Upsert Client</button>
+    </div>
+  </div>
+
+  <div class="da-grid">
+    <div class="da-touch">
+      <section class="da-card">
+        <div class="da-card-hdr">
+          <div>
+            <div class="da-card-title">Stage 1 · Business Snapshot</div>
+            <div class="da-card-sub">Just enough to steer the recommendation while you’re on the phone.</div>
+          </div>
+          <span class="tag" id="da-key-tag">Unsaved</span>
+        </div>
+        <div class="da-grid-2">
+          <div>
+            <label class="da-mini">Business Name</label>
+            <input class="form-input" id="da-business-name" type="text" placeholder="Rockford Pro Plumbing" oninput="daScheduleSave()">
+          </div>
+          <div>
+            <label class="da-mini">Contact Name</label>
+            <input class="form-input" id="da-contact-name" type="text" placeholder="Jordan" oninput="daScheduleSave()">
+          </div>
+          <div>
+            <label class="da-mini">Phone</label>
+            <input class="form-input" id="da-phone" type="text" placeholder="+18155550100" oninput="daScheduleSave()">
+          </div>
+          <div>
+            <label class="da-mini">Email</label>
+            <input class="form-input" id="da-email" type="email" placeholder="owner@business.com" oninput="daScheduleSave()">
+          </div>
+          <div>
+            <label class="da-mini">Category / Type</label>
+            <input class="form-input" id="da-category" type="text" placeholder="Plumbing / HVAC / Roofing" oninput="daScheduleSave()">
+          </div>
+          <div>
+            <label class="da-mini">Website</label>
+            <input class="form-input" id="da-website" type="text" placeholder="https://example.com" oninput="daScheduleSave()">
+          </div>
+        </div>
+        <div class="da-grid-2" style="margin-top:10px">
+          <label class="da-check"><input type="checkbox" id="da-google" onchange="daScheduleSave()"><span>Has Google presence<small>Google Business Profile exists and feels current.</small></span></label>
+          <label class="da-check"><input type="checkbox" id="da-facebook" onchange="daScheduleSave()"><span>Has Facebook presence<small>Social presence exists and is usable.</small></span></label>
+        </div>
+        <div style="margin-top:10px">
+          <label class="da-mini">Notes</label>
+          <textarea class="form-textarea da-note" id="da-notes" placeholder="Quick call notes, objections, timing, budget, or what they want fixed…" oninput="daScheduleSave()"></textarea>
+        </div>
+      </section>
+
+      <section class="da-card">
+        <div class="da-card-hdr">
+          <div>
+            <div class="da-card-title">Stage 2 · Need Discovery</div>
+            <div class="da-card-sub">Checkboxes only. Mark the pain, let the stack recommendation do the rest.</div>
+          </div>
+          <span class="tag" id="da-discovery-count">0 selected</span>
+        </div>
+        <div class="da-checklist">
+          <label class="da-check"><input type="checkbox" id="da-weak-website" onchange="daScheduleSave()"><span>Poor or missing website<small>No site, dated site, or site does not help them get calls.</small></span></label>
+          <label class="da-check"><input type="checkbox" id="da-weak-presence" onchange="daScheduleSave()"><span>Weak Google/Facebook presence<small>They are hard to find or do not look trustworthy online.</small></span></label>
+          <label class="da-check"><input type="checkbox" id="da-no-flow" onchange="daScheduleSave()"><span>No clear contact flow<small>Leads are not clearly routed to the right person.</small></span></label>
+          <label class="da-check"><input type="checkbox" id="da-missed-calls" onchange="daScheduleSave()"><span>Missed calls<small>They are losing calls before anyone can answer.</small></span></label>
+          <label class="da-check"><input type="checkbox" id="da-weak-followup" onchange="daScheduleSave()"><span>Weak follow-up<small>Lead follow-through feels slow or inconsistent.</small></span></label>
+          <label class="da-check"><input type="checkbox" id="da-more-reviews" onchange="daScheduleSave()"><span>Wants more reviews<small>They want more trust signals from customers.</small></span></label>
+          <label class="da-check"><input type="checkbox" id="da-estimate-problem" onchange="daScheduleSave()"><span>Estimate / job-status communication problem<small>They need better update flow for quotes and job progress.</small></span></label>
+          <label class="da-check"><input type="checkbox" id="da-ongoing-support" onchange="daScheduleSave()"><span>Wants ongoing support after refresh<small>They want a light owner workflow helper beyond the initial fix.</small></span></label>
+        </div>
+      </section>
+    </div>
+
+    <div class="da-touch">
+      <section class="da-card">
+        <div class="da-card-hdr">
+          <div>
+            <div class="da-card-title">Stage 3 · Recommendation</div>
+            <div class="da-card-sub">Best-fit core offer first, bundle second, modules only when they matter.</div>
+          </div>
+          <button class="btn btn-ghost" style="font-size:11px" onclick="daUseRecommendation()">Use Recommendation</button>
+        </div>
+        <div class="da-stack-box">
+          <div class="da-stack-line" id="da-rec-line">No recommendation yet.</div>
+          <div class="da-stack-meta" id="da-rec-meta">Fill the snapshot and discovery fields to guide the stack.</div>
+        </div>
+        <div style="margin-top:10px" class="da-grid-2">
+          <div>
+            <label class="da-mini">Core Offer</label>
+            <select class="form-select" id="da-core-offer" onchange="daScheduleSave()">
+              <option value="">Select core offer…</option>
+              <option value="presence_refresh">Presence Refresh</option>
+              <option value="starter_website">Starter Website</option>
+              <option value="lead_contact_setup">Lead &amp; Contact Setup</option>
+            </select>
+          </div>
+          <div>
+            <label class="da-mini">Bundle</label>
+            <select class="form-select" id="da-bundle-key" onchange="daScheduleSave()">
+              <option value="">No bundle</option>
+              <option value="basic_cleanup">Basic Cleanup</option>
+              <option value="presence_website">Presence + Website</option>
+              <option value="full_starter_package">Full Starter Package</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <div class="da-mini">Specialty Modules</div>
+          <div class="da-pill-row">
+            <label class="da-pill"><input type="checkbox" id="da-module-missed_call_recovery" onchange="daScheduleSave()"> Missed Call Recovery</label>
+            <label class="da-pill"><input type="checkbox" id="da-module-follow_up_reminder_setup" onchange="daScheduleSave()"> Follow-Up &amp; Reminder Setup</label>
+            <label class="da-pill"><input type="checkbox" id="da-module-review_request_system" onchange="daScheduleSave()"> Review Request System</label>
+            <label class="da-pill"><input type="checkbox" id="da-module-estimate_job_status_communication" onchange="daScheduleSave()"> Estimate &amp; Job Status Communication</label>
+            <label class="da-pill"><input type="checkbox" id="da-module-client_approval_estimate_portal" onchange="daScheduleSave()"> Client Approval / Estimate Portal</label>
+            <label class="da-pill"><input type="checkbox" id="da-module-mobile_admin_workflow_helper" onchange="daScheduleSave()"> Mobile Admin / owner workflow helper</label>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <label class="da-mini">Offer Notes</label>
+          <textarea class="form-textarea da-note" id="da-offer-notes" placeholder="Reason for the recommendation, scope notes, objections, or special constraints…" oninput="daScheduleSave()"></textarea>
+        </div>
+      </section>
+
+      <section class="da-card">
+        <div class="da-card-hdr">
+          <div>
+            <div class="da-card-title">Pricing + Handoff</div>
+            <div class="da-card-sub">Use a live quote when it is obvious. Switch to a formal estimate when the call is still fuzzy.</div>
+          </div>
+          <span class="tag" id="da-price-badge">Recommendation only</span>
+        </div>
+        <div class="da-grid-2">
+          <div>
+            <label class="da-mini">Pricing Mode</label>
+            <select class="form-select" id="da-pricing-mode" onchange="daScheduleSave()">
+              <option value="live_quote">Live quote</option>
+              <option value="formal_estimate">Formal estimate</option>
+            </select>
+          </div>
+          <div>
+            <label class="da-mini">Exact Quote Override</label>
+            <input class="form-input" id="da-price" type="text" placeholder="Leave blank to use the recommendation" oninput="daScheduleSave()">
+          </div>
+          <div>
+            <label class="da-mini">Monthly Support</label>
+            <select class="form-select" id="da-monthly-support" onchange="daScheduleSave()">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+          <div>
+            <label class="da-mini">Monthly Fee</label>
+            <input class="form-input" id="da-monthly-fee" type="text" placeholder="$0 or leave blank" oninput="daScheduleSave()">
+          </div>
+          <div>
+            <label class="da-mini">Agreement Status</label>
+            <select class="form-select" id="da-agreement-status" onchange="daScheduleSave()">
+              <option value="">Unset</option>
+              <option value="needs_agreement">Needs agreement</option>
+              <option value="sent">Agreement sent</option>
+              <option value="signed">Signed</option>
+            </select>
+          </div>
+          <div>
+            <label class="da-mini">Invoice Status</label>
+            <select class="form-select" id="da-invoice-status" onchange="daScheduleSave()">
+              <option value="">Unset</option>
+              <option value="not_invoiced">Not invoiced</option>
+              <option value="sent">Invoice sent</option>
+              <option value="paid">Paid</option>
+            </select>
+          </div>
+          <div>
+            <label class="da-mini">Deposit Status</label>
+            <select class="form-select" id="da-deposit-status" onchange="daScheduleSave()">
+              <option value="">Unset</option>
+              <option value="pending">Pending</option>
+              <option value="requested">Requested</option>
+              <option value="received">Received</option>
+            </select>
+          </div>
+          <div>
+            <label class="da-mini">Stage</label>
+            <select class="form-select" id="da-stage" onchange="daScheduleSave()">
+              <option value="discovered">Discovered</option>
+              <option value="drafted">Drafted</option>
+              <option value="contacted">Contacted</option>
+              <option value="replied">Replied</option>
+              <option value="call_booked">Call Booked</option>
+              <option value="proposal_ready">Proposal Ready</option>
+              <option value="won">Won</option>
+              <option value="deployment_pending">Deployment Pending</option>
+              <option value="live">Live</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <div class="da-mini">Quick Actions</div>
+          <div class="da-actions">
+            <button class="btn btn-ghost" onclick="daAction('follow_up')">Mark follow-up needed</button>
+            <button class="btn btn-ghost" onclick="daAction('estimate')">Create estimate / proposal draft</button>
+            <button class="btn btn-primary" onclick="daAction('convert')">Convert to client</button>
+            <button class="btn btn-secondary" onclick="daAction('deploy')">Launch deployment</button>
+            <button class="btn btn-ghost" onclick="daAction('access')">Request access</button>
+            <button class="btn btn-ghost" onclick="daAction('agreement')">Mark agreement pending</button>
+            <button class="btn btn-ghost" onclick="daAction('billing')">Mark invoice / deposit pending</button>
+          </div>
+        </div>
+        <div style="margin-top:10px" class="da-status" id="da-save-note">Save the call, then use the action buttons to move it into delivery.</div>
+      </section>
+    </div>
+  </div>
+</div>
+</div>
 
 <!-- ══════════════ PAGE: DELIVERY BOARD (Pass 86) ══════════════ -->
 <div class="page" id="page-delivery-board">
