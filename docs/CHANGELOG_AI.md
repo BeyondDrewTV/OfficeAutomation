@@ -1,4 +1,89 @@
-﻿### 2026-04-05 - Out-of-band repo-truth hotfix: stranded-drafted recovery
+﻿### 2026-04-10 - Full public delivery-kit coverage milestone
+
+**Goal:** Resolve the delivery truth UI mismatch for estimate/portal offers, build real kit files for all remaining atomic public offers (Follow-Up & Reminder Setup, Review Request System), build bundle-level operator docs (Basic Cleanup, Presence + Website, Full Starter Package), and update delivery_kits.py to match actual repo truth.
+
+**Root cause of UI mismatch (estimate/portal):** The Python data in `delivery_kits.py` was already correct from the previous pass — both `estimate_job_status_communication` and `client_approval_estimate_portal` had `build_status: "hardening"` and populated `artifact_files`. The UI showed stale data because the Flask server had not been restarted after the previous pass's file edits. `get_catalog_payload()` is called at request time; module-level `DELIVERY_CATALOG` is loaded at server startup. No code fix was needed — the fix is a server restart.
+
+**Changes:**
+
+- `lead_engine/delivery_kits/follow_up_reminder_setup/` (5 files) — cadence_worksheet.md, message_template_pack.md, access_checklist.md, test_sequence.md, handoff_closeout.md. Client-service setup kit — not the internal Copperline follow-up logic.
+
+- `lead_engine/delivery_kits/review_request_system/` (5 files) — review_setup_worksheet.md, review_copy_library.md, access_checklist.md, qa_checklist.md, handoff_closeout.md
+
+- `lead_engine/delivery_kits/basic_cleanup/` (3 files) — bundle_scope_matrix.md, activation_checklist.md, closeout_template.md
+
+- `lead_engine/delivery_kits/presence_website/` (4 files) — bundle_intake_worksheet.md, dependency_checklist.md, combined_go_live_checklist.md, bundle_closeout_template.md
+
+- `lead_engine/delivery_kits/full_starter_package/` (2 files) — master_intake_worksheet.md, dependency_sequencing_checklist.md
+
+- `lead_engine/delivery_kits.py` — Updated 5 entries:
+  - `follow_up_reminder_setup`: `missing_*` cleared, `artifact_files` + `promotion_criteria` added, truth notes updated. Remains `hardening`. `launch_eligible = false`.
+  - `review_request_system`: same pattern.
+  - `basic_cleanup`: `planned` → `hardening`, `missing_artifacts` cleared, `artifact_files` + `promotion_criteria` added.
+  - `presence_website`: `planned` → `hardening`, `missing_artifacts` cleared, `artifact_files` + `promotion_criteria` added.
+  - `full_starter_package`: `planned` → `hardening`, `artifact_files` added (2 files), `missing_qa` + `missing_closeout` kept since bundle QA sequence and handoff packet are not yet built.
+
+**Launch gate truth:** Only `missed_call_recovery` is `launch_eligible = true`. No other status changes to launch_eligible. All newly advanced offers remain `hardening` / not delivery-proven.
+
+**Public catalog after this pass:** 11 public offers — 1 ready, 10 hardening, 0 planned, 0 verification.
+
+**Protected-system status:** No queue/send/scheduling files touched. No API endpoints changed. No auto-send introduced.
+
+**Python import check:** `get_catalog_payload()` returns 12 items (11 public + 1 internal). All public hardening items expose `artifact_files` and `promotion_criteria` correctly.
+
+**Remaining gaps:** `full_starter_package` still has missing_qa (cross-offer QA sequence) and missing_closeout (full starter handoff packet) — intentional, bundle is partially hardened only. No kit is delivery-proven yet.
+
+---
+
+### 2026-04-09 - Delivery truth hardening: 2 more offers + wizard gate fix
+
+**Goal:** Harden `estimate_job_status_communication` and `client_approval_estimate_portal` with real kit files; fix the Launch Deployment button disabled state; live-verify the wizard.
+
+**Changes:**
+
+- `lead_engine/delivery_kits/estimate_job_status_communication/` (5 new files) — status_map_worksheet.md, message_template_pack.md, access_checklist.md, test_sequence.md, handoff_closeout.md
+
+- `lead_engine/delivery_kits/client_approval_estimate_portal/` (5 new files) — approval_flow_worksheet.md, estimate_page_template.md, access_checklist.md, qa_verification_checklist.md, closeout_and_rollback.md. Approval portal is link/form-based only — not a web app.
+
+- `lead_engine/delivery_kits.py` — both entries updated: `missing_*` lists cleared, `artifact_files` + `promotion_criteria` added, `definition_of_done` + `qa_checks` expanded. `client_approval_estimate_portal` advanced from `"planned"` → `"hardening"`. Both `launch_eligible` stay `False`.
+
+- `lead_engine/dashboard_static/index.html` — `#da-deploy-btn` id added to "Launch deployment" secondary button; `daRender()` now sets `deployBtn.disabled = !gates.launchReady` so the button is HTML-disabled whenever any activation gate is in a waiting state.
+
+**Live verification results (wizard):** All 8 checks passed. Checks A–D (wizard loads, progress bar, Back/Next, summary panel live updates) confirmed working. Check E (Hardening Command: all three previously hardened kits showing "Kit files present"). Check F was PARTIAL before this fix — now resolved. Check G (Internal Only warning) and Check H (zero console errors) both passed.
+
+**Launch gate truth:** Only `missed_call_recovery` is `launch_eligible = true`. `client_approval_estimate_portal` advanced from `planned` to `hardening`. No other status changes.
+
+**Protected-system status:** No queue/send/scheduling files touched. No API endpoints changed. No auto-send introduced.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, `lead_engine/delivery_kits.py`, 10 new kit template files, `docs/`
+
+---
+
+### 2026-04-09 - Deploy Activation wizard + 3-offer hardening milestone
+
+**Goal:** Replace the long-scroll Deploy Activation admin sheet with a guided 6-step operator wizard, and build real delivery kit files for Lead & Contact Setup, Presence Refresh, and Starter Website.
+
+**Changes:**
+
+- `lead_engine/dashboard_static/index.html` — `#page-deploy-activation` rewritten as a 6-step wizard (Snapshot → Discovery → Recommend → Confirm → Packet → Action). Persistent summary panel (sticky right column, stacks below on mobile) shows client name, recommended stack, build status chip, launch eligibility chip, urgency, blockers, next step, and access status at all times. Progress bar is clickable; Back/Next navigation on each step. `daGoToStep()`, `_daUpdateSummaryPanel()` added. `daRender()` extended to populate the summary panel on every input. All existing element IDs preserved — no JS regressions. Hardening Command cards now show "Kit files present" badge + green file list when no missing gaps remain; promotion criteria surfaced per offer.
+
+- `lead_engine/delivery_kits.py` — `lead_contact_setup` and `presence_refresh` entries updated: `missing_*` lists cleared, `artifact_files` + `promotion_criteria` fields added, truth notes and `next_hardening_step` updated. `starter_website` entry advanced from `planned` → `hardening`: `missing_*` lists cleared, `artifact_files` + `promotion_criteria` added, `definition_of_done` and `qa_checks` expanded to concrete items. `get_catalog_payload()` updated to expose `artifact_files` and `promotion_criteria` in `hardening_items`.
+
+- `lead_engine/delivery_kits/lead_contact_setup/` (5 new files) — intake_routing_worksheet.md, access_checklist.md, notification_preference_template.md, routing_test_script.md, handoff_closeout.md
+
+- `lead_engine/delivery_kits/presence_refresh/` (5 new files) — asset_request_template.md, access_checklist.md, presence_cleanup_checklist.md, presence_qa_checklist.md, closeout_snapshot_template.md
+
+- `lead_engine/delivery_kits/starter_website/` (5 new files) — content_intake_form.md, asset_checklist.md, domain_hosting_decision.md, publish_checklist.md, handoff_closeout.md
+
+**Launch gate truth:** Only `missed_call_recovery` is `ready` / `launch_eligible = true`. All three newly hardened kits are at `hardening` / `launch_eligible = false`. No kit advances to `verification` until a real client delivery closes out cleanly.
+
+**Protected-system status:** No queue/send/scheduling files touched. No API endpoints changed. No data model changes. No auto-send introduced.
+
+**Files changed:** `lead_engine/dashboard_static/index.html`, `lead_engine/delivery_kits.py`, 15 new kit template files in `lead_engine/delivery_kits/`, `docs/`
+
+---
+
+### 2026-04-05 - Out-of-band repo-truth hotfix: stranded-drafted recovery
 
 **Goal:** Recover stranded drafted leads that had direct email addresses but were missing from `pending_emails.csv`, without widening the queue or breaking dedupe.
 
