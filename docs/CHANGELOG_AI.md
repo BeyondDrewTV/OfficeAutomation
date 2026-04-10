@@ -1,4 +1,40 @@
-﻿### 2026-04-10 - Full public delivery-kit coverage milestone
+﻿### 2026-04-10 - Delivery execution layer + Presence Refresh working checklist
+
+**Goal:** Add an in-dashboard operator execution surface (Delivery Run) so Drew can run real deliveries, check off items, capture proof, record closeout, and track verification readiness truthfully.
+
+**Root cause of reported UI mismatch (restated):** Server-restart issue from prior pass, not a code bug. `DELIVERY_CATALOG` is module-level; changes to `delivery_kits.py` require a Flask server restart. Confirmed by Python import check. No code change needed — operational fix only.
+
+**Changes:**
+
+- `lead_engine/dashboard_static/index.html`:
+  - Added "📋 Delivery Run" sub-tab (delivery section, between Hardening Command and Deploy Activation)
+  - Added `switchSubPage` hook: `if (name === 'delivery-run') loadDeliveryRun()`
+  - Added `#page-delivery-run` page with offer selector, progress bar, checklist body, notes/proof fields, closeout section, verification-readiness rail
+  - Added `DR_CHECKLISTS` data — full Presence Refresh checklist (GBP section: 12 items, Facebook section: 11 items); fallback to `qa_checks` from catalog for other offers
+  - Added JS functions: `drToggleCheck`, `drSave`, `drScheduleSave`, `drRender`, `drOfferChanged`, `drOpenForOffer`, `loadDeliveryRun`, `_drChecklistForOffer`, `_drCountChecks`, `_drVerifRail`
+  - Added "▶ Run" button on Hardening Command cards (only for kit-complete offers) — navigates directly to Delivery Run with that offer pre-selected
+  - Added CSS: `.dr-wrap`, `.dr-hdr`, `.dr-offer-sel`, `.dr-progress-row`, `.dr-section`, `.dr-check`, `.dr-check-box`, `.dr-fields`, `.dr-textarea`, `.dr-closeout-sel`, `.dr-verif-rail`, `.dr-verif-item`, `.dr-run-btn` (plus variants)
+
+- `lead_engine/dashboard_server.py`:
+  - Added `DELIVERY_EXEC_LOG` path (`data/delivery_execution_log.json`)
+  - Added `_load_exec_log()` and `_save_exec_log()` helpers
+  - Added `GET /api/delivery_run?offer_key=X` — returns execution state for an offer
+  - Added `POST /api/delivery_run` — saves checks, work_notes, proof_links, blockers, closeout_notes, closeout_status (enum: open/in_progress/captured); validates offer_key against DELIVERY_CATALOG; manages started_at / updated_at
+
+**Verification:**
+- Python syntax check: OK
+- Import check: delivery_kits + dashboard_server helpers load cleanly
+- Exec log load: returns empty dict correctly (no file yet)
+- HTML presence checks: all 13 checks passed
+- Server restart required to serve new routes (operational step)
+
+**No offers promoted.** Verification-readiness rail explicitly shows "Verification: needs real closeout + proof on file" as a permanent non-done item. No offer advances to verification through this pass.
+
+**Protected-system status:** No queue/send/scheduling/pipeline files touched.
+
+---
+
+### 2026-04-10 - Full public delivery-kit coverage milestone
 
 **Goal:** Resolve the delivery truth UI mismatch for estimate/portal offers, build real kit files for all remaining atomic public offers (Follow-Up & Reminder Setup, Review Request System), build bundle-level operator docs (Basic Cleanup, Presence + Website, Full Starter Package), and update delivery_kits.py to match actual repo truth.
 

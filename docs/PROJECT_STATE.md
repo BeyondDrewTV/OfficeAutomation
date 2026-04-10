@@ -18,8 +18,11 @@ It is also a prelaunch hardening OS: the Delivery surface tracks real kit readin
 - Manual send discipline applies everywhere — no auto-send
 - Deploy Activation is now a **6-step guided wizard** with a persistent summary panel (Step 1: Snapshot, Step 2: Discovery, Step 3: Recommend, Step 4: Confirm, Step 5: Packet, Step 6: Action)
 - **All 11 public offers now have real kit files on disk** — every atomic offer has 5 files; bundles have 2–4 files. All at `hardening`, none delivery-proven yet.
+- **Delivery Run** page added — operators can now run deliveries, check off items, capture proof, and record closeout directly in the dashboard
+- **Verification-readiness rail** explicitly requires real closeout + proof before any offer can advance to verification
 - Only `Missed Call Recovery` is `ready` / `launch_eligible = true`
 - Public catalog: 1 ready, 10 hardening, 0 planned
+- Delivery execution state persisted to `data/delivery_execution_log.json`
 
 ## Current Baseline Commits
 

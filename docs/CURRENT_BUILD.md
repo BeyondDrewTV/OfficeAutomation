@@ -10,6 +10,16 @@ The queue/pipeline work is complete (passes 172–189). All public offers now ha
 
 ## Completed This Session
 
+### Delivery execution layer (this pass)
+- Added **📋 Delivery Run** sub-tab and page to the Delivery section
+- Operator can select any hardening offer, work through a per-offer checklist, check off items, capture proof links, add work notes, record blockers, set closeout status, and write closeout notes
+- **Presence Refresh** gets a detailed 2-section checklist: GBP (12 items) + Facebook (11 items)
+- All other offers fall back to their `qa_checks` from the catalog
+- **Verification-readiness rail** shows: kit files on disk → delivery in progress/complete → closeout captured → verification (explicitly requires real proof on file — no fake promotion)
+- **"▶ Run" button** on kit-complete Hardening Command cards — navigates directly to Delivery Run for that offer
+- State persisted to `data/delivery_execution_log.json` via two new API routes (`GET/POST /api/delivery_run`)
+- Server restart required to serve new routes
+
 ### Full public delivery-kit coverage milestone
 - **Follow-Up & Reminder Setup**: cadence worksheet, message template pack, access checklist, test sequence, handoff closeout — 5 files, `hardening`
 - **Review Request System**: review setup worksheet, review copy library, access checklist, QA checklist, handoff closeout — 5 files, `hardening`

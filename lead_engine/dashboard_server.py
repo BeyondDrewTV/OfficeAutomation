@@ -1,4 +1,4 @@
-﻿"""
+"""
 Copperline — Lead Operations Dashboard
 Run: python lead_engine/dashboard_server.py
 Then open: http://localhost:5000
@@ -65,6 +65,7 @@ from outreach.email_draft_agent import DRAFT_VERSION as _CURRENT_DRAFT_VERSION
 from city_planner import CityPlanner
 import lead_memory as _lm  # Pass 44: durable lead memory + suppression registry
 from stranded_drafted import scan_stranded_drafted
+from delivery_kits import get_catalog_payload, compute_stack_truth, DELIVERY_CATALOG, PRELAUNCH_MODE
 
 # ---------------------------------------------------------------------------
 # Load queue modules via direct file path — avoids collision with Python's
@@ -1351,28 +1352,28 @@ _DELIVERY_SPECIALTY_KEYS = set(_DELIVERY_SPECIALTY_MODULES)
 _DELIVERY_BUNDLE_BY_CORE = {bundle["core_offer"]: key for key, bundle in _DELIVERY_BUNDLES.items()}
 _LEGACY_PACKAGE_STACKS = {
     "missed_call_recovery": {
-        "core_offer": "lead_contact_setup",
-        "bundle_key": "full_starter_package",
+        "core_offer": "",
+        "bundle_key": "",
         "selected_modules": ["missed_call_recovery"],
     },
     "lead_intake_routing": {
         "core_offer": "lead_contact_setup",
-        "bundle_key": "full_starter_package",
-        "selected_modules": ["mobile_admin_workflow_helper"],
+        "bundle_key": "",
+        "selected_modules": [],
     },
     "followup_reactivation": {
-        "core_offer": "lead_contact_setup",
-        "bundle_key": "full_starter_package",
+        "core_offer": "",
+        "bundle_key": "",
         "selected_modules": ["follow_up_reminder_setup"],
     },
     "review_request_system": {
-        "core_offer": "presence_refresh",
-        "bundle_key": "basic_cleanup",
+        "core_offer": "",
+        "bundle_key": "",
         "selected_modules": ["review_request_system"],
     },
     "estimate_job_status_communication": {
-        "core_offer": "lead_contact_setup",
-        "bundle_key": "full_starter_package",
+        "core_offer": "",
+        "bundle_key": "",
         "selected_modules": ["estimate_job_status_communication"],
     },
 }
@@ -1388,13 +1389,22 @@ _DELIVERY_STAGES = {
     "live",
 }
 _DELIVERY_READINESS_KEYS = (
-    "intake_complete",
+    "activation_packet_ready",
+    "assets_ready",
     "vendor_access_collected",
     "copy_approved",
     "routing_logic_defined",
-    "testing_pending",
+    "qa_ready",
+    "rollback_ready",
+    "handoff_ready",
     "live",
 )
+_DELIVERY_VISIBILITY_KEYS = {"hidden", "internal", "ready"}
+_DELIVERY_BUILD_STATUS_KEYS = {"planned", "hardening", "verification", "ready"}
+_DELIVERY_OFFER_TYPE_KEYS = {"public", "internal"}
+_DELIVERY_SUPPORT_POLICY_KEYS = {"", "optional_support", "managed_automation", "internal_only"}
+_DELIVERY_OWNERSHIP_KEYS = {"", "client_owned", "drew_managed", "hybrid"}
+_DELIVERY_KIT_STATUS_KEYS = {"", "hidden", "internal", "limited", "ready"}
 _DEPLOY_SNAPSHOT_KEYS = (
     "business_name",
     "contact_name",
@@ -1419,6 +1429,15 @@ _DEPLOY_DISCOVERY_KEYS = (
 _DEPLOY_QUOTE_MODES = {"live_quote", "formal_estimate"}
 _DEPLOY_MONTHLY_SUPPORT_STATES = {True, False}
 _DEPLOY_DEFAULT_NOTES = ""
+_CONSULT_BUILDER_KEYS = (
+    "freeform_notes",
+    "business_type",
+    "current_tools_accounts",
+    "owner_preferences",
+    "urgency",
+    "transcript_summary",
+    "do_not_recommend_notes",
+)
 
 
 def _coerce_bool(value) -> bool:
@@ -1449,12 +1468,43 @@ def _normalize_discovery(value: dict | None) -> dict:
     return base
 
 
+def _normalize_consult_builder(value: dict | None) -> dict:
+    base = {k: "" for k in _CONSULT_BUILDER_KEYS}
+    if not isinstance(value, dict):
+        return base
+    for key in _CONSULT_BUILDER_KEYS:
+        if isinstance(value.get(key), str):
+            base[key] = value.get(key, "").strip()[:2000]
+    return base
+
+
+def _clean_string_list(value) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    seen = set()
+    out = []
+    for item in value:
+        if not isinstance(item, str):
+            continue
+        clean = item.strip()
+        if not clean or clean in seen:
+            continue
+        seen.add(clean)
+        out.append(clean[:200])
+    return out
+
+
+def _clean_link_list(value) -> list[str]:
+    return _clean_string_list(value)
+
+
 def _deploy_task_templates(profile: dict | None) -> list[str]:
     profile = profile if isinstance(profile, dict) else {}
     tasks: list[str] = []
     core_offer = (profile.get("core_offer") or "").strip().lower()
     bundle_key = (profile.get("bundle_key") or "").strip().lower()
     modules = _normalize_selected_modules(profile.get("selected_modules"))
+    truth = compute_stack_truth(core_offer, bundle_key, modules)
     if core_offer == "presence_refresh":
         tasks += [
             "Refresh Google Business Profile",
@@ -1493,9 +1543,50 @@ def _deploy_task_templates(profile: dict | None) -> list[str]:
         task = module_tasks.get(module)
         if task:
             tasks.append(task)
+    for item in truth.get("required_artifacts", []):
+        tasks.append(f"Collect: {item}")
+    for item in truth.get("access_requirements", []):
+        tasks.append(f"Confirm access: {item}")
     if _coerce_bool(profile.get("monthly_support")):
         tasks.append("Confirm monthly support scope")
     return list(dict.fromkeys(tasks))
+
+
+def _apply_stack_truth_defaults(merged: dict) -> dict:
+    truth = compute_stack_truth(
+        (merged.get("core_offer") or "").strip().lower(),
+        (merged.get("bundle_key") or "").strip().lower(),
+        _normalize_selected_modules(merged.get("selected_modules")),
+    )
+    if not truth.get("kit_key"):
+        return {}
+    return {
+        "prelaunch_mode": PRELAUNCH_MODE,
+        "offer_type": truth.get("offer_type", "public"),
+        "build_status": truth.get("build_status", "planned"),
+        "launch_eligible": bool(truth.get("launch_eligible")),
+        "visibility_state": truth.get("visibility_state", "hidden"),
+        "target_visibility_state": truth.get("target_visibility_state", "hidden"),
+        "kit_key": truth.get("kit_key", ""),
+        "kit_version": truth.get("kit_version", ""),
+        "kit_status": truth.get("kit_status", ""),
+        "current_truth_notes": truth.get("current_truth_notes", []),
+        "target_truth_notes": truth.get("target_truth_notes", []),
+        "required_artifacts": truth.get("required_artifacts", []),
+        "access_requirements": truth.get("access_requirements", []),
+        "qa_checks": truth.get("qa_checks", []),
+        "rollback_plan": truth.get("rollback_plan", []),
+        "definition_of_done": truth.get("definition_of_done", []),
+        "missing_artifacts": truth.get("missing_artifacts", []),
+        "missing_qa": truth.get("missing_qa", []),
+        "missing_closeout": truth.get("missing_closeout", []),
+        "missing_rollback": truth.get("missing_rollback", []),
+        "next_hardening_steps": truth.get("next_hardening_steps", []),
+        "activation_packet_sections": truth.get("activation_packet_sections", []),
+        "ownership_mode": truth.get("ownership_mode", ""),
+        "support_policy_key": truth.get("support_policy_key", ""),
+        "support_summary": truth.get("support_summary", ""),
+    }
 
 
 def _delivery_profile_default(row: dict | None = None) -> dict:
@@ -1503,6 +1594,8 @@ def _delivery_profile_default(row: dict | None = None) -> dict:
     return {
         "snapshot": {k: (False if k in {"google_presence", "facebook_presence"} else "") for k in _DEPLOY_SNAPSHOT_KEYS},
         "discovery": {k: False for k in _DEPLOY_DISCOVERY_KEYS},
+        "consult_builder": {k: "" for k in _CONSULT_BUILDER_KEYS},
+        "draft_recommendation": {},
         "core_offer": "",
         "bundle_key": "",
         "selected_modules": [],
@@ -1515,6 +1608,43 @@ def _delivery_profile_default(row: dict | None = None) -> dict:
         "deposit_status": "",
         "offer_notes": "",
         "activation_tasks": [],
+        "prelaunch_mode": PRELAUNCH_MODE,
+        "offer_type": "public",
+        "build_status": "planned",
+        "launch_eligible": False,
+        "visibility_state": "hidden",
+        "target_visibility_state": "hidden",
+        "kit_key": "",
+        "kit_version": "",
+        "kit_status": "",
+        "current_truth_notes": [],
+        "target_truth_notes": [],
+        "required_artifacts": [],
+        "artifact_links": [],
+        "access_requirements": [],
+        "credential_status": "",
+        "qa_checks": [],
+        "rollback_plan": [],
+        "definition_of_done": [],
+        "missing_artifacts": [],
+        "missing_qa": [],
+        "missing_closeout": [],
+        "missing_rollback": [],
+        "next_hardening_steps": [],
+        "activation_packet_sections": [],
+        "handoff_status": "",
+        "closeout_status": "",
+        "ownership_mode": "",
+        "support_policy_key": "",
+        "support_summary": "",
+        "change_order_status": "in_scope",
+        "revision_round": 0,
+        "revision_status": "",
+        "change_order_needed": False,
+        "change_order_notes": "",
+        "blockers": [],
+        "next_step": "",
+        "activation_packet_status": "draft",
         "stage": "replied" if is_replied else "discovered",
         "readiness": {k: False for k in _DELIVERY_READINESS_KEYS},
         "updated_at": "",
@@ -1560,6 +1690,10 @@ def _finalize_activation_patch(clean_patch: dict, current_profile: dict) -> dict
         clean_patch["snapshot"] = _normalize_snapshot(merged["snapshot"])
     if "discovery" in merged and isinstance(merged["discovery"], dict):
         clean_patch["discovery"] = _normalize_discovery(merged["discovery"])
+    if "consult_builder" in merged and isinstance(merged["consult_builder"], dict):
+        clean_patch["consult_builder"] = _normalize_consult_builder(merged["consult_builder"])
+    if "draft_recommendation" in merged and isinstance(merged["draft_recommendation"], dict):
+        clean_patch["draft_recommendation"] = dict(merged["draft_recommendation"])
 
     pricing_mode = (merged.get("pricing_mode") or "").strip().lower()
     if pricing_mode in _DEPLOY_QUOTE_MODES:
@@ -1574,6 +1708,55 @@ def _finalize_activation_patch(clean_patch: dict, current_profile: dict) -> dict
         clean_patch["monthly_fee"] = str(monthly_fee).strip() if monthly_fee is not None else ""
     if "deposit_status" in merged:
         clean_patch["deposit_status"] = (merged.get("deposit_status") or "").strip()
+    if "artifact_links" in merged:
+        clean_patch["artifact_links"] = _clean_link_list(merged.get("artifact_links"))
+    if "blockers" in merged:
+        clean_patch["blockers"] = _clean_string_list(merged.get("blockers"))
+    if "next_step" in merged:
+        clean_patch["next_step"] = (merged.get("next_step") or "").strip()[:200]
+    if "credential_status" in merged:
+        clean_patch["credential_status"] = (merged.get("credential_status") or "").strip()[:80]
+    if "handoff_status" in merged:
+        clean_patch["handoff_status"] = (merged.get("handoff_status") or "").strip()[:80]
+    if "closeout_status" in merged:
+        clean_patch["closeout_status"] = (merged.get("closeout_status") or "").strip()[:80]
+    if "activation_packet_status" in merged:
+        clean_patch["activation_packet_status"] = (merged.get("activation_packet_status") or "").strip()[:80]
+    if "revision_status" in merged:
+        clean_patch["revision_status"] = (merged.get("revision_status") or "").strip()[:80]
+    if "change_order_status" in merged:
+        clean_patch["change_order_status"] = (merged.get("change_order_status") or "").strip()[:80]
+    if "change_order_notes" in merged:
+        clean_patch["change_order_notes"] = (merged.get("change_order_notes") or "")[:1000]
+    if "change_order_needed" in merged:
+        clean_patch["change_order_needed"] = _coerce_bool(merged.get("change_order_needed"))
+    if "revision_round" in merged:
+        try:
+            clean_patch["revision_round"] = max(0, int(merged.get("revision_round") or 0))
+        except (TypeError, ValueError):
+            clean_patch["revision_round"] = 0
+    if "visibility_state" in merged:
+        visibility_state = (merged.get("visibility_state") or "").strip().lower()
+        clean_patch["visibility_state"] = visibility_state if visibility_state in _DELIVERY_VISIBILITY_KEYS else "hidden"
+    if "offer_type" in merged:
+        offer_type = (merged.get("offer_type") or "").strip().lower()
+        clean_patch["offer_type"] = offer_type if offer_type in _DELIVERY_OFFER_TYPE_KEYS else "public"
+    if "build_status" in merged:
+        build_status = (merged.get("build_status") or "").strip().lower()
+        clean_patch["build_status"] = build_status if build_status in _DELIVERY_BUILD_STATUS_KEYS else "planned"
+    if "launch_eligible" in merged:
+        clean_patch["launch_eligible"] = _coerce_bool(merged.get("launch_eligible"))
+    if "ownership_mode" in merged:
+        ownership_mode = (merged.get("ownership_mode") or "").strip().lower()
+        clean_patch["ownership_mode"] = ownership_mode if ownership_mode in _DELIVERY_OWNERSHIP_KEYS else ""
+    if "support_policy_key" in merged:
+        support_policy_key = (merged.get("support_policy_key") or "").strip().lower()
+        clean_patch["support_policy_key"] = support_policy_key if support_policy_key in _DELIVERY_SUPPORT_POLICY_KEYS else ""
+    if "kit_status" in merged:
+        kit_status = (merged.get("kit_status") or "").strip().lower()
+        clean_patch["kit_status"] = kit_status if kit_status in _DELIVERY_KIT_STATUS_KEYS else ""
+
+    clean_patch.update(_apply_stack_truth_defaults(merged))
 
     clean_patch["activation_tasks"] = _deploy_task_templates(merged)
     return clean_patch
@@ -1615,6 +1798,12 @@ def _normalize_delivery_profile(raw_profile: dict | None, row: dict | None = Non
     discovery = raw_profile.get("discovery")
     if isinstance(discovery, dict):
         base["discovery"] = _normalize_discovery(discovery)
+    consult_builder = raw_profile.get("consult_builder")
+    if isinstance(consult_builder, dict):
+        base["consult_builder"] = _normalize_consult_builder(consult_builder)
+    draft_recommendation = raw_profile.get("draft_recommendation")
+    if isinstance(draft_recommendation, dict):
+        base["draft_recommendation"] = dict(draft_recommendation)
 
     price = raw_profile.get("price")
     if isinstance(price, (int, float)):
@@ -1658,6 +1847,113 @@ def _normalize_delivery_profile(raw_profile: dict | None, row: dict | None = Non
     if isinstance(activation_tasks, list):
         base["activation_tasks"] = [task for task in activation_tasks if isinstance(task, str) and task.strip()]
 
+    visibility_state = (raw_profile.get("visibility_state") or "").strip().lower()
+    if visibility_state in _DELIVERY_VISIBILITY_KEYS:
+        base["visibility_state"] = visibility_state
+    offer_type = (raw_profile.get("offer_type") or "").strip().lower()
+    if offer_type in _DELIVERY_OFFER_TYPE_KEYS:
+        base["offer_type"] = offer_type
+    build_status = (raw_profile.get("build_status") or "").strip().lower()
+    if build_status in _DELIVERY_BUILD_STATUS_KEYS:
+        base["build_status"] = build_status
+    if "launch_eligible" in raw_profile:
+        base["launch_eligible"] = _coerce_bool(raw_profile.get("launch_eligible"))
+    target_visibility_state = (raw_profile.get("target_visibility_state") or "").strip().lower()
+    if target_visibility_state in _DELIVERY_VISIBILITY_KEYS:
+        base["target_visibility_state"] = target_visibility_state
+    kit_key = raw_profile.get("kit_key")
+    if isinstance(kit_key, str):
+        base["kit_key"] = kit_key.strip()
+    kit_version = raw_profile.get("kit_version")
+    if isinstance(kit_version, str):
+        base["kit_version"] = kit_version.strip()
+    kit_status = (raw_profile.get("kit_status") or "").strip().lower()
+    if kit_status in _DELIVERY_KIT_STATUS_KEYS:
+        base["kit_status"] = kit_status
+    artifact_links = raw_profile.get("artifact_links")
+    if isinstance(artifact_links, list):
+        base["artifact_links"] = _clean_link_list(artifact_links)
+    required_artifacts = raw_profile.get("required_artifacts")
+    if isinstance(required_artifacts, list):
+        base["required_artifacts"] = _clean_string_list(required_artifacts)
+    access_requirements = raw_profile.get("access_requirements")
+    if isinstance(access_requirements, list):
+        base["access_requirements"] = _clean_string_list(access_requirements)
+    credential_status = raw_profile.get("credential_status")
+    if isinstance(credential_status, str):
+        base["credential_status"] = credential_status.strip()
+    qa_checks = raw_profile.get("qa_checks")
+    if isinstance(qa_checks, list):
+        base["qa_checks"] = _clean_string_list(qa_checks)
+    rollback_plan = raw_profile.get("rollback_plan")
+    if isinstance(rollback_plan, list):
+        base["rollback_plan"] = _clean_string_list(rollback_plan)
+    definition_of_done = raw_profile.get("definition_of_done")
+    if isinstance(definition_of_done, list):
+        base["definition_of_done"] = _clean_string_list(definition_of_done)
+    activation_packet_sections = raw_profile.get("activation_packet_sections")
+    if isinstance(activation_packet_sections, list):
+        base["activation_packet_sections"] = _clean_string_list(activation_packet_sections)
+    handoff_status = raw_profile.get("handoff_status")
+    if isinstance(handoff_status, str):
+        base["handoff_status"] = handoff_status.strip()
+    closeout_status = raw_profile.get("closeout_status")
+    if isinstance(closeout_status, str):
+        base["closeout_status"] = closeout_status.strip()
+    ownership_mode = (raw_profile.get("ownership_mode") or "").strip().lower()
+    if ownership_mode in _DELIVERY_OWNERSHIP_KEYS:
+        base["ownership_mode"] = ownership_mode
+    support_policy_key = (raw_profile.get("support_policy_key") or "").strip().lower()
+    if support_policy_key in _DELIVERY_SUPPORT_POLICY_KEYS:
+        base["support_policy_key"] = support_policy_key
+    support_summary = raw_profile.get("support_summary")
+    if isinstance(support_summary, str):
+        base["support_summary"] = support_summary
+    current_truth_notes = raw_profile.get("current_truth_notes")
+    if isinstance(current_truth_notes, list):
+        base["current_truth_notes"] = _clean_string_list(current_truth_notes)
+    target_truth_notes = raw_profile.get("target_truth_notes")
+    if isinstance(target_truth_notes, list):
+        base["target_truth_notes"] = _clean_string_list(target_truth_notes)
+    missing_artifacts = raw_profile.get("missing_artifacts")
+    if isinstance(missing_artifacts, list):
+        base["missing_artifacts"] = _clean_string_list(missing_artifacts)
+    missing_qa = raw_profile.get("missing_qa")
+    if isinstance(missing_qa, list):
+        base["missing_qa"] = _clean_string_list(missing_qa)
+    missing_closeout = raw_profile.get("missing_closeout")
+    if isinstance(missing_closeout, list):
+        base["missing_closeout"] = _clean_string_list(missing_closeout)
+    missing_rollback = raw_profile.get("missing_rollback")
+    if isinstance(missing_rollback, list):
+        base["missing_rollback"] = _clean_string_list(missing_rollback)
+    next_hardening_steps = raw_profile.get("next_hardening_steps")
+    if isinstance(next_hardening_steps, list):
+        base["next_hardening_steps"] = _clean_string_list(next_hardening_steps)
+    change_order_status = raw_profile.get("change_order_status")
+    if isinstance(change_order_status, str):
+        base["change_order_status"] = change_order_status.strip()
+    revision_status = raw_profile.get("revision_status")
+    if isinstance(revision_status, str):
+        base["revision_status"] = revision_status.strip()
+    try:
+        base["revision_round"] = max(0, int(raw_profile.get("revision_round") or 0))
+    except (TypeError, ValueError):
+        pass
+    base["change_order_needed"] = _coerce_bool(raw_profile.get("change_order_needed"))
+    change_order_notes = raw_profile.get("change_order_notes")
+    if isinstance(change_order_notes, str):
+        base["change_order_notes"] = change_order_notes
+    blockers = raw_profile.get("blockers")
+    if isinstance(blockers, list):
+        base["blockers"] = _clean_string_list(blockers)
+    next_step = raw_profile.get("next_step")
+    if isinstance(next_step, str):
+        base["next_step"] = next_step.strip()
+    activation_packet_status = raw_profile.get("activation_packet_status")
+    if isinstance(activation_packet_status, str):
+        base["activation_packet_status"] = activation_packet_status.strip()
+
     stage = (raw_profile.get("stage") or "").strip().lower()
     if stage in _DELIVERY_STAGES:
         base["stage"] = stage
@@ -1672,7 +1968,78 @@ def _normalize_delivery_profile(raw_profile: dict | None, row: dict | None = Non
     if isinstance(updated_at, str):
         base["updated_at"] = updated_at
 
+    base.update(_apply_stack_truth_defaults(base))
+
     return base
+
+
+@app.route("/api/delivery_catalog")
+def api_delivery_catalog():
+    return jsonify({"ok": True, "catalog": get_catalog_payload()})
+
+
+DELIVERY_EXEC_LOG = BASE_DIR / "data" / "delivery_execution_log.json"
+
+def _load_exec_log():
+    if DELIVERY_EXEC_LOG.exists():
+        try:
+            return json.loads(DELIVERY_EXEC_LOG.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return {}
+
+def _save_exec_log(data):
+    DELIVERY_EXEC_LOG.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+@app.route("/api/delivery_run", methods=["GET"])
+def api_delivery_run_get():
+    offer_key = (request.args.get("offer_key") or "").strip()
+    log = _load_exec_log()
+    if offer_key:
+        return jsonify({"ok": True, "offer_key": offer_key, "state": log.get(offer_key, {})})
+    return jsonify({"ok": True, "all": log})
+
+
+@app.route("/api/delivery_run", methods=["POST"])
+def api_delivery_run_save():
+    import datetime
+    body = request.json or {}
+    offer_key = (body.get("offer_key") or "").strip()
+    if not offer_key:
+        return jsonify({"ok": False, "error": "offer_key required"}), 400
+    allowed_offer_keys = set(DELIVERY_CATALOG.keys())
+    if offer_key not in allowed_offer_keys:
+        return jsonify({"ok": False, "error": "unknown offer_key"}), 400
+
+    log = _load_exec_log()
+    existing = log.get(offer_key, {})
+
+    patch = body.get("state", {})
+    merged = dict(existing)
+
+    if "checks" in patch and isinstance(patch["checks"], dict):
+        existing_checks = merged.get("checks", {})
+        for k, v in patch["checks"].items():
+            if isinstance(k, str) and isinstance(v, bool):
+                existing_checks[k] = v
+        merged["checks"] = existing_checks
+
+    for field in ("work_notes", "proof_links", "blockers", "closeout_notes"):
+        if field in patch and isinstance(patch[field], str):
+            merged[field] = patch[field].strip()[:2000]
+
+    if "closeout_status" in patch and patch["closeout_status"] in ("open", "in_progress", "captured"):
+        merged["closeout_status"] = patch["closeout_status"]
+
+    now = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    if "started_at" not in merged:
+        merged["started_at"] = now
+    merged["updated_at"] = now
+
+    log[offer_key] = merged
+    _save_exec_log(log)
+    return jsonify({"ok": True, "offer_key": offer_key, "state": merged})
 
 
 @app.route("/api/conversation_queue")
@@ -1777,6 +2144,57 @@ def api_update_delivery_profile():
         if not isinstance(offer_notes, str):
             return jsonify({"ok": False, "error": "offer_notes must be a string"}), 400
         clean_patch["offer_notes"] = offer_notes[:2000]
+    if "artifact_links" in patch:
+        clean_patch["artifact_links"] = _clean_link_list(patch.get("artifact_links"))
+    if "credential_status" in patch:
+        credential_status = patch.get("credential_status")
+        if not isinstance(credential_status, str):
+            return jsonify({"ok": False, "error": "credential_status must be a string"}), 400
+        clean_patch["credential_status"] = credential_status.strip()[:80]
+    if "handoff_status" in patch:
+        handoff_status = patch.get("handoff_status")
+        if not isinstance(handoff_status, str):
+            return jsonify({"ok": False, "error": "handoff_status must be a string"}), 400
+        clean_patch["handoff_status"] = handoff_status.strip()[:80]
+    if "closeout_status" in patch:
+        closeout_status = patch.get("closeout_status")
+        if not isinstance(closeout_status, str):
+            return jsonify({"ok": False, "error": "closeout_status must be a string"}), 400
+        clean_patch["closeout_status"] = closeout_status.strip()[:80]
+    if "revision_status" in patch:
+        revision_status = patch.get("revision_status")
+        if not isinstance(revision_status, str):
+            return jsonify({"ok": False, "error": "revision_status must be a string"}), 400
+        clean_patch["revision_status"] = revision_status.strip()[:80]
+    if "revision_round" in patch:
+        try:
+            clean_patch["revision_round"] = max(0, int(patch.get("revision_round") or 0))
+        except (TypeError, ValueError):
+            return jsonify({"ok": False, "error": "revision_round must be a number"}), 400
+    if "change_order_status" in patch:
+        change_order_status = patch.get("change_order_status")
+        if not isinstance(change_order_status, str):
+            return jsonify({"ok": False, "error": "change_order_status must be a string"}), 400
+        clean_patch["change_order_status"] = change_order_status.strip()[:80]
+    if "change_order_needed" in patch:
+        clean_patch["change_order_needed"] = _coerce_bool(patch.get("change_order_needed"))
+    if "change_order_notes" in patch:
+        change_order_notes = patch.get("change_order_notes")
+        if not isinstance(change_order_notes, str):
+            return jsonify({"ok": False, "error": "change_order_notes must be a string"}), 400
+        clean_patch["change_order_notes"] = change_order_notes[:1000]
+    if "blockers" in patch:
+        clean_patch["blockers"] = _clean_string_list(patch.get("blockers"))
+    if "next_step" in patch:
+        next_step = patch.get("next_step")
+        if not isinstance(next_step, str):
+            return jsonify({"ok": False, "error": "next_step must be a string"}), 400
+        clean_patch["next_step"] = next_step.strip()[:200]
+    if "activation_packet_status" in patch:
+        activation_packet_status = patch.get("activation_packet_status")
+        if not isinstance(activation_packet_status, str):
+            return jsonify({"ok": False, "error": "activation_packet_status must be a string"}), 400
+        clean_patch["activation_packet_status"] = activation_packet_status.strip()[:80]
 
     if "stage" in patch:
         stage = (patch.get("stage") or "").strip().lower()
@@ -1853,6 +2271,32 @@ def api_delivery_board():
             "invoice_status": profile.get("invoice_status", ""),
             "deposit_status": profile.get("deposit_status", ""),
             "offer_notes":   profile.get("offer_notes", ""),
+            "prelaunch_mode": profile.get("prelaunch_mode", PRELAUNCH_MODE),
+            "offer_type":    profile.get("offer_type", "public"),
+            "build_status":  profile.get("build_status", "planned"),
+            "launch_eligible": profile.get("launch_eligible", False),
+            "visibility_state": profile.get("visibility_state", "hidden"),
+            "target_visibility_state": profile.get("target_visibility_state", "hidden"),
+            "kit_key":       profile.get("kit_key", ""),
+            "kit_status":    profile.get("kit_status", ""),
+            "current_truth_notes": profile.get("current_truth_notes", []),
+            "target_truth_notes": profile.get("target_truth_notes", []),
+            "required_artifacts": profile.get("required_artifacts", []),
+            "access_requirements": profile.get("access_requirements", []),
+            "missing_artifacts": profile.get("missing_artifacts", []),
+            "missing_qa": profile.get("missing_qa", []),
+            "missing_closeout": profile.get("missing_closeout", []),
+            "missing_rollback": profile.get("missing_rollback", []),
+            "next_hardening_steps": profile.get("next_hardening_steps", []),
+            "rollback_plan": profile.get("rollback_plan", []),
+            "ownership_mode": profile.get("ownership_mode", ""),
+            "support_policy_key": profile.get("support_policy_key", ""),
+            "support_summary": profile.get("support_summary", ""),
+            "handoff_status": profile.get("handoff_status", ""),
+            "closeout_status": profile.get("closeout_status", ""),
+            "activation_packet_status": profile.get("activation_packet_status", ""),
+            "blockers":      profile.get("blockers", []),
+            "next_step":     profile.get("next_step", ""),
             "readiness":     readiness,
             "readiness_pct": round(completed / total_keys * 100) if total_keys else 0,
             "readiness_done": completed,
@@ -1954,6 +2398,57 @@ def api_update_delivery_profile_by_key():
         if not isinstance(offer_notes, str):
             return jsonify({"ok": False, "error": "offer_notes must be a string"}), 400
         clean_patch["offer_notes"] = offer_notes[:2000]
+    if "artifact_links" in patch:
+        clean_patch["artifact_links"] = _clean_link_list(patch.get("artifact_links"))
+    if "credential_status" in patch:
+        credential_status = patch.get("credential_status")
+        if not isinstance(credential_status, str):
+            return jsonify({"ok": False, "error": "credential_status must be a string"}), 400
+        clean_patch["credential_status"] = credential_status.strip()[:80]
+    if "handoff_status" in patch:
+        handoff_status = patch.get("handoff_status")
+        if not isinstance(handoff_status, str):
+            return jsonify({"ok": False, "error": "handoff_status must be a string"}), 400
+        clean_patch["handoff_status"] = handoff_status.strip()[:80]
+    if "closeout_status" in patch:
+        closeout_status = patch.get("closeout_status")
+        if not isinstance(closeout_status, str):
+            return jsonify({"ok": False, "error": "closeout_status must be a string"}), 400
+        clean_patch["closeout_status"] = closeout_status.strip()[:80]
+    if "revision_status" in patch:
+        revision_status = patch.get("revision_status")
+        if not isinstance(revision_status, str):
+            return jsonify({"ok": False, "error": "revision_status must be a string"}), 400
+        clean_patch["revision_status"] = revision_status.strip()[:80]
+    if "revision_round" in patch:
+        try:
+            clean_patch["revision_round"] = max(0, int(patch.get("revision_round") or 0))
+        except (TypeError, ValueError):
+            return jsonify({"ok": False, "error": "revision_round must be a number"}), 400
+    if "change_order_status" in patch:
+        change_order_status = patch.get("change_order_status")
+        if not isinstance(change_order_status, str):
+            return jsonify({"ok": False, "error": "change_order_status must be a string"}), 400
+        clean_patch["change_order_status"] = change_order_status.strip()[:80]
+    if "change_order_needed" in patch:
+        clean_patch["change_order_needed"] = _coerce_bool(patch.get("change_order_needed"))
+    if "change_order_notes" in patch:
+        change_order_notes = patch.get("change_order_notes")
+        if not isinstance(change_order_notes, str):
+            return jsonify({"ok": False, "error": "change_order_notes must be a string"}), 400
+        clean_patch["change_order_notes"] = change_order_notes[:1000]
+    if "blockers" in patch:
+        clean_patch["blockers"] = _clean_string_list(patch.get("blockers"))
+    if "next_step" in patch:
+        next_step = patch.get("next_step")
+        if not isinstance(next_step, str):
+            return jsonify({"ok": False, "error": "next_step must be a string"}), 400
+        clean_patch["next_step"] = next_step.strip()[:200]
+    if "activation_packet_status" in patch:
+        activation_packet_status = patch.get("activation_packet_status")
+        if not isinstance(activation_packet_status, str):
+            return jsonify({"ok": False, "error": "activation_packet_status must be a string"}), 400
+        clean_patch["activation_packet_status"] = activation_packet_status.strip()[:80]
 
     if "stage" in patch:
         stage = (patch.get("stage") or "").strip().lower()
@@ -2044,6 +2539,26 @@ def api_deploy_activation():
         if not isinstance(discovery, dict):
             return jsonify({"ok": False, "error": "discovery must be an object"}), 400
         clean_patch["discovery"] = _normalize_discovery(discovery)
+    if "consult_builder" in patch:
+        consult_builder = patch.get("consult_builder")
+        if not isinstance(consult_builder, dict):
+            return jsonify({"ok": False, "error": "consult_builder must be an object"}), 400
+        clean_patch["consult_builder"] = _normalize_consult_builder(consult_builder)
+    if "draft_recommendation" in patch:
+        draft_recommendation = patch.get("draft_recommendation")
+        if not isinstance(draft_recommendation, dict):
+            return jsonify({"ok": False, "error": "draft_recommendation must be an object"}), 400
+        clean_patch["draft_recommendation"] = dict(draft_recommendation)
+    if "consult_builder" in patch:
+        consult_builder = patch.get("consult_builder")
+        if not isinstance(consult_builder, dict):
+            return jsonify({"ok": False, "error": "consult_builder must be an object"}), 400
+        clean_patch["consult_builder"] = _normalize_consult_builder(consult_builder)
+    if "draft_recommendation" in patch:
+        draft_recommendation = patch.get("draft_recommendation")
+        if not isinstance(draft_recommendation, dict):
+            return jsonify({"ok": False, "error": "draft_recommendation must be an object"}), 400
+        clean_patch["draft_recommendation"] = dict(draft_recommendation)
 
     if "core_offer" in patch:
         core_offer = (patch.get("core_offer") or "").strip().lower()
@@ -2120,6 +2635,57 @@ def api_deploy_activation():
         if not isinstance(offer_notes, str):
             return jsonify({"ok": False, "error": "offer_notes must be a string"}), 400
         clean_patch["offer_notes"] = offer_notes[:2000]
+    if "artifact_links" in patch:
+        clean_patch["artifact_links"] = _clean_link_list(patch.get("artifact_links"))
+    if "credential_status" in patch:
+        credential_status = patch.get("credential_status")
+        if not isinstance(credential_status, str):
+            return jsonify({"ok": False, "error": "credential_status must be a string"}), 400
+        clean_patch["credential_status"] = credential_status.strip()[:80]
+    if "handoff_status" in patch:
+        handoff_status = patch.get("handoff_status")
+        if not isinstance(handoff_status, str):
+            return jsonify({"ok": False, "error": "handoff_status must be a string"}), 400
+        clean_patch["handoff_status"] = handoff_status.strip()[:80]
+    if "closeout_status" in patch:
+        closeout_status = patch.get("closeout_status")
+        if not isinstance(closeout_status, str):
+            return jsonify({"ok": False, "error": "closeout_status must be a string"}), 400
+        clean_patch["closeout_status"] = closeout_status.strip()[:80]
+    if "revision_status" in patch:
+        revision_status = patch.get("revision_status")
+        if not isinstance(revision_status, str):
+            return jsonify({"ok": False, "error": "revision_status must be a string"}), 400
+        clean_patch["revision_status"] = revision_status.strip()[:80]
+    if "revision_round" in patch:
+        try:
+            clean_patch["revision_round"] = max(0, int(patch.get("revision_round") or 0))
+        except (TypeError, ValueError):
+            return jsonify({"ok": False, "error": "revision_round must be a number"}), 400
+    if "change_order_status" in patch:
+        change_order_status = patch.get("change_order_status")
+        if not isinstance(change_order_status, str):
+            return jsonify({"ok": False, "error": "change_order_status must be a string"}), 400
+        clean_patch["change_order_status"] = change_order_status.strip()[:80]
+    if "change_order_needed" in patch:
+        clean_patch["change_order_needed"] = _coerce_bool(patch.get("change_order_needed"))
+    if "change_order_notes" in patch:
+        change_order_notes = patch.get("change_order_notes")
+        if not isinstance(change_order_notes, str):
+            return jsonify({"ok": False, "error": "change_order_notes must be a string"}), 400
+        clean_patch["change_order_notes"] = change_order_notes[:1000]
+    if "blockers" in patch:
+        clean_patch["blockers"] = _clean_string_list(patch.get("blockers"))
+    if "next_step" in patch:
+        next_step = patch.get("next_step")
+        if not isinstance(next_step, str):
+            return jsonify({"ok": False, "error": "next_step must be a string"}), 400
+        clean_patch["next_step"] = next_step.strip()[:200]
+    if "activation_packet_status" in patch:
+        activation_packet_status = patch.get("activation_packet_status")
+        if not isinstance(activation_packet_status, str):
+            return jsonify({"ok": False, "error": "activation_packet_status must be a string"}), 400
+        clean_patch["activation_packet_status"] = activation_packet_status.strip()[:80]
 
     if "stage" in patch:
         stage = (patch.get("stage") or "").strip().lower()

@@ -1396,6 +1396,9 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .da-touch{display:flex;flex-direction:column;gap:8px}
 .da-price-range{font-size:18px;font-family:var(--mono);font-weight:700;color:var(--text);line-height:1.2}
 .da-price-help{font-size:11px;color:var(--muted);line-height:1.6;margin-top:4px}
+.da-list-box{padding:10px 12px;border-radius:var(--rs);background:var(--surface2);border:1px solid var(--border);font-size:11px;color:var(--text);line-height:1.6;min-height:76px}
+.da-list-box ul{margin:0;padding-left:18px}
+.da-list-box li{margin:0 0 4px}
 .da-primary-wrap{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .da-primary-btn{width:100%;justify-content:center;font-size:13px;padding:10px 14px}
 .da-secondary-row{display:flex;gap:8px;flex-wrap:wrap}
@@ -1415,6 +1418,34 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   .da-grid{grid-template-columns:1fr}
   .da-grid-2,.da-grid-3{grid-template-columns:1fr}
   .da-answer-row{grid-template-columns:1fr}
+}
+/* ── Deploy Activation Wizard (Pass 190) ─────────────────────────────────── */
+.da-wizard{display:flex;gap:16px;align-items:flex-start}
+.da-wizard-body{flex:1;min-width:0}
+.da-step-panel{display:none}
+.da-step-panel.active{display:block}
+.da-step-nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:8px}
+.da-step-nav-left,.da-step-nav-right{display:flex;gap:8px}
+.da-progress{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.da-progress-step{display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);font-size:10px;font-weight:600;letter-spacing:.05em;color:var(--muted);cursor:pointer;white-space:nowrap;transition:border-color .15s,color .15s}
+.da-progress-step:hover{border-color:var(--border-hi);color:var(--text)}
+.da-progress-step.active{border-color:rgba(79,142,247,.5);background:rgba(79,142,247,.1);color:var(--blue)}
+.da-progress-step .da-ps-n{font-family:var(--mono);font-size:9px;opacity:.7}
+.da-summary-panel{width:220px;flex-shrink:0;position:sticky;top:16px;display:flex;flex-direction:column;gap:8px}
+.da-summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px}
+.da-summary-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px}
+.da-summary-row{margin-bottom:6px}
+.da-summary-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px}
+.da-summary-val{font-size:11px;color:var(--text);line-height:1.5}
+.da-summary-val.blocked{color:var(--red)}
+.da-summary-val.eligible{color:var(--green)}
+.da-summary-chip{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:8px;margin-top:2px}
+.da-summary-chip.ok{background:rgba(62,207,114,.12);color:var(--green)}
+.da-summary-chip.wait{background:rgba(245,166,35,.12);color:var(--amber)}
+.da-summary-chip.block{background:rgba(239,68,68,.12);color:var(--red)}
+@media(max-width:700px){
+  .da-wizard{flex-direction:column}
+  .da-summary-panel{width:100%;position:static}
 }
 .db-wrap{max-width:1200px;margin:0 auto;padding:28px}
 .db-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
@@ -1449,6 +1480,45 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .db-check-icon{width:12px;height:12px;border-radius:2px;border:1px solid var(--border);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;transition:.12s}
 .db-check.done .db-check-icon{background:var(--green);border-color:var(--green);color:#0e1a12}
 .db-card-stage-sel{margin-top:10px;width:100%;padding:5px 8px;background:var(--surface3);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:11px;font-family:var(--sans);cursor:pointer;outline:none}
+
+/* ── Delivery Run ────────────────────────────────────────────────────────── */
+.dr-wrap{max-width:900px;margin:0 auto;padding:28px}
+.dr-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:12px}
+.dr-hdr h2{font-size:16px;font-weight:600}
+.dr-hdr-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.dr-offer-sel{padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:12px;outline:none;min-width:240px;cursor:pointer}
+.dr-offer-sel option{background:var(--surface2)}
+.dr-progress-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.dr-progress-bar{flex:1;height:6px;background:var(--surface3);border-radius:3px;overflow:hidden}
+.dr-progress-fill{height:100%;background:var(--green);border-radius:3px;transition:width .3s}
+.dr-progress-label{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.dr-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden}
+.dr-section-hdr{padding:10px 16px;font-size:12px;font-weight:600;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.dr-section-count{font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:auto}
+.dr-section-body{padding:12px 16px;display:flex;flex-direction:column;gap:6px}
+.dr-check{display:flex;align-items:center;gap:9px;padding:5px 6px;border-radius:4px;cursor:pointer;transition:background .1s}
+.dr-check:hover{background:var(--surface2)}
+.dr-check-box{width:14px;height:14px;border-radius:3px;border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:.12s;cursor:pointer}
+.dr-check.done .dr-check-box{background:var(--green);border-color:var(--green);color:#0e1a12}
+.dr-check-label{font-size:12px;color:var(--muted);line-height:1.4;user-select:none}
+.dr-check.done .dr-check-label{color:var(--text)}
+.dr-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.dr-field-full{grid-column:1/-1}
+.dr-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:5px}
+.dr-textarea{width:100%;box-sizing:border-box;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:12px;line-height:1.5;resize:vertical;min-height:72px;outline:none;transition:border .12s}
+.dr-textarea:focus{border-color:var(--border-hi)}
+.dr-closeout-sel{padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:12px;outline:none;cursor:pointer;width:100%}
+.dr-closeout-sel option{background:var(--surface2)}
+.dr-verif-rail{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.dr-verif-item{padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);text-align:center}
+.dr-verif-icon{font-size:16px;margin-bottom:4px}
+.dr-verif-label{font-size:10px;color:var(--muted);line-height:1.3}
+.dr-verif-item.done .dr-verif-icon{color:var(--green)}
+.dr-verif-item.done .dr-verif-label{color:var(--text)}
+.dr-save-status{font-size:11px;color:var(--muted);min-height:18px}
+.dr-empty{padding:48px 0;text-align:center;color:var(--muted);font-size:13px}
+.dr-run-btn{font-size:11px;padding:4px 10px;background:var(--surface3);border:1px solid var(--border);border-radius:var(--rs);color:var(--muted);cursor:pointer;transition:.12s;white-space:nowrap}
+.dr-run-btn:hover{color:var(--text);border-color:var(--border-hi)}
 
 </style>
 </head>
@@ -1500,6 +1570,8 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <div class="sub-tab" data-parent="tools" data-page="tools"       onclick="switchSubPage('tools','tools',this)">⚙ Tools</div>
   <div class="sub-tab" data-parent="tools" data-page="lead-memory" onclick="switchSubPage('tools','lead-memory',this)">🧠 Lead Memory</div>
   <!-- Delivery sub-tabs -->
+  <div class="sub-tab" data-parent="delivery" data-page="hardening-command" onclick="switchSubPage('delivery','hardening-command',this)">🛠 Hardening Command</div>
+  <div class="sub-tab" data-parent="delivery" data-page="delivery-run" onclick="switchSubPage('delivery','delivery-run',this)">📋 Delivery Run</div>
   <div class="sub-tab" data-parent="delivery" data-page="deploy-activation" onclick="switchSubPage('delivery','deploy-activation',this)">🚀 Deploy Activation</div>
   <div class="sub-tab" data-parent="delivery" data-page="delivery-board" onclick="switchSubPage('delivery','delivery-board',this)" style="display:none">&#128230; Board</div>
 </nav>
@@ -7337,7 +7409,7 @@ const _parentDefaults = {
   clients:   'mc-clients',
   health:    'health',
   tools:     'tools',
-  delivery:  'deploy-activation',
+  delivery:  'hardening-command',
 };
 
 // Which pages show together (health shows both page-health AND page-exceptions)
@@ -7379,6 +7451,8 @@ function _runPageHooks(name) {
   if (name === 'social')        socialLoad();
   if (name === 'sprint')        sprintLoad();
   if (name === 'conversations') convLoad();
+  if (name === 'hardening-command') loadHardeningCommand();
+  if (name === 'delivery-run') loadDeliveryRun();
   if (name === 'deploy-activation') loadDeliveryActivation();
   if (name === 'delivery-board') loadDeliveryBoard();
   if (name === 'health')        { healthLoad(); exceptionsLoad(); }
@@ -8699,11 +8773,14 @@ const COPPERLINE_STAGE_LABELS = {
   live: 'Live',
 };
 const COPPERLINE_READINESS_CHECKLIST = [
-  { key: 'intake_complete', label: 'Intake complete' },
+  { key: 'activation_packet_ready', label: 'Activation packet ready' },
+  { key: 'assets_ready', label: 'Assets ready' },
   { key: 'vendor_access_collected', label: 'Phone/vendor access collected' },
   { key: 'copy_approved', label: 'Copy approved' },
   { key: 'routing_logic_defined', label: 'Routing logic defined' },
-  { key: 'testing_pending', label: 'Testing complete' },
+  { key: 'qa_ready', label: 'QA ready' },
+  { key: 'rollback_ready', label: 'Rollback ready' },
+  { key: 'handoff_ready', label: 'Handoff ready' },
   { key: 'live', label: 'Live' },
 ];
 let _cvData = [];
@@ -8835,14 +8912,14 @@ function _cvRecommendedStack(row) {
     return {
       core_offer: 'starter_website',
       bundle_key: 'presence_website',
-      selected_modules: ['mobile_admin_workflow_helper'],
+      selected_modules: [],
     };
   }
   if (/(intake|dispatch|routing|lead intake|front desk|book(ing)? calls?)/.test(combined)) {
     return {
       core_offer: 'lead_contact_setup',
       bundle_key: 'full_starter_package',
-      selected_modules: ['mobile_admin_workflow_helper', 'follow_up_reminder_setup'],
+      selected_modules: ['follow_up_reminder_setup'],
     };
   }
   return {
@@ -9283,11 +9360,26 @@ const _DA_MODULE_PRICING = {
 let _daPendingLead = null;
 let _daActiveKey = '';
 let _daSaveTimer = null;
+let _deliveryCatalog = null;
+let _hardeningCommandLoaded = false;
+const _DA_VISIBILITY_LABELS = {
+  hidden: 'Hidden',
+  internal: 'Internal',
+  ready: 'Ready',
+};
+const _DA_VISIBILITY_ORDER = { hidden: 0, internal: 1, ready: 2 };
+const _DA_BUILD_STATUS_LABELS = {
+  planned: 'Planned',
+  hardening: 'Hardening',
+  verification: 'Verification',
+  ready: 'Ready',
+};
+const _DA_BUILD_STATUS_ORDER = { planned: 0, hardening: 1, verification: 2, ready: 3 };
 const _DA_STAGE_LABELS = {
   call_booked: 'Consultation Saved',
-  proposal_ready: 'Estimate in Progress',
-  won: 'Client Approved',
-  deployment_pending: 'Activation Pending',
+  proposal_ready: 'Draft Recommendation',
+  won: 'Activation Packet Prefilled',
+  deployment_pending: 'Deploy Ready',
   live: 'Live',
 };
 const _DA_PRIMARY_ACTIONS = {
@@ -9297,6 +9389,132 @@ const _DA_PRIMARY_ACTIONS = {
   deploy: 'Launch Deployment',
   access: 'Request Access',
 };
+
+async function _daEnsureCatalog() {
+  if (_deliveryCatalog) return _deliveryCatalog;
+  const res = await api('/api/delivery_catalog');
+  if (res?.ok) _deliveryCatalog = res.catalog;
+  return _deliveryCatalog;
+}
+
+function _daCatalogEntries() {
+  return _deliveryCatalog?.entries || {};
+}
+
+function _daStackKeysFromProfile(profile) {
+  const keys = [];
+  [profile?.core_offer, profile?.bundle_key, ...((profile?.selected_modules || []))].forEach((key) => {
+    if (!key || keys.includes(key)) return;
+    if (_daCatalogEntries()[key]) keys.push(key);
+  });
+  return keys;
+}
+
+function _daComputeStackTruth(profile) {
+  const entries = _daCatalogEntries();
+  const keys = _daStackKeysFromProfile(profile || {});
+  const mainKey = profile?.bundle_key || profile?.core_offer || keys[0] || '';
+  if (!mainKey || !entries[mainKey]) {
+    return {
+      prelaunch_mode: !!_deliveryCatalog?.prelaunch_mode,
+      offer_type: 'public',
+      build_status: 'planned',
+      launch_eligible: false,
+      visibility_state: 'hidden',
+      target_visibility_state: 'hidden',
+      kit_status: 'hidden',
+      kit_key: '',
+      current_truth_notes: [],
+      target_truth_notes: [],
+      required_artifacts: [],
+      access_requirements: [],
+      qa_checks: [],
+      rollback_plan: [],
+      definition_of_done: [],
+      missing_artifacts: [],
+      missing_qa: [],
+      missing_closeout: [],
+      missing_rollback: [],
+      next_hardening_steps: [],
+      activation_packet_sections: _deliveryCatalog?.activation_packet_sections || [],
+      ownership_mode: '',
+      support_summary: '',
+    };
+  }
+  const seenByField = {};
+  const mergeField = (field) => {
+    seenByField[field] = seenByField[field] || new Set();
+    const out = [];
+    keys.forEach((key) => {
+      const raw = entries[key]?.[field];
+      const items = Array.isArray(raw) ? raw : ((typeof raw === 'string' && raw.trim()) ? [raw] : []);
+      items.forEach((item) => {
+        if (seenByField[field].has(item)) return;
+        seenByField[field].add(item);
+        out.push(item);
+      });
+    });
+    return out;
+  };
+  const visibility = keys.reduce((best, key) => {
+    const next = entries[key]?.current_visibility_state || entries[key]?.visibility_state || 'hidden';
+    return (_DA_VISIBILITY_ORDER[next] < _DA_VISIBILITY_ORDER[best]) ? next : best;
+  }, 'ready');
+  const buildStatus = keys.reduce((best, key) => {
+    const next = entries[key]?.build_status || 'planned';
+    return (_DA_BUILD_STATUS_ORDER[next] < _DA_BUILD_STATUS_ORDER[best]) ? next : best;
+  }, 'ready');
+  const offerType = keys.some((key) => entries[key]?.offer_type === 'internal') ? 'internal' : 'public';
+  return {
+    prelaunch_mode: !!_deliveryCatalog?.prelaunch_mode,
+    offer_type: offerType,
+    build_status: buildStatus,
+    launch_eligible: keys.every((key) => !!entries[key]?.launch_eligible) && offerType === 'public',
+    visibility_state: visibility,
+    target_visibility_state: keys.reduce((best, key) => {
+      const next = entries[key]?.target_visibility_state || entries[key]?.current_visibility_state || 'hidden';
+      return (_DA_VISIBILITY_ORDER[next] < _DA_VISIBILITY_ORDER[best]) ? next : best;
+    }, 'ready'),
+    kit_status: visibility,
+    kit_key: entries[mainKey]?.kit_key || '',
+    current_truth_notes: mergeField('current_truth_note'),
+    target_truth_notes: mergeField('target_truth_note'),
+    required_artifacts: mergeField('required_artifacts'),
+    access_requirements: mergeField('access_requirements'),
+    qa_checks: mergeField('qa_checks'),
+    rollback_plan: mergeField('rollback_plan'),
+    definition_of_done: mergeField('definition_of_done'),
+    missing_artifacts: mergeField('missing_artifacts'),
+    missing_qa: mergeField('missing_qa'),
+    missing_closeout: mergeField('missing_closeout'),
+    missing_rollback: mergeField('missing_rollback'),
+    next_hardening_steps: mergeField('next_hardening_step'),
+    activation_packet_sections: _deliveryCatalog?.activation_packet_sections || [],
+    ownership_mode: entries[mainKey]?.ownership_mode || '',
+    support_summary: entries[mainKey]?.support_summary || '',
+  };
+}
+
+function _daVisibilityLabel(value) {
+  return _DA_VISIBILITY_LABELS[value] || 'Hidden';
+}
+
+function _daBuildStatusLabel(value) {
+  return _DA_BUILD_STATUS_LABELS[value] || 'Planned';
+}
+
+function _daSupportPolicyLabel(value) {
+  if (value === 'managed_automation') return 'Managed automation';
+  if (value === 'internal_only') return 'Internal only';
+  return 'Optional support';
+}
+
+function _daOwnershipLabel(value) {
+  if (value === 'client_owned') return 'Client-owned';
+  if (value === 'drew_managed') return 'Drew-managed';
+  if (value === 'hybrid') return 'Hybrid';
+  return 'Unset';
+}
 
 function _daDefaultState() {
   return {
@@ -9311,6 +9529,15 @@ function _daDefaultState() {
       facebook_presence: false,
       notes: '',
     },
+    consult_builder: {
+      freeform_notes: '',
+      business_type: '',
+      current_tools_accounts: '',
+      owner_preferences: '',
+      urgency: '',
+      transcript_summary: '',
+      do_not_recommend_notes: '',
+    },
     discovery: {
       poor_or_missing_website: false,
       weak_google_facebook_presence: false,
@@ -9321,6 +9548,7 @@ function _daDefaultState() {
       estimate_or_job_status_problem: false,
       wants_ongoing_support: false,
     },
+    draft_recommendation: {},
     readiness: {
       vendor_access_collected: false,
     },
@@ -9336,6 +9564,18 @@ function _daDefaultState() {
       invoice_status: '',
       deposit_status: '',
       offer_notes: '',
+      artifact_links: [],
+      credential_status: '',
+      handoff_status: '',
+      closeout_status: '',
+      revision_round: 0,
+      revision_status: '',
+      change_order_status: 'in_scope',
+      change_order_needed: false,
+      change_order_notes: '',
+      next_step: '',
+      blockers: [],
+      activation_packet_status: 'draft',
       stage: 'call_booked',
     },
   };
@@ -9377,6 +9617,15 @@ function _daReadState() {
     facebook_presence: !!document.getElementById('da-facebook')?.checked,
     notes: document.getElementById('da-notes')?.value || '',
   };
+  const consult_builder = {
+    freeform_notes: document.getElementById('da-consult-freeform')?.value || '',
+    business_type: document.getElementById('da-consult-business-type')?.value || '',
+    current_tools_accounts: document.getElementById('da-consult-tools')?.value || '',
+    owner_preferences: document.getElementById('da-consult-preferences')?.value || '',
+    urgency: document.getElementById('da-consult-urgency')?.value || '',
+    transcript_summary: document.getElementById('da-consult-transcript')?.value || '',
+    do_not_recommend_notes: document.getElementById('da-consult-do-not-recommend')?.value || '',
+  };
   const discovery = {};
   const discoveryIdMap = {
     poor_or_missing_website: 'da-weak-website',
@@ -9403,12 +9652,29 @@ function _daReadState() {
     invoice_status: document.getElementById('da-invoice-status')?.value || '',
     deposit_status: document.getElementById('da-deposit-status')?.value || '',
     offer_notes: document.getElementById('da-offer-notes')?.value || '',
+    artifact_links: (document.getElementById('da-artifact-links')?.value || '').split('\n').map((line) => line.trim()).filter(Boolean),
+    credential_status: document.getElementById('da-credential-status')?.value || '',
+    handoff_status: document.getElementById('da-handoff-status')?.value || '',
+    closeout_status: document.getElementById('da-closeout-status')?.value || '',
+    revision_round: parseInt(document.getElementById('da-revision-round')?.value || '0', 10) || 0,
+    revision_status: document.getElementById('da-revision-status')?.value || '',
+    change_order_status: document.getElementById('da-change-order-status')?.value || 'in_scope',
+    change_order_needed: !!document.getElementById('da-change-order-needed')?.checked,
+    change_order_notes: document.getElementById('da-change-order-notes')?.value || '',
+    next_step: document.getElementById('da-next-step')?.value || '',
+    blockers: (document.getElementById('da-blockers')?.value || '').split('\n').map((line) => line.trim()).filter(Boolean),
+    activation_packet_status: document.getElementById('da-activation-packet-status')?.value || 'draft',
     stage: document.getElementById('da-stage')?.value || 'call_booked',
   };
   const readiness = {
+    activation_packet_ready: ['ready_for_start','ready_for_qa','ready_for_go_live','delivered'].includes(profile.activation_packet_status),
+    assets_ready: !!document.getElementById('da-assets-ready')?.checked,
     vendor_access_collected: !!document.getElementById('da-access-collected')?.checked,
+    qa_ready: !!document.getElementById('da-qa-ready')?.checked,
+    rollback_ready: !!document.getElementById('da-rollback-ready')?.checked,
+    handoff_ready: !!document.getElementById('da-handoff-ready')?.checked,
   };
-  return { snapshot, discovery, readiness, profile };
+  return { snapshot, consult_builder, discovery, draft_recommendation: {}, readiness, profile };
 }
 
 function _daDiscoverySelectionCount(discovery) {
@@ -9417,6 +9683,7 @@ function _daDiscoverySelectionCount(discovery) {
 
 function _daRecommendationFromState(state) {
   const snapshot = state.snapshot || {};
+  const consult = state.consult_builder || {};
   const discovery = state.discovery || {};
   const selected = [];
   const hasWebsite = !!String(snapshot.website || '').trim();
@@ -9424,6 +9691,8 @@ function _daRecommendationFromState(state) {
   const weakPresence = discovery.weak_google_facebook_presence || discovery.poor_or_missing_website || !hasWebsite;
   const intakePain = discovery.no_clear_contact_flow || discovery.weak_follow_up;
   const broad = issueCount >= 3 || (weakPresence && intakePain) || discovery.wants_ongoing_support;
+  const businessType = String(consult.business_type || snapshot.category || '').toLowerCase();
+  const doNotRecommend = String(consult.do_not_recommend_notes || '').toLowerCase();
   let core_offer = '';
   let bundle_key = '';
   let reason = '';
@@ -9452,23 +9721,37 @@ function _daRecommendationFromState(state) {
   if (discovery.weak_follow_up && !selected.includes('follow_up_reminder_setup')) selected.push('follow_up_reminder_setup');
   if (discovery.wants_more_reviews) selected.push('review_request_system');
   if (discovery.estimate_or_job_status_problem) selected.push('estimate_job_status_communication');
-  if (discovery.no_clear_contact_flow || discovery.wants_ongoing_support) selected.push('mobile_admin_workflow_helper');
+  if ((businessType.includes('contract') || businessType.includes('roof') || businessType.includes('plumb') || businessType.includes('hvac')) && discovery.estimate_or_job_status_problem && !selected.includes('client_approval_estimate_portal')) {
+    selected.push('client_approval_estimate_portal');
+  }
+  const avoid = (key, label) => doNotRecommend.includes(key.replace(/_/g, ' ')) || doNotRecommend.includes(label.toLowerCase());
+  if (avoid('starter_website', 'Starter Website') && core_offer === 'starter_website') {
+    core_offer = 'presence_refresh';
+    bundle_key = discovery.weak_google_facebook_presence ? 'basic_cleanup' : '';
+    reason = 'Website work is flagged as do-not-recommend, so the draft falls back to the safest non-site option.';
+  }
   const moduleSet = [...new Set(selected)];
+  const filteredModules = moduleSet.filter((key) => {
+    const label = _cvSelectedModuleLabels([key])[0] || key;
+    return !avoid(key, label) && key !== 'mobile_admin_workflow_helper';
+  });
   const basePrice = _DA_BUNDLE_PRICING[bundle_key] || _DA_CORE_PRICING[core_offer] || 0;
-  const modulePrice = moduleSet.reduce((sum, key) => sum + (_DA_MODULE_PRICING[key] || 0), 0);
+  const modulePrice = filteredModules.reduce((sum, key) => sum + (_DA_MODULE_PRICING[key] || 0), 0);
   const recommendedPrice = basePrice + modulePrice;
   const packageLabel = bundle_key ? _cvBundleLabel(bundle_key) : _cvCoreOfferLabel(core_offer);
   const includes = bundle_key
     ? [packageLabel, _cvCoreOfferLabel(core_offer)]
     : [_cvCoreOfferLabel(core_offer)];
+  const truth = _daComputeStackTruth({ core_offer, bundle_key, selected_modules: filteredModules });
   return {
     core_offer,
     bundle_key,
-    selected_modules: moduleSet,
+    selected_modules: filteredModules,
     reason,
     recommendedPrice,
     packageLabel,
     includes,
+    truth,
   };
 }
 
@@ -9488,15 +9771,35 @@ function _daPricingGuidance(state, rec) {
 
 function _daDeploymentGates(state, rec) {
   const readiness = state.readiness || {};
+  const profileHasStack = !!(state.profile.core_offer || state.profile.bundle_key || state.profile.selected_modules?.length);
+  const truth = _daComputeStackTruth({
+    core_offer: profileHasStack ? (state.profile.core_offer || '') : rec.core_offer,
+    bundle_key: profileHasStack ? (state.profile.bundle_key || '') : rec.bundle_key,
+    selected_modules: profileHasStack ? (state.profile.selected_modules || []) : rec.selected_modules,
+  });
   const estimateDone = state.profile.pricing_mode === 'live_quote'
     ? true
     : ['proposal_ready', 'won', 'deployment_pending', 'live'].includes(state.profile.stage);
   const agreementDone = state.profile.agreement_status === 'signed';
   const billingDone = state.profile.deposit_status === 'received' || state.profile.invoice_status === 'paid';
   const accessDone = !!readiness.vendor_access_collected;
-  const monthlyRelevant = state.discovery.wants_ongoing_support || (rec.selected_modules || []).includes('mobile_admin_workflow_helper');
+  const packetDone = !!readiness.activation_packet_ready;
+  const assetsDone = !!readiness.assets_ready;
+  const qaDone = !!readiness.qa_ready;
+  const rollbackRelevant = (truth.rollback_plan || []).length > 0;
+  const rollbackDone = rollbackRelevant ? !!readiness.rollback_ready : true;
+  const launchEligibleDone = !!truth.launch_eligible;
+  const monthlyRelevant = state.discovery.wants_ongoing_support;
   const monthlyDone = monthlyRelevant ? (document.getElementById('da-monthly-support')?.value || '') !== '' : true;
   const items = [
+    {
+      key: 'launch',
+      title: 'Launch eligibility',
+      done: launchEligibleDone,
+      detail: launchEligibleDone
+        ? `${_daBuildStatusLabel(truth.build_status)} stack is launch eligible.`
+        : `${_daBuildStatusLabel(truth.build_status)} stack is still in prelaunch hardening and should not launch yet.`,
+    },
     {
       key: 'estimate',
       title: 'Estimate / proposal status',
@@ -9518,10 +9821,36 @@ function _daDeploymentGates(state, rec) {
       detail: billingDone ? 'Payment gate is covered.' : 'Invoice or deposit still needs to be secured.',
     },
     {
+      key: 'packet',
+      title: 'Activation packet',
+      done: packetDone,
+      detail: packetDone ? 'Activation packet is complete enough to start.' : 'Activation packet is still incomplete.',
+    },
+    {
+      key: 'assets',
+      title: 'Assets / inputs',
+      done: assetsDone,
+      detail: assetsDone ? 'Required assets are in hand.' : 'Required assets still need to be collected.',
+    },
+    {
       key: 'access',
       title: 'Access status',
       done: accessDone,
       detail: accessDone ? 'Vendor / account access has been collected.' : 'Access still needs to be requested and confirmed.',
+    },
+    {
+      key: 'qa',
+      title: 'QA readiness',
+      done: qaDone,
+      detail: qaDone ? 'QA path is ready.' : 'QA still needs to be checked off.',
+    },
+    {
+      key: 'rollback',
+      title: 'Safe mode / rollback',
+      done: rollbackDone,
+      detail: rollbackRelevant
+        ? (rollbackDone ? 'Rollback path is documented and ready.' : 'Rollback path still needs to be confirmed.')
+        : 'Not needed for this stack.',
     },
     {
       key: 'monthly',
@@ -9540,15 +9869,22 @@ function _daDeploymentGates(state, rec) {
   return {
     items,
     blockers,
-    launchReady: blockers.length === 0 && ['won', 'deployment_pending'].includes(state.profile.stage),
+    truth,
+    launchReady: blockers.length === 0 && ['won', 'deployment_pending'].includes(state.profile.stage) && !!truth.launch_eligible,
   };
 }
 
 function _daPrimaryAction(state, gates) {
   const hasSavedRecord = !!_daActiveKey;
   if (!hasSavedRecord) return { key: 'save', label: _DA_PRIMARY_ACTIONS.save, disabled: false };
+  if (gates.truth?.offer_type === 'internal') {
+    return { key: 'save', label: _DA_PRIMARY_ACTIONS.save, disabled: false };
+  }
   if (state.profile.pricing_mode === 'formal_estimate' && !['proposal_ready', 'won', 'deployment_pending', 'live'].includes(state.profile.stage)) {
     return { key: 'estimate', label: _DA_PRIMARY_ACTIONS.estimate, disabled: false };
+  }
+  if (!gates.truth?.launch_eligible) {
+    return { key: 'save', label: _DA_PRIMARY_ACTIONS.save, disabled: false };
   }
   if (!['won', 'deployment_pending', 'live'].includes(state.profile.stage)) {
     return { key: 'convert', label: _DA_PRIMARY_ACTIONS.convert, disabled: false };
@@ -9565,6 +9901,7 @@ function _daPrimaryAction(state, gates) {
 
 function _daFillForm(state, meta = {}) {
   const snapshot = state.snapshot || {};
+  const consult = state.consult_builder || {};
   const discovery = state.discovery || {};
   const readiness = state.readiness || {};
   const profile = state.profile || {};
@@ -9582,6 +9919,13 @@ function _daFillForm(state, meta = {}) {
   setChecked('da-google', snapshot.google_presence);
   setChecked('da-facebook', snapshot.facebook_presence);
   setVal('da-notes', snapshot.notes || '');
+  setVal('da-consult-freeform', consult.freeform_notes || '');
+  setVal('da-consult-business-type', consult.business_type || snapshot.category || '');
+  setVal('da-consult-tools', consult.current_tools_accounts || '');
+  setVal('da-consult-preferences', consult.owner_preferences || '');
+  setVal('da-consult-urgency', consult.urgency || '');
+  setVal('da-consult-transcript', consult.transcript_summary || '');
+  setVal('da-consult-do-not-recommend', consult.do_not_recommend_notes || '');
 
   const discoveryIdMap = {
     poor_or_missing_website: 'da-weak-website',
@@ -9605,8 +9949,24 @@ function _daFillForm(state, meta = {}) {
   setVal('da-invoice-status', profile.invoice_status || '');
   setVal('da-deposit-status', profile.deposit_status || '');
   setVal('da-offer-notes', profile.offer_notes || '');
+  setVal('da-artifact-links', (profile.artifact_links || []).join('\n'));
+  setVal('da-credential-status', profile.credential_status || '');
+  setVal('da-handoff-status', profile.handoff_status || '');
+  setVal('da-closeout-status', profile.closeout_status || '');
+  setVal('da-revision-round', String(profile.revision_round || 0));
+  setVal('da-revision-status', profile.revision_status || '');
+  setVal('da-change-order-status', profile.change_order_status || 'in_scope');
+  setChecked('da-change-order-needed', profile.change_order_needed);
+  setVal('da-change-order-notes', profile.change_order_notes || '');
+  setVal('da-next-step', profile.next_step || '');
+  setVal('da-blockers', (profile.blockers || []).join('\n'));
+  setVal('da-activation-packet-status', profile.activation_packet_status || 'draft');
   setVal('da-stage', _DA_STAGE_LABELS[profile.stage] ? profile.stage : 'call_booked');
+  setChecked('da-assets-ready', readiness.assets_ready || false);
   setChecked('da-access-collected', readiness.vendor_access_collected || !!profile.readiness?.vendor_access_collected);
+  setChecked('da-qa-ready', readiness.qa_ready || false);
+  setChecked('da-rollback-ready', readiness.rollback_ready || false);
+  setChecked('da-handoff-ready', readiness.handoff_ready || false);
 
   const selectedModules = new Set(profile.selected_modules || recommendation.selected_modules || []);
   ['missed_call_recovery','follow_up_reminder_setup','review_request_system','estimate_job_status_communication','client_approval_estimate_portal','mobile_admin_workflow_helper']
@@ -9621,6 +9981,7 @@ function daRender() {
   const pricing = _daPricingGuidance(state, rec);
   const gates = _daDeploymentGates(state, rec);
   const primary = _daPrimaryAction(state, gates);
+  const truth = gates.truth || _daComputeStackTruth(state.profile);
   const selectedCount = _daDiscoverySelectionCount(state.discovery);
   const discoveryCountEl = document.getElementById('da-discovery-count');
   if (discoveryCountEl) discoveryCountEl.textContent = `${selectedCount} selected`;
@@ -9629,18 +9990,72 @@ function daRender() {
   const recPackage = document.getElementById('da-rec-package');
   const recIncludes = document.getElementById('da-rec-includes');
   const recModules = document.getElementById('da-rec-modules');
+  const recBuild = document.getElementById('da-rec-build-status');
+  const recLaunch = document.getElementById('da-rec-launch-eligible');
   const recReason = document.getElementById('da-rec-reason');
+  const recAccess = document.getElementById('da-rec-access');
+  const recAssets = document.getElementById('da-rec-assets');
   const priceBadge = document.getElementById('da-price-badge');
   if (recPackage) recPackage.innerHTML = rec.packageLabel ? `<strong>${escHtml(rec.packageLabel)}</strong>` : 'No recommendation yet.';
   if (recIncludes) recIncludes.textContent = rec.includes.join(' + ') || 'Fill the call inputs to guide the recommendation.';
-  if (recModules) recModules.textContent = moduleLabels.length ? moduleLabels.join(' · ') : 'No specialty modules suggested right now.';
-  if (recReason) recReason.textContent = rec.reason || 'Fill the call inputs to guide the recommendation.';
+  if (recModules) recModules.textContent = moduleLabels.length ? `${moduleLabels.join(' · ')}${truth.launch_eligible ? '' : ` · build ${_daBuildStatusLabel(truth.build_status)}`}` : `No specialty modules suggested right now.${truth.launch_eligible ? '' : ` Build status: ${_daBuildStatusLabel(truth.build_status)}.`}`;
+  if (recBuild) recBuild.textContent = _daBuildStatusLabel(truth.build_status);
+  if (recLaunch) recLaunch.textContent = truth.launch_eligible ? 'Launch eligible now' : 'Launch blocked until hardened';
+  if (recReason) recReason.textContent = rec.reason
+    ? `${rec.reason} ${truth.launch_eligible ? 'Launch eligible now.' : `Prelaunch only: ${_daBuildStatusLabel(truth.build_status)}.`}`
+    : 'Fill the call inputs to guide the recommendation.';
+  if (recAccess) recAccess.textContent = truth.access_requirements?.length ? truth.access_requirements.join(' · ') : 'No access needs surfaced yet.';
+  if (recAssets) recAssets.textContent = truth.required_artifacts?.length ? truth.required_artifacts.join(' · ') : 'No asset needs surfaced yet.';
   if (priceBadge) priceBadge.textContent = pricing.label;
 
   const rangeEl = document.getElementById('da-price-range');
   const priceHelp = document.getElementById('da-price-help');
   if (rangeEl) rangeEl.textContent = pricing.label;
   if (priceHelp) priceHelp.textContent = pricing.why;
+
+  const visibilityEl = document.getElementById('da-visibility-state');
+  const targetVisibilityEl = document.getElementById('da-target-visibility-state');
+  const kitEl = document.getElementById('da-kit-key');
+  const ownershipEl = document.getElementById('da-ownership-mode');
+  const supportEl = document.getElementById('da-support-mode');
+  const truthWarnEl = document.getElementById('da-truth-warning');
+  const truthNotesEl = document.getElementById('da-current-truth-notes');
+  const listHtml = (items, empty) => (items && items.length
+    ? `<ul>${items.map((item) => `<li>${escHtml(item)}</li>`).join('')}</ul>`
+    : `<div class="da-answer-subtle">${escHtml(empty)}</div>`);
+  if (visibilityEl) visibilityEl.textContent = `${truth.offer_type === 'internal' ? 'Internal' : 'Public'} · ${_daBuildStatusLabel(truth.build_status)}`;
+  if (targetVisibilityEl) targetVisibilityEl.textContent = truth.launch_eligible ? 'Launch eligible' : 'Launch blocked';
+  if (kitEl) kitEl.textContent = truth.kit_key || 'No kit selected';
+  if (ownershipEl) ownershipEl.textContent = _daOwnershipLabel(truth.ownership_mode);
+  if (supportEl) supportEl.textContent = truth.support_summary || _daSupportPolicyLabel(state.profile.support_policy_key || '');
+  if (truthWarnEl) {
+    truthWarnEl.textContent = truth.offer_type === 'internal'
+      ? 'Internal-only tool path. Keep it out of public offer stacks.'
+      : truth.launch_eligible
+        ? 'Ready: this public stack is launch eligible.'
+        : `Prelaunch mode: ${_daBuildStatusLabel(truth.build_status)} stack is still being hardened and should not launch yet.`;
+  }
+  if (truthNotesEl) truthNotesEl.innerHTML = listHtml(truth.current_truth_notes, 'No current-truth notes on file.');
+  const artifactsEl = document.getElementById('da-required-artifacts');
+  const accessEl = document.getElementById('da-required-access');
+  const dodEl = document.getElementById('da-definition-of-done');
+  const rollbackEl = document.getElementById('da-rollback-plan');
+  const packetEl = document.getElementById('da-activation-packet');
+  const missingArtifactsEl = document.getElementById('da-missing-artifacts');
+  const missingQaEl = document.getElementById('da-missing-qa');
+  const missingCloseoutEl = document.getElementById('da-missing-closeout');
+  const missingRollbackEl = document.getElementById('da-missing-rollback');
+  const nextHardeningEl = document.getElementById('da-next-hardening-step');
+  if (artifactsEl) artifactsEl.innerHTML = listHtml(truth.required_artifacts, 'No required artifacts listed yet.');
+  if (accessEl) accessEl.innerHTML = listHtml(truth.access_requirements, 'No required access listed yet.');
+  if (dodEl) dodEl.innerHTML = listHtml(truth.definition_of_done, 'No Definition of Done listed yet.');
+  if (rollbackEl) rollbackEl.innerHTML = listHtml(truth.rollback_plan, 'No rollback path needed for this stack.');
+  if (packetEl) packetEl.innerHTML = listHtml(truth.activation_packet_sections, 'Activation packet sections will appear here.');
+  if (missingArtifactsEl) missingArtifactsEl.innerHTML = listHtml(truth.missing_artifacts, 'No artifact gaps recorded.');
+  if (missingQaEl) missingQaEl.innerHTML = listHtml(truth.missing_qa, 'No QA gaps recorded.');
+  if (missingCloseoutEl) missingCloseoutEl.innerHTML = listHtml(truth.missing_closeout, 'No closeout gaps recorded.');
+  if (missingRollbackEl) missingRollbackEl.innerHTML = listHtml(truth.missing_rollback, 'No rollback gaps recorded.');
+  if (nextHardeningEl) nextHardeningEl.textContent = truth.next_hardening_steps?.[0] || 'No next hardening step yet.';
 
   const gatesEl = document.getElementById('da-gates');
   if (gatesEl) {
@@ -9660,7 +10075,7 @@ function daRender() {
   if (blockerEl) {
     blockerEl.textContent = gates.blockers.length
       ? `Before deployment: ${gates.blockers.map((item) => item.title).join(' · ')}.`
-      : 'Launch path is clear once the client is approved.';
+      : (truth.launch_eligible ? 'Launch path is clear once the client is approved.' : `Launch is blocked until the stack reaches Ready from ${_daBuildStatusLabel(truth.build_status)}.` );
   }
 
   const primaryBtn = document.getElementById('da-primary-cta');
@@ -9669,21 +10084,88 @@ function daRender() {
     primaryBtn.disabled = !!primary.disabled;
     primaryBtn.dataset.action = primary.key;
   }
+  const deployBtn = document.getElementById('da-deploy-btn');
+  if (deployBtn) deployBtn.disabled = !gates.launchReady;
 
   const tag = document.getElementById('da-key-tag');
   if (tag) tag.textContent = _daActiveKey || 'Unsaved';
+
+  _daUpdateSummaryPanel(state, rec, truth, gates);
+}
+
+let _daCurrentStep = 1;
+const _DA_STEP_COUNT = 6;
+
+function daGoToStep(n) {
+  _daCurrentStep = Math.max(1, Math.min(_DA_STEP_COUNT, n));
+  for (let i = 1; i <= _DA_STEP_COUNT; i++) {
+    const panel = document.getElementById(`da-step-${i}`);
+    if (panel) panel.classList.toggle('active', i === _daCurrentStep);
+  }
+  const steps = document.querySelectorAll('#da-progress-bar .da-progress-step');
+  steps.forEach((el, idx) => el.classList.toggle('active', idx + 1 === _daCurrentStep));
+  const wizard = document.querySelector('.da-wizard-body');
+  if (wizard) wizard.scrollTop = 0;
+}
+
+function _daUpdateSummaryPanel(state, rec, truth, gates) {
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
+  const clientName = (state.snapshot.business_name || '').trim() || '—';
+  const contactName = (state.snapshot.contact_name || '').trim();
+  set('da-summary-client', escHtml(contactName ? `${clientName} · ${contactName}` : clientName));
+  const stackLabel = rec.packageLabel
+    ? escHtml(rec.packageLabel) + (rec.selected_modules?.length ? `<br><span style="font-size:10px;color:var(--muted)">${escHtml(rec.selected_modules.join(', '))}</span>` : '')
+    : 'No recommendation yet';
+  set('da-summary-stack', stackLabel);
+  const buildLabel = escHtml(truth.build_status ? (truth.build_status.charAt(0).toUpperCase() + truth.build_status.slice(1)) : 'Planned');
+  const buildCls = truth.build_status === 'ready' ? 'ok' : (truth.build_status === 'hardening' || truth.build_status === 'verification' ? 'wait' : 'wait');
+  set('da-summary-build', `<span class="da-summary-chip ${buildCls}">${buildLabel}</span>`);
+  const launchCls = truth.launch_eligible ? 'ok' : 'block';
+  const launchLabel = truth.launch_eligible ? 'Eligible' : 'Blocked';
+  set('da-summary-launch', `<span class="da-summary-chip ${launchCls}">${launchLabel}</span>`);
+  const urgency = state.snapshot.urgency || state.consult_builder?.urgency || '';
+  set('da-summary-urgency', escHtml(urgency || '—'));
+  const nextStep = (document.getElementById('da-next-step')?.value || '').trim() || (truth.next_hardening_steps?.[0] || '—');
+  set('da-summary-next-step', escHtml(nextStep));
+  const blockersRaw = (document.getElementById('da-blockers')?.value || '').trim();
+  const blockerLines = blockersRaw ? blockersRaw.split('\n').filter(Boolean) : [];
+  const gateBlockers = (gates.blockers || []).map((b) => b.title);
+  const allBlockers = [...new Set([...blockerLines, ...gateBlockers])];
+  set('da-summary-blockers', allBlockers.length ? escHtml(allBlockers.slice(0, 3).join(' · ')) : '<span style="color:var(--green)">Clear</span>');
+  const accessNeeded = truth.access_requirements?.length ? escHtml(truth.access_requirements.slice(0, 2).join(', ')) : 'None surfaced';
+  const accessCollected = document.getElementById('da-access-collected')?.checked;
+  set('da-summary-access', accessCollected ? '<span style="color:var(--green)">Collected</span>' : escHtml(accessNeeded));
+  set('da-summary-key', escHtml(_daActiveKey || 'Unsaved'));
 }
 
 function _daSnapshotPayload() {
   const state = _daReadState();
   const rec = _daRecommendationFromState(state);
-  const chosenCore = state.profile.core_offer || rec.core_offer;
-  const chosenBundle = state.profile.bundle_key || rec.bundle_key;
-  const chosenModules = state.profile.selected_modules.length ? state.profile.selected_modules : rec.selected_modules;
+  const profileHasStack = !!(state.profile.core_offer || state.profile.bundle_key || state.profile.selected_modules.length);
+  const truth = rec.truth || _daComputeStackTruth({
+    core_offer: profileHasStack ? (state.profile.core_offer || '') : rec.core_offer,
+    bundle_key: profileHasStack ? (state.profile.bundle_key || '') : rec.bundle_key,
+    selected_modules: profileHasStack ? state.profile.selected_modules : rec.selected_modules,
+  });
+  const chosenCore = profileHasStack ? (state.profile.core_offer || '') : rec.core_offer;
+  const chosenBundle = profileHasStack ? (state.profile.bundle_key || '') : rec.bundle_key;
+  const chosenModules = profileHasStack ? state.profile.selected_modules : rec.selected_modules;
   const price = (state.profile.price || '').trim();
   return {
     snapshot: state.snapshot,
+    consult_builder: state.consult_builder,
     discovery: state.discovery,
+    draft_recommendation: {
+      core_offer: rec.core_offer,
+      bundle_key: rec.bundle_key,
+      selected_modules: rec.selected_modules,
+      package_label: rec.packageLabel,
+      reason: rec.reason,
+      build_status: truth.build_status,
+      launch_eligible: truth.launch_eligible,
+      likely_required_access: truth.access_requirements,
+      likely_required_assets: truth.required_artifacts,
+    },
     readiness: state.readiness,
     core_offer: chosenCore,
     bundle_key: chosenBundle,
@@ -9696,6 +10178,18 @@ function _daSnapshotPayload() {
     invoice_status: state.profile.invoice_status,
     deposit_status: state.profile.deposit_status,
     offer_notes: state.profile.offer_notes || rec.reason,
+    artifact_links: state.profile.artifact_links,
+    credential_status: state.profile.credential_status,
+    handoff_status: state.profile.handoff_status,
+    closeout_status: state.profile.closeout_status,
+    revision_round: state.profile.revision_round,
+    revision_status: state.profile.revision_status,
+    change_order_status: state.profile.change_order_status,
+    change_order_needed: state.profile.change_order_needed,
+    change_order_notes: state.profile.change_order_notes,
+    blockers: state.profile.blockers,
+    next_step: state.profile.next_step,
+    activation_packet_status: state.profile.activation_packet_status,
     stage: state.profile.stage || 'call_booked',
   };
 }
@@ -9739,7 +10233,9 @@ async function daSaveNow(extraPatch = {}) {
   if (res.delivery_profile) {
     _daFillForm({
       snapshot: { ..._daDefaultState().snapshot, ...(res.delivery_profile.snapshot || {}), ...identity },
+      consult_builder: res.delivery_profile.consult_builder || state.consult_builder,
       discovery: res.delivery_profile.discovery || state.discovery,
+      draft_recommendation: res.delivery_profile.draft_recommendation || state.draft_recommendation,
       profile: {
         core_offer: res.delivery_profile.core_offer || profile.core_offer,
         bundle_key: res.delivery_profile.bundle_key || profile.bundle_key,
@@ -9752,6 +10248,18 @@ async function daSaveNow(extraPatch = {}) {
         invoice_status: res.delivery_profile.invoice_status || profile.invoice_status,
         deposit_status: res.delivery_profile.deposit_status || profile.deposit_status,
         offer_notes: res.delivery_profile.offer_notes || profile.offer_notes,
+        artifact_links: res.delivery_profile.artifact_links || profile.artifact_links || [],
+        credential_status: res.delivery_profile.credential_status || profile.credential_status,
+        handoff_status: res.delivery_profile.handoff_status || profile.handoff_status,
+        closeout_status: res.delivery_profile.closeout_status || profile.closeout_status,
+        revision_round: res.delivery_profile.revision_round ?? profile.revision_round ?? 0,
+        revision_status: res.delivery_profile.revision_status || profile.revision_status,
+        change_order_status: res.delivery_profile.change_order_status || profile.change_order_status,
+        change_order_needed: !!res.delivery_profile.change_order_needed,
+        change_order_notes: res.delivery_profile.change_order_notes || profile.change_order_notes,
+        blockers: res.delivery_profile.blockers || profile.blockers || [],
+        next_step: res.delivery_profile.next_step || profile.next_step,
+        activation_packet_status: res.delivery_profile.activation_packet_status || profile.activation_packet_status,
         stage: res.delivery_profile.stage || profile.stage,
         readiness: res.delivery_profile.readiness || profile.readiness || {},
       },
@@ -9782,6 +10290,11 @@ async function daSaveOnly() {
 function daUseRecommendation() {
   const state = _daReadState();
   const rec = _daRecommendationFromState(state);
+  const truth = rec.truth || _daComputeStackTruth({
+    core_offer: rec.core_offer,
+    bundle_key: rec.bundle_key,
+    selected_modules: rec.selected_modules,
+  });
   const setVal = (id, value) => { const el = document.getElementById(id); if (el) el.value = value; };
   const setChecked = (id, value) => { const el = document.getElementById(id); if (el) el.checked = !!value; };
 
@@ -9789,6 +10302,10 @@ function daUseRecommendation() {
   setVal('da-bundle-key', rec.bundle_key);
   ['missed_call_recovery','follow_up_reminder_setup','review_request_system','estimate_job_status_communication','client_approval_estimate_portal','mobile_admin_workflow_helper']
     .forEach((key) => setChecked(`da-module-${key}`, (rec.selected_modules || []).includes(key)));
+  setVal('da-offer-notes', state.profile.offer_notes || rec.reason);
+  setVal('da-next-step', truth.next_hardening_steps?.[0] || state.profile.next_step || 'Confirm the draft recommendation and collect packet inputs.');
+  setVal('da-artifact-links', (state.profile.artifact_links || []).join('\n'));
+  setVal('da-activation-packet-status', ['','draft'].includes(state.profile.activation_packet_status || '') ? 'collecting' : state.profile.activation_packet_status);
   daScheduleSave();
 }
 
@@ -9805,6 +10322,10 @@ async function daAction(action) {
     patch.pricing_mode = 'formal_estimate';
     patch.agreement_status = 'needs_agreement';
   } else if (action === 'convert') {
+    if (gates.truth?.offer_type === 'internal' || !gates.truth?.launch_eligible) {
+      toast('This stack is still in prelaunch hardening and cannot convert yet', 'err');
+      return;
+    }
     patch.stage = 'won';
   } else if (action === 'deploy') {
     if (!gates.launchReady) {
@@ -9856,6 +10377,15 @@ function _daPrefillFromRow(row) {
       facebook_presence: !!row?.facebook_url,
       notes: row?.lead_insight_sentence || row?.conversation_notes || '',
     },
+    consult_builder: {
+      freeform_notes: row?.conversation_notes || row?.lead_insight_sentence || '',
+      business_type: row?.industry || '',
+      current_tools_accounts: '',
+      owner_preferences: '',
+      urgency: /urgent|asap|quick/i.test(`${row?.reply_snippet || ''} ${row?.conversation_notes || ''}`) ? 'high' : '',
+      transcript_summary: row?.reply_snippet || '',
+      do_not_recommend_notes: '',
+    },
     discovery: {
       poor_or_missing_website: !String(row?.website || '').trim(),
       weak_google_facebook_presence: !row?.website || !(row?.facebook_url || row?.instagram_url),
@@ -9866,6 +10396,7 @@ function _daPrefillFromRow(row) {
       estimate_or_job_status_problem: /estimate|job status|quote|update/i.test(`${row?.reply_snippet || ''} ${row?.conversation_notes || ''}`),
       wants_ongoing_support: /ongoing|support|maintenance|stay on/i.test(`${row?.reply_snippet || ''} ${row?.conversation_notes || ''}`),
     },
+    draft_recommendation: profile?.draft_recommendation || {},
     profile,
   };
 }
@@ -9873,6 +10404,7 @@ function _daPrefillFromRow(row) {
 async function loadDeliveryActivation() {
   const status = document.getElementById('da-status');
   if (status) status.textContent = 'Loading deploy activation…';
+  await _daEnsureCatalog();
   const seed = _daPendingLead || (_daActiveKey ? { key: _daActiveKey } : null);
   _daPendingLead = null;
 
@@ -9890,7 +10422,9 @@ async function loadDeliveryActivation() {
       if (data.ok) {
         _daActiveKey = data.key || _daActiveKey;
         payload.snapshot = { ...payload.snapshot, ...(data.delivery_profile?.snapshot || {}), ...(data.identity || {}) };
+        payload.consult_builder = { ...payload.consult_builder, ...(data.delivery_profile?.consult_builder || {}) };
         payload.discovery = { ...payload.discovery, ...(data.delivery_profile?.discovery || {}) };
+        payload.draft_recommendation = { ...payload.draft_recommendation, ...(data.delivery_profile?.draft_recommendation || {}) };
         payload.profile = { ...payload.profile, ...(data.delivery_profile || {}) };
       }
     } else if (_daActiveKey) {
@@ -9898,7 +10432,9 @@ async function loadDeliveryActivation() {
       const data = await res.json();
       if (data.ok) {
         payload.snapshot = { ...payload.snapshot, ...(data.delivery_profile?.snapshot || {}), ...(data.identity || {}) };
+        payload.consult_builder = { ...payload.consult_builder, ...(data.delivery_profile?.consult_builder || {}) };
         payload.discovery = { ...payload.discovery, ...(data.delivery_profile?.discovery || {}) };
+        payload.draft_recommendation = { ...payload.draft_recommendation, ...(data.delivery_profile?.draft_recommendation || {}) };
         payload.profile = { ...payload.profile, ...(data.delivery_profile || {}) };
       }
     }
@@ -9911,6 +10447,86 @@ async function loadDeliveryActivation() {
   if (tag) tag.textContent = _daActiveKey || 'Unsaved';
   if (status) status.textContent = _daActiveKey ? `Loaded ${_daActiveKey}` : 'No client loaded yet.';
   return payload;
+}
+
+function _hardeningMissingHtml(items) {
+  return items && items.length ? items.map((item) => `<li>${escHtml(item)}</li>`).join('') : '<li>None</li>';
+}
+
+function renderHardeningCommand(catalog) {
+  const summary = catalog?.launch_summary || {};
+  const sumEl = document.getElementById('hc-summary');
+  const blockedBy = summary.unfinished_public_offers || 0;
+  if (sumEl) {
+    sumEl.innerHTML = `
+      <div class="db-legal-chip">Public offers ${summary.public_offer_count || 0}</div>
+      <div class="db-legal-chip">Ready ${summary.ready_count || 0}</div>
+      <div class="db-legal-chip">Hardening ${summary.hardening_count || 0}</div>
+      <div class="db-legal-chip">Verification ${summary.verification_count || 0}</div>
+      <div class="db-legal-chip">${summary.launch_blocked ? `Launch blocked by ${blockedBy}` : 'Launch clear'}</div>
+    `;
+  }
+  const body = document.getElementById('hc-body');
+  if (!body) return;
+  const items = catalog?.hardening_items || [];
+  body.innerHTML = items.map((item) => {
+    const artifactFiles = item.artifact_files || {};
+    const artifactKeys = Object.keys(artifactFiles);
+    const hasArtifacts = artifactKeys.length > 0;
+    const missingAll = (item.missing_artifacts || []).length + (item.missing_qa || []).length +
+                       (item.missing_closeout || []).length + (item.missing_rollback || []).length;
+    const kitComplete = hasArtifacts && missingAll === 0;
+    const artifactHtml = hasArtifacts
+      ? `<div style="margin-top:10px"><div class="da-mini">Kit files on disk</div><div class="da-list-box"><ul>${
+          artifactKeys.map(k => `<li style="color:var(--green)">&#10003; ${escHtml(k.replace(/_/g,' '))}</li>`).join('')
+        }</ul></div></div>`
+      : '';
+    const promotionHtml = (item.promotion_criteria || []).length
+      ? `<div style="margin-top:10px"><div class="da-mini">Promotion criteria</div><div class="da-list-box"><ul>${
+          item.promotion_criteria.map(c => `<li>${escHtml(c)}</li>`).join('')
+        }</ul></div></div>`
+      : '';
+    const gapsHtml = missingAll > 0
+      ? `<div class="da-grid-2" style="margin-top:10px">
+          <div><div class="da-mini">Missing artifacts</div><div class="da-list-box"><ul>${_hardeningMissingHtml(item.missing_artifacts)}</ul></div></div>
+          <div><div class="da-mini">Missing QA</div><div class="da-list-box"><ul>${_hardeningMissingHtml(item.missing_qa)}</ul></div></div>
+          <div><div class="da-mini">Missing closeout</div><div class="da-list-box"><ul>${_hardeningMissingHtml(item.missing_closeout)}</ul></div></div>
+          <div><div class="da-mini">Missing rollback</div><div class="da-list-box"><ul>${_hardeningMissingHtml(item.missing_rollback)}</ul></div></div>
+        </div>`
+      : (kitComplete ? `<div style="margin-top:8px;font-size:11px;color:var(--green)">&#10003; No missing artifacts — kit ready for first delivery</div>` : '');
+    return `
+    <article class="db-card">
+      <div class="db-card-hdr">
+        <div>
+          <div class="db-card-title">${escHtml(item.label)}</div>
+          <div class="db-card-subtle">${escHtml(item.type.replace(/_/g, ' '))}</div>
+        </div>
+        ${kitComplete ? `<button class="dr-run-btn" onclick="drOpenForOffer('${escHtml(item.key)}')">▶ Run</button>` : ''}
+      </div>
+      <div class="db-legal-row">
+        <span class="db-legal-chip">${escHtml(item.offer_type)}</span>
+        <span class="db-legal-chip">${escHtml(_daBuildStatusLabel(item.build_status))}</span>
+        <span class="db-legal-chip">${item.launch_eligible ? 'Launch eligible' : 'Launch blocked'}</span>
+        ${kitComplete ? `<span class="db-legal-chip" style="color:var(--green);border-color:rgba(62,207,114,.3)">Kit files present</span>` : ''}
+      </div>
+      <div class="db-blocker">${escHtml(item.current_truth_note || 'No current truth note.')}</div>
+      <div class="db-card-subtle">${escHtml(item.target_truth_note || '')}</div>
+      ${artifactHtml}
+      ${gapsHtml}
+      ${promotionHtml}
+      <div class="db-next-step">
+        <div class="db-next-label">Next hardening step</div>
+        <div class="db-next-copy">${escHtml(item.next_hardening_step || 'No next step set.')}</div>
+      </div>
+    </article>
+  `;
+  }).join('');
+}
+
+async function loadHardeningCommand() {
+  await _daEnsureCatalog();
+  renderHardeningCommand(_deliveryCatalog || {});
+  _hardeningCommandLoaded = true;
 }
 
 function cvOpenInDeploy(idx) {
@@ -15031,13 +15647,293 @@ async function mapSearch() {
 }
 
 
+// ── Delivery Run ──────────────────────────────────────────────────────────
+
+const DR_CHECKLISTS = {
+  presence_refresh: {
+    sections: [
+      { id: 'gbp', label: 'Google Business Profile', items: [
+        { key: 'name',          label: 'Business name correct and consistent across web' },
+        { key: 'category',      label: 'Category correct — primary and secondary' },
+        { key: 'phone',         label: 'Phone number accurate' },
+        { key: 'website',       label: 'Website URL linked and correct' },
+        { key: 'hours',         label: 'Hours accurate — including seasonal or holiday' },
+        { key: 'service_area',  label: 'Service area defined and accurate' },
+        { key: 'services',      label: 'Services list current and complete' },
+        { key: 'description',   label: 'Description updated — useful, not keyword-stuffed' },
+        { key: 'photos',        label: 'Photos reviewed — old/bad removed, recent added' },
+        { key: 'reviews',       label: 'Recent reviews have responses' },
+        { key: 'before_proof',  label: 'Before-state screenshot or link captured' },
+        { key: 'after_proof',   label: 'After-state screenshot or link captured' },
+      ]},
+      { id: 'fb', label: 'Facebook', items: [
+        { key: 'about',          label: 'About/bio text accurate and current' },
+        { key: 'contact',        label: 'Phone and contact info accurate' },
+        { key: 'profile_photo',  label: 'Profile photo current' },
+        { key: 'cover_photo',    label: 'Cover photo current' },
+        { key: 'cta',            label: 'CTA button set correctly' },
+        { key: 'pinned',         label: 'Pinned/high-visibility content reviewed' },
+        { key: 'photos',         label: 'Albums and photos cleaned up' },
+        { key: 'contact_route',  label: 'Contact route tested — message, link, or phone' },
+        { key: 'cross_check',    label: 'Consistent with GBP — phone, hours, address' },
+        { key: 'before_proof',   label: 'Before-state screenshot or link captured' },
+        { key: 'after_proof',    label: 'After-state screenshot or link captured' },
+      ]},
+    ]
+  },
+};
+
+let _drCurrentOfferKey = '';
+let _drState = {};
+let _drSaveTimer = null;
+let _drCatalogItems = [];
+
+function _drChecklistForOffer(offerKey) {
+  if (DR_CHECKLISTS[offerKey]) return DR_CHECKLISTS[offerKey].sections;
+  const catalog = _deliveryCatalog;
+  if (!catalog) return [];
+  const item = (catalog.hardening_items || []).find(i => i.key === offerKey);
+  if (!item) return [];
+  const checks = item.qa_checks || [];
+  if (!checks.length) return [];
+  return [{ id: 'qa', label: 'QA Checklist', items: checks.map((c, i) => ({ key: 'qa_' + i, label: c })) }];
+}
+
+function _drCountChecks(offerKey) {
+  const sections = _drChecklistForOffer(offerKey);
+  let total = 0, done = 0;
+  const checks = _drState.checks || {};
+  sections.forEach(s => s.items.forEach(item => {
+    total++;
+    if (checks[s.id + '_' + item.key]) done++;
+  }));
+  return { total, done };
+}
+
+function _drVerifRail(offerKey) {
+  const { total, done } = _drCountChecks(offerKey);
+  const hasKit = _drCatalogItems.find(i => i.key === offerKey)?.artifact_files;
+  const hasKitFiles = hasKit && Object.keys(hasKit).length > 0;
+  const runStarted = !!_drState.started_at;
+  const runComplete = total > 0 && done === total;
+  const closeoutCaptured = _drState.closeout_status === 'captured';
+
+  const rail = [
+    { icon: hasKitFiles ? '✓' : '○', label: 'Kit files on disk', done: hasKitFiles },
+    { icon: runStarted ? (runComplete ? '✓' : '◑') : '○', label: runStarted ? (runComplete ? 'Checklist complete' : 'Delivery in progress') : 'Not started', done: runComplete },
+    { icon: closeoutCaptured ? '✓' : '○', label: closeoutCaptured ? 'Closeout captured' : 'Closeout pending', done: closeoutCaptured },
+    { icon: '○', label: 'Verification: needs real closeout + proof on file', done: false },
+  ];
+  return `<div class="dr-verif-rail">${rail.map(r =>
+    `<div class="dr-verif-item${r.done ? ' done' : ''}"><div class="dr-verif-icon">${r.icon}</div><div class="dr-verif-label">${escHtml(r.label)}</div></div>`
+  ).join('')}</div>`;
+}
+
+function drRender() {
+  const offerKey = _drCurrentOfferKey;
+  const body = document.getElementById('dr-body');
+  const progRow = document.getElementById('dr-progress-row');
+  if (!body) return;
+
+  if (!offerKey) {
+    body.innerHTML = '<div class="dr-empty">Select an offer above to open its delivery checklist.</div>';
+    if (progRow) progRow.style.display = 'none';
+    return;
+  }
+
+  const sections = _drChecklistForOffer(offerKey);
+  const checks = _drState.checks || {};
+  const { total, done } = _drCountChecks(offerKey);
+  const pct = total ? Math.round(done / total * 100) : 0;
+
+  if (progRow) {
+    progRow.style.display = 'flex';
+    const fill = document.getElementById('dr-progress-fill');
+    const lbl  = document.getElementById('dr-progress-label');
+    if (fill) fill.style.width = pct + '%';
+    if (lbl)  lbl.textContent = done + ' / ' + total + ' (' + pct + '%)';
+  }
+
+  const sectionsHtml = sections.map(section => {
+    const secDone = section.items.filter(item => checks[section.id + '_' + item.key]).length;
+    const itemsHtml = section.items.map(item => {
+      const checkKey = section.id + '_' + item.key;
+      const isDone = !!checks[checkKey];
+      return `<div class="dr-check${isDone ? ' done' : ''}" onclick="drToggleCheck('${section.id}','${item.key}')">
+        <div class="dr-check-box">${isDone ? '✓' : ''}</div>
+        <div class="dr-check-label">${escHtml(item.label)}</div>
+      </div>`;
+    }).join('');
+    return `<div class="dr-section">
+      <div class="dr-section-hdr">${escHtml(section.label)}<span class="dr-section-count">${secDone}/${section.items.length}</span></div>
+      <div class="dr-section-body">${itemsHtml}</div>
+    </div>`;
+  }).join('');
+
+  const fieldsHtml = `
+  <div class="dr-section">
+    <div class="dr-section-hdr">Work Notes &amp; Proof</div>
+    <div class="dr-section-body">
+      <div class="dr-fields">
+        <div class="dr-field-full">
+          <div class="dr-label">Work notes</div>
+          <textarea class="dr-textarea" id="dr-work-notes" placeholder="What you did, what you found, what needs follow-up…" oninput="drScheduleSave()">${escHtml(_drState.work_notes || '')}</textarea>
+        </div>
+        <div>
+          <div class="dr-label">Proof links / screenshots</div>
+          <textarea class="dr-textarea" id="dr-proof-links" placeholder="Before: https://…&#10;After: https://…" oninput="drScheduleSave()">${escHtml(_drState.proof_links || '')}</textarea>
+        </div>
+        <div>
+          <div class="dr-label">Blockers or flags</div>
+          <textarea class="dr-textarea" id="dr-blockers" placeholder="Anything blocking completion or needing follow-up…" oninput="drScheduleSave()">${escHtml(_drState.blockers || '')}</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="dr-section">
+    <div class="dr-section-hdr">Closeout</div>
+    <div class="dr-section-body">
+      <div class="dr-fields">
+        <div>
+          <div class="dr-label">Closeout status</div>
+          <select class="dr-closeout-sel" id="dr-closeout-status" onchange="drScheduleSave()">
+            <option value="open"${(_drState.closeout_status||'open')==='open'?' selected':''}>Open — delivery in progress</option>
+            <option value="in_progress"${_drState.closeout_status==='in_progress'?' selected':''}>In progress — wrapping up</option>
+            <option value="captured"${_drState.closeout_status==='captured'?' selected':''}>Captured — closeout notes on file</option>
+          </select>
+        </div>
+        <div>
+          <div class="dr-label">Closeout notes</div>
+          <textarea class="dr-textarea" id="dr-closeout-notes" placeholder="What was delivered, what was handed off, what's on file…" oninput="drScheduleSave()">${escHtml(_drState.closeout_notes || '')}</textarea>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  const verifHtml = `
+  <div class="dr-section">
+    <div class="dr-section-hdr">Verification Readiness</div>
+    <div class="dr-section-body">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Verification requires: one real delivery run complete → closeout captured → proof on file. No offer moves to verification until that evidence exists.</div>
+      ${_drVerifRail(offerKey)}
+    </div>
+  </div>`;
+
+  body.innerHTML = sectionsHtml + fieldsHtml + verifHtml;
+}
+
+function drToggleCheck(sectionId, itemKey) {
+  const checkKey = sectionId + '_' + itemKey;
+  if (!_drState.checks) _drState.checks = {};
+  _drState.checks[checkKey] = !_drState.checks[checkKey];
+  drRender();
+  drScheduleSave();
+}
+
+function drScheduleSave() {
+  clearTimeout(_drSaveTimer);
+  _drSaveTimer = setTimeout(drSave, 800);
+}
+
+async function drSave() {
+  clearTimeout(_drSaveTimer);
+  const offerKey = _drCurrentOfferKey;
+  if (!offerKey) return;
+  const statusEl = document.getElementById('dr-save-status');
+  if (statusEl) statusEl.textContent = 'Saving…';
+
+  const workNotes     = document.getElementById('dr-work-notes')?.value   || '';
+  const proofLinks    = document.getElementById('dr-proof-links')?.value  || '';
+  const blockers      = document.getElementById('dr-blockers')?.value     || '';
+  const closeoutNotes = document.getElementById('dr-closeout-notes')?.value || '';
+  const closeoutStatus = document.getElementById('dr-closeout-status')?.value || 'open';
+
+  const patch = {
+    checks:          _drState.checks || {},
+    work_notes:      workNotes,
+    proof_links:     proofLinks,
+    blockers:        blockers,
+    closeout_notes:  closeoutNotes,
+    closeout_status: closeoutStatus,
+  };
+
+  try {
+    const res = await fetch('/api/delivery_run', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ offer_key: offerKey, state: patch }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      _drState = data.state;
+      if (statusEl) { statusEl.textContent = 'Saved'; setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 2000); }
+      drRender();
+    } else {
+      if (statusEl) statusEl.textContent = 'Save failed';
+    }
+  } catch(e) {
+    if (statusEl) statusEl.textContent = 'Save error';
+  }
+}
+
+async function loadDeliveryRun(offerKey) {
+  await _daEnsureCatalog();
+  const catalog = _deliveryCatalog;
+  _drCatalogItems = catalog?.hardening_items || [];
+
+  const sel = document.getElementById('dr-offer-select');
+  if (sel) {
+    const publicHardening = _drCatalogItems.filter(i => i.offer_type === 'public' && i.build_status !== 'planned');
+    sel.innerHTML = '<option value="">— Select offer —</option>' +
+      publicHardening.map(i => `<option value="${escHtml(i.key)}">${escHtml(i.label)} (${escHtml(i.build_status)})</option>`).join('');
+    if (offerKey) {
+      sel.value = offerKey;
+      _drCurrentOfferKey = offerKey;
+    }
+  }
+
+  if (_drCurrentOfferKey) {
+    try {
+      const res = await fetch('/api/delivery_run?offer_key=' + encodeURIComponent(_drCurrentOfferKey));
+      const data = await res.json();
+      if (data.ok) _drState = data.state || {};
+    } catch(e) { _drState = {}; }
+  }
+  drRender();
+}
+
+async function drOfferChanged() {
+  const sel = document.getElementById('dr-offer-select');
+  const offerKey = sel?.value || '';
+  _drCurrentOfferKey = offerKey;
+  _drState = {};
+  if (offerKey) {
+    try {
+      const res = await fetch('/api/delivery_run?offer_key=' + encodeURIComponent(offerKey));
+      const data = await res.json();
+      if (data.ok) _drState = data.state || {};
+    } catch(e) { _drState = {}; }
+  }
+  drRender();
+}
+
+function drOpenForOffer(offerKey) {
+  _drCurrentOfferKey = offerKey;
+  _drState = {};
+  const tab = document.querySelector('[data-page="delivery-run"]');
+  switchSubPage('delivery', 'delivery-run', tab);
+}
+
 // ── Pass 86: Delivery Board ──────────────────────────────────────────────
 const _READINESS_LABELS = {
-  intake_complete:          'Intake complete',
+  activation_packet_ready:  'Activation packet ready',
+  assets_ready:             'Assets ready',
   vendor_access_collected:  'Vendor access collected',
   copy_approved:            'Copy approved',
   routing_logic_defined:    'Routing logic defined',
-  testing_pending:          'Testing / QA pending',
+  qa_ready:                 'QA ready',
+  rollback_ready:           'Rollback ready',
+  handoff_ready:            'Handoff ready',
   live:                     'Marked live',
 };
 const _READINESS_KEYS = Object.keys(_READINESS_LABELS);
@@ -15098,17 +15994,29 @@ function renderDeliveryBoard(data) {
 
 function _dbBlockersFromRow(row) {
   const blockers = [];
+  if (row.offer_type === 'internal') blockers.push('internal');
+  if (!row.launch_eligible) blockers.push('launch');
+  if (row.activation_packet_status && !['ready_for_start', 'ready_for_qa', 'ready_for_go_live', 'delivered'].includes(row.activation_packet_status)) blockers.push('packet');
+  if (!(row.readiness && row.readiness.assets_ready)) blockers.push('assets');
   if (row.agreement_status !== 'signed') blockers.push('agreement');
   if (row.deposit_status !== 'received' && row.invoice_status !== 'paid') blockers.push('billing');
   if (!(row.readiness && row.readiness.vendor_access_collected)) blockers.push('access');
+  if (!(row.readiness && row.readiness.qa_ready)) blockers.push('qa');
+  if ((row.rollback_plan || []).length && !(row.readiness && row.readiness.rollback_ready)) blockers.push('rollback');
   return blockers;
 }
 
 function _dbNextStep(row) {
   const blockers = _dbBlockersFromRow(row);
+  if (blockers.includes('internal')) return { next: 'Remove internal-only modules', blocker: 'This stack still includes internal-only operator tooling.' };
+  if (blockers.includes('launch')) return { next: 'Finish hardening before launch', blocker: `This stack is still ${_daBuildStatusLabel(row.build_status || 'planned')} and not launch eligible.` };
+  if (blockers.includes('packet')) return { next: 'Finish the activation packet', blocker: 'Client activation packet is still incomplete.' };
+  if (blockers.includes('assets')) return { next: 'Collect missing assets', blocker: 'Required artifacts are still missing.' };
   if (blockers.includes('agreement')) return { next: 'Get signed agreement', blocker: 'Agreement is still open.' };
   if (blockers.includes('billing')) return { next: 'Collect invoice or deposit', blocker: 'Money gate is still open.' };
   if (blockers.includes('access')) return { next: 'Request account access', blocker: 'Vendor access is not on file yet.' };
+  if (blockers.includes('qa')) return { next: 'Run the QA checklist', blocker: 'QA is not marked ready yet.' };
+  if (blockers.includes('rollback')) return { next: 'Confirm rollback path', blocker: 'Safe mode / rollback is not marked ready.' };
   if ((row.readiness_pct || 0) < 100) return { next: 'Finish readiness checklist', blocker: 'Operational setup is still in progress.' };
   return { next: row.stage === 'live' ? 'Monitor live delivery' : 'Ready for go-live handoff', blocker: '' };
 }
@@ -15125,12 +16033,20 @@ function buildDbCard(row) {
   const moduleHtml = moduleLabels.length
     ? `<div class="db-card-mods">${escHtml(moduleLabels.join(' · '))}</div>`
     : `<div class="db-card-subtle">Specialty modules stay under the core offer.</div>`;
+  const visibilityHtml = `<span class="db-legal-chip">${escHtml(row.offer_type === 'internal' ? 'Internal' : 'Public')}</span>`;
+  const buildHtml = `<span class="db-legal-chip">Build ${escHtml(_daBuildStatusLabel(row.build_status || 'planned'))}</span>`;
+  const launchHtml = `<span class="db-legal-chip">${row.launch_eligible ? 'Launch eligible' : 'Launch blocked'}</span>`;
+  const kitHtml = row.kit_key ? `<span class="db-legal-chip">Kit ${escHtml(row.kit_key)}</span>` : '';
   const priceHtml = row.price ? `<span class="db-legal-chip">Price ${escHtml(row.price)}</span>` : '';
-  const supportHtml = row.monthly_support ? `<span class="db-legal-chip">Support ${escHtml(row.monthly_fee || 'monthly')}</span>` : '';
+  const supportHtml = row.monthly_support
+    ? `<span class="db-legal-chip">Support ${escHtml(row.monthly_fee || 'monthly')}</span>`
+    : (row.support_policy_key ? `<span class="db-legal-chip">${escHtml(_daSupportPolicyLabel(row.support_policy_key))}</span>` : '');
+  const ownershipHtml = row.ownership_mode ? `<span class="db-legal-chip">${escHtml(_daOwnershipLabel(row.ownership_mode))}</span>` : '';
   const agreementHtml = row.agreement_status ? `<span class="db-legal-chip">Agreement ${escHtml(row.agreement_status)}</span>` : '';
   const invoiceHtml = row.invoice_status ? `<span class="db-legal-chip">Invoice ${escHtml(row.invoice_status)}</span>` : '';
   const depositHtml = row.deposit_status ? `<span class="db-legal-chip">Deposit ${escHtml(row.deposit_status)}</span>` : '';
-  const statusHtml = [priceHtml, supportHtml, agreementHtml, invoiceHtml, depositHtml].filter(Boolean).join('');
+  const packetHtml = row.activation_packet_status ? `<span class="db-legal-chip">Packet ${escHtml(row.activation_packet_status)}</span>` : '';
+  const statusHtml = [visibilityHtml, buildHtml, launchHtml, kitHtml, ownershipHtml, supportHtml, priceHtml, agreementHtml, invoiceHtml, depositHtml, packetHtml].filter(Boolean).join('');
   const next = _dbNextStep(row);
   const checksHtml = _READINESS_KEYS.map(k => {
     const done = row.readiness && row.readiness[k];
@@ -15146,12 +16062,14 @@ function buildDbCard(row) {
     ${stackHtml}
     ${moduleHtml}
     <div class="db-legal-row">${statusHtml || '<span class="db-legal-chip">No legal / money status set yet</span>'}</div>
+    ${(row.required_artifacts || []).length ? `<div class="db-card-subtle">Artifacts: ${escHtml(row.required_artifacts.join(' · '))}</div>` : ''}
     <div class="db-readiness-bar"><div class="db-readiness-fill" style="width:${pct}%"></div></div>
     <div class="db-readiness">${checksHtml}</div>
     <div class="db-next-step">
       <div class="db-next-label">Next step</div>
-      <div class="db-next-copy">${escHtml(next.next)}</div>
+      <div class="db-next-copy">${escHtml(row.next_step || next.next)}</div>
       ${next.blocker ? `<div class="db-blocker">${escHtml(next.blocker)}</div>` : ''}
+      ${(row.blockers || []).length ? `<div class="db-blocker">${escHtml(row.blockers.join(' · '))}</div>` : ''}
     </div>
     <select class="db-card-stage-sel" onchange="moveDbCard(event,'${row.key}')" data-lead-key="${row.key}">
       <option value="">— Move stage —</option>
@@ -15196,255 +16114,644 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
 </script>
 
 
+<!-- ══════════════ PAGE: HARDENING COMMAND ══════════════ -->
+<div class="page" id="page-hardening-command">
+<div class="db-wrap">
+  <div class="db-hdr">
+    <div>
+      <h2>🛠 Hardening Command</h2>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Prelaunch mode stays on until every intended public offer is fully hardened and launch eligible.</div>
+    </div>
+    <button class="btn btn-ghost" onclick="loadHardeningCommand()">↻ Refresh</button>
+  </div>
+  <div class="db-stats" id="hc-summary" style="display:flex"></div>
+  <div class="db-columns" style="display:block">
+    <div class="db-col">
+      <div class="db-col-hdr">Offer Hardening Queue</div>
+      <div class="db-col-body" id="hc-body"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ PAGE: DELIVERY RUN ══════════════ -->
+<div class="page" id="page-delivery-run">
+<div class="dr-wrap">
+  <div class="dr-hdr">
+    <div>
+      <h2>📋 Delivery Run</h2>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Operator execution checklist — work through a real delivery, capture proof, and record closeout.</div>
+    </div>
+    <div class="dr-hdr-actions">
+      <select class="dr-offer-sel" id="dr-offer-select" onchange="drOfferChanged()">
+        <option value="">— Select offer —</option>
+      </select>
+      <button class="btn btn-ghost" onclick="drSave()" id="dr-save-btn">Save</button>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="dr-progress-row" id="dr-progress-row" style="display:none">
+    <div class="dr-progress-bar"><div class="dr-progress-fill" id="dr-progress-fill" style="width:0%"></div></div>
+    <div class="dr-progress-label" id="dr-progress-label">0 / 0</div>
+    <div class="dr-save-status" id="dr-save-status"></div>
+  </div>
+
+  <!-- Checklist body -->
+  <div id="dr-body">
+    <div class="dr-empty">Select an offer above to open its delivery checklist.</div>
+  </div>
+</div>
+</div>
+
 <!-- ══════════════ PAGE: DEPLOY ACTIVATION ══════════════ -->
 <div class="page" id="page-deploy-activation">
 <div class="da-wrap">
   <div class="da-hdr">
     <div>
-      <h2>🚀 Deploy Activation</h2>
-      <div class="da-hdr-sub">Free consultation to simple recommendation to project work. Keep the call moving, capture the smallest useful snapshot, and hand the right stack into delivery without hopping tabs.</div>
+      <h2>Deploy Activation</h2>
+      <div class="da-hdr-sub">Prelaunch hardening mode. Internal operator guidance only.</div>
       <div class="da-status" id="da-status" style="margin-top:8px">No client loaded yet.</div>
     </div>
     <div class="da-actions">
-      <button class="btn btn-ghost" onclick="loadDeliveryActivation()">↻ Refresh</button>
-      <button class="btn btn-ghost" onclick="daOpenBoard()">📦 Open Board</button>
+      <button class="btn btn-ghost" onclick="loadDeliveryActivation()">&#8635; Refresh</button>
+      <button class="btn btn-ghost" onclick="daOpenBoard()">Open Board</button>
       <button class="btn btn-ghost" onclick="daSaveOnly()">Save Record</button>
     </div>
   </div>
 
-  <div class="da-grid">
-    <div class="da-touch">
-      <section class="da-card">
-        <div class="da-card-hdr">
-          <div>
-            <div class="da-card-title">Stage 1 · Business Snapshot</div>
-            <div class="da-card-sub">Just enough to steer the recommendation while you’re on the phone.</div>
-          </div>
-          <span class="tag" id="da-key-tag">Unsaved</span>
-        </div>
-        <div class="da-grid-2">
-          <div>
-            <label class="da-mini">Business Name</label>
-            <input class="form-input" id="da-business-name" type="text" placeholder="Rockford Pro Plumbing" oninput="daScheduleSave()">
-          </div>
-          <div>
-            <label class="da-mini">Contact Name</label>
-            <input class="form-input" id="da-contact-name" type="text" placeholder="Jordan" oninput="daScheduleSave()">
-          </div>
-          <div>
-            <label class="da-mini">Phone</label>
-            <input class="form-input" id="da-phone" type="text" placeholder="+18155550100" oninput="daScheduleSave()">
-          </div>
-          <div>
-            <label class="da-mini">Email</label>
-            <input class="form-input" id="da-email" type="email" placeholder="owner@business.com" oninput="daScheduleSave()">
-          </div>
-          <div>
-            <label class="da-mini">Category / Type</label>
-            <input class="form-input" id="da-category" type="text" placeholder="Plumbing / HVAC / Roofing" oninput="daScheduleSave()">
-          </div>
-          <div>
-            <label class="da-mini">Website</label>
-            <input class="form-input" id="da-website" type="text" placeholder="https://example.com" oninput="daScheduleSave()">
-          </div>
-        </div>
-        <div class="da-grid-2" style="margin-top:10px">
-          <label class="da-check"><input type="checkbox" id="da-google" onchange="daScheduleSave()"><span>Has Google presence<small>Google Business Profile exists and feels current.</small></span></label>
-          <label class="da-check"><input type="checkbox" id="da-facebook" onchange="daScheduleSave()"><span>Has Facebook presence<small>Social presence exists and is usable.</small></span></label>
-        </div>
-        <div style="margin-top:10px">
-          <label class="da-mini">Notes</label>
-          <textarea class="form-textarea da-note" id="da-notes" placeholder="Quick call notes, objections, timing, budget, or what they want fixed…" oninput="daScheduleSave()"></textarea>
-        </div>
-      </section>
+  <div class="da-wizard">
+    <!-- ── Wizard Body ── -->
+    <div class="da-wizard-body">
 
-      <section class="da-card">
-        <div class="da-card-hdr">
-          <div>
-            <div class="da-card-title">Stage 2 · Need Discovery</div>
-            <div class="da-card-sub">Checkboxes only. Mark the pain, let the stack recommendation do the rest.</div>
-          </div>
-          <span class="tag" id="da-discovery-count">0 selected</span>
-        </div>
-        <div class="da-checklist">
-          <label class="da-check"><input type="checkbox" id="da-weak-website" onchange="daScheduleSave()"><span>Poor or missing website<small>No site, dated site, or site does not help them get calls.</small></span></label>
-          <label class="da-check"><input type="checkbox" id="da-weak-presence" onchange="daScheduleSave()"><span>Weak Google/Facebook presence<small>They are hard to find or do not look trustworthy online.</small></span></label>
-          <label class="da-check"><input type="checkbox" id="da-no-flow" onchange="daScheduleSave()"><span>No clear contact flow<small>Leads are not clearly routed to the right person.</small></span></label>
-          <label class="da-check"><input type="checkbox" id="da-missed-calls" onchange="daScheduleSave()"><span>Missed calls<small>They are losing calls before anyone can answer.</small></span></label>
-          <label class="da-check"><input type="checkbox" id="da-weak-followup" onchange="daScheduleSave()"><span>Weak follow-up<small>Lead follow-through feels slow or inconsistent.</small></span></label>
-          <label class="da-check"><input type="checkbox" id="da-more-reviews" onchange="daScheduleSave()"><span>Wants more reviews<small>They want more trust signals from customers.</small></span></label>
-          <label class="da-check"><input type="checkbox" id="da-estimate-problem" onchange="daScheduleSave()"><span>Estimate / job-status communication problem<small>They need better update flow for quotes and job progress.</small></span></label>
-          <label class="da-check"><input type="checkbox" id="da-ongoing-support" onchange="daScheduleSave()"><span>Wants ongoing support after refresh<small>They want a light owner workflow helper beyond the initial fix.</small></span></label>
-        </div>
-      </section>
-    </div>
+      <!-- Progress Bar -->
+      <div class="da-progress" id="da-progress-bar">
+        <div class="da-progress-step active" onclick="daGoToStep(1)"><span class="da-ps-n">1</span> Snapshot</div>
+        <div class="da-progress-step" onclick="daGoToStep(2)"><span class="da-ps-n">2</span> Discovery</div>
+        <div class="da-progress-step" onclick="daGoToStep(3)"><span class="da-ps-n">3</span> Recommend</div>
+        <div class="da-progress-step" onclick="daGoToStep(4)"><span class="da-ps-n">4</span> Confirm</div>
+        <div class="da-progress-step" onclick="daGoToStep(5)"><span class="da-ps-n">5</span> Packet</div>
+        <div class="da-progress-step" onclick="daGoToStep(6)"><span class="da-ps-n">6</span> Action</div>
+      </div>
 
-    <div class="da-touch">
-      <section class="da-card">
-        <div class="da-card-hdr">
-          <div>
-            <div class="da-card-title">Stage 3 · Recommendation</div>
-            <div class="da-card-sub">One commercial answer you can read back on the call without mentally rebuilding the package.</div>
-          </div>
-          <button class="btn btn-ghost" style="font-size:11px" onclick="daUseRecommendation()">Use Recommendation</button>
-        </div>
-        <div class="da-stack-box">
-          <div class="da-answer-grid">
-            <div class="da-answer-row">
-              <div class="da-answer-label">Recommended offer</div>
-              <div class="da-answer-copy" id="da-rec-package">No recommendation yet.</div>
+      <!-- ── Step 1: Business Snapshot ── -->
+      <div class="da-step-panel active" id="da-step-1">
+        <section class="da-card">
+          <div class="da-card-hdr">
+            <div>
+              <div class="da-card-title">Step 1 · Business Snapshot</div>
+              <div class="da-card-sub">Capture the basics before the call gets moving.</div>
             </div>
-            <div class="da-answer-row">
-              <div class="da-answer-label">What it includes</div>
-              <div class="da-answer-copy" id="da-rec-includes">Fill the snapshot and discovery fields to guide the recommendation.</div>
+            <span class="tag" id="da-key-tag">Unsaved</span>
+          </div>
+          <div class="da-grid-2">
+            <div>
+              <label class="da-mini">Business Name</label>
+              <input class="form-input" id="da-business-name" type="text" placeholder="Rockford Pro Plumbing" oninput="daScheduleSave()">
             </div>
-            <div class="da-answer-row">
-              <div class="da-answer-label">Suggested modules</div>
-              <div class="da-answer-copy" id="da-rec-modules">No specialty modules suggested right now.</div>
+            <div>
+              <label class="da-mini">Contact Name</label>
+              <input class="form-input" id="da-contact-name" type="text" placeholder="Jordan" oninput="daScheduleSave()">
             </div>
-            <div class="da-answer-row">
-              <div class="da-answer-label">Why this fits</div>
-              <div class="da-answer-subtle" id="da-rec-reason">Fill the snapshot and discovery fields to guide the stack.</div>
+            <div>
+              <label class="da-mini">Phone</label>
+              <input class="form-input" id="da-phone" type="text" placeholder="+18155550100" oninput="daScheduleSave()">
+            </div>
+            <div>
+              <label class="da-mini">Email</label>
+              <input class="form-input" id="da-email" type="email" placeholder="owner@business.com" oninput="daScheduleSave()">
+            </div>
+            <div>
+              <label class="da-mini">Category / Type</label>
+              <input class="form-input" id="da-category" type="text" placeholder="Plumbing / HVAC / Roofing" oninput="daScheduleSave()">
+            </div>
+            <div>
+              <label class="da-mini">Website</label>
+              <input class="form-input" id="da-website" type="text" placeholder="https://example.com" oninput="daScheduleSave()">
             </div>
           </div>
-        </div>
-        <div style="margin-top:10px" class="da-grid-2">
-          <div>
-            <label class="da-mini">Core Offer</label>
-            <select class="form-select" id="da-core-offer" onchange="daScheduleSave()">
-              <option value="">Select core offer…</option>
-              <option value="presence_refresh">Presence Refresh</option>
-              <option value="starter_website">Starter Website</option>
-              <option value="lead_contact_setup">Lead &amp; Contact Setup</option>
-            </select>
+          <div class="da-grid-2" style="margin-top:10px">
+            <label class="da-check"><input type="checkbox" id="da-google" onchange="daScheduleSave()"><span>Has Google presence<small>Google Business Profile exists and feels current.</small></span></label>
+            <label class="da-check"><input type="checkbox" id="da-facebook" onchange="daScheduleSave()"><span>Has Facebook presence<small>Social presence exists and is usable.</small></span></label>
           </div>
-          <div>
-            <label class="da-mini">Bundle</label>
-            <select class="form-select" id="da-bundle-key" onchange="daScheduleSave()">
-              <option value="">No bundle</option>
-              <option value="basic_cleanup">Basic Cleanup</option>
-              <option value="presence_website">Presence + Website</option>
-              <option value="full_starter_package">Full Starter Package</option>
-            </select>
+          <div class="da-grid-2" style="margin-top:10px">
+            <div>
+              <label class="da-mini">Urgency</label>
+              <select class="form-select" id="da-consult-urgency" onchange="daScheduleSave()">
+                <option value="">Unset</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <div style="margin-top:10px">
-          <div class="da-mini">Specialty Modules</div>
-          <div class="da-pill-row">
-            <label class="da-pill"><input type="checkbox" id="da-module-missed_call_recovery" onchange="daScheduleSave()"> Missed Call Recovery</label>
-            <label class="da-pill"><input type="checkbox" id="da-module-follow_up_reminder_setup" onchange="daScheduleSave()"> Follow-Up &amp; Reminder Setup</label>
-            <label class="da-pill"><input type="checkbox" id="da-module-review_request_system" onchange="daScheduleSave()"> Review Request System</label>
-            <label class="da-pill"><input type="checkbox" id="da-module-estimate_job_status_communication" onchange="daScheduleSave()"> Estimate &amp; Job Status Communication</label>
-            <label class="da-pill"><input type="checkbox" id="da-module-client_approval_estimate_portal" onchange="daScheduleSave()"> Client Approval / Estimate Portal</label>
-            <label class="da-pill"><input type="checkbox" id="da-module-mobile_admin_workflow_helper" onchange="daScheduleSave()"> Mobile Admin / owner workflow helper</label>
+          <div style="margin-top:10px">
+            <label class="da-mini">Notes</label>
+            <textarea class="form-textarea da-note" id="da-notes" placeholder="Quick call notes, objections, timing, budget, or what they want fixed…" oninput="daScheduleSave()"></textarea>
+          </div>
+        </section>
+        <div class="da-step-nav">
+          <div class="da-step-nav-left"></div>
+          <div class="da-step-nav-right">
+            <button class="btn btn-ghost" onclick="daGoToStep(2)">Next: Discovery &#8594;</button>
           </div>
         </div>
-        <div style="margin-top:10px">
-          <label class="da-mini">Offer Notes</label>
-          <textarea class="form-textarea da-note" id="da-offer-notes" placeholder="Reason for the recommendation, scope notes, objections, or special constraints…" oninput="daScheduleSave()"></textarea>
-        </div>
-      </section>
+      </div>
 
-      <section class="da-card">
-        <div class="da-card-hdr">
-          <div>
-            <div class="da-card-title">Pricing + Handoff</div>
-            <div class="da-card-sub">Give the operator a safe pricing read, then guide the next step without overcommitting too early.</div>
+      <!-- ── Step 2: Pain & Discovery ── -->
+      <div class="da-step-panel" id="da-step-2">
+        <section class="da-card">
+          <div class="da-card-hdr">
+            <div>
+              <div class="da-card-title">Step 2 · Pain &amp; Discovery</div>
+              <div class="da-card-sub">What the owner actually needs fixed, plus consult context.</div>
+            </div>
+            <span class="tag" id="da-discovery-count">0 selected</span>
           </div>
-          <span class="tag" id="da-price-badge">Recommendation only</span>
-        </div>
-        <div>
-          <div class="da-mini">Suggested price guidance</div>
-          <div class="da-price-range" id="da-price-range">Recommendation only</div>
-          <div class="da-price-help" id="da-price-help">The range tightens or widens based on how mixed the scope sounds on the call.</div>
-        </div>
-        <div class="da-grid-2">
-          <div>
-            <label class="da-mini">Pricing Mode</label>
-            <select class="form-select" id="da-pricing-mode" onchange="daScheduleSave()">
-              <option value="live_quote">Live quote</option>
-              <option value="formal_estimate">Formal estimate</option>
-            </select>
+          <div class="da-checklist">
+            <label class="da-check"><input type="checkbox" id="da-weak-website" onchange="daScheduleSave()"><span>Poor or missing website<small>No site, dated site, or site does not help them get calls.</small></span></label>
+            <label class="da-check"><input type="checkbox" id="da-weak-presence" onchange="daScheduleSave()"><span>Weak Google/Facebook presence<small>They are hard to find or do not look trustworthy online.</small></span></label>
+            <label class="da-check"><input type="checkbox" id="da-no-flow" onchange="daScheduleSave()"><span>No clear contact flow<small>Leads are not clearly routed to the right person.</small></span></label>
+            <label class="da-check"><input type="checkbox" id="da-missed-calls" onchange="daScheduleSave()"><span>Missed calls<small>They are losing calls before anyone can answer.</small></span></label>
+            <label class="da-check"><input type="checkbox" id="da-weak-followup" onchange="daScheduleSave()"><span>Weak follow-up<small>Lead follow-through feels slow or inconsistent.</small></span></label>
+            <label class="da-check"><input type="checkbox" id="da-more-reviews" onchange="daScheduleSave()"><span>Wants more reviews<small>They want more trust signals from customers.</small></span></label>
+            <label class="da-check"><input type="checkbox" id="da-estimate-problem" onchange="daScheduleSave()"><span>Estimate / job-status communication problem<small>They need better update flow for quotes and job progress.</small></span></label>
+            <label class="da-check"><input type="checkbox" id="da-ongoing-support" onchange="daScheduleSave()"><span>Wants ongoing support after refresh<small>They want a light owner workflow helper beyond the initial fix.</small></span></label>
           </div>
-          <div>
-            <label class="da-mini">Quoted Amount Override</label>
-            <input class="form-input" id="da-price" type="text" placeholder="Optional exact quote if you want to state it live" oninput="daScheduleSave()">
+          <div class="da-grid-2" style="margin-top:12px">
+            <div>
+              <label class="da-mini">Business Type</label>
+              <input class="form-input" id="da-consult-business-type" type="text" placeholder="Owner-operated plumbing shop" oninput="daScheduleSave()">
+            </div>
           </div>
-          <div>
-            <label class="da-mini">Monthly Support</label>
-            <select class="form-select" id="da-monthly-support" onchange="daScheduleSave()">
-              <option value="">Decide later</option>
-              <option value="false">No</option>
-              <option value="true">Yes</option>
-            </select>
+          <div style="margin-top:10px">
+            <label class="da-mini">Current Tools / Accounts</label>
+            <textarea class="form-textarea da-note" id="da-consult-tools" placeholder="Current website host, Google/Facebook status, phone system, CRM, inbox, forms…" oninput="daScheduleSave()"></textarea>
           </div>
-          <div>
-            <label class="da-mini">Monthly Fee</label>
-            <input class="form-input" id="da-monthly-fee" type="text" placeholder="$0 or leave blank" oninput="daScheduleSave()">
+          <div style="margin-top:10px">
+            <label class="da-mini">Owner Preferences</label>
+            <textarea class="form-textarea da-note" id="da-consult-preferences" placeholder="How they like updates, who should get leads, preferred channels, support expectations…" oninput="daScheduleSave()"></textarea>
           </div>
-          <div>
-            <label class="da-mini">Agreement Status</label>
-            <select class="form-select" id="da-agreement-status" onchange="daScheduleSave()">
-              <option value="">Unset</option>
-              <option value="needs_agreement">Needs agreement</option>
-              <option value="sent">Agreement sent</option>
-              <option value="signed">Signed</option>
-            </select>
+          <div style="margin-top:10px">
+            <label class="da-mini">Transcript / Recording Summary</label>
+            <textarea class="form-textarea da-note" id="da-consult-transcript" placeholder="Short summary of the call or recording…" oninput="daScheduleSave()"></textarea>
           </div>
-          <div>
-            <label class="da-mini">Invoice Status</label>
-            <select class="form-select" id="da-invoice-status" onchange="daScheduleSave()">
-              <option value="">Unset</option>
-              <option value="not_invoiced">Not invoiced</option>
-              <option value="sent">Invoice sent</option>
-              <option value="paid">Paid</option>
-            </select>
+          <div style="margin-top:10px">
+            <label class="da-mini">Freeform Consult Notes</label>
+            <textarea class="form-textarea da-note" id="da-consult-freeform" placeholder="Any raw notes worth keeping before they become activation details…" oninput="daScheduleSave()"></textarea>
           </div>
-          <div>
-            <label class="da-mini">Deposit Status</label>
-            <select class="form-select" id="da-deposit-status" onchange="daScheduleSave()">
-              <option value="">Unset</option>
-              <option value="pending">Pending</option>
-              <option value="requested">Requested</option>
-              <option value="received">Received</option>
-            </select>
+          <div style="margin-top:10px">
+            <label class="da-mini">Do Not Recommend</label>
+            <textarea class="form-textarea da-note" id="da-consult-do-not-recommend" placeholder="Any offer, module, channel, or tool you want the draft recommender to avoid…" oninput="daScheduleSave()"></textarea>
           </div>
-          <div>
-            <label class="da-mini">Stage</label>
-            <select class="form-select" id="da-stage" onchange="daScheduleSave()">
-              <option value="call_booked">Consultation Saved</option>
-              <option value="proposal_ready">Estimate in Progress</option>
-              <option value="won">Client Approved</option>
-              <option value="deployment_pending">Activation Pending</option>
-              <option value="live">Live</option>
-            </select>
+        </section>
+        <div class="da-step-nav">
+          <div class="da-step-nav-left">
+            <button class="btn btn-ghost" onclick="daGoToStep(1)">&#8592; Snapshot</button>
+          </div>
+          <div class="da-step-nav-right">
+            <button class="btn btn-ghost" onclick="daGoToStep(3)">Next: Recommend &#8594;</button>
           </div>
         </div>
-        <div class="da-gate-inline">
-          <input type="checkbox" id="da-access-collected" onchange="daScheduleSave()">
-          <label for="da-access-collected">Access already collected</label>
-        </div>
-        <div style="margin-top:12px">
-          <div class="da-mini">Activation Gates</div>
-          <div class="da-gates" id="da-gates"></div>
-          <div class="da-blocker" id="da-launch-blockers">Launch path is clear once the client is approved.</div>
-        </div>
-        <div class="da-primary-wrap">
-          <button class="btn btn-primary da-primary-btn" id="da-primary-cta" onclick="daRunPrimaryAction()">Save Consultation</button>
-          <div class="da-secondary-row">
-            <button class="btn btn-ghost" onclick="daAction('follow_up')">Mark follow-up needed</button>
-            <button class="btn btn-ghost" onclick="daAction('estimate')">Create estimate</button>
-            <button class="btn btn-ghost" onclick="daAction('convert')">Convert to client</button>
-            <button class="btn btn-ghost" onclick="daAction('deploy')">Launch deployment</button>
-            <button class="btn btn-ghost" onclick="daAction('access')">Request access</button>
-            <button class="btn btn-ghost" onclick="daAction('agreement')">Mark agreement pending</button>
-            <button class="btn btn-ghost" onclick="daAction('billing')">Mark invoice / deposit pending</button>
+      </div>
+
+      <!-- ── Step 3: Draft Recommendation ── -->
+      <div class="da-step-panel" id="da-step-3">
+        <section class="da-card">
+          <div class="da-card-hdr">
+            <div>
+              <div class="da-card-title">Step 3 · Draft Recommendation</div>
+              <div class="da-card-sub">Rules-first internal guidance. This is not a public promise generator.</div>
+            </div>
+            <button class="btn btn-ghost" style="font-size:11px" onclick="daUseRecommendation()">Confirm Draft Stack</button>
+          </div>
+          <div class="da-stack-box">
+            <div class="da-answer-grid">
+              <div class="da-answer-row">
+                <div class="da-answer-label">Recommended offer</div>
+                <div class="da-answer-copy" id="da-rec-package">No recommendation yet.</div>
+              </div>
+              <div class="da-answer-row">
+                <div class="da-answer-label">What it includes</div>
+                <div class="da-answer-copy" id="da-rec-includes">Fill the snapshot and discovery fields to guide the recommendation.</div>
+              </div>
+              <div class="da-answer-row">
+                <div class="da-answer-label">Suggested modules</div>
+                <div class="da-answer-copy" id="da-rec-modules">No specialty modules suggested right now.</div>
+              </div>
+              <div class="da-answer-row">
+                <div class="da-answer-label">Build status</div>
+                <div class="da-answer-copy" id="da-rec-build-status">Planned</div>
+              </div>
+              <div class="da-answer-row">
+                <div class="da-answer-label">Launch eligibility</div>
+                <div class="da-answer-copy" id="da-rec-launch-eligible">Blocked until hardened</div>
+              </div>
+              <div class="da-answer-row">
+                <div class="da-answer-label">Why this fits</div>
+                <div class="da-answer-subtle" id="da-rec-reason">Fill the snapshot and discovery fields to guide the stack.</div>
+              </div>
+              <div class="da-answer-row">
+                <div class="da-answer-label">Likely access needed</div>
+                <div class="da-answer-subtle" id="da-rec-access">Fill the consult to see likely access needs.</div>
+              </div>
+              <div class="da-answer-row">
+                <div class="da-answer-label">Likely assets needed</div>
+                <div class="da-answer-subtle" id="da-rec-assets">Fill the consult to see likely asset needs.</div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:12px" class="da-grid-2">
+            <div>
+              <label class="da-mini">Core Offer</label>
+              <select class="form-select" id="da-core-offer" onchange="daScheduleSave()">
+                <option value="">Select core offer…</option>
+                <option value="presence_refresh">Presence Refresh</option>
+                <option value="starter_website">Starter Website</option>
+                <option value="lead_contact_setup">Lead &amp; Contact Setup</option>
+              </select>
+            </div>
+            <div>
+              <label class="da-mini">Bundle</label>
+              <select class="form-select" id="da-bundle-key" onchange="daScheduleSave()">
+                <option value="">No bundle</option>
+                <option value="basic_cleanup">Basic Cleanup</option>
+                <option value="presence_website">Presence + Website</option>
+                <option value="full_starter_package">Full Starter Package</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <div class="da-mini">Specialty Modules</div>
+            <div class="da-pill-row">
+              <label class="da-pill"><input type="checkbox" id="da-module-missed_call_recovery" onchange="daScheduleSave()"> Missed Call Recovery</label>
+              <label class="da-pill"><input type="checkbox" id="da-module-follow_up_reminder_setup" onchange="daScheduleSave()"> Follow-Up &amp; Reminder Setup</label>
+              <label class="da-pill"><input type="checkbox" id="da-module-review_request_system" onchange="daScheduleSave()"> Review Request System</label>
+              <label class="da-pill"><input type="checkbox" id="da-module-estimate_job_status_communication" onchange="daScheduleSave()"> Estimate &amp; Job Status Communication</label>
+              <label class="da-pill"><input type="checkbox" id="da-module-client_approval_estimate_portal" onchange="daScheduleSave()"> Client Approval / Estimate Portal</label>
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <div class="da-mini">Internal Only</div>
+            <div class="da-pill-row">
+              <label class="da-pill"><input type="checkbox" id="da-module-mobile_admin_workflow_helper" onchange="daScheduleSave()"> Mobile Admin / owner workflow helper</label>
+            </div>
+            <div class="da-answer-subtle" style="margin-top:6px">Internal operator helper only. This should not be sold as a public package.</div>
+          </div>
+          <div style="margin-top:10px">
+            <label class="da-mini">Offer Notes</label>
+            <textarea class="form-textarea da-note" id="da-offer-notes" placeholder="Reason for the recommendation, scope notes, objections, or special constraints…" oninput="daScheduleSave()"></textarea>
+          </div>
+        </section>
+        <div class="da-step-nav">
+          <div class="da-step-nav-left">
+            <button class="btn btn-ghost" onclick="daGoToStep(2)">&#8592; Discovery</button>
+          </div>
+          <div class="da-step-nav-right">
+            <button class="btn btn-ghost" onclick="daGoToStep(4)">Next: Confirm &#8594;</button>
           </div>
         </div>
-        <div style="margin-top:10px" class="da-status" id="da-save-note">Save the call, then use the action buttons to move it into delivery.</div>
-      </section>
-    </div>
-  </div>
+      </div>
+
+      <!-- ── Step 4: Confirm Stack ── -->
+      <div class="da-step-panel" id="da-step-4">
+        <section class="da-card">
+          <div class="da-card-hdr">
+            <div>
+              <div class="da-card-title">Step 4 · Confirm Stack</div>
+              <div class="da-card-sub">Verify the offer type, kit, and hardening state before moving to packet.</div>
+            </div>
+          </div>
+          <div class="da-grid-2">
+            <div>
+              <div class="da-mini">Offer Type / Build</div>
+              <div class="da-answer-copy" id="da-visibility-state">Public · Planned</div>
+            </div>
+            <div>
+              <div class="da-mini">Launch Eligibility</div>
+              <div class="da-answer-subtle" id="da-target-visibility-state">Launch blocked</div>
+            </div>
+            <div>
+              <div class="da-mini">Kit</div>
+              <div class="da-answer-copy" id="da-kit-key">No kit selected</div>
+            </div>
+            <div>
+              <div class="da-mini">Ownership</div>
+              <div class="da-answer-copy" id="da-ownership-mode">Unset</div>
+            </div>
+            <div>
+              <div class="da-mini">Support</div>
+              <div class="da-answer-subtle" id="da-support-mode">Optional support by default.</div>
+            </div>
+          </div>
+          <div class="da-blocker" id="da-truth-warning" style="margin-top:12px">Ready: this stack has an active delivery kit behind it.</div>
+          <div style="margin-top:12px">
+            <div class="da-mini">Current Truth Notes</div>
+            <div class="da-list-box" id="da-current-truth-notes"></div>
+          </div>
+          <div class="da-grid-2" style="margin-top:12px">
+            <div>
+              <div class="da-mini">Missing Artifacts</div>
+              <div class="da-list-box" id="da-missing-artifacts"></div>
+            </div>
+            <div>
+              <div class="da-mini">Missing QA</div>
+              <div class="da-list-box" id="da-missing-qa"></div>
+            </div>
+            <div>
+              <div class="da-mini">Missing Closeout</div>
+              <div class="da-list-box" id="da-missing-closeout"></div>
+            </div>
+            <div>
+              <div class="da-mini">Missing Rollback</div>
+              <div class="da-list-box" id="da-missing-rollback"></div>
+            </div>
+          </div>
+          <div style="margin-top:12px">
+            <div class="da-mini">Next Hardening Step</div>
+            <div class="da-answer-subtle" id="da-next-hardening-step">No next hardening step yet.</div>
+          </div>
+        </section>
+        <div class="da-step-nav">
+          <div class="da-step-nav-left">
+            <button class="btn btn-ghost" onclick="daGoToStep(3)">&#8592; Recommend</button>
+          </div>
+          <div class="da-step-nav-right">
+            <button class="btn btn-ghost" onclick="daGoToStep(5)">Next: Packet &#8594;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Step 5: Activation Packet ── -->
+      <div class="da-step-panel" id="da-step-5">
+        <section class="da-card">
+          <div class="da-card-hdr">
+            <div>
+              <div class="da-card-title">Step 5 · Activation Packet</div>
+              <div class="da-card-sub">Track readiness, access, artifacts, and the packet state before deploy.</div>
+            </div>
+          </div>
+          <div class="da-grid-2">
+            <div>
+              <label class="da-mini">Activation Packet Status</label>
+              <select class="form-select" id="da-activation-packet-status" onchange="daScheduleSave()">
+                <option value="draft">Draft</option>
+                <option value="collecting">Collecting</option>
+                <option value="ready_for_start">Ready for start</option>
+                <option value="ready_for_qa">Ready for QA</option>
+                <option value="ready_for_go_live">Ready for go-live</option>
+                <option value="delivered">Delivered</option>
+              </select>
+            </div>
+            <div>
+              <label class="da-mini">Credential / Access Status</label>
+              <input class="form-input" id="da-credential-status" type="text" placeholder="requested / partial / verified" oninput="daScheduleSave()">
+            </div>
+            <div>
+              <label class="da-mini">Handoff Status</label>
+              <input class="form-input" id="da-handoff-status" type="text" placeholder="not ready / queued / delivered" oninput="daScheduleSave()">
+            </div>
+            <div>
+              <label class="da-mini">Closeout Status</label>
+              <input class="form-input" id="da-closeout-status" type="text" placeholder="open / awaiting confirmation / closed" oninput="daScheduleSave()">
+            </div>
+            <div>
+              <label class="da-mini">Revision Round</label>
+              <input class="form-input" id="da-revision-round" type="number" min="0" step="1" oninput="daScheduleSave()">
+            </div>
+            <div>
+              <label class="da-mini">Revision Status</label>
+              <input class="form-input" id="da-revision-status" type="text" placeholder="not started / in review / complete" oninput="daScheduleSave()">
+            </div>
+            <div>
+              <label class="da-mini">Change-Order Status</label>
+              <select class="form-select" id="da-change-order-status" onchange="daScheduleSave()">
+                <option value="in_scope">In scope</option>
+                <option value="review_needed">Review needed</option>
+                <option value="sent">Change order sent</option>
+                <option value="approved">Change order approved</option>
+              </select>
+            </div>
+            <div>
+              <label class="da-check"><input type="checkbox" id="da-change-order-needed" onchange="daScheduleSave()"><span>Change order needed<small>Use when the client asks for new deliverables, channels, or integrations outside the sold scope.</small></span></label>
+            </div>
+          </div>
+          <div style="margin-top:10px">
+            <label class="da-mini">Change-Order Notes</label>
+            <textarea class="form-textarea da-note" id="da-change-order-notes" placeholder="What changed, what is out of scope, and what needs approval…" oninput="daScheduleSave()"></textarea>
+          </div>
+          <div style="margin-top:10px">
+            <label class="da-mini">Next Step</label>
+            <input class="form-input" id="da-next-step" type="text" placeholder="Immediate operator next step" oninput="daScheduleSave()">
+          </div>
+          <div style="margin-top:10px">
+            <label class="da-mini">Blockers</label>
+            <textarea class="form-textarea da-note" id="da-blockers" placeholder="One blocker per line…" oninput="daScheduleSave()"></textarea>
+          </div>
+          <div style="margin-top:10px">
+            <label class="da-mini">Artifact Links</label>
+            <textarea class="form-textarea da-note" id="da-artifact-links" placeholder="One link per line for docs, sheets, approval pages, or handoff assets…" oninput="daScheduleSave()"></textarea>
+          </div>
+          <div class="da-grid-3" style="margin-top:12px">
+            <label class="da-check"><input type="checkbox" id="da-assets-ready" onchange="daScheduleSave()"><span>Assets ready<small>All required assets are collected.</small></span></label>
+            <label class="da-check"><input type="checkbox" id="da-qa-ready" onchange="daScheduleSave()"><span>QA ready<small>The QA path is checked and ready.</small></span></label>
+            <label class="da-check"><input type="checkbox" id="da-rollback-ready" onchange="daScheduleSave()"><span>Rollback ready<small>Safe mode / rollback is documented where needed.</small></span></label>
+            <label class="da-check"><input type="checkbox" id="da-handoff-ready" onchange="daScheduleSave()"><span>Handoff ready<small>The client handoff packet is ready.</small></span></label>
+          </div>
+          <div class="da-grid-2" style="margin-top:12px">
+            <div>
+              <div class="da-mini">Activation Packet</div>
+              <div class="da-list-box" id="da-activation-packet"></div>
+            </div>
+            <div>
+              <div class="da-mini">Definition of Done</div>
+              <div class="da-list-box" id="da-definition-of-done"></div>
+            </div>
+            <div>
+              <div class="da-mini">Required Artifacts</div>
+              <div class="da-list-box" id="da-required-artifacts"></div>
+            </div>
+            <div>
+              <div class="da-mini">Required Access</div>
+              <div class="da-list-box" id="da-required-access"></div>
+            </div>
+          </div>
+          <div style="margin-top:12px">
+            <div class="da-mini">Rollback / Safe Mode</div>
+            <div class="da-list-box" id="da-rollback-plan"></div>
+          </div>
+        </section>
+        <div class="da-step-nav">
+          <div class="da-step-nav-left">
+            <button class="btn btn-ghost" onclick="daGoToStep(4)">&#8592; Confirm</button>
+          </div>
+          <div class="da-step-nav-right">
+            <button class="btn btn-ghost" onclick="daGoToStep(6)">Next: Action &#8594;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Step 6: Action ── -->
+      <div class="da-step-panel" id="da-step-6">
+        <section class="da-card">
+          <div class="da-card-hdr">
+            <div>
+              <div class="da-card-title">Step 6 · Action</div>
+              <div class="da-card-sub">Price safely, capture approvals, and only launch when the stack is actually ready.</div>
+            </div>
+            <span class="tag" id="da-price-badge">Recommendation only</span>
+          </div>
+          <div>
+            <div class="da-mini">Suggested price guidance</div>
+            <div class="da-price-range" id="da-price-range">Recommendation only</div>
+            <div class="da-price-help" id="da-price-help">The range tightens or widens based on how mixed the scope sounds on the call.</div>
+          </div>
+          <div class="da-grid-2" style="margin-top:12px">
+            <div>
+              <label class="da-mini">Pricing Mode</label>
+              <select class="form-select" id="da-pricing-mode" onchange="daScheduleSave()">
+                <option value="live_quote">Live quote</option>
+                <option value="formal_estimate">Formal estimate</option>
+              </select>
+            </div>
+            <div>
+              <label class="da-mini">Quoted Amount Override</label>
+              <input class="form-input" id="da-price" type="text" placeholder="Optional exact quote if you want to state it live" oninput="daScheduleSave()">
+            </div>
+            <div>
+              <label class="da-mini">Monthly Support</label>
+              <select class="form-select" id="da-monthly-support" onchange="daScheduleSave()">
+                <option value="">Decide later</option>
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+              </select>
+            </div>
+            <div>
+              <label class="da-mini">Monthly Fee</label>
+              <input class="form-input" id="da-monthly-fee" type="text" placeholder="$0 or leave blank" oninput="daScheduleSave()">
+            </div>
+            <div>
+              <label class="da-mini">Agreement Status</label>
+              <select class="form-select" id="da-agreement-status" onchange="daScheduleSave()">
+                <option value="">Unset</option>
+                <option value="needs_agreement">Needs agreement</option>
+                <option value="sent">Agreement sent</option>
+                <option value="signed">Signed</option>
+              </select>
+            </div>
+            <div>
+              <label class="da-mini">Invoice Status</label>
+              <select class="form-select" id="da-invoice-status" onchange="daScheduleSave()">
+                <option value="">Unset</option>
+                <option value="not_invoiced">Not invoiced</option>
+                <option value="sent">Invoice sent</option>
+                <option value="paid">Paid</option>
+              </select>
+            </div>
+            <div>
+              <label class="da-mini">Deposit Status</label>
+              <select class="form-select" id="da-deposit-status" onchange="daScheduleSave()">
+                <option value="">Unset</option>
+                <option value="pending">Pending</option>
+                <option value="requested">Requested</option>
+                <option value="received">Received</option>
+              </select>
+            </div>
+            <div>
+              <label class="da-mini">Stage</label>
+              <select class="form-select" id="da-stage" onchange="daScheduleSave()">
+                <option value="call_booked">Consultation Saved</option>
+                <option value="proposal_ready">Draft Recommendation</option>
+                <option value="won">Activation Packet Prefilled</option>
+                <option value="deployment_pending">Deploy Ready</option>
+                <option value="live">Live</option>
+              </select>
+            </div>
+          </div>
+          <div class="da-gate-inline" id="da-gate-inline">
+            <input type="checkbox" id="da-access-collected" onchange="daScheduleSave()">
+            <label for="da-access-collected">Access already collected</label>
+          </div>
+          <div style="margin-top:12px">
+            <div class="da-mini">Activation Gates</div>
+            <div class="da-gates" id="da-gates"></div>
+            <div class="da-blocker" id="da-launch-blockers">Launch path is clear once the client is approved.</div>
+          </div>
+          <div class="da-primary-wrap">
+            <button class="btn btn-primary da-primary-btn" id="da-primary-cta" onclick="daRunPrimaryAction()">Save Consultation</button>
+            <div class="da-secondary-row">
+              <button class="btn btn-ghost" onclick="daAction('follow_up')">Mark follow-up needed</button>
+              <button class="btn btn-ghost" onclick="daAction('estimate')">Create estimate</button>
+              <button class="btn btn-ghost" onclick="daAction('convert')">Convert to client</button>
+              <button class="btn btn-ghost" id="da-deploy-btn" onclick="daAction('deploy')">Launch deployment</button>
+              <button class="btn btn-ghost" onclick="daAction('access')">Request access</button>
+              <button class="btn btn-ghost" onclick="daAction('agreement')">Mark agreement pending</button>
+              <button class="btn btn-ghost" onclick="daAction('billing')">Mark invoice / deposit pending</button>
+            </div>
+          </div>
+          <div style="margin-top:10px" class="da-status" id="da-save-note">Save the call, then use the action buttons to move it into delivery.</div>
+        </section>
+        <div class="da-step-nav">
+          <div class="da-step-nav-left">
+            <button class="btn btn-ghost" onclick="daGoToStep(5)">&#8592; Packet</button>
+          </div>
+          <div class="da-step-nav-right"></div>
+        </div>
+      </div>
+
+    </div><!-- /da-wizard-body -->
+
+    <!-- ── Summary Panel ── -->
+    <div class="da-summary-panel" id="da-summary-panel">
+      <div class="da-summary-card">
+        <div class="da-summary-title">Stack at a Glance</div>
+        <div class="da-summary-row">
+          <div class="da-summary-label">Client</div>
+          <div class="da-summary-val" id="da-summary-client">—</div>
+        </div>
+        <div class="da-summary-row">
+          <div class="da-summary-label">Stack</div>
+          <div class="da-summary-val" id="da-summary-stack">No recommendation yet</div>
+        </div>
+        <div class="da-summary-row">
+          <div class="da-summary-label">Build</div>
+          <div class="da-summary-val" id="da-summary-build"><span class="da-summary-chip wait">Planned</span></div>
+        </div>
+        <div class="da-summary-row">
+          <div class="da-summary-label">Launch</div>
+          <div class="da-summary-val" id="da-summary-launch"><span class="da-summary-chip block">Blocked</span></div>
+        </div>
+        <div class="da-summary-row">
+          <div class="da-summary-label">Urgency</div>
+          <div class="da-summary-val" id="da-summary-urgency">—</div>
+        </div>
+      </div>
+      <div class="da-summary-card">
+        <div class="da-summary-title">Operator Status</div>
+        <div class="da-summary-row">
+          <div class="da-summary-label">Next step</div>
+          <div class="da-summary-val" id="da-summary-next-step">—</div>
+        </div>
+        <div class="da-summary-row">
+          <div class="da-summary-label">Blockers</div>
+          <div class="da-summary-val" id="da-summary-blockers">—</div>
+        </div>
+        <div class="da-summary-row">
+          <div class="da-summary-label">Access</div>
+          <div class="da-summary-val" id="da-summary-access">—</div>
+        </div>
+        <div class="da-summary-row" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+          <div class="da-summary-label">Record</div>
+          <div class="da-summary-val" id="da-summary-key">Unsaved</div>
+        </div>
+        <div class="da-summary-row" style="margin-top:4px">
+          <div class="da-summary-val" id="da-summary-save-status" style="font-size:10px;color:var(--muted)"></div>
+        </div>
+      </div>
+    </div><!-- /da-summary-panel -->
+
+  </div><!-- /da-wizard -->
 </div>
 </div>
 
