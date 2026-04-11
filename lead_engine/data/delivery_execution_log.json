@@ -1,0 +1,22 @@
+{
+  "practice|presence_refresh": {
+    "lead_key": "practice",
+    "offer_key": "presence_refresh",
+    "business_name": "Practice run",
+    "checks": {
+      "gbp_name": true,
+      "gbp_phone": true
+    },
+    "work_notes": "Test run - verifying API",
+    "proof_links": "https://example.com/before",
+    "closeout_status": "captured",
+    "started_at": "2026-04-10T12:54:25Z",
+    "updated_at": "2026-04-10T22:12:18Z",
+    "delivery_date": "2026-04-10",
+    "closeout_date": "2026-04-10",
+    "remaining_recommendations": "Review again after 30 days.",
+    "verification_review_notes": "Evidence ready for manual review.",
+    "owner_ack_status": "acknowledged",
+    "verification_review_status": "ready_for_manual_review"
+  }
+}

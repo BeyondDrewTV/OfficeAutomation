@@ -59,7 +59,13 @@ That's it. You just sent cold outreach. Do this every week in a new city or indu
 
 ```
 GOOGLE_PLACES_API_KEY   — get free at console.cloud.google.com (enable Places API)
-GMAIL_SENDER            — your Gmail address
-GMAIL_APP_PASSWORD      — Gmail → Security → App Passwords
+COPPERLINE_FROM_EMAIL   — drewyomantas@copperlineops.com
+COPPERLINE_FROM_NAME    - Drew @ Copperline
+COPPERLINE_REPLY_TO     - drewyomantas@copperlineops.com
+GOOGLE_WORKSPACE_SMTP_USERNAME      — drewyomantas@copperlineops.com
+GOOGLE_WORKSPACE_SMTP_APP_PASSWORD  — Google Workspace app password
+COPPERLINE_LIVE_SEND_ENABLED        — false for dry-run/local, true only after final verification
 ANTHROPIC_API_KEY       — claude.ai/settings → API keys
 ```
+
+Safe send verification: use **More -> Preview Send** first. It must report ready/skipped counts without sending. Only then set `COPPERLINE_LIVE_SEND_ENABLED=true`, approve one internal test row, and use **Send Approved**.

@@ -6,8 +6,8 @@ matches them back to prospects in pending_emails.csv, flags them as
 'replied', logs every event, and fires optional webhook notifications.
 
 Credentials used:
-  GMAIL_ADDRESS      — the sending Gmail account (same as email_sender_agent)
-  GMAIL_APP_PASSWORD — Gmail App Password (same as email_sender_agent)
+  GOOGLE_WORKSPACE_SMTP_USERNAME     — Workspace sender account
+  GOOGLE_WORKSPACE_SMTP_APP_PASSWORD — Workspace app password
 
 Optional:
   REPLY_WEBHOOK_URL  — if set, POSTs a JSON payload to this URL on each reply
@@ -36,6 +36,13 @@ try:
     from urllib.error import URLError
 except ImportError:
     pass
+
+try:
+    from send.mail_config import load_mail_settings, validate_mail_settings
+except ModuleNotFoundError:
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from send.mail_config import load_mail_settings, validate_mail_settings
 
 log = logging.getLogger("copperline.replies")
 
@@ -67,6 +74,7 @@ PENDING_COLUMNS = [
     "message_id", "replied", "replied_at", "reply_snippet",
     "conversation_notes", "conversation_next_step",
     "send_after",
+    "business_specific_observation",
 ]
 
 
@@ -139,14 +147,10 @@ def _get_text_body(msg: email.message.Message) -> str:
 
 def _connect_imap() -> imaplib.IMAP4_SSL:
     """Open an authenticated IMAP connection using env credentials."""
-    address  = os.getenv("GMAIL_ADDRESS", "").strip()
-    password = os.getenv("GMAIL_APP_PASSWORD", "").strip()
-    if not address or not password:
-        raise RuntimeError(
-            "GMAIL_ADDRESS and GMAIL_APP_PASSWORD must be set to check replies."
-        )
+    settings = load_mail_settings()
+    validate_mail_settings(settings)
     conn = imaplib.IMAP4_SSL(IMAP_HOST, IMAP_PORT)
-    conn.login(address, password)
+    conn.login(settings.smtp_username, settings.smtp_password)
     return conn
 
 
@@ -387,9 +391,10 @@ def check_for_replies(max_messages: int = 100) -> Dict:
     """
     summary: Dict = {"checked": 0, "new_replies": 0, "errors": [], "replies": []}
 
-    operator_address = os.getenv("GMAIL_ADDRESS", "").strip()
-    if not operator_address:
-        summary["errors"].append("GMAIL_ADDRESS not set — cannot check replies.")
+    try:
+        operator_address = load_mail_settings().identity.from_email
+    except Exception as exc:
+        summary["errors"].append(f"Mail config invalid - cannot check replies: {exc}")
         return summary
 
     # Read current queue state

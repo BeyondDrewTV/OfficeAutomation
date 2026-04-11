@@ -1,4 +1,187 @@
-﻿### 2026-04-10 - Delivery execution layer + Presence Refresh working checklist
+### 2026-04-10 - Workspace Sender Identity Migration
+
+**Goal:** Move Copperline outbound email to the official Google Workspace sender `drewyomantas@copperlineops.com` without widening the outreach system.
+
+**Repo truth before this pass:**
+- Active send path was Gmail SMTP in `lead_engine/send/email_sender_agent.py`, driven by `GMAIL_ADDRESS`, `GMAIL_APP_PASSWORD`, and `SENDER_DISPLAY_NAME`.
+- Reply detection and sent reconciliation used Gmail IMAP in `lead_engine/outreach/reply_checker.py`.
+- Sender identity and display text were split across SMTP construction, signature text, dashboard confirmation copy, `.env.example`, and setup docs.
+
+**Changes:**
+- `lead_engine/send/mail_config.py`: centralized Workspace SMTP provider config, official from/reply-to identity, credential checks, and the `COPPERLINE_LIVE_SEND_ENABLED` live-send gate.
+- `lead_engine/send/email_sender_agent.py`: sends with the centralized Workspace identity, writes `Reply-To`, updates the signature to `drewyomantas@copperlineops.com`, and blocks live SMTP unless Workspace credentials and the live gate are valid.
+- `lead_engine/outreach/reply_checker.py`: uses the centralized sender config for IMAP login and reply matching.
+- `lead_engine/dashboard_server.py` and `lead_engine/dashboard_static/index.html`: expose and display active mail sender, readiness, and live/test mode.
+- `.env.example`, `README.md`, `lead_engine/README.md`, `docs/CURRENT_BUILD.md`, `docs/PROJECT_STATE.md`, `docs/AI_CONTROL_PANEL.md`, and `docs/reference/SETUP_AND_GO_LIVE.md`: synced to the Workspace SMTP setup.
+
+**Protected-system status:** Queue schema and draft generation unchanged. Verification used dry-run/static checks only; no live outbound email was sent.
+
+### 2026-04-10 - Offer Evidence Ledger + Promotion-Readiness Visibility
+
+**Goal:** Bridge reviewed delivery evidence back into offer-level hardening truth without changing catalog status automatically.
+
+**Repo truth before this pass:**
+- Deploy Activation already covered Quick Wins, recommendation fields, simple proposal options, accepted-option activation kickoff, and copy-ready leave-behind output.
+- Delivery Run already had client-bound runs, checklist execution, proof fields, blockers, closeout state, owner acknowledgment, run-level manual review state, and Owner Closeout Packet output.
+- Delivery already had a Manual Review queue for run-level evidence review.
+- All 11 public offers had real kit files on disk; only Missed Call Recovery was `ready` / `launch_eligible = true`. All other public offers remained `hardening`.
+
+**Changes:**
+- `lead_engine/dashboard_server.py`: added a shared review-row helper, a read-only offer evidence aggregator, catalog enrichment for `hardening_items[*].evidence_summary`, and `GET /api/delivery_offer_evidence`.
+- `lead_engine/dashboard_static/index.html`: Hardening Command now shows offer evidence counts, proof coverage, last evidence/reviewed run, advisory promotion readiness, and links back to the latest evidence run or Manual Review queue.
+- `docs/CURRENT_BUILD.md`, `docs/PROJECT_STATE.md`, `docs/CHANGELOG_AI.md`: synced to the new evidence-ledger truth.
+
+**What is not real yet:**
+- No automatic promotion to `verification`, `ready`, or `launch_eligible = true`.
+- No fake verification automation, auto-send, sender changes, scheduler rewrites, queue schema rewrites, CRM/project system, or billing work.
+- Promotion readiness remains an operator-visible advisory layer only.
+
+**Protected-system status:** Existing Delivery Run save behavior remains the only write path. Sender, scheduler, queue schema, and follow-up automation were not changed.
+
+### 2026-04-10 - Closeout Packet + Manual Verification Review
+
+**Goal:** Turn Delivery Run completion into a real owner-facing closeout and manual verification-review handoff without automatic offer promotion.
+
+**Repo truth before this pass:**
+- Deploy Activation already covered Quick Wins, recommendation fields, simple proposal options, accepted-option activation kickoff, and copy-ready leave-behind output.
+- Delivery Run already had client-bound runs, offer-bound checklist execution, proof fields, work notes, blockers, closeout status, owner acknowledgment, post-closeout notes, and verification-readiness rails.
+- All 11 public offers had kit files on disk; only Missed Call Recovery was `ready` / `launch_eligible = true`.
+
+**Changes:**
+- `lead_engine/dashboard_static/index.html`: extended Delivery Run with delivery/closeout date fields, remaining recommendations, copy-ready Owner Closeout Packet output, run-level manual review state, manual review notes, and a Delivery Manual Review subtab for closeout/evidence review.
+- `lead_engine/dashboard_server.py`: persists run-level closeout/review fields in `delivery_execution_log.json` and adds `/api/delivery_review_queue` for manual evidence review candidates.
+- Docs updated: `docs/CURRENT_BUILD.md`, `docs/PROJECT_STATE.md`, `docs/CHANGELOG_AI.md`.
+
+**What is not real yet:**
+- No PDF engine, auto-send, contract, invoicing, payments, CRM/project system, or automatic catalog promotion.
+- Manual review state is run-level evidence tracking only.
+- No offer was promoted to verification, ready, launch eligible, or delivery-proven status.
+
+**Protected-system status:** No sender, scheduler, queue schema, follow-up automation, or automatic delivery verification changed.
+
+### 2026-04-10 - Accepted Option -> Activation Kickoff
+
+**Goal:** Bridge the gap between proposal notes and delivery kickoff by turning a chosen simple option into a manual activation path inside Deploy Activation.
+
+**Repo truth before this pass:**
+- Deploy Activation already had Step 2 Quick Wins, Step 3 recommendation fields, Step 3 simple proposal options, and Step 6 copy-ready leave-behind output.
+- Quick Wins and `proposal_options` already persisted through `/api/deploy_activation`.
+- Delivery Run was already client-bound with checklist execution, proof fields, closeout support, and verification-readiness rails.
+
+**Changes:**
+- `lead_engine/dashboard_static/index.html`: added Step 3 accepted-option controls, activation-scope creation from the selected option's real offer keys, accepted-context callouts in Steps 4/5/6, Step 6 manual kickoff actions, leave-behind accepted direction output, and Delivery Board accepted-scope visibility.
+- `lead_engine/dashboard_server.py`: added delivery-profile normalization/persistence for `accepted_option_*`, `accepted_scope_note`, and `accepted_assumptions`; Delivery Board rows now include accepted-option context.
+- Docs updated: `docs/CURRENT_BUILD.md`, `docs/PROJECT_STATE.md`, `docs/CHANGELOG_AI.md`.
+
+**What is not real yet:**
+- No contract, payment, invoicing, full CRM, auto-send, PDF, automatic project creation, or fake delivery verification.
+- Accepted scope is a manual kickoff continuity layer only.
+- No offer was promoted to verification or delivery-proven status.
+
+**Protected-system status:** No sender, scheduler, queue schema, follow-up automation, or delivery verification promotion changed.
+
+---
+### 2026-04-10 - Recommendation + Simple Proposal Handoff
+
+**Goal:** Turn the Quick-Win Review flow into a real post-consult recommendation and simple quoting handoff without building a full proposal engine.
+
+**Repo truth before this pass:**
+- Deploy Activation already had Quick Wins in Step 2, a draft stack in Step 3, and a copy-ready leave-behind in Step 6.
+- Delivery Run, Presence Refresh, and Missed Call Recovery already had real operator checklist surfaces and were not the business gap.
+- Quick Wins were frontend-wired but the server normalizer did not reliably preserve `consult_builder.quick_wins`.
+
+**Changes:**
+- `lead_engine/dashboard_static/index.html`: added Step 3 Simple Options with editable option cards, `Build From Recommendation`, `proposal_options` state/payload hydration, and Step 6 leave-behind output for simple options and price notes.
+- `lead_engine/dashboard_server.py`: preserves/sanitizes `consult_builder.quick_wins` and normalizes `proposal_options` through `/api/deploy_activation`.
+- Docs updated: `docs/CURRENT_BUILD.md`, `docs/PROJECT_STATE.md`, `docs/CHANGELOG_AI.md`.
+
+**What is not real yet:**
+- No PDF engine, email send flow, contract generation, invoicing, payments, CRM, or auto-follow-up.
+- Options are manual copy/paste proposal notes only.
+- No offer was promoted to verification or delivery-proven status.
+
+**Protected-system status:** No sender, scheduler, queue schema, follow-up automation, or Delivery Run execution logic changed.
+
+---
+### 2026-04-10 - Quick-Win Review System + Consultation Leave-Behind
+
+**Goal:** Turn the consultation flow into a real Quick-Win Review system that produces structured notes and a usable client leave-behind, integrated into the existing Deploy Activation wizard.
+
+**Repo truth before this pass:**
+- Deploy Activation wizard had `consult_builder` fields (freeform_notes, transcript_summary, business_type, etc.) but no structured quick-wins capture
+- No client leave-behind output existed anywhere in the system
+- Delivery Run was operator-ready; consultation output was the remaining business gap
+
+**Changes:**
+
+- `lead_engine/dashboard_static/index.html` only — no server changes:
+  - **CSS**: Added `.qw-*` and `.lb-*` rules (Quick-Win cards, category/priority badges, template select, leave-behind pre block, toggle open/closed state)
+  - **State**: Added `let _daQuickWins = []` module variable; `quick_wins: []` to `consult_builder` in `_daDefaultState()`; `quick_wins: _daQuickWins` to `_daReadState()`; comparison-gated restore in `_daFillForm()` — re-renders QW list only when content actually changed (prevents textarea focus loss during auto-save)
+  - **`QW_TEMPLATES`**: 11 real contractor-context templates covering: GBP hours, GBP description, Facebook photo, review responses (→ Presence Refresh); missing website, no phone CTA (→ Starter Website); missed call text-back (→ Missed Call Recovery); contact routing (→ Lead & Contact Setup); review requests (→ Review Request System); estimate follow-up (→ Estimate & Job Status); follow-up sequence (→ Follow-Up & Reminder Setup)
+  - **JS functions**: `qwAdd()`, `qwApplyTemplate(idx)`, `qwRemove(id)`, `qwUpdateField(id, field, value)`, `_qwRenderList()`, `_qwNextId()`, `_qwPopulateTemplateSelect()`, `_qwLeaveBehindText()`, `qwToggleLeaveBehind()`, `qwRefreshLeaveBehind()`, `qwCopyLeaveBehind()`
+  - **Step 2 HTML**: Added Quick Wins section below existing consult fields — template select (`QW_TEMPLATES` populated on load), "+ Add Win" button, `#qw-list` dynamic render target
+  - **Step 6 HTML**: Added Consultation Leave-Behind card — "📄 Preview Leave-Behind" toggle + "📋 Copy" button, `<pre id="qw-lb-pre">` output block. Hint text explains which steps feed the output.
+  - **`loadDeployActivation()`**: Added `_qwPopulateTemplateSelect()` call after `_daFillForm()`
+
+- `docs/CURRENT_BUILD.md` — updated with QW system description
+- `docs/PROJECT_STATE.md` — updated current truth with QW Review entry
+- `docs/CHANGELOG_AI.md` — this entry
+
+**Data flow:**
+- `_daQuickWins` → `consult_builder.quick_wins` in save payload → `/api/deploy_activation` POST → stored server-side in `delivery_profile.consult_builder`
+- On load: `delivery_profile.consult_builder.quick_wins` → `_daFillForm()` → `_daQuickWins` → `_qwRenderList()`
+- No server changes required — `consult_builder` is stored as-is (JSON blob)
+
+**What is not real yet:**
+- No consultation has been run end-to-end with real quick wins on a real client
+- Leave-behind is copy/print only — no PDF export, no email send
+- Templates are starter content — will improve after first real use
+
+**Protected-system status:** No queue/send/scheduling files touched. No API endpoints changed. No auto-send introduced. No offer status promoted.
+
+---
+
+### 2026-04-10 - Client-bound Delivery Run: MCR checklist + Presence Refresh polish + log migration
+
+**Goal:** Make Delivery Run operator-ready for the first real client delivery — add Missed Call Recovery checklist (the only launch_eligible offer), add before-state capture steps to Presence Refresh, migrate stale log entry to proper run_key format, and sync docs.
+
+**Repo truth before this pass:**
+- `DR_CHECKLISTS` had only `presence_refresh` (10 GBP + 9 FB = 19 items); MCR fell back to 4 generic qa_checks
+- `delivery_execution_log.json` had bare `"presence_refresh"` key (old format from pre-client-binding test)
+- Docs incorrectly stated "GBP 12 + Facebook 11 = 23 items"
+- All delivery infrastructure (client selector, run_key, closeout section, verif rail, proof fields) was already fully operational from the prior pass
+
+**Changes:**
+
+- `lead_engine/dashboard_static/index.html`:
+  - Added `missed_call_recovery` to `DR_CHECKLISTS` — 3 sections: Setup (5 items: twilio_number, routing_configured, response_text_approved, business_name_confirmed, owner_notification_set), Testing (5 items: test_call_completed, text_wording_correct, owner_notification_received, logging_verified, safe_mode_documented), Handoff (3 items: owner_briefed, owner_access_confirmed, handoff_doc_filed). 13 items total.
+  - Added `before_state` as first item in GBP section — "Before-state captured — screenshot or note current GBP state before any changes"
+  - Added `before_state` as first item in Facebook section — "Before-state captured — screenshot or note current Facebook page state before any changes"
+  - Presence Refresh now: 11 GBP + 10 Facebook = 21 items
+
+- `lead_engine/data/delivery_execution_log.json`:
+  - Migrated key from `"presence_refresh"` → `"practice|presence_refresh"`
+  - Added explicit `"lead_key": "practice"` and `"offer_key": "presence_refresh"` fields to match current state model
+
+- `docs/CURRENT_BUILD.md` — updated scope description: correct item counts, document MCR checklist, document client-bound run infrastructure
+- `docs/PROJECT_STATE.md` — updated Delivery Run truth: client-bound run_key, MCR checklist, Presence Refresh item count
+- `docs/CHANGELOG_AI.md` — this entry
+
+**What is not real yet:**
+- No offer has been delivery-proven against a real client (no real closeout on file)
+- Presence Refresh and all other hardening offers still at `hardening` / `launch_eligible = false`
+- Full Starter Package still missing bundle QA sequence and handoff packet
+
+**Protected-system status:** No queue/send/scheduling files touched. No API endpoints changed. No auto-send introduced. No offer status promoted.
+
+**Verification:**
+- `DR_CHECKLISTS.missed_call_recovery` present with 3 sections, 13 items
+- `DR_CHECKLISTS.presence_refresh` GBP section now 11 items (before_state added), Facebook section now 10 items (before_state added)
+- `delivery_execution_log.json` key format matches `run_key` convention
+
+---
+
+### 2026-04-10 - Delivery execution layer + Presence Refresh working checklist
 
 **Goal:** Add an in-dashboard operator execution surface (Delivery Run) so Drew can run real deliveries, check off items, capture proof, record closeout, and track verification readiness truthfully.
 

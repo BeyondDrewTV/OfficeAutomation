@@ -43,6 +43,7 @@ PENDING_COLUMNS = [
     "message_id", "replied", "replied_at", "reply_snippet",
     "conversation_notes", "conversation_next_step",
     "send_after",
+    "business_specific_observation",
 ]
 
 BASE_DIR              = Path(__file__).resolve().parent

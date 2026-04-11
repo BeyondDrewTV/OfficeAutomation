@@ -44,6 +44,7 @@ from send.email_sender_agent import (
     get_send_readiness,
     _parse_send_after_local,
 )
+from send.mail_config import mail_status_payload
 from intelligence.email_extractor_agent import enrich_prospects_with_emails
 from intelligence.observation_evidence_agent import refresh_observation_evidence
 from discovery.auto_prospect_agent import (
@@ -381,6 +382,7 @@ def api_status():
         "stale_drafts":          stale,
         "stranded_drafted_missing_queue": stranded["recoverable_count"],
         "current_draft_version": _CURRENT_DRAFT_VERSION,
+        "mail":                  mail_status_payload(),
     })
 
 def _enrich_row(row: dict, index: int) -> dict:

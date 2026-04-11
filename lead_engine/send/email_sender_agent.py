@@ -11,8 +11,14 @@ from email.message import EmailMessage
 from pathlib import Path
 from typing import Dict, List
 
+try:
+    from send.mail_config import load_mail_settings, validate_mail_settings
+except ModuleNotFoundError:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    from send.mail_config import load_mail_settings, validate_mail_settings
 
-# Full 41-column schema — MUST stay in sync with run_lead_engine.PENDING_COLUMNS.
+
+# Full queue schema — MUST stay in sync with run_lead_engine.PENDING_COLUMNS.
 # WARNING: Do NOT shrink this list. _write_pending_rows() uses it as fieldnames,
 # so any column omitted here will be permanently stripped from the CSV on the next write.
 PENDING_EMAIL_COLUMNS = [
@@ -30,6 +36,7 @@ PENDING_EMAIL_COLUMNS = [
     "replied", "replied_at", "reply_snippet",
     "conversation_notes", "conversation_next_step",
     "send_after",
+    "business_specific_observation",
 ]
 
 
@@ -69,9 +76,10 @@ _SIGNATURE = (
     "Drew Yomantas\n"
     "Copperline\n"
     "Workflow consulting for service businesses\n"
-    "drewyomantas@gmail.com"
+    "drewyomantas@copperlineops.com"
 )
-_SIGNATURE_ANCHOR = "drewyomantas@gmail.com"
+_SIGNATURE_ANCHOR = "drewyomantas@copperlineops.com"
+_LEGACY_SIGNATURE_ANCHOR = "drewyomantas@gmail.com"
 
 
 def _parse_send_after_local(send_after_raw: str):
@@ -90,6 +98,8 @@ def _parse_send_after_local(send_after_raw: str):
 def _append_signature(body: str) -> str:
     if _SIGNATURE_ANCHOR in body:
         return body
+    if _LEGACY_SIGNATURE_ANCHOR in body:
+        return body.replace(_LEGACY_SIGNATURE_ANCHOR, _SIGNATURE_ANCHOR)
     return body + _SIGNATURE
 
 
@@ -136,24 +146,20 @@ def _draft_validation_state(row: Dict[str, str]) -> Dict[str, str | bool]:
     }
 
 
-def _send_email_via_gmail(to_email: str, subject: str, body: str) -> str:
-    """Send via Gmail SMTP. Returns the Message-ID. Raises on failure."""
+def _send_via_google_workspace_smtp(to_email: str, subject: str, body: str) -> str:
+    """Send via Google Workspace SMTP. Returns the Message-ID. Raises on failure."""
     import uuid
-    sender      = os.getenv("GMAIL_ADDRESS", "").strip()
-    app_password = os.getenv("GMAIL_APP_PASSWORD", "").strip()
-
-    if not sender or not app_password:
-        raise RuntimeError("GMAIL_ADDRESS and GMAIL_APP_PASSWORD must be set.")
-
-    sender_name = os.getenv("SENDER_DISPLAY_NAME", "Drew @ Copperline")
+    settings = load_mail_settings()
+    validate_mail_settings(settings, require_live=True)
     message_id  = f"<{uuid.uuid4().hex}@copperline.mail>"
     body        = _append_signature(body)
 
     message = EmailMessage()
-    message["From"]       = f"{sender_name} <{sender}>"
+    message["From"]       = f"{settings.identity.from_name} <{settings.identity.from_email}>"
     message["To"]         = to_email
     message["Subject"]    = subject
     message["Message-ID"] = message_id
+    message["Reply-To"]   = settings.identity.reply_to
     message.set_content(body)
 
     html_body = (
@@ -164,11 +170,15 @@ def _send_email_via_gmail(to_email: str, subject: str, body: str) -> str:
     )
     message.add_alternative(html_body, subtype="html")
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        smtp.login(sender, app_password)
+    with smtplib.SMTP_SSL(settings.smtp_host, settings.smtp_port) as smtp:
+        smtp.login(settings.smtp_username, settings.smtp_password)
         smtp.send_message(message)
 
     return message_id
+
+
+def _send_email_via_gmail(to_email: str, subject: str, body: str) -> str:
+    return _send_via_google_workspace_smtp(to_email, subject, body)
 
 
 def _is_send_eligible(row: Dict[str, str]) -> bool:
@@ -311,6 +321,8 @@ def _update_prospects_sent_status(pending_csv_path: Path, sent_names: set) -> No
 
 def process_pending_emails(pending_csv_path: str | Path, dry_run: bool = True) -> Dict[str, int]:
     """Process pending queue. dry_run=True by default — never sends unless explicitly False."""
+    if not dry_run:
+        validate_mail_settings(require_live=True)
     rows = _read_pending_rows(pending_csv_path)
 
     drafted       = len(rows)

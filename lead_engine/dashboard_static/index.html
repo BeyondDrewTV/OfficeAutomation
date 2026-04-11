@@ -1481,6 +1481,57 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .db-check.done .db-check-icon{background:var(--green);border-color:var(--green);color:#0e1a12}
 .db-card-stage-sel{margin-top:10px;width:100%;padding:5px 8px;background:var(--surface3);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:11px;font-family:var(--sans);cursor:pointer;outline:none}
 
+/* ── Quick-Win Review ────────────────────────────────────────────────────── */
+.qw-section{margin-top:14px}
+.qw-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.qw-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.qw-card{border:1px solid var(--border);border-radius:var(--rs);padding:10px;margin-bottom:6px;background:var(--bg)}
+.qw-card-hdr{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.qw-cat-badge{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:rgba(79,142,247,.15);color:var(--accent)}
+.qw-pri-now{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:rgba(239,68,68,.15);color:#ef4444}
+.qw-pri-soon{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:rgba(245,158,11,.15);color:#f59e0b}
+.qw-pri-later{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:rgba(107,114,128,.15);color:var(--muted)}
+.qw-remove-btn{margin-left:auto;font-size:10px;color:var(--muted);cursor:pointer;background:none;border:none;padding:2px 6px;border-radius:3px}
+.qw-remove-btn:hover{color:#ef4444;background:rgba(239,68,68,.08)}
+.qw-field-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+.qw-field-row{margin-bottom:6px}
+.qw-label{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.qw-input{width:100%;font-size:11px;padding:5px 7px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);box-sizing:border-box;resize:vertical}
+.qw-input:focus{outline:none;border-color:var(--accent)}
+.qw-select{font-size:11px;padding:4px 6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);width:100%}
+.qw-add-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.qw-template-sel{font-size:11px;padding:4px 6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);max-width:220px}
+.qw-easy-fix{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer}
+.po-section{margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+.po-section-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap}
+.po-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.po-section-sub{font-size:11px;color:var(--muted);line-height:1.5;max-width:520px;margin-top:2px}
+.po-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.po-card{border:1px solid var(--border);border-radius:var(--rs);padding:10px;margin-bottom:8px;background:var(--bg)}
+.po-card-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.po-card-title{font-size:11px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.po-rec-badge{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:rgba(62,207,114,.12);color:var(--green)}
+.po-remove-btn{margin-left:auto;font-size:10px;color:var(--muted);cursor:pointer;background:none;border:none;padding:2px 6px;border-radius:3px}
+.po-remove-btn:hover{color:#ef4444;background:rgba(239,68,68,.08)}
+.po-offer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:5px}
+.po-offer-check{display:flex;align-items:flex-start;gap:5px;font-size:10px;color:var(--muted);line-height:1.35}
+.po-offer-check input{margin-top:2px}
+.po-empty{font-size:11px;color:var(--muted);padding:7px 0;line-height:1.5}
+.po-accept-box{margin-top:12px;border:1px solid var(--border);border-radius:var(--rs);background:var(--surface);padding:10px}
+.po-accept-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.po-accept-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.po-accept-sub{font-size:11px;color:var(--muted);line-height:1.5;margin-top:2px;max-width:520px}
+.po-accept-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.po-accepted-context{border:1px solid rgba(62,207,114,.18);background:rgba(62,207,114,.06);border-radius:var(--rs);padding:10px;margin:10px 0 12px;display:none}
+.po-accepted-context.visible{display:block}
+.po-accepted-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--green);margin-bottom:4px}
+.po-accepted-copy{font-size:11px;color:var(--text);line-height:1.55}
+.po-accepted-copy span{color:var(--muted)}
+.lb-section{margin-top:14px}
+.lb-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.lb-pre{font-size:11px;line-height:1.75;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:14px;white-space:pre-wrap;font-family:inherit;color:var(--text);max-height:380px;overflow-y:auto;display:none}
+.lb-pre.open{display:block}
+.lb-actions{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
 /* ── Delivery Run ────────────────────────────────────────────────────────── */
 .dr-wrap{max-width:900px;margin:0 auto;padding:28px}
 .dr-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;gap:12px}
@@ -1519,6 +1570,23 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .dr-empty{padding:48px 0;text-align:center;color:var(--muted);font-size:13px}
 .dr-run-btn{font-size:11px;padding:4px 10px;background:var(--surface3);border:1px solid var(--border);border-radius:var(--rs);color:var(--muted);cursor:pointer;transition:.12s;white-space:nowrap}
 .dr-run-btn:hover{color:var(--text);border-color:var(--border-hi)}
+input.dr-textarea{min-height:auto;resize:none;display:block;width:100%;box-sizing:border-box}
+.dr-context{font-size:11px;color:var(--muted);margin-bottom:14px;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);display:none}
+.dr-client-sel{padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:var(--sans);font-size:12px;outline:none;min-width:200px;cursor:pointer}
+.dr-client-sel option,.dr-client-sel optgroup{background:var(--surface2)}
+.dr-hdr-selectors{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dr-summary-pre{font-size:11px;line-height:1.7;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:12px;white-space:pre-wrap;font-family:inherit;color:var(--text);max-height:340px;overflow-y:auto}
+.dr-section-actions{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.drv-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:12px;margin-bottom:10px}
+.drv-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.drv-title{font-size:13px;font-weight:700;color:var(--text)}
+.drv-meta{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.4}
+.drv-chip-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.drv-chip{font-size:10px;color:var(--muted);padding:2px 7px;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface3)}
+.drv-chip.good{color:var(--green);border-color:rgba(62,207,114,.25)}
+.drv-chip.warn{color:var(--amber);border-color:rgba(245,166,35,.25)}
+.drv-chip.bad{color:#ef4444;border-color:rgba(239,68,68,.25)}
+.drv-empty{padding:44px 0;text-align:center;color:var(--muted);font-size:13px}
 
 </style>
 </head>
@@ -1531,6 +1599,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
     <span class="tag">Operations Hub</span>
   </div>
   <div class="hdr-r">
+    <span id="mail-svc-status" class="svc-pill svc-unknown" title="Outbound mail identity has not been checked yet.">Mail: Checking</span>
     <span id="mc-svc-status" class="svc-pill svc-unknown" title="The missed-call automation service has not been configured yet. This does not affect discovery or outreach.">● Missed-Call: Not Configured</span>
     <button class="btn btn-ghost" onclick="qlfOpen()" title="Search all leads by email, name, phone (Ctrl+K)" style="font-size:12px;display:flex;align-items:center;gap:6px">
       🔍 Find Lead <kbd style="font-size:9px;color:var(--dim);background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:1px 5px;font-family:var(--mono)">Ctrl+K</kbd>
@@ -1572,6 +1641,7 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   <!-- Delivery sub-tabs -->
   <div class="sub-tab" data-parent="delivery" data-page="hardening-command" onclick="switchSubPage('delivery','hardening-command',this)">🛠 Hardening Command</div>
   <div class="sub-tab" data-parent="delivery" data-page="delivery-run" onclick="switchSubPage('delivery','delivery-run',this)">📋 Delivery Run</div>
+  <div class="sub-tab" data-parent="delivery" data-page="delivery-review" onclick="switchSubPage('delivery','delivery-review',this)">Manual Review</div>
   <div class="sub-tab" data-parent="delivery" data-page="deploy-activation" onclick="switchSubPage('delivery','deploy-activation',this)">🚀 Deploy Activation</div>
   <div class="sub-tab" data-parent="delivery" data-page="delivery-board" onclick="switchSubPage('delivery','delivery-board',this)" style="display:none">&#128230; Board</div>
 </nav>
@@ -3581,6 +3651,7 @@ async function loadAll() {
     setText('s-approved', status.approved_unsent);
     setText('s-sent', status.sent);
     setText('s-logged', status.sent_logged_only);
+    _updateMailStatus(status.mail);
     _updateRepliedStat(status.replied ?? 0);
     setText('s-stale', status.stale_drafts);
     status_draft_version = status.current_draft_version ?? '';
@@ -3611,6 +3682,7 @@ async function loadStats() {
   setText('s-approved', s.approved_unsent);
   setText('s-sent', s.sent);
   setText('s-logged', s.sent_logged_only);
+  _updateMailStatus(s.mail);
   _updateRepliedStat(s.replied ?? 0);
   setText('s-stale', s.stale_drafts);
   _updateScheduledStat(); // Pass 172-177: computed from allRows — must follow allRows population in loadAll
@@ -3621,6 +3693,25 @@ function _updateRepliedStat(count) {
   if (stat) stat.textContent = count;
   const pulse = document.getElementById('reply-pulse');
   if (pulse) pulse.style.display = count > 0 ? 'inline-block' : 'none';
+}
+
+function _updateMailStatus(mail) {
+  const pill = document.getElementById('mail-svc-status');
+  window._lastMailStatus = mail || null;
+  if (!pill) return;
+  if (!mail) {
+    pill.className = 'svc-pill svc-unknown';
+    pill.textContent = 'Mail: Unknown';
+    pill.title = 'Outbound mail status was not returned by the server.';
+    return;
+  }
+  const sender = mail.from_email || 'unknown sender';
+  const live = !!mail.live_send_enabled;
+  const ready = !!mail.ready_for_live_send;
+  pill.className = 'svc-pill ' + (ready ? 'svc-online' : 'svc-offline');
+  pill.textContent = `Mail: ${sender} - ${live ? 'Live' : 'Test mode'}`;
+  const issues = Array.isArray(mail.issues) && mail.issues.length ? ` Issues: ${mail.issues.join(', ')}.` : '';
+  pill.title = `Provider: ${mail.provider || 'unknown'}. From: ${mail.from_name || ''} <${sender}>. Reply-To: ${mail.reply_to || sender}. ${ready ? 'Ready for live send.' : 'Not ready for live send.'}${issues}`;
 }
 
 function _updateScheduledStat() { // Pass 172-177: client-side computed — backend has no scheduled count endpoint
@@ -6991,8 +7082,11 @@ async function sendDryRun() {
 
 function confirmSend() {
   const ready = _sendableRows(allRows).length;
+  const mail = window._lastMailStatus || {};
+  const sender = mail.from_email || 'the configured Workspace sender';
+  const mode = mail.live_send_enabled ? 'Live send is enabled' : 'Test mode is active - live send will be blocked';
   document.getElementById('send-modal-msg').innerHTML =
-    `<strong>${ready} email${ready!==1?'s':''}</strong> will be sent from your Gmail account as Drew @ Copperline. Only rows that are approved, valid, and currently send-ready are included, including rows whose schedule window has arrived. This cannot be undone.`;
+    `<strong>${ready} email${ready!==1?'s':''}</strong> will be sent from ${escHtml(sender)} as ${escHtml(mail.from_name || 'Drew @ Copperline')}. ${escHtml(mode)}. Only rows that are approved, valid, and currently send-ready are included, including rows whose schedule window has arrived. This cannot be undone.`;
   document.getElementById('send-modal').classList.add('open');
 }
 
@@ -7453,6 +7547,7 @@ function _runPageHooks(name) {
   if (name === 'conversations') convLoad();
   if (name === 'hardening-command') loadHardeningCommand();
   if (name === 'delivery-run') loadDeliveryRun();
+  if (name === 'delivery-review') loadDeliveryReviewQueue();
   if (name === 'deploy-activation') loadDeliveryActivation();
   if (name === 'delivery-board') loadDeliveryBoard();
   if (name === 'health')        { healthLoad(); exceptionsLoad(); }
@@ -8791,6 +8886,7 @@ function _cvDefaultDeliveryProfile(row) {
     core_offer: '',
     bundle_key: '',
     selected_modules: [],
+    proposal_options: [],
     price: '',
     agreement_status: '',
     invoice_status: '',
@@ -8844,6 +8940,7 @@ function _cvNormalizeDeliveryProfile(profile, row) {
 
   const selectedModules = _cvNormalizeModules(profile.selected_modules);
   normalized.selected_modules = selectedModules.length ? selectedModules : _cvNormalizeModules(legacyStack?.selected_modules || []);
+  normalized.proposal_options = Array.isArray(profile.proposal_options) ? profile.proposal_options : [];
 
   if (typeof profile.price === 'number') normalized.price = String(profile.price);
   if (typeof profile.price === 'string') normalized.price = profile.price.trim();
@@ -9360,6 +9457,8 @@ const _DA_MODULE_PRICING = {
 let _daPendingLead = null;
 let _daActiveKey = '';
 let _daSaveTimer = null;
+let _daQuickWins = [];
+let _daProposalOptions = [];
 let _deliveryCatalog = null;
 let _hardeningCommandLoaded = false;
 const _DA_VISIBILITY_LABELS = {
@@ -9389,6 +9488,19 @@ const _DA_PRIMARY_ACTIONS = {
   deploy: 'Launch Deployment',
   access: 'Request Access',
 };
+const _DA_PROPOSAL_OFFER_KEYS = [
+  'presence_refresh',
+  'starter_website',
+  'lead_contact_setup',
+  'missed_call_recovery',
+  'estimate_job_status_communication',
+  'client_approval_estimate_portal',
+  'review_request_system',
+  'follow_up_reminder_setup',
+  'basic_cleanup',
+  'presence_website',
+  'full_starter_package',
+];
 
 async function _daEnsureCatalog() {
   if (_deliveryCatalog) return _deliveryCatalog;
@@ -9537,6 +9649,7 @@ function _daDefaultState() {
       urgency: '',
       transcript_summary: '',
       do_not_recommend_notes: '',
+      quick_wins: [],
     },
     discovery: {
       poor_or_missing_website: false,
@@ -9556,6 +9669,14 @@ function _daDefaultState() {
       core_offer: '',
       bundle_key: '',
       selected_modules: [],
+      proposal_options: [],
+      accepted_option_id: '',
+      accepted_option_status: 'draft_only',
+      accepted_option_date: '',
+      accepted_option_label: '',
+      accepted_option_note: '',
+      accepted_scope_note: '',
+      accepted_assumptions: '',
       price: '',
       pricing_mode: 'live_quote',
       monthly_support: false,
@@ -9625,6 +9746,7 @@ function _daReadState() {
     urgency: document.getElementById('da-consult-urgency')?.value || '',
     transcript_summary: document.getElementById('da-consult-transcript')?.value || '',
     do_not_recommend_notes: document.getElementById('da-consult-do-not-recommend')?.value || '',
+    quick_wins: _daQuickWins,
   };
   const discovery = {};
   const discoveryIdMap = {
@@ -9644,6 +9766,14 @@ function _daReadState() {
     core_offer: document.getElementById('da-core-offer')?.value || '',
     bundle_key: document.getElementById('da-bundle-key')?.value || '',
     selected_modules: _daSelectedModules(),
+    proposal_options: _daProposalOptions,
+    accepted_option_id: document.getElementById('po-accepted-option-id')?.value || '',
+    accepted_option_status: document.getElementById('po-accepted-status')?.value || 'draft_only',
+    accepted_option_date: document.getElementById('po-accepted-date')?.value || '',
+    accepted_option_label: document.getElementById('po-accepted-label')?.value || '',
+    accepted_option_note: document.getElementById('po-accepted-note')?.value || '',
+    accepted_scope_note: document.getElementById('po-accepted-scope-note')?.value || '',
+    accepted_assumptions: document.getElementById('po-accepted-assumptions')?.value || '',
     price: document.getElementById('da-price')?.value || '',
     pricing_mode: document.getElementById('da-pricing-mode')?.value || 'live_quote',
     monthly_support: (document.getElementById('da-monthly-support')?.value || 'false') === 'true',
@@ -9926,6 +10056,11 @@ function _daFillForm(state, meta = {}) {
   setVal('da-consult-urgency', consult.urgency || '');
   setVal('da-consult-transcript', consult.transcript_summary || '');
   setVal('da-consult-do-not-recommend', consult.do_not_recommend_notes || '');
+  const _incomingQW = Array.isArray(consult.quick_wins) ? consult.quick_wins : [];
+  if (JSON.stringify(_incomingQW) !== JSON.stringify(_daQuickWins)) {
+    _daQuickWins = _incomingQW;
+    _qwRenderList();
+  }
 
   const discoveryIdMap = {
     poor_or_missing_website: 'da-weak-website',
@@ -9941,6 +10076,13 @@ function _daFillForm(state, meta = {}) {
 
   setVal('da-core-offer', profile.core_offer || recommendation.core_offer || '');
   setVal('da-bundle-key', profile.bundle_key || recommendation.bundle_key || '');
+  setVal('po-accepted-option-id', profile.accepted_option_id || '');
+  setVal('po-accepted-status', profile.accepted_option_status || 'draft_only');
+  setVal('po-accepted-date', profile.accepted_option_date || '');
+  setVal('po-accepted-label', profile.accepted_option_label || '');
+  setVal('po-accepted-note', profile.accepted_option_note || '');
+  setVal('po-accepted-scope-note', profile.accepted_scope_note || '');
+  setVal('po-accepted-assumptions', profile.accepted_assumptions || '');
   setVal('da-price', profile.price || '');
   setVal('da-pricing-mode', profile.pricing_mode || 'live_quote');
   setVal('da-monthly-support', profile.monthly_support === true ? 'true' : (profile.monthly_support === false ? 'false' : ''));
@@ -9971,6 +10113,13 @@ function _daFillForm(state, meta = {}) {
   const selectedModules = new Set(profile.selected_modules || recommendation.selected_modules || []);
   ['missed_call_recovery','follow_up_reminder_setup','review_request_system','estimate_job_status_communication','client_approval_estimate_portal','mobile_admin_workflow_helper']
     .forEach((key) => setChecked(`da-module-${key}`, selectedModules.has(key)));
+
+  const incomingOptions = Array.isArray(profile.proposal_options) ? profile.proposal_options : [];
+  if (JSON.stringify(incomingOptions) !== JSON.stringify(_daProposalOptions)) {
+    _daProposalOptions = incomingOptions;
+    _poRenderList();
+  }
+  _poRefreshAcceptedOptionSelect();
 
   daRender();
 }
@@ -10087,6 +10236,16 @@ function daRender() {
   const deployBtn = document.getElementById('da-deploy-btn');
   if (deployBtn) deployBtn.disabled = !gates.launchReady;
 
+  const acceptedContext = _poAcceptedContextText(state);
+  ['da-accepted-context-step4','da-accepted-context-step5','da-accepted-context-step6'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const hasAccepted = state.profile.accepted_option_id || state.profile.accepted_option_status === 'client_accepted';
+    el.classList.toggle('visible', !!hasAccepted);
+    el.innerHTML = `<div class="po-accepted-title">Accepted option</div>
+      <div class="po-accepted-copy"><strong>${escHtml(acceptedContext.label)}</strong> · ${escHtml(acceptedContext.status)}<br><span>${escHtml(acceptedContext.offers || 'No active delivery stack yet')}</span></div>`;
+  });
+
   const tag = document.getElementById('da-key-tag');
   if (tag) tag.textContent = _daActiveKey || 'Unsaved';
 
@@ -10106,6 +10265,537 @@ function daGoToStep(n) {
   steps.forEach((el, idx) => el.classList.toggle('active', idx + 1 === _daCurrentStep));
   const wizard = document.querySelector('.da-wizard-body');
   if (wizard) wizard.scrollTop = 0;
+}
+
+// ── Quick-Win Review ─────────────────────────────────────────────────────────
+
+const QW_TEMPLATES = [
+  { category: 'presence',      what_noticed: 'GBP shows outdated hours or "Permanently closed"',                       why_matters: 'Customers searching evenings or weekends see wrong info and go elsewhere',                             quick_win: 'Update GBP hours to current schedule; add holiday hours for the next 90 days',                   priority: 'now',  offer_key: 'presence_refresh',                    is_easy_fix: true  },
+  { category: 'presence',      what_noticed: 'GBP description is empty or last updated over a year ago',               why_matters: 'Missing or stale description hurts local search rank and tells the customer nothing',             quick_win: 'Write a 2–3 sentence description: who you are, what you do, who you serve',                      priority: 'now',  offer_key: 'presence_refresh',                    is_easy_fix: true  },
+  { category: 'presence',      what_noticed: 'Facebook page has no cover photo or profile photo is years old',         why_matters: 'First impression looks low-effort; customers may assume the business is inactive',                 quick_win: 'Update profile photo to current logo; cover photo to a recent job photo',                        priority: 'now',  offer_key: 'presence_refresh',                    is_easy_fix: true  },
+  { category: 'reviews',       what_noticed: 'No owner responses on any Google reviews — including negative ones',     why_matters: 'Unresponded reviews signal to prospects that no one\'s watching or cares',                       quick_win: 'Respond to all existing reviews; set a reminder to respond within 48 hours going forward',         priority: 'soon', offer_key: 'presence_refresh',                    is_easy_fix: true  },
+  { category: 'website',       what_noticed: 'No website or current site is a placeholder with no real content',       why_matters: 'No website means no credibility anchor — GBP sends traffic nowhere useful',                     quick_win: 'Build a simple site: who/what/where, job photos, clear click-to-call in the header',             priority: 'now',  offer_key: 'starter_website',                     is_easy_fix: false },
+  { category: 'website',       what_noticed: 'Website has no visible phone number above the fold on mobile',           why_matters: 'Most customers on mobile won\'t scroll to find a number — they leave immediately',               quick_win: 'Add a click-to-call phone number to the top bar or hero section',                                priority: 'now',  offer_key: 'starter_website',                     is_easy_fix: true  },
+  { category: 'missed_calls',  what_noticed: 'Calls go to voicemail during job hours with no text-back',               why_matters: 'Roughly 30–50% of missed callers don\'t leave a voicemail — those leads are gone',              quick_win: 'Install missed call text-back: caller gets auto-text within 60 seconds, owner gets notified',     priority: 'now',  offer_key: 'missed_call_recovery',                is_easy_fix: false },
+  { category: 'lead_handling', what_noticed: 'Calls and GBP messages go to a personal cell with no backup',           why_matters: 'When the owner is on a job, leads sit unanswered for hours and call someone else',              quick_win: 'Set up routing so all inbound contacts get an immediate response path, not just voicemail',       priority: 'soon', offer_key: 'lead_contact_setup',                  is_easy_fix: false },
+  { category: 'reviews',       what_noticed: 'Fewer than 10 Google reviews and no new reviews in 6+ months',          why_matters: 'Local search weights review count and recency — low count suppresses map-pack visibility',     quick_win: 'Set up a review request text that goes out automatically after a completed job',                 priority: 'soon', offer_key: 'review_request_system',               is_easy_fix: false },
+  { category: 'lead_handling', what_noticed: 'Estimates are sent by text or verbally with no written follow-up',       why_matters: 'Prospects forget the scope and number — follow-up rate drops below 30%',                       quick_win: 'Send estimates with a link and add a 24h and 72h follow-up text if no reply',                    priority: 'soon', offer_key: 'estimate_job_status_communication',   is_easy_fix: false },
+  { category: 'lead_handling', what_noticed: 'No follow-up after sending an estimate — hoping the customer calls back',why_matters: 'Most jobs are awarded to whoever follows up first — silence loses the job',                     quick_win: 'Add a 2-touch follow-up sequence: text at 24h, text at 72h if no reply',                         priority: 'soon', offer_key: 'follow_up_reminder_setup',            is_easy_fix: false },
+];
+
+const _QW_CAT_LABELS  = { presence: 'Presence', website: 'Website', lead_handling: 'Lead Handling', reviews: 'Reviews', missed_calls: 'Missed Calls', other: 'Other' };
+const _QW_OFFER_LABELS = {
+  presence_refresh: 'Presence Refresh', starter_website: 'Starter Website',
+  lead_contact_setup: 'Lead & Contact Setup', missed_call_recovery: 'Missed Call Recovery',
+  review_request_system: 'Review Request System', estimate_job_status_communication: 'Estimate & Job Status',
+  follow_up_reminder_setup: 'Follow-Up & Reminder Setup', client_approval_estimate_portal: 'Client Approval Portal',
+};
+
+function _qwNextId() { return 'qw_' + Date.now() + '_' + Math.floor(Math.random() * 1000); }
+
+function _qwPopulateTemplateSelect() {
+  const sel = document.getElementById('qw-template-sel');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">+ Template…</option>' +
+    QW_TEMPLATES.map((t, i) =>
+      `<option value="${i}">${escHtml(_QW_CAT_LABELS[t.category] || t.category)} — ${escHtml(t.what_noticed.slice(0, 52))}${t.what_noticed.length > 52 ? '…' : ''}</option>`
+    ).join('');
+}
+
+function qwAdd() {
+  _daQuickWins.push({ id: _qwNextId(), category: 'presence', what_noticed: '', why_matters: '', quick_win: '', priority: 'now', offer_key: '', is_easy_fix: false });
+  _qwRenderList();
+  daScheduleSave();
+}
+
+function qwApplyTemplate(idx) {
+  const t = QW_TEMPLATES[parseInt(idx, 10)];
+  if (!t) return;
+  _daQuickWins.push({ id: _qwNextId(), ...t });
+  _qwRenderList();
+  daScheduleSave();
+}
+
+function qwRemove(id) {
+  _daQuickWins = _daQuickWins.filter(w => w.id !== id);
+  _qwRenderList();
+  daScheduleSave();
+}
+
+function qwUpdateField(id, field, value) {
+  const w = _daQuickWins.find(w => w.id === id);
+  if (!w) return;
+  if (field === 'is_easy_fix') w[field] = !!value;
+  else w[field] = value;
+  if (field === 'category' || field === 'priority' || field === 'offer_key' || field === 'is_easy_fix') {
+    _qwRenderList();
+  }
+  daScheduleSave();
+}
+
+function _qwRenderList() {
+  const el = document.getElementById('qw-list');
+  if (!el) return;
+  if (!_daQuickWins.length) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:6px 0">No quick wins captured yet. Use + Add Win or a template above.</div>';
+    return;
+  }
+  el.innerHTML = _daQuickWins.map(w => {
+    const priClass = w.priority === 'now' ? 'qw-pri-now' : w.priority === 'soon' ? 'qw-pri-soon' : 'qw-pri-later';
+    const priLabel = w.priority === 'now' ? 'Now' : w.priority === 'soon' ? 'Soon' : 'Later';
+    const catLabel = _QW_CAT_LABELS[w.category] || w.category || 'General';
+    return `<div class="qw-card">
+  <div class="qw-card-hdr">
+    <span class="qw-cat-badge">${escHtml(catLabel)}</span>
+    <span class="${priClass}">${escHtml(priLabel)}</span>
+    ${w.is_easy_fix ? '<span style="font-size:9px;color:var(--muted)">⚡ Easy fix</span>' : ''}
+    <button class="qw-remove-btn" onclick="qwRemove('${w.id}')">✕ Remove</button>
+  </div>
+  <div class="qw-field-2">
+    <div>
+      <div class="qw-label">Category</div>
+      <select class="qw-select" onchange="qwUpdateField('${w.id}','category',this.value)">
+        ${Object.entries(_QW_CAT_LABELS).map(([k,v]) => `<option value="${k}"${w.category===k?' selected':''}>${escHtml(v)}</option>`).join('')}
+      </select>
+    </div>
+    <div>
+      <div class="qw-label">Priority</div>
+      <select class="qw-select" onchange="qwUpdateField('${w.id}','priority',this.value)">
+        <option value="now"${w.priority==='now'?' selected':''}>Now</option>
+        <option value="soon"${w.priority==='soon'?' selected':''}>Soon</option>
+        <option value="later"${w.priority==='later'?' selected':''}>Later</option>
+      </select>
+    </div>
+  </div>
+  <div class="qw-field-row">
+    <div class="qw-label">What I noticed</div>
+    <textarea class="qw-input" rows="2" oninput="qwUpdateField('${w.id}','what_noticed',this.value)">${escHtml(w.what_noticed||'')}</textarea>
+  </div>
+  <div class="qw-field-row">
+    <div class="qw-label">Why it matters</div>
+    <textarea class="qw-input" rows="2" oninput="qwUpdateField('${w.id}','why_matters',this.value)">${escHtml(w.why_matters||'')}</textarea>
+  </div>
+  <div class="qw-field-row">
+    <div class="qw-label">Quick win</div>
+    <textarea class="qw-input" rows="2" oninput="qwUpdateField('${w.id}','quick_win',this.value)">${escHtml(w.quick_win||'')}</textarea>
+  </div>
+  <div class="qw-field-2">
+    <div>
+      <div class="qw-label">Mapped offer (optional)</div>
+      <select class="qw-select" onchange="qwUpdateField('${w.id}','offer_key',this.value)">
+        <option value="">— None —</option>
+        ${Object.entries(_QW_OFFER_LABELS).map(([k,v]) => `<option value="${k}"${w.offer_key===k?' selected':''}>${escHtml(v)}</option>`).join('')}
+      </select>
+    </div>
+    <div style="display:flex;align-items:flex-end;padding-bottom:4px">
+      <label class="qw-easy-fix">
+        <input type="checkbox" ${w.is_easy_fix?'checked':''} onchange="qwUpdateField('${w.id}','is_easy_fix',this.checked)">
+        Same-day easy fix
+      </label>
+    </div>
+  </div>
+</div>`;
+  }).join('');
+}
+
+// ── Simple Proposal Options ──────────────────────────────────────────────────
+
+function _poNextId() { return 'po_' + Date.now() + '_' + Math.floor(Math.random() * 1000); }
+
+function _poOfferChoices() {
+  return _DA_PROPOSAL_OFFER_KEYS.map((key) => ({
+    key,
+    label: COPPERLINE_BUNDLE_LABELS[key] ? `${COPPERLINE_BUNDLE_LABELS[key]} bundle` : _poOfferLabel(key),
+  }));
+}
+
+function _poOfferLabel(key) {
+  return COPPERLINE_CORE_LABELS[key] || COPPERLINE_MODULE_LABELS[key] || COPPERLINE_BUNDLE_LABELS[key] || key;
+}
+
+function _poNormalizeOption(option = {}) {
+  const offerKeys = option.offer_keys || option.included_offers || [];
+  return {
+    id: option.id || _poNextId(),
+    label: option.label || '',
+    offer_keys: Array.isArray(offerKeys) ? offerKeys.filter((key) => _poOfferChoices().some((item) => item.key === key)) : [],
+    price_note: option.price_note || '',
+    scope_note: option.scope_note || '',
+    recommended: !!(option.recommended ?? option.is_recommended),
+    assumptions: option.assumptions || option.notes || '',
+  };
+}
+
+function _poAcceptedStatusLabel(status) {
+  if (status === 'client_accepted') return 'Client accepted';
+  if (status === 'client_leaning') return 'Client leaning';
+  return 'Draft only';
+}
+
+function _poAcceptedStatus() {
+  return document.getElementById('po-accepted-status')?.value || 'draft_only';
+}
+
+function _poFindOption(optionId) {
+  return _daProposalOptions.map(_poNormalizeOption).find((option) => option.id === optionId) || null;
+}
+
+function _poSelectedOption() {
+  return _poFindOption(document.getElementById('po-accepted-option-id')?.value || '');
+}
+
+function _poOptionToStack(option) {
+  const keys = option?.offer_keys || [];
+  const bundle_key = keys.find((key) => COPPERLINE_BUNDLE_LABELS[key]) || '';
+  const core_offer = bundle_key
+    ? (COPPERLINE_BUNDLE_CORE[bundle_key] || '')
+    : (keys.find((key) => COPPERLINE_CORE_LABELS[key]) || '');
+  const selected_modules = keys.filter((key) => COPPERLINE_MODULE_LABELS[key] && key !== 'mobile_admin_workflow_helper');
+  return { core_offer, bundle_key, selected_modules };
+}
+
+function _poAcceptedContextText(state = _daReadState()) {
+  const option = _poFindOption(state.profile.accepted_option_id);
+  const label = state.profile.accepted_option_label || option?.label || 'No option selected';
+  const offers = option?.offer_keys?.length
+    ? option.offer_keys.map(_poOfferLabel).join(' + ')
+    : [state.profile.bundle_key, state.profile.core_offer, ...(state.profile.selected_modules || [])].filter(Boolean).map(_poOfferLabel).join(' + ');
+  const status = _poAcceptedStatusLabel(state.profile.accepted_option_status);
+  return { label, offers, status };
+}
+
+function _poRefreshAcceptedOptionSelect() {
+  const sel = document.getElementById('po-accepted-option-id');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">No selected option</option>' +
+    _daProposalOptions.map(_poNormalizeOption).map((option) =>
+      `<option value="${escHtml(option.id)}"${option.id === current ? ' selected' : ''}>${escHtml(option.label || 'Untitled option')}</option>`
+    ).join('');
+  if (current && !_poFindOption(current)) sel.value = '';
+}
+
+function poAcceptedOptionChanged() {
+  const option = _poSelectedOption();
+  const set = (id, value) => { const el = document.getElementById(id); if (el) el.value = value; };
+  if (option) {
+    set('po-accepted-label', option.label || '');
+    set('po-accepted-scope-note', option.scope_note || '');
+    set('po-accepted-assumptions', option.assumptions || '');
+  }
+  daScheduleSave();
+}
+
+function poSetAcceptedStatus(status) {
+  const statusEl = document.getElementById('po-accepted-status');
+  const dateEl = document.getElementById('po-accepted-date');
+  const option = _poSelectedOption();
+  if (statusEl) statusEl.value = status;
+  if (status === 'client_accepted' && dateEl && !dateEl.value) dateEl.value = new Date().toISOString().slice(0, 10);
+  if (option) {
+    const labelEl = document.getElementById('po-accepted-label');
+    const scopeEl = document.getElementById('po-accepted-scope-note');
+    const assumptionsEl = document.getElementById('po-accepted-assumptions');
+    if (labelEl && !labelEl.value) labelEl.value = option.label || '';
+    if (scopeEl && !scopeEl.value) scopeEl.value = option.scope_note || '';
+    if (assumptionsEl && !assumptionsEl.value) assumptionsEl.value = option.assumptions || '';
+  }
+  daScheduleSave();
+}
+
+function poCreateActivationScope() {
+  const option = _poSelectedOption();
+  if (!option) {
+    toast('Select a proposal option first', 'err');
+    return;
+  }
+  const stack = _poOptionToStack(option);
+  if (!stack.core_offer && !stack.bundle_key && !stack.selected_modules.length) {
+    toast('Selected option has no included offers yet', 'err');
+    return;
+  }
+  const setVal = (id, value) => { const el = document.getElementById(id); if (el) el.value = value; };
+  const setChecked = (id, value) => { const el = document.getElementById(id); if (el) el.checked = !!value; };
+  setVal('po-accepted-option-id', option.id);
+  setVal('po-accepted-status', 'client_accepted');
+  if (!document.getElementById('po-accepted-date')?.value) setVal('po-accepted-date', new Date().toISOString().slice(0, 10));
+  setVal('po-accepted-label', option.label || '');
+  setVal('po-accepted-scope-note', option.scope_note || '');
+  setVal('po-accepted-assumptions', option.assumptions || '');
+  setVal('da-core-offer', stack.core_offer);
+  setVal('da-bundle-key', stack.bundle_key);
+  ['missed_call_recovery','follow_up_reminder_setup','review_request_system','estimate_job_status_communication','client_approval_estimate_portal','mobile_admin_workflow_helper']
+    .forEach((key) => setChecked(`da-module-${key}`, stack.selected_modules.includes(key)));
+  if (option.price_note && !document.getElementById('da-price')?.value) setVal('da-price', option.price_note);
+  const notes = [option.scope_note, option.assumptions ? `Assumptions: ${option.assumptions}` : ''].filter(Boolean).join('\n');
+  if (notes) setVal('da-offer-notes', notes);
+  setVal('da-activation-packet-status', ['','draft'].includes(document.getElementById('da-activation-packet-status')?.value || '') ? 'collecting' : document.getElementById('da-activation-packet-status')?.value || 'collecting');
+  setVal('da-next-step', `Kick off accepted option: ${option.label || _poOfferLabel(stack.bundle_key || stack.core_offer || stack.selected_modules[0])}. Collect access and packet inputs.`);
+  setVal('da-stage', 'won');
+  daScheduleSave();
+  daGoToStep(5);
+}
+
+async function poOpenAcceptedDeliveryRun() {
+  const option = _poSelectedOption();
+  const stack = option ? _poOptionToStack(option) : _daReadState().profile;
+  const offerKey = stack.bundle_key || stack.core_offer || (stack.selected_modules || [])[0] || '';
+  if (!offerKey) {
+    toast('No accepted delivery offer selected yet', 'err');
+    return;
+  }
+  const res = await daSaveOnly();
+  const leadKey = res?.key || _daActiveKey || '';
+  if (!leadKey) {
+    toast('Save this activation record before opening Delivery Run', 'err');
+    return;
+  }
+  drOpenForClient(leadKey, offerKey);
+}
+
+function _poCurrentStackKeys(state, rec, leanOnly = false) {
+  const profile = state.profile || {};
+  const hasStack = !!(profile.core_offer || profile.bundle_key || profile.selected_modules?.length);
+  const core = hasStack ? profile.core_offer : rec.core_offer;
+  const bundle = hasStack ? profile.bundle_key : rec.bundle_key;
+  const modules = hasStack ? (profile.selected_modules || []) : (rec.selected_modules || []);
+  return [...new Set([leanOnly ? '' : bundle, core, ...(leanOnly ? [] : modules)].filter(Boolean))];
+}
+
+function _poUpdateField(id, field, value) {
+  const option = _daProposalOptions.find((item) => item.id === id);
+  if (!option) return;
+  if (field === 'recommended') option[field] = !!value;
+  else option[field] = value;
+  if (field === 'recommended') _poRenderList();
+  if (field === 'label') _poRefreshAcceptedOptionSelect();
+  daScheduleSave();
+}
+
+function _poToggleOffer(id, offerKey, checked) {
+  const option = _daProposalOptions.find((item) => item.id === id);
+  if (!option) return;
+  const selected = new Set(option.offer_keys || option.included_offers || []);
+  if (checked) selected.add(offerKey);
+  else selected.delete(offerKey);
+  option.offer_keys = [...selected].filter((key) => _poOfferChoices().some((item) => item.key === key));
+  daScheduleSave();
+}
+
+function poAdd(seed = {}) {
+  _daProposalOptions.push(_poNormalizeOption(seed));
+  _poRenderList();
+  daScheduleSave();
+}
+
+function poRemove(id) {
+  _daProposalOptions = _daProposalOptions.filter((item) => item.id !== id);
+  _poRenderList();
+  daScheduleSave();
+}
+
+function poBuildFromRecommendation() {
+  const state = _daReadState();
+  const rec = _daRecommendationFromState(state);
+  const fullStack = _poCurrentStackKeys(state, rec, false);
+  const leanStack = _poCurrentStackKeys(state, rec, true);
+  const quickWinOffer = _daQuickWins.map((w) => w.offer_key).find((key) => key && !fullStack.includes(key));
+  const options = [
+    {
+      id: _poNextId(),
+      label: 'Recommended Option',
+      offer_keys: fullStack,
+      price_note: (state.profile.price || '').trim(),
+      scope_note: state.profile.offer_notes || rec.reason || 'Best fit based on the quick wins and discovery notes.',
+      recommended: true,
+      assumptions: 'Use this as the main recommendation unless the owner wants a smaller first step.',
+    },
+  ];
+  if (leanStack.length && JSON.stringify(leanStack) !== JSON.stringify(fullStack)) {
+    options.push({
+      id: _poNextId(),
+      label: 'Smaller First Step',
+      offer_keys: leanStack,
+      price_note: '',
+      scope_note: 'A lighter starting point if the owner wants to solve the clearest pain first.',
+      recommended: false,
+      assumptions: '',
+    });
+  }
+  if (quickWinOffer) {
+    options.push({
+      id: _poNextId(),
+      label: 'Optional Add-On',
+      offer_keys: [quickWinOffer],
+      price_note: '',
+      scope_note: 'Use only if this quick win matters enough to include in the first follow-up.',
+      recommended: false,
+      assumptions: '',
+    });
+  } else {
+    options.push({
+      id: _poNextId(),
+      label: 'Stretch / Bundle Option',
+      offer_keys: [],
+      price_note: '',
+      scope_note: 'Only fill this if the owner wants a broader bundle after the first recommendation.',
+      recommended: false,
+      assumptions: '',
+    });
+  }
+  _daProposalOptions = options.slice(0, 3);
+  _poRenderList();
+  daScheduleSave();
+}
+
+function _poRenderList() {
+  const el = document.getElementById('po-list');
+  if (!el) return;
+  _daProposalOptions = _daProposalOptions.map(_poNormalizeOption);
+  if (!_daProposalOptions.length) {
+    el.innerHTML = '<div class="po-empty">No simple options yet. Build from the current recommendation or add one manually.</div>';
+    _poRefreshAcceptedOptionSelect();
+    return;
+  }
+  const choices = _poOfferChoices();
+  el.innerHTML = _daProposalOptions.map((raw) => {
+    const option = _poNormalizeOption(raw);
+    const title = option.label || 'Untitled option';
+    return `<div class="po-card">
+  <div class="po-card-hdr">
+    <span class="po-card-title">${escHtml(title)}</span>
+    ${option.recommended ? '<span class="po-rec-badge">Recommended</span>' : ''}
+    <button class="po-remove-btn" onclick="poRemove('${option.id}')">Remove</button>
+  </div>
+  <div class="qw-field-2">
+    <div>
+      <div class="qw-label">Option label</div>
+      <input class="qw-input" type="text" value="${escHtml(option.label)}" oninput="_poUpdateField('${option.id}','label',this.value)">
+    </div>
+    <div>
+      <div class="qw-label">Price / price note</div>
+      <input class="qw-input" type="text" value="${escHtml(option.price_note)}" placeholder="$750 or formal estimate needed" oninput="_poUpdateField('${option.id}','price_note',this.value)">
+    </div>
+  </div>
+  <div class="qw-field-row">
+    <div class="qw-label">Included offer(s)</div>
+    <div class="po-offer-grid">
+      ${choices.map((choice) => `<label class="po-offer-check"><input type="checkbox" ${option.offer_keys.includes(choice.key) ? 'checked' : ''} onchange="_poToggleOffer('${option.id}','${choice.key}',this.checked)"> ${escHtml(choice.label)}</label>`).join('')}
+    </div>
+  </div>
+  <div class="qw-field-row">
+    <div class="qw-label">Scope note</div>
+    <textarea class="qw-input" rows="2" oninput="_poUpdateField('${option.id}','scope_note',this.value)">${escHtml(option.scope_note)}</textarea>
+  </div>
+  <div class="qw-field-row">
+    <div class="qw-label">Notes / assumptions</div>
+    <textarea class="qw-input" rows="2" oninput="_poUpdateField('${option.id}','assumptions',this.value)">${escHtml(option.assumptions)}</textarea>
+  </div>
+  <label class="qw-easy-fix"><input type="checkbox" ${option.recommended ? 'checked' : ''} onchange="_poUpdateField('${option.id}','recommended',this.checked)"> Recommended option</label>
+</div>`;
+  }).join('');
+  _poRefreshAcceptedOptionSelect();
+}
+
+function _qwLeaveBehindText() {
+  const state = _daReadState();
+  const businessName = (state.snapshot.business_name || '').trim() || 'Your Business';
+  const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const rec = _daRecommendationFromState(state);
+  const wins = _daQuickWins.filter(w => (w.what_noticed || w.quick_win || w.why_matters).trim());
+  const priLabels = { now: 'Priority: Now', soon: 'Priority: Soon', later: 'Priority: Later' };
+  const bar = '─'.repeat(52);
+
+  let out = `QUICK-WIN REVIEW\n${businessName}  ·  ${date}\nPrepared by Drew Yomantas\n\n${bar}\n`;
+
+  if (wins.length) {
+    out += `\nWHAT WE FOUND\n\n`;
+    wins.forEach((w, i) => {
+      out += `${i + 1}. ${_QW_CAT_LABELS[w.category] || w.category || 'General'}  ·  ${priLabels[w.priority] || 'Priority: Soon'}\n`;
+      if (w.what_noticed) out += `   What we noticed: ${w.what_noticed}\n`;
+      if (w.why_matters)  out += `   Why it matters:  ${w.why_matters}\n`;
+      if (w.quick_win)    out += `   Quick win:       ${w.quick_win}\n`;
+      if (w.is_easy_fix)  out += `   ⚡ Same-day easy fix\n`;
+      if (w.offer_key && _QW_OFFER_LABELS[w.offer_key]) out += `   Offer: ${_QW_OFFER_LABELS[w.offer_key]}\n`;
+      out += `\n`;
+    });
+    out += `${bar}\n`;
+  }
+
+  if (rec.packageLabel) {
+    out += `\nRECOMMENDED NEXT STEPS\n\n`;
+    out += `• ${rec.packageLabel}\n`;
+    if (rec.includes && rec.includes.length > 1) rec.includes.forEach(s => { out += `  — ${s}\n`; });
+    if (rec.reason) out += `\n${rec.reason}\n`;
+    if ((state.profile.offer_notes || '').trim()) out += `\n${state.profile.offer_notes.trim()}\n`;
+    out += `\n${bar}\n`;
+  }
+
+  const options = (_daProposalOptions || []).map((option) => _poNormalizeOption(option)).filter((option) =>
+    (option.label || option.price_note || option.scope_note || option.assumptions || option.offer_keys.length)
+  );
+  if (options.length) {
+    out += `\nSIMPLE OPTIONS\n\n`;
+    options.forEach((option, i) => {
+      out += `${i + 1}. ${option.label || 'Option'}${option.recommended ? '  ·  Recommended' : ''}\n`;
+      const offers = (option.offer_keys || []).map(_poOfferLabel).filter(Boolean);
+      if (offers.length) out += `   Includes: ${offers.join(' + ')}\n`;
+      if ((option.price_note || '').trim()) out += `   Price note: ${option.price_note.trim()}\n`;
+      if ((option.scope_note || '').trim()) out += `   Scope: ${option.scope_note.trim()}\n`;
+      if ((option.assumptions || '').trim()) out += `   Assumptions: ${option.assumptions.trim()}\n`;
+      out += `\n`;
+    });
+    out += `${bar}\n`;
+  }
+
+  if (state.profile.accepted_option_status === 'client_accepted' && (state.profile.accepted_option_label || state.profile.accepted_option_id)) {
+    const accepted = _poAcceptedContextText(state);
+    out += `\nACCEPTED DIRECTION\n\n`;
+    out += `${accepted.label}\n`;
+    if (accepted.offers) out += `Includes: ${accepted.offers}\n`;
+    if (state.profile.accepted_option_date) out += `Accepted: ${state.profile.accepted_option_date}\n`;
+    if (state.profile.accepted_scope_note) out += `Scope: ${state.profile.accepted_scope_note}\n`;
+    if (state.profile.accepted_assumptions) out += `Assumptions: ${state.profile.accepted_assumptions}\n`;
+    if (state.profile.accepted_option_note) out += `Note: ${state.profile.accepted_option_note}\n`;
+    out += `\n${bar}\n`;
+  }
+
+  const price = (state.profile.price || '').trim();
+  if (price || state.profile.monthly_fee) {
+    out += `\nINVESTMENT NOTE\n\n`;
+    if (price) out += `Quote note: ${price}\n`;
+    if (state.profile.monthly_fee) out += `Monthly support note: ${state.profile.monthly_fee}\n`;
+    out += `\n${bar}\n`;
+  }
+
+  out += `\nQuestions? Contact Drew Yomantas\nIf this direction looks right, reply with the option you prefer and we'll confirm scope, timing, and the next step.\n`;
+  return out;
+}
+
+function qwToggleLeaveBehind() {
+  const pre = document.getElementById('qw-lb-pre');
+  if (!pre) return;
+  const isOpen = pre.classList.toggle('open');
+  if (isOpen) pre.textContent = _qwLeaveBehindText();
+  const btn = document.getElementById('qw-lb-toggle-btn');
+  if (btn) btn.textContent = isOpen ? '▲ Hide Leave-Behind' : '📄 Preview Leave-Behind';
+}
+
+function qwRefreshLeaveBehind() {
+  const pre = document.getElementById('qw-lb-pre');
+  if (pre && pre.classList.contains('open')) pre.textContent = _qwLeaveBehindText();
+}
+
+async function qwCopyLeaveBehind() {
+  const text = _qwLeaveBehindText();
+  try {
+    await navigator.clipboard.writeText(text);
+    const btn = document.getElementById('qw-lb-copy-btn');
+    if (btn) { btn.textContent = '✓ Copied'; setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000); }
+  } catch(e) {
+    const pre = document.getElementById('qw-lb-pre');
+    if (pre) { pre.classList.add('open'); pre.textContent = text; }
+  }
 }
 
 function _daUpdateSummaryPanel(state, rec, truth, gates) {
@@ -10161,6 +10851,12 @@ function _daSnapshotPayload() {
       selected_modules: rec.selected_modules,
       package_label: rec.packageLabel,
       reason: rec.reason,
+      proposal_options: state.profile.proposal_options,
+      accepted_option_id: state.profile.accepted_option_id,
+      accepted_option_status: state.profile.accepted_option_status,
+      accepted_option_label: state.profile.accepted_option_label,
+      accepted_scope_note: state.profile.accepted_scope_note,
+      accepted_assumptions: state.profile.accepted_assumptions,
       build_status: truth.build_status,
       launch_eligible: truth.launch_eligible,
       likely_required_access: truth.access_requirements,
@@ -10170,6 +10866,14 @@ function _daSnapshotPayload() {
     core_offer: chosenCore,
     bundle_key: chosenBundle,
     selected_modules: chosenModules,
+    proposal_options: state.profile.proposal_options,
+    accepted_option_id: state.profile.accepted_option_id,
+    accepted_option_status: state.profile.accepted_option_status,
+    accepted_option_date: state.profile.accepted_option_date,
+    accepted_option_label: state.profile.accepted_option_label,
+    accepted_option_note: state.profile.accepted_option_note,
+    accepted_scope_note: state.profile.accepted_scope_note,
+    accepted_assumptions: state.profile.accepted_assumptions,
     price,
     pricing_mode: state.profile.pricing_mode,
     monthly_support: state.profile.monthly_support,
@@ -10240,6 +10944,14 @@ async function daSaveNow(extraPatch = {}) {
         core_offer: res.delivery_profile.core_offer || profile.core_offer,
         bundle_key: res.delivery_profile.bundle_key || profile.bundle_key,
         selected_modules: res.delivery_profile.selected_modules || profile.selected_modules,
+        proposal_options: res.delivery_profile.proposal_options || profile.proposal_options || [],
+        accepted_option_id: res.delivery_profile.accepted_option_id || profile.accepted_option_id,
+        accepted_option_status: res.delivery_profile.accepted_option_status || profile.accepted_option_status,
+        accepted_option_date: res.delivery_profile.accepted_option_date || profile.accepted_option_date,
+        accepted_option_label: res.delivery_profile.accepted_option_label || profile.accepted_option_label,
+        accepted_option_note: res.delivery_profile.accepted_option_note || profile.accepted_option_note,
+        accepted_scope_note: res.delivery_profile.accepted_scope_note || profile.accepted_scope_note,
+        accepted_assumptions: res.delivery_profile.accepted_assumptions || profile.accepted_assumptions,
         price: res.delivery_profile.price || profile.price,
         pricing_mode: res.delivery_profile.pricing_mode || profile.pricing_mode,
         monthly_support: !!res.delivery_profile.monthly_support,
@@ -10443,6 +11155,7 @@ async function loadDeliveryActivation() {
   }
 
   _daFillForm(payload);
+  _qwPopulateTemplateSelect();
   const tag = document.getElementById('da-key-tag');
   if (tag) tag.textContent = _daActiveKey || 'Unsaved';
   if (status) status.textContent = _daActiveKey ? `Loaded ${_daActiveKey}` : 'No client loaded yet.';
@@ -10453,8 +11166,21 @@ function _hardeningMissingHtml(items) {
   return items && items.length ? items.map((item) => `<li>${escHtml(item)}</li>`).join('') : '<li>None</li>';
 }
 
+function _hcEvidenceChip(label, tone='') {
+  return `<span class="db-legal-chip"${tone ? ` style="${tone}"` : ''}>${escHtml(label)}</span>`;
+}
+
+function hcOpenEvidenceRunFromButton(btn) {
+  drOpenReviewRun(btn.dataset.runKey || '', btn.dataset.leadKey || '', btn.dataset.offerKey || '');
+}
+
+function hcOpenReviewQueue() {
+  switchSubPage('delivery', 'delivery-review', document.querySelector('[data-page="delivery-review"]'));
+}
+
 function renderHardeningCommand(catalog) {
   const summary = catalog?.launch_summary || {};
+  const evidenceOverview = catalog?.offer_evidence_overview || {};
   const sumEl = document.getElementById('hc-summary');
   const blockedBy = summary.unfinished_public_offers || 0;
   if (sumEl) {
@@ -10463,6 +11189,9 @@ function renderHardeningCommand(catalog) {
       <div class="db-legal-chip">Ready ${summary.ready_count || 0}</div>
       <div class="db-legal-chip">Hardening ${summary.hardening_count || 0}</div>
       <div class="db-legal-chip">Verification ${summary.verification_count || 0}</div>
+      <div class="db-legal-chip">Offers with runs ${evidenceOverview.offers_with_runs || 0}</div>
+      <div class="db-legal-chip">Reviewed complete ${evidenceOverview.offers_with_reviewed_complete_runs || 0}</div>
+      <div class="db-legal-chip">Human verify candidates ${evidenceOverview.offers_ready_for_human_verification || 0}</div>
       <div class="db-legal-chip">${summary.launch_blocked ? `Launch blocked by ${blockedBy}` : 'Launch clear'}</div>
     `;
   }
@@ -10486,6 +11215,68 @@ function renderHardeningCommand(catalog) {
           item.promotion_criteria.map(c => `<li>${escHtml(c)}</li>`).join('')
         }</ul></div></div>`
       : '';
+    const evidence = item.evidence_summary || {};
+    const readiness = evidence.promotion_readiness || {};
+    const reviewedRuns = Array.isArray(evidence.recent_runs) ? evidence.recent_runs : [];
+    const latestEvidenceRun = reviewedRuns.find((run) => run.run_key === evidence.last_evidence_run_key) || reviewedRuns[0] || {};
+    const readinessTone = readiness.status === 'ready_for_human_verification'
+      ? 'color:var(--green);border-color:rgba(62,207,114,.3)'
+      : (readiness.status === 'reviewed_proof_incomplete'
+          ? 'color:var(--red);border-color:rgba(245,101,101,.28)'
+          : 'color:var(--amber);border-color:rgba(245,166,35,.28)');
+    const evidenceChips = [
+      _hcEvidenceChip(`Runs ${Number(evidence.total_runs || 0)}`),
+      _hcEvidenceChip(`Closeout captured ${Number(evidence.closeout_captured_count || 0)}`),
+      _hcEvidenceChip(`Review ready ${Number(evidence.ready_for_manual_review_count || 0)}`),
+      _hcEvidenceChip(`Reviewed complete ${Number(evidence.reviewed_complete_count || 0)}`),
+      _hcEvidenceChip(`Reviewed insufficient ${Number(evidence.reviewed_insufficient_count || 0)}`),
+      _hcEvidenceChip(evidence.open_blocker_present ? `Open blockers ${Number(evidence.open_blocker_count || 0)}` : 'No open blockers', evidence.open_blocker_present ? 'color:var(--red);border-color:rgba(245,101,101,.28)' : 'color:var(--green);border-color:rgba(62,207,114,.3)')
+    ].join('');
+    const lastReviewed = evidence.last_reviewed_run_key
+      ? `${evidence.last_reviewed_business_name || 'Unknown client'}${evidence.last_reviewed_run_date ? ` · ${evidence.last_reviewed_run_date}` : ''}`
+      : 'No reviewed run yet';
+    const lastEvidence = evidence.last_evidence_run_key
+      ? `${evidence.last_evidence_business_name || 'Unknown client'}${evidence.last_evidence_run_date ? ` · ${evidence.last_evidence_run_date}` : ''}`
+      : 'No evidence run yet';
+    const evidenceRunsHtml = reviewedRuns.length
+      ? `<div style="margin-top:10px"><div class="da-mini">Recent evidence runs</div><div class="da-list-box"><ul>${
+          reviewedRuns.slice(0, 3).map((run) => `<li>${escHtml(run.business_name || 'Practice run')} · ${escHtml(run.verification_review_label || 'Not ready for review')} · ${escHtml(run.closeout_status || 'open')}${run.proof_present ? ' · proof' : ' · proof missing'}</li>`).join('')
+        }</ul></div></div>`
+      : '';
+    const evidenceHtml = `
+      <div style="margin-top:10px">
+        <div class="da-mini">Offer evidence ledger</div>
+        <div class="db-legal-row" style="margin-top:6px">${evidenceChips}</div>
+        <div class="da-grid-2" style="margin-top:10px">
+          <div>
+            <div class="da-mini">Proof coverage</div>
+            <div class="da-list-box">${escHtml(evidence.proof_coverage_summary || 'No delivery runs yet')}</div>
+          </div>
+          <div>
+            <div class="da-mini">Evidence state</div>
+            <div class="da-list-box">${escHtml(evidence.evidence_presence || 'No run evidence yet')}</div>
+          </div>
+          <div>
+            <div class="da-mini">Last reviewed run</div>
+            <div class="da-list-box">${escHtml(lastReviewed)}</div>
+          </div>
+          <div>
+            <div class="da-mini">Last evidence run</div>
+            <div class="da-list-box">${escHtml(lastEvidence)}</div>
+          </div>
+        </div>
+        <div class="db-next-step" style="margin-top:10px">
+          <div class="db-next-label">Promotion readiness</div>
+          <div class="db-legal-row" style="margin:6px 0 8px 0">${_hcEvidenceChip(readiness.label || 'No reviewed runs yet', readinessTone)}</div>
+          <div class="db-next-copy">${escHtml(readiness.note || 'No reviewed delivery evidence exists for this offer yet.')}</div>
+        </div>
+        ${evidenceRunsHtml}
+        <div class="db-legal-row" style="margin-top:10px">
+          ${evidence.last_evidence_run_key ? `<button class="dr-run-btn" data-run-key="${escHtml(evidence.last_evidence_run_key)}" data-lead-key="${escHtml(latestEvidenceRun.lead_key || '')}" data-offer-key="${escHtml(item.key)}" onclick="hcOpenEvidenceRunFromButton(this)">Open latest evidence run</button>` : ''}
+          <button class="btn btn-ghost" onclick="hcOpenReviewQueue()">Open review queue</button>
+        </div>
+      </div>
+    `;
     const gapsHtml = missingAll > 0
       ? `<div class="da-grid-2" style="margin-top:10px">
           <div><div class="da-mini">Missing artifacts</div><div class="da-list-box"><ul>${_hardeningMissingHtml(item.missing_artifacts)}</ul></div></div>
@@ -10512,6 +11303,7 @@ function renderHardeningCommand(catalog) {
       <div class="db-blocker">${escHtml(item.current_truth_note || 'No current truth note.')}</div>
       <div class="db-card-subtle">${escHtml(item.target_truth_note || '')}</div>
       ${artifactHtml}
+      ${evidenceHtml}
       ${gapsHtml}
       ${promotionHtml}
       <div class="db-next-step">
@@ -15653,50 +16445,77 @@ const DR_CHECKLISTS = {
   presence_refresh: {
     sections: [
       { id: 'gbp', label: 'Google Business Profile', items: [
-        { key: 'name',          label: 'Business name correct and consistent across web' },
-        { key: 'category',      label: 'Category correct — primary and secondary' },
-        { key: 'phone',         label: 'Phone number accurate' },
-        { key: 'website',       label: 'Website URL linked and correct' },
-        { key: 'hours',         label: 'Hours accurate — including seasonal or holiday' },
-        { key: 'service_area',  label: 'Service area defined and accurate' },
-        { key: 'services',      label: 'Services list current and complete' },
-        { key: 'description',   label: 'Description updated — useful, not keyword-stuffed' },
-        { key: 'photos',        label: 'Photos reviewed — old/bad removed, recent added' },
-        { key: 'reviews',       label: 'Recent reviews have responses' },
-        { key: 'before_proof',  label: 'Before-state screenshot or link captured' },
-        { key: 'after_proof',   label: 'After-state screenshot or link captured' },
+        { key: 'before_state',  label: 'Before-state captured — screenshot or note current GBP state before any changes' },
+        { key: 'name',         label: 'Business name correct and consistent across web' },
+        { key: 'category',     label: 'Category correct — primary and secondary' },
+        { key: 'phone',        label: 'Phone number accurate' },
+        { key: 'website',      label: 'Website URL linked and correct' },
+        { key: 'hours',        label: 'Hours accurate — including seasonal or holiday' },
+        { key: 'service_area', label: 'Service area defined and accurate' },
+        { key: 'services',     label: 'Services list current and complete' },
+        { key: 'description',  label: 'Description updated — useful, not keyword-stuffed' },
+        { key: 'photos',       label: 'Photos reviewed — old/bad removed, recent added' },
+        { key: 'reviews',      label: 'Recent reviews have responses' },
       ]},
       { id: 'fb', label: 'Facebook', items: [
-        { key: 'about',          label: 'About/bio text accurate and current' },
-        { key: 'contact',        label: 'Phone and contact info accurate' },
-        { key: 'profile_photo',  label: 'Profile photo current' },
-        { key: 'cover_photo',    label: 'Cover photo current' },
-        { key: 'cta',            label: 'CTA button set correctly' },
-        { key: 'pinned',         label: 'Pinned/high-visibility content reviewed' },
-        { key: 'photos',         label: 'Albums and photos cleaned up' },
-        { key: 'contact_route',  label: 'Contact route tested — message, link, or phone' },
-        { key: 'cross_check',    label: 'Consistent with GBP — phone, hours, address' },
-        { key: 'before_proof',   label: 'Before-state screenshot or link captured' },
-        { key: 'after_proof',    label: 'After-state screenshot or link captured' },
+        { key: 'before_state',  label: 'Before-state captured — screenshot or note current Facebook page state before any changes' },
+        { key: 'about',         label: 'About/bio text accurate and current' },
+        { key: 'contact',       label: 'Phone and contact info accurate' },
+        { key: 'profile_photo', label: 'Profile photo current' },
+        { key: 'cover_photo',   label: 'Cover photo current' },
+        { key: 'cta',           label: 'CTA button set correctly' },
+        { key: 'pinned',        label: 'Pinned/high-visibility content reviewed' },
+        { key: 'photos',        label: 'Albums and photos cleaned up' },
+        { key: 'contact_route', label: 'Contact route tested — message, link, or phone' },
+        { key: 'cross_check',   label: 'Consistent with GBP — phone, hours, address' },
+      ]},
+    ]
+  },
+  missed_call_recovery: {
+    sections: [
+      { id: 'setup', label: 'Setup', items: [
+        { key: 'twilio_number',          label: 'Twilio number assigned to client account' },
+        { key: 'routing_configured',     label: 'Missed-call routing to Twilio confirmed with client\'s carrier' },
+        { key: 'response_text_approved', label: 'Auto-response text content reviewed and approved by owner' },
+        { key: 'business_name_confirmed',label: 'Business name in auto-text confirmed accurate' },
+        { key: 'owner_notification_set', label: 'Owner notification destination confirmed (phone or email)' },
+      ]},
+      { id: 'testing', label: 'Testing', items: [
+        { key: 'test_call_completed',        label: 'Test missed call placed — text received within 2 minutes' },
+        { key: 'text_wording_correct',       label: 'Auto-text message wording correct and professional' },
+        { key: 'owner_notification_received',label: 'Owner notification received after test' },
+        { key: 'logging_verified',           label: 'Activity log / logging verified functional' },
+        { key: 'safe_mode_documented',       label: 'Safe-mode path or failover documented' },
+      ]},
+      { id: 'handoff', label: 'Handoff', items: [
+        { key: 'owner_briefed',          label: 'Owner briefed — knows what happens when a call is missed' },
+        { key: 'owner_access_confirmed', label: 'Owner can access call log or activity view' },
+        { key: 'handoff_doc_filed',      label: 'Handoff doc location on file' },
       ]},
     ]
   },
 };
 
 let _drCurrentOfferKey = '';
-let _drState = {};
-let _drSaveTimer = null;
-let _drCatalogItems = [];
+let _drCurrentLeadKey  = '';
+let _drCurrentRunKey   = '';
+let _drState           = {};
+let _drSaveTimer       = null;
+let _drCatalogItems    = [];
+let _drClients         = [];
+
+function _drBuildRunKey(leadKey, offerKey) {
+  if (!offerKey) return '';
+  return (leadKey || 'practice') + '|' + offerKey;
+}
 
 function _drChecklistForOffer(offerKey) {
   if (DR_CHECKLISTS[offerKey]) return DR_CHECKLISTS[offerKey].sections;
-  const catalog = _deliveryCatalog;
-  if (!catalog) return [];
-  const item = (catalog.hardening_items || []).find(i => i.key === offerKey);
+  const item = (_deliveryCatalog?.hardening_items || []).find(i => i.key === offerKey);
   if (!item) return [];
-  const checks = item.qa_checks || [];
-  if (!checks.length) return [];
-  return [{ id: 'qa', label: 'QA Checklist', items: checks.map((c, i) => ({ key: 'qa_' + i, label: c })) }];
+  return (item.qa_checks || []).length
+    ? [{ id: 'qa', label: 'QA Checklist', items: item.qa_checks.map((c, i) => ({ key: 'qa_' + i, label: c })) }]
+    : [];
 }
 
 function _drCountChecks(offerKey) {
@@ -15710,39 +16529,149 @@ function _drCountChecks(offerKey) {
   return { total, done };
 }
 
+const DR_REVIEW_STATUS_LABELS = {
+  not_ready: 'Not ready for review',
+  ready_for_manual_review: 'Ready for manual review',
+  reviewed_insufficient: 'Reviewed, evidence insufficient',
+  reviewed_complete: 'Reviewed, evidence complete',
+};
+
+function _drOfferLabel(offerKey) {
+  return _drCatalogItems.find(i => i.key === offerKey)?.label || _poOfferLabel(offerKey || '') || offerKey || 'Selected offer';
+}
+
+function _drDraftStateFromForm() {
+  return {
+    ..._drState,
+    work_notes:          document.getElementById('dr-work-notes')?.value          ?? _drState.work_notes,
+    before_proof_link:   document.getElementById('dr-before-proof')?.value        ?? _drState.before_proof_link,
+    after_proof_link:    document.getElementById('dr-after-proof')?.value         ?? _drState.after_proof_link,
+    artifact_refs:       document.getElementById('dr-artifact-refs')?.value       ?? _drState.artifact_refs,
+    blockers:            document.getElementById('dr-blockers')?.value            ?? _drState.blockers,
+    delivery_date:       document.getElementById('dr-delivery-date')?.value       ?? _drState.delivery_date,
+    closeout_date:       document.getElementById('dr-closeout-date')?.value       ?? _drState.closeout_date,
+    closeout_notes:      document.getElementById('dr-closeout-notes')?.value      ?? _drState.closeout_notes,
+    post_closeout_notes: document.getElementById('dr-post-closeout-notes')?.value ?? _drState.post_closeout_notes,
+    remaining_recommendations: document.getElementById('dr-remaining-recommendations')?.value ?? _drState.remaining_recommendations,
+    closeout_status:     document.getElementById('dr-closeout-status')?.value     ?? _drState.closeout_status,
+    owner_ack_status:    document.getElementById('dr-owner-ack')?.value           ?? _drState.owner_ack_status,
+    verification_review_status: document.getElementById('dr-verification-review-status')?.value ?? _drState.verification_review_status,
+    verification_review_notes: document.getElementById('dr-verification-review-notes')?.value ?? _drState.verification_review_notes,
+  };
+}
+
+function _drCompletedChecklistLabels(offerKey, limit = 12) {
+  const checks = _drState.checks || {};
+  const labels = [];
+  _drChecklistForOffer(offerKey).forEach(section => {
+    section.items.forEach(item => {
+      if (checks[section.id + '_' + item.key]) labels.push(item.label);
+    });
+  });
+  return labels.slice(0, limit);
+}
+
+function _drCloseoutSummaryText(offerKey = _drCurrentOfferKey) {
+  const state = _drDraftStateFromForm();
+  const client = _drClients.find(c => c.key === _drCurrentLeadKey);
+  const businessName = client?.business_name || state.business_name || (_drCurrentLeadKey ? 'Client' : 'Practice run');
+  const offerName = _drOfferLabel(offerKey);
+  const completed = _drCompletedChecklistLabels(offerKey);
+  const deliveryDate = (state.delivery_date || state.started_at || '').trim();
+  const closeoutDate = (state.closeout_date || '').trim() || new Date().toISOString().slice(0, 10);
+  const ownerAck = state.owner_ack_status === 'acknowledged' ? 'Acknowledged by owner' : 'Pending owner acknowledgment';
+  let out = `DELIVERY CLOSEOUT\n${businessName}\nOffer: ${offerName}\n`;
+  if (deliveryDate) out += `Delivery date: ${deliveryDate}\n`;
+  out += `Closeout date: ${closeoutDate}\n\n`;
+  out += `WHAT WAS COMPLETED\n`;
+  if ((state.closeout_notes || '').trim()) out += `${state.closeout_notes.trim()}\n`;
+  else out += `Delivery checklist work was completed or captured in the run notes.\n`;
+  if (completed.length) {
+    out += `\nKEY CHECKLIST ITEMS\n`;
+    completed.forEach(item => { out += `- ${item}\n`; });
+  }
+  out += `\nPROOF / ARTIFACTS\n`;
+  out += `Before proof: ${(state.before_proof_link || '').trim() || 'Not yet attached'}\n`;
+  out += `After proof: ${(state.after_proof_link || '').trim() || 'Not yet attached'}\n`;
+  if ((state.artifact_refs || '').trim()) out += `Artifacts: ${state.artifact_refs.trim()}\n`;
+  out += `\nOWNER ACKNOWLEDGMENT\n${ownerAck}\n`;
+  const remaining = ((state.remaining_recommendations || '').trim() || (state.post_closeout_notes || '').trim());
+  if (remaining) out += `\nREMAINING RECOMMENDATIONS / NEXT STEPS\n${remaining}\n`;
+  if ((state.blockers || '').trim()) out += `\nOPEN FLAGS\n${state.blockers.trim()}\n`;
+  out += `\nDrew Yomantas\nCopperline\n`;
+  return out;
+}
+
+function drRefreshCloseoutSummary() {
+  const el = document.getElementById('dr-closeout-summary');
+  if (el) el.textContent = _drCloseoutSummaryText();
+}
+
+function drCopyCloseoutSummary() {
+  const text = _drCloseoutSummaryText();
+  navigator.clipboard.writeText(text).then(() => toast('Closeout summary copied', 'ok')).catch(() => toast('Copy failed', 'err'));
+}
+
 function _drVerifRail(offerKey) {
   const { total, done } = _drCountChecks(offerKey);
   const hasKit = _drCatalogItems.find(i => i.key === offerKey)?.artifact_files;
-  const hasKitFiles = hasKit && Object.keys(hasKit).length > 0;
-  const runStarted = !!_drState.started_at;
-  const runComplete = total > 0 && done === total;
+  const hasKitFiles    = hasKit && Object.keys(hasKit).length > 0;
+  const runStarted     = !!_drState.started_at;
+  const runComplete    = total > 0 && done === total;
+  const hasBeforeProof = !!(_drState.before_proof_link || '').trim();
+  const hasAfterProof  = !!(_drState.after_proof_link  || '').trim();
+  const proofCaptured  = hasBeforeProof && hasAfterProof;
+  const hasBlockers    = !!(_drState.blockers || '').trim();
   const closeoutCaptured = _drState.closeout_status === 'captured';
+  const clientBound    = !!_drCurrentLeadKey;
+  const reviewStatus   = _drState.verification_review_status || 'not_ready';
 
   const rail = [
-    { icon: hasKitFiles ? '✓' : '○', label: 'Kit files on disk', done: hasKitFiles },
-    { icon: runStarted ? (runComplete ? '✓' : '◑') : '○', label: runStarted ? (runComplete ? 'Checklist complete' : 'Delivery in progress') : 'Not started', done: runComplete },
-    { icon: closeoutCaptured ? '✓' : '○', label: closeoutCaptured ? 'Closeout captured' : 'Closeout pending', done: closeoutCaptured },
-    { icon: '○', label: 'Verification: needs real closeout + proof on file', done: false },
+    { icon: hasKitFiles  ? '✓' : '○', label: 'Kit files on disk',                                                               done: hasKitFiles },
+    { icon: clientBound  ? '✓' : '○', label: clientBound ? 'Client bound' : 'Practice run — no client',                         done: clientBound },
+    { icon: runComplete  ? '✓' : (runStarted ? '◑' : '○'), label: runStarted ? (runComplete ? 'Checklist complete' : `${done}/${total} items done`) : 'Not started', done: runComplete },
+    { icon: proofCaptured ? '✓' : (hasBeforeProof ? '◑' : '○'), label: proofCaptured ? 'Before + after proof captured' : (hasBeforeProof ? 'Before proof only' : 'Proof not captured'), done: proofCaptured },
+    { icon: closeoutCaptured ? '✓' : '○', label: closeoutCaptured ? 'Closeout captured' : 'Closeout pending',                   done: closeoutCaptured },
+    { icon: hasBlockers  ? '⚠' : '○', label: hasBlockers ? 'Blockers present — resolve before promoting' : 'No blockers',       done: !hasBlockers },
+    { icon: reviewStatus === 'reviewed_complete' ? '✓' : (reviewStatus === 'ready_for_manual_review' ? '◑' : '○'), label: 'Manual review: ' + (DR_REVIEW_STATUS_LABELS[reviewStatus] || DR_REVIEW_STATUS_LABELS.not_ready), done: reviewStatus === 'reviewed_complete' },
   ];
   return `<div class="dr-verif-rail">${rail.map(r =>
     `<div class="dr-verif-item${r.done ? ' done' : ''}"><div class="dr-verif-icon">${r.icon}</div><div class="dr-verif-label">${escHtml(r.label)}</div></div>`
   ).join('')}</div>`;
 }
 
+function _drUpdateContext() {
+  const ctx = document.getElementById('dr-context');
+  if (!ctx) return;
+  if (!_drCurrentOfferKey) { ctx.style.display = 'none'; return; }
+  const client    = _drClients.find(c => c.key === _drCurrentLeadKey);
+  const offerItem = _drCatalogItems.find(i => i.key === _drCurrentOfferKey);
+  const stageMap  = { won: 'Won', deployment_pending: 'Deployment Pending', live: 'Live', call_booked: 'Call Booked' };
+  const parts = [];
+  if (client) parts.push(client.business_name + (client.stage ? ' · ' + (stageMap[client.stage] || client.stage) : ''));
+  else parts.push('Practice run');
+  if (offerItem) parts.push(offerItem.label);
+  if (_drCurrentRunKey) parts.push('Run key: ' + _drCurrentRunKey);
+  ctx.textContent = parts.join('  ·  ');
+  ctx.style.display = 'block';
+}
+
 function drRender() {
   const offerKey = _drCurrentOfferKey;
-  const body = document.getElementById('dr-body');
-  const progRow = document.getElementById('dr-progress-row');
+  const body     = document.getElementById('dr-body');
+  const progRow  = document.getElementById('dr-progress-row');
   if (!body) return;
 
+  _drUpdateContext();
+
   if (!offerKey) {
-    body.innerHTML = '<div class="dr-empty">Select an offer above to open its delivery checklist.</div>';
+    body.innerHTML = '<div class="dr-empty">Select a client and offer above to open the delivery checklist.</div>';
     if (progRow) progRow.style.display = 'none';
     return;
   }
 
-  const sections = _drChecklistForOffer(offerKey);
-  const checks = _drState.checks || {};
+  const sections  = _drChecklistForOffer(offerKey);
+  const checks    = _drState.checks || {};
   const { total, done } = _drCountChecks(offerKey);
   const pct = total ? Math.round(done / total * 100) : 0;
 
@@ -15751,49 +16680,65 @@ function drRender() {
     const fill = document.getElementById('dr-progress-fill');
     const lbl  = document.getElementById('dr-progress-label');
     if (fill) fill.style.width = pct + '%';
-    if (lbl)  lbl.textContent = done + ' / ' + total + ' (' + pct + '%)';
+    if (lbl)  lbl.textContent  = done + ' / ' + total + ' (' + pct + '%)';
   }
 
   const sectionsHtml = sections.map(section => {
     const secDone = section.items.filter(item => checks[section.id + '_' + item.key]).length;
-    const itemsHtml = section.items.map(item => {
-      const checkKey = section.id + '_' + item.key;
-      const isDone = !!checks[checkKey];
-      return `<div class="dr-check${isDone ? ' done' : ''}" onclick="drToggleCheck('${section.id}','${item.key}')">
-        <div class="dr-check-box">${isDone ? '✓' : ''}</div>
-        <div class="dr-check-label">${escHtml(item.label)}</div>
-      </div>`;
-    }).join('');
     return `<div class="dr-section">
       <div class="dr-section-hdr">${escHtml(section.label)}<span class="dr-section-count">${secDone}/${section.items.length}</span></div>
-      <div class="dr-section-body">${itemsHtml}</div>
+      <div class="dr-section-body">${section.items.map(item => {
+        const isDone = !!checks[section.id + '_' + item.key];
+        return `<div class="dr-check${isDone ? ' done' : ''}" onclick="drToggleCheck('${section.id}','${item.key}')">
+          <div class="dr-check-box">${isDone ? '✓' : ''}</div>
+          <div class="dr-check-label">${escHtml(item.label)}</div>
+        </div>`;
+      }).join('')}</div>
     </div>`;
   }).join('');
 
-  const fieldsHtml = `
+  const proofHtml = `
   <div class="dr-section">
-    <div class="dr-section-hdr">Work Notes &amp; Proof</div>
+    <div class="dr-section-hdr">Proof &amp; Artifacts</div>
     <div class="dr-section-body">
       <div class="dr-fields">
+        <div>
+          <div class="dr-label">Before-state proof</div>
+          <input class="dr-textarea" id="dr-before-proof" type="text" placeholder="Screenshot path, URL, or Drive/Before-name.png" value="${escHtml(_drState.before_proof_link || '')}" oninput="drScheduleSave()">
+        </div>
+        <div>
+          <div class="dr-label">After-state proof</div>
+          <input class="dr-textarea" id="dr-after-proof" type="text" placeholder="Screenshot path, URL, or Drive/After-name.png" value="${escHtml(_drState.after_proof_link || '')}" oninput="drScheduleSave()">
+        </div>
+        <div class="dr-field-full">
+          <div class="dr-label">Artifact references</div>
+          <textarea class="dr-textarea" id="dr-artifact-refs" placeholder="Kit files used, handoff doc location, client email thread…" oninput="drScheduleSave()">${escHtml(_drState.artifact_refs || '')}</textarea>
+        </div>
         <div class="dr-field-full">
           <div class="dr-label">Work notes</div>
           <textarea class="dr-textarea" id="dr-work-notes" placeholder="What you did, what you found, what needs follow-up…" oninput="drScheduleSave()">${escHtml(_drState.work_notes || '')}</textarea>
         </div>
-        <div>
-          <div class="dr-label">Proof links / screenshots</div>
-          <textarea class="dr-textarea" id="dr-proof-links" placeholder="Before: https://…&#10;After: https://…" oninput="drScheduleSave()">${escHtml(_drState.proof_links || '')}</textarea>
-        </div>
-        <div>
+        <div class="dr-field-full">
           <div class="dr-label">Blockers or flags</div>
           <textarea class="dr-textarea" id="dr-blockers" placeholder="Anything blocking completion or needing follow-up…" oninput="drScheduleSave()">${escHtml(_drState.blockers || '')}</textarea>
         </div>
       </div>
     </div>
-  </div>
+  </div>`;
+
+  const closeoutHtml = `
   <div class="dr-section">
     <div class="dr-section-hdr">Closeout</div>
     <div class="dr-section-body">
       <div class="dr-fields">
+        <div>
+          <div class="dr-label">Delivery date</div>
+          <input class="dr-textarea" id="dr-delivery-date" type="date" value="${escHtml(_drState.delivery_date || '')}" oninput="drScheduleSave()">
+        </div>
+        <div>
+          <div class="dr-label">Closeout date</div>
+          <input class="dr-textarea" id="dr-closeout-date" type="date" value="${escHtml(_drState.closeout_date || '')}" oninput="drScheduleSave()">
+        </div>
         <div>
           <div class="dr-label">Closeout status</div>
           <select class="dr-closeout-sel" id="dr-closeout-status" onchange="drScheduleSave()">
@@ -15803,10 +16748,39 @@ function drRender() {
           </select>
         </div>
         <div>
+          <div class="dr-label">Owner acknowledgment</div>
+          <select class="dr-closeout-sel" id="dr-owner-ack" onchange="drScheduleSave()">
+            <option value="pending"${(_drState.owner_ack_status||'pending')==='pending'?' selected':''}>Pending — not yet confirmed</option>
+            <option value="acknowledged"${_drState.owner_ack_status==='acknowledged'?' selected':''}>Acknowledged — owner confirmed</option>
+          </select>
+        </div>
+        <div class="dr-field-full">
           <div class="dr-label">Closeout notes</div>
           <textarea class="dr-textarea" id="dr-closeout-notes" placeholder="What was delivered, what was handed off, what's on file…" oninput="drScheduleSave()">${escHtml(_drState.closeout_notes || '')}</textarea>
         </div>
+        <div class="dr-field-full">
+          <div class="dr-label">Post-closeout notes</div>
+          <textarea class="dr-textarea" id="dr-post-closeout-notes" style="min-height:52px" placeholder="Issues after closeout, follow-up items, lessons learned…" oninput="drScheduleSave()">${escHtml(_drState.post_closeout_notes || '')}</textarea>
+        </div>
+        <div class="dr-field-full">
+          <div class="dr-label">Remaining recommendations / next steps</div>
+          <textarea class="dr-textarea" id="dr-remaining-recommendations" style="min-height:52px" placeholder="Owner-facing next steps, exclusions, or follow-up recommendations…" oninput="drScheduleSave()">${escHtml(_drState.remaining_recommendations || '')}</textarea>
+        </div>
       </div>
+    </div>
+  </div>`;
+
+  const closeoutPacketHtml = `
+  <div class="dr-section">
+    <div class="dr-section-hdr">Owner Closeout Packet
+      <div class="dr-section-actions">
+        <button class="dr-run-btn" onclick="drRefreshCloseoutSummary()">Refresh</button>
+        <button class="dr-run-btn" onclick="drCopyCloseoutSummary()">Copy</button>
+      </div>
+    </div>
+    <div class="dr-section-body">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Copy-ready owner closeout. This does not send, sign, invoice, or promote the offer.</div>
+      <pre class="dr-summary-pre" id="dr-closeout-summary">${escHtml(_drCloseoutSummaryText(offerKey))}</pre>
     </div>
   </div>`;
 
@@ -15814,18 +16788,33 @@ function drRender() {
   <div class="dr-section">
     <div class="dr-section-hdr">Verification Readiness</div>
     <div class="dr-section-body">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Verification requires: one real delivery run complete → closeout captured → proof on file. No offer moves to verification until that evidence exists.</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">Verification requires: one real client-bound run → checklist complete → proof captured → closeout on file → no blockers → operator manual review. No offer moves to verification automatically.</div>
+      <div class="dr-fields">
+        <div>
+          <div class="dr-label">Manual review state</div>
+          <select class="dr-closeout-sel" id="dr-verification-review-status" onchange="drScheduleSave()">
+            <option value="not_ready"${(_drState.verification_review_status||'not_ready')==='not_ready'?' selected':''}>Not ready for review</option>
+            <option value="ready_for_manual_review"${_drState.verification_review_status==='ready_for_manual_review'?' selected':''}>Ready for manual review</option>
+            <option value="reviewed_insufficient"${_drState.verification_review_status==='reviewed_insufficient'?' selected':''}>Reviewed, evidence insufficient</option>
+            <option value="reviewed_complete"${_drState.verification_review_status==='reviewed_complete'?' selected':''}>Reviewed, evidence complete</option>
+          </select>
+        </div>
+        <div class="dr-field-full">
+          <div class="dr-label">Manual review notes</div>
+          <textarea class="dr-textarea" id="dr-verification-review-notes" style="min-height:52px" placeholder="What evidence was reviewed, what is missing, or why it is complete…" oninput="drScheduleSave()">${escHtml(_drState.verification_review_notes || '')}</textarea>
+        </div>
+      </div>
       ${_drVerifRail(offerKey)}
     </div>
   </div>`;
 
-  body.innerHTML = sectionsHtml + fieldsHtml + verifHtml;
+  body.innerHTML = sectionsHtml + proofHtml + closeoutHtml + closeoutPacketHtml + verifHtml;
 }
 
 function drToggleCheck(sectionId, itemKey) {
-  const checkKey = sectionId + '_' + itemKey;
   if (!_drState.checks) _drState.checks = {};
-  _drState.checks[checkKey] = !_drState.checks[checkKey];
+  const k = sectionId + '_' + itemKey;
+  _drState.checks[k] = !_drState.checks[k];
   drRender();
   drScheduleSave();
 }
@@ -15837,31 +16826,41 @@ function drScheduleSave() {
 
 async function drSave() {
   clearTimeout(_drSaveTimer);
-  const offerKey = _drCurrentOfferKey;
-  if (!offerKey) return;
+  const runKey = _drCurrentRunKey;
+  if (!runKey) return;
   const statusEl = document.getElementById('dr-save-status');
   if (statusEl) statusEl.textContent = 'Saving…';
 
-  const workNotes     = document.getElementById('dr-work-notes')?.value   || '';
-  const proofLinks    = document.getElementById('dr-proof-links')?.value  || '';
-  const blockers      = document.getElementById('dr-blockers')?.value     || '';
-  const closeoutNotes = document.getElementById('dr-closeout-notes')?.value || '';
-  const closeoutStatus = document.getElementById('dr-closeout-status')?.value || 'open';
-
+  const client = _drClients.find(c => c.key === _drCurrentLeadKey);
   const patch = {
-    checks:          _drState.checks || {},
-    work_notes:      workNotes,
-    proof_links:     proofLinks,
-    blockers:        blockers,
-    closeout_notes:  closeoutNotes,
-    closeout_status: closeoutStatus,
+    checks:              _drState.checks || {},
+    work_notes:          document.getElementById('dr-work-notes')?.value          || '',
+    before_proof_link:   document.getElementById('dr-before-proof')?.value        || '',
+    after_proof_link:    document.getElementById('dr-after-proof')?.value         || '',
+    artifact_refs:       document.getElementById('dr-artifact-refs')?.value       || '',
+    blockers:            document.getElementById('dr-blockers')?.value            || '',
+    closeout_notes:      document.getElementById('dr-closeout-notes')?.value      || '',
+    post_closeout_notes: document.getElementById('dr-post-closeout-notes')?.value || '',
+    closeout_status:     document.getElementById('dr-closeout-status')?.value     || 'open',
+    owner_ack_status:    document.getElementById('dr-owner-ack')?.value           || 'pending',
+    delivery_date:       document.getElementById('dr-delivery-date')?.value       || '',
+    closeout_date:       document.getElementById('dr-closeout-date')?.value       || '',
+    remaining_recommendations: document.getElementById('dr-remaining-recommendations')?.value || '',
+    verification_review_status: document.getElementById('dr-verification-review-status')?.value || 'not_ready',
+    verification_review_notes: document.getElementById('dr-verification-review-notes')?.value || '',
   };
 
   try {
     const res = await fetch('/api/delivery_run', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ offer_key: offerKey, state: patch }),
+      body: JSON.stringify({
+        run_key:       runKey,
+        offer_key:     _drCurrentOfferKey,
+        lead_key:      _drCurrentLeadKey || 'practice',
+        business_name: client?.business_name || '',
+        state: patch,
+      }),
     });
     const data = await res.json();
     if (data.ok) {
@@ -15876,52 +16875,116 @@ async function drSave() {
   }
 }
 
-async function loadDeliveryRun(offerKey) {
-  await _daEnsureCatalog();
-  const catalog = _deliveryCatalog;
-  _drCatalogItems = catalog?.hardening_items || [];
+async function _drLoadClients() {
+  try {
+    const res = await fetch('/api/delivery_run_clients');
+    const data = await res.json();
+    if (data.ok) _drClients = data.clients || [];
+  } catch(e) { _drClients = []; }
+}
 
+async function _drLoadState() {
+  _drState = {};
+  const runKey = _drCurrentRunKey;
+  if (!runKey) return;
+  try {
+    const res = await fetch('/api/delivery_run?run_key=' + encodeURIComponent(runKey));
+    const data = await res.json();
+    if (data.ok) _drState = data.state || {};
+  } catch(e) {}
+}
+
+function _drPopulateClientSelect() {
+  const sel = document.getElementById('dr-client-select');
+  if (!sel) return;
+  const stageLabel = { won: '🏆 Won', deployment_pending: '⚙ Pending', live: '🟢 Live', call_booked: '📞 Booked' };
+  sel.innerHTML = '<option value="">— Practice run (no client) —</option>' +
+    _drClients.map(c =>
+      `<option value="${escHtml(c.key)}"${c.key === _drCurrentLeadKey ? ' selected' : ''}>${escHtml(c.business_name)} · ${escHtml(stageLabel[c.stage] || c.stage)}</option>`
+    ).join('');
+}
+
+function _drPopulateOfferSelect() {
   const sel = document.getElementById('dr-offer-select');
-  if (sel) {
-    const publicHardening = _drCatalogItems.filter(i => i.offer_type === 'public' && i.build_status !== 'planned');
-    sel.innerHTML = '<option value="">— Select offer —</option>' +
-      publicHardening.map(i => `<option value="${escHtml(i.key)}">${escHtml(i.label)} (${escHtml(i.build_status)})</option>`).join('');
-    if (offerKey) {
-      sel.value = offerKey;
-      _drCurrentOfferKey = offerKey;
+  if (!sel) return;
+  const all = _drCatalogItems.filter(i => i.offer_type === 'public' && i.build_status !== 'planned');
+
+  const client = _drClients.find(c => c.key === _drCurrentLeadKey);
+  const stack  = new Set([client?.core_offer, client?.bundle_key, ...(client?.selected_modules || [])].filter(Boolean));
+  const inStack = all.filter(i => stack.has(i.key));
+  const other   = all.filter(i => !stack.has(i.key));
+
+  let html = '<option value="">— Select offer —</option>';
+  if (inStack.length) {
+    html += `<optgroup label="Client stack">${inStack.map(i =>
+      `<option value="${escHtml(i.key)}"${i.key === _drCurrentOfferKey ? ' selected' : ''}>${escHtml(i.label)} (${escHtml(i.build_status)})</option>`
+    ).join('')}</optgroup>`;
+  }
+  if (other.length) {
+    html += `<optgroup label="${inStack.length ? 'All other offers' : 'All offers'}">${other.map(i =>
+      `<option value="${escHtml(i.key)}"${i.key === _drCurrentOfferKey ? ' selected' : ''}>${escHtml(i.label)} (${escHtml(i.build_status)})</option>`
+    ).join('')}</optgroup>`;
+  }
+  sel.innerHTML = html;
+}
+
+async function loadDeliveryRun(openRunKey) {
+  await _daEnsureCatalog();
+  _drCatalogItems = _deliveryCatalog?.hardening_items || [];
+  await _drLoadClients();
+
+  if (openRunKey) {
+    const pipeIdx = openRunKey.indexOf('|');
+    if (pipeIdx !== -1) {
+      const lk = openRunKey.slice(0, pipeIdx);
+      _drCurrentLeadKey  = lk === 'practice' ? '' : lk;
+      _drCurrentOfferKey = openRunKey.slice(pipeIdx + 1);
+    } else {
+      _drCurrentLeadKey  = '';
+      _drCurrentOfferKey = openRunKey;
     }
+    _drCurrentRunKey = _drBuildRunKey(_drCurrentLeadKey, _drCurrentOfferKey);
+    await _drLoadState();
+  } else if (_drCurrentRunKey) {
+    await _drLoadState();
   }
 
-  if (_drCurrentOfferKey) {
-    try {
-      const res = await fetch('/api/delivery_run?offer_key=' + encodeURIComponent(_drCurrentOfferKey));
-      const data = await res.json();
-      if (data.ok) _drState = data.state || {};
-    } catch(e) { _drState = {}; }
-  }
+  _drPopulateClientSelect();
+  _drPopulateOfferSelect();
+  drRender();
+}
+
+async function drClientChanged() {
+  _drCurrentLeadKey = document.getElementById('dr-client-select')?.value || '';
+  _drCurrentRunKey  = _drBuildRunKey(_drCurrentLeadKey, _drCurrentOfferKey);
+  _drState = {};
+  _drPopulateOfferSelect();
+  await _drLoadState();
   drRender();
 }
 
 async function drOfferChanged() {
-  const sel = document.getElementById('dr-offer-select');
-  const offerKey = sel?.value || '';
-  _drCurrentOfferKey = offerKey;
+  _drCurrentOfferKey = document.getElementById('dr-offer-select')?.value || '';
+  _drCurrentRunKey   = _drBuildRunKey(_drCurrentLeadKey, _drCurrentOfferKey);
   _drState = {};
-  if (offerKey) {
-    try {
-      const res = await fetch('/api/delivery_run?offer_key=' + encodeURIComponent(offerKey));
-      const data = await res.json();
-      if (data.ok) _drState = data.state || {};
-    } catch(e) { _drState = {}; }
-  }
+  await _drLoadState();
   drRender();
 }
 
 function drOpenForOffer(offerKey) {
+  _drCurrentLeadKey  = '';
   _drCurrentOfferKey = offerKey;
+  _drCurrentRunKey   = _drBuildRunKey('', offerKey);
   _drState = {};
-  const tab = document.querySelector('[data-page="delivery-run"]');
-  switchSubPage('delivery', 'delivery-run', tab);
+  switchSubPage('delivery', 'delivery-run', document.querySelector('[data-page="delivery-run"]'));
+}
+
+function drOpenForClient(leadKey, offerKey) {
+  _drCurrentLeadKey  = leadKey  || '';
+  _drCurrentOfferKey = offerKey || '';
+  _drCurrentRunKey   = _drBuildRunKey(leadKey, offerKey);
+  _drState = {};
+  switchSubPage('delivery', 'delivery-run', document.querySelector('[data-page="delivery-run"]'));
 }
 
 // ── Pass 86: Delivery Board ──────────────────────────────────────────────
@@ -16046,7 +17109,10 @@ function buildDbCard(row) {
   const invoiceHtml = row.invoice_status ? `<span class="db-legal-chip">Invoice ${escHtml(row.invoice_status)}</span>` : '';
   const depositHtml = row.deposit_status ? `<span class="db-legal-chip">Deposit ${escHtml(row.deposit_status)}</span>` : '';
   const packetHtml = row.activation_packet_status ? `<span class="db-legal-chip">Packet ${escHtml(row.activation_packet_status)}</span>` : '';
-  const statusHtml = [visibilityHtml, buildHtml, launchHtml, kitHtml, ownershipHtml, supportHtml, priceHtml, agreementHtml, invoiceHtml, depositHtml, packetHtml].filter(Boolean).join('');
+  const acceptedHtml = row.accepted_option_status === 'client_accepted' && row.accepted_option_label
+    ? `<span class="db-legal-chip">Accepted ${escHtml(row.accepted_option_label)}</span>`
+    : '';
+  const statusHtml = [visibilityHtml, buildHtml, launchHtml, kitHtml, ownershipHtml, supportHtml, priceHtml, agreementHtml, invoiceHtml, depositHtml, packetHtml, acceptedHtml].filter(Boolean).join('');
   const next = _dbNextStep(row);
   const checksHtml = _READINESS_KEYS.map(k => {
     const done = row.readiness && row.readiness[k];
@@ -16062,6 +17128,7 @@ function buildDbCard(row) {
     ${stackHtml}
     ${moduleHtml}
     <div class="db-legal-row">${statusHtml || '<span class="db-legal-chip">No legal / money status set yet</span>'}</div>
+    ${row.accepted_scope_note ? `<div class="db-card-subtle">Accepted scope: ${escHtml(row.accepted_scope_note)}</div>` : ''}
     ${(row.required_artifacts || []).length ? `<div class="db-card-subtle">Artifacts: ${escHtml(row.required_artifacts.join(' · '))}</div>` : ''}
     <div class="db-readiness-bar"><div class="db-readiness-fill" style="width:${pct}%"></div></div>
     <div class="db-readiness">${checksHtml}</div>
@@ -16111,6 +17178,70 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
   }
 }
 
+async function loadDeliveryReviewQueue() {
+  const list = document.getElementById('drv-list');
+  if (list) list.innerHTML = '<div class="drv-empty">Loading manual review queue…</div>';
+  try {
+    const res = await fetch('/api/delivery_review_queue');
+    const data = await res.json();
+    if (!data.ok) { console.error('delivery_review_queue error', data); return; }
+    renderDeliveryReviewQueue(data.rows || []);
+  } catch(e) {
+    console.error('loadDeliveryReviewQueue failed', e);
+    if (list) list.innerHTML = '<div class="drv-empty">Review queue failed to load.</div>';
+  }
+}
+
+function _drvChip(label, status) {
+  return `<span class="drv-chip ${status || ''}">${escHtml(label)}</span>`;
+}
+
+function renderDeliveryReviewQueue(rows) {
+  const list = document.getElementById('drv-list');
+  const count = document.getElementById('drv-count');
+  if (count) count.textContent = rows.length ? `${rows.length} run${rows.length === 1 ? '' : 's'}` : 'No runs';
+  if (!list) return;
+  if (!rows.length) {
+    list.innerHTML = '<div class="drv-empty">No delivery runs have been captured yet.</div>';
+    return;
+  }
+  list.innerHTML = rows.map(row => {
+    const proofStatus = row.proof_present ? _drvChip('Proof complete', 'good') : _drvChip('Proof missing', 'warn');
+    const blockerStatus = row.blockers_present ? _drvChip('Blockers present', 'bad') : _drvChip('No blockers', 'good');
+    const closeoutStatus = row.closeout_status === 'captured' ? _drvChip('Closeout captured', 'good') : _drvChip('Closeout pending', 'warn');
+    const reviewClass = row.verification_review_status === 'reviewed_complete' ? 'good'
+      : row.verification_review_status === 'reviewed_insufficient' ? 'bad'
+      : row.verification_review_status === 'ready_for_manual_review' ? 'warn'
+      : '';
+    const reviewStatus = _drvChip(row.verification_review_label || DR_REVIEW_STATUS_LABELS[row.verification_review_status] || 'Not ready for review', reviewClass);
+    const ackStatus = row.owner_ack_status === 'acknowledged' ? _drvChip('Owner acknowledged', 'good') : _drvChip('Owner ack pending', 'warn');
+    const artifactStatus = row.artifact_refs_present ? _drvChip('Artifacts referenced', 'good') : _drvChip('Artifacts not referenced', '');
+    return `<article class="drv-card">
+      <div class="drv-card-hdr">
+        <div>
+          <div class="drv-title">${escHtml(row.business_name || 'Practice run')}</div>
+          <div class="drv-meta">${escHtml(row.offer_label || row.offer_key || 'Offer')} · ${escHtml(row.run_key || '')}${row.updated_at ? ` · Updated ${escHtml(row.updated_at)}` : ''}</div>
+        </div>
+        <button class="dr-run-btn" data-run-key="${escHtml(row.run_key || '')}" data-lead-key="${escHtml(row.lead_key || '')}" data-offer-key="${escHtml(row.offer_key || '')}" onclick="drOpenReviewRunFromButton(this)">Open Run</button>
+      </div>
+      <div class="drv-chip-row">${[closeoutStatus, proofStatus, artifactStatus, blockerStatus, ackStatus, reviewStatus].join('')}</div>
+      <div class="drv-meta">Checklist items tracked: ${Number(row.checks_done || 0)} done / ${Number(row.checks_tracked || 0)} saved. ${row.candidate_for_review ? 'Evidence looks reviewable, pending operator judgment.' : 'Needs manual evidence review before any promotion decision.'}</div>
+      ${row.blockers ? `<div class="db-blocker" style="margin-top:8px">${escHtml(row.blockers)}</div>` : ''}
+    </article>`;
+  }).join('');
+}
+
+function drOpenReviewRun(runKey, leadKey, offerKey) {
+  _drCurrentLeadKey = leadKey || '';
+  _drCurrentOfferKey = offerKey || '';
+  _drCurrentRunKey = runKey || _drBuildRunKey(leadKey, offerKey);
+  switchSubPage('delivery', 'delivery-run', document.querySelector('[data-page="delivery-run"]'));
+}
+
+function drOpenReviewRunFromButton(btn) {
+  drOpenReviewRun(btn.dataset.runKey || '', btn.dataset.leadKey || '', btn.dataset.offerKey || '');
+}
+
 </script>
 
 
@@ -16140,15 +17271,23 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
   <div class="dr-hdr">
     <div>
       <h2>📋 Delivery Run</h2>
-      <div style="font-size:11px;color:var(--muted);margin-top:2px">Operator execution checklist — work through a real delivery, capture proof, and record closeout.</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Operator execution checklist — select a client and offer, work through the checklist, capture proof, and record closeout.</div>
     </div>
     <div class="dr-hdr-actions">
-      <select class="dr-offer-sel" id="dr-offer-select" onchange="drOfferChanged()">
-        <option value="">— Select offer —</option>
-      </select>
+      <div class="dr-hdr-selectors">
+        <select class="dr-client-sel" id="dr-client-select" onchange="drClientChanged()">
+          <option value="">— Practice run (no client) —</option>
+        </select>
+        <select class="dr-offer-sel" id="dr-offer-select" onchange="drOfferChanged()">
+          <option value="">— Select offer —</option>
+        </select>
+      </div>
       <button class="btn btn-ghost" onclick="drSave()" id="dr-save-btn">Save</button>
     </div>
   </div>
+
+  <!-- Run context chip -->
+  <div class="dr-context" id="dr-context"></div>
 
   <!-- Progress -->
   <div class="dr-progress-row" id="dr-progress-row" style="display:none">
@@ -16159,7 +17298,26 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
 
   <!-- Checklist body -->
   <div id="dr-body">
-    <div class="dr-empty">Select an offer above to open its delivery checklist.</div>
+    <div class="dr-empty">Select a client and offer above to open the delivery checklist.</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ PAGE: DELIVERY MANUAL REVIEW ══════════════ -->
+<div class="page" id="page-delivery-review">
+<div class="dr-wrap">
+  <div class="dr-hdr">
+    <div>
+      <h2>Manual Verification Review</h2>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">Run-level evidence queue. Review closeout and proof without promoting offer status automatically.</div>
+    </div>
+    <div class="dr-hdr-actions">
+      <div class="dr-save-status" id="drv-count"></div>
+      <button class="btn btn-ghost" onclick="loadDeliveryReviewQueue()">Refresh</button>
+    </div>
+  </div>
+  <div id="drv-list">
+    <div class="drv-empty">Open the review queue to see captured delivery runs.</div>
   </div>
 </div>
 </div>
@@ -16305,6 +17463,18 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
             <label class="da-mini">Do Not Recommend</label>
             <textarea class="form-textarea da-note" id="da-consult-do-not-recommend" placeholder="Any offer, module, channel, or tool you want the draft recommender to avoid…" oninput="daScheduleSave()"></textarea>
           </div>
+          <div class="qw-section">
+            <div class="qw-section-hdr">
+              <div class="qw-section-title">Quick Wins</div>
+              <div class="qw-add-row">
+                <select class="qw-template-sel" id="qw-template-sel" onchange="if(this.value!==''){qwApplyTemplate(this.value);this.value=''}">
+                  <option value="">+ Template…</option>
+                </select>
+                <button class="btn btn-ghost" style="font-size:11px" onclick="qwAdd()">+ Add Win</button>
+              </div>
+            </div>
+            <div id="qw-list"><div style="font-size:11px;color:var(--muted);padding:6px 0">No quick wins captured yet. Use + Add Win or a template above.</div></div>
+          </div>
         </section>
         <div class="da-step-nav">
           <div class="da-step-nav-left">
@@ -16403,6 +17573,68 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
             <label class="da-mini">Offer Notes</label>
             <textarea class="form-textarea da-note" id="da-offer-notes" placeholder="Reason for the recommendation, scope notes, objections, or special constraints…" oninput="daScheduleSave()"></textarea>
           </div>
+          <div class="po-section">
+            <div class="po-section-hdr">
+              <div>
+                <div class="po-section-title">Simple Options</div>
+                <div class="po-section-sub">Turn the quick wins into an editable recommendation, optional second path, and stretch note for manual follow-up.</div>
+              </div>
+              <div class="po-actions">
+                <button class="btn btn-ghost" style="font-size:11px" onclick="poBuildFromRecommendation()">Build From Recommendation</button>
+                <button class="btn btn-ghost" style="font-size:11px" onclick="poAdd({label:'Optional Option',offer_keys:[],price_note:'',scope_note:'',recommended:false,assumptions:''})">+ Add Option</button>
+              </div>
+            </div>
+            <div id="po-list"><div class="po-empty">No simple options yet. Build from the current recommendation or add one manually.</div></div>
+            <div class="po-accept-box">
+              <div class="po-accept-hdr">
+                <div>
+                  <div class="po-accept-title">Accepted Option</div>
+                  <div class="po-accept-sub">Manual yes-path only. Mark the owner&apos;s chosen option, then create activation-ready scope when it should feed delivery.</div>
+                </div>
+                <div class="po-actions">
+                  <button class="btn btn-ghost" style="font-size:11px" onclick="poSetAcceptedStatus('client_leaning')">Mark Leaning</button>
+                  <button class="btn btn-ghost" style="font-size:11px" onclick="poSetAcceptedStatus('client_accepted')">Mark Accepted</button>
+                  <button class="btn btn-primary" style="font-size:11px" onclick="poCreateActivationScope()">Create Activation Scope</button>
+                </div>
+              </div>
+              <div class="po-accept-grid">
+                <div>
+                  <label class="qw-label">Selected option</label>
+                  <select class="qw-select" id="po-accepted-option-id" onchange="poAcceptedOptionChanged()">
+                    <option value="">No selected option</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="qw-label">Status</label>
+                  <select class="qw-select" id="po-accepted-status" onchange="daScheduleSave()">
+                    <option value="draft_only">Draft only</option>
+                    <option value="client_leaning">Client leaning</option>
+                    <option value="client_accepted">Client accepted</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="qw-label">Acceptance date</label>
+                  <input class="qw-input" id="po-accepted-date" type="date" oninput="daScheduleSave()">
+                </div>
+                <div>
+                  <label class="qw-label">Selected option label</label>
+                  <input class="qw-input" id="po-accepted-label" type="text" placeholder="Recommended Option" oninput="daScheduleSave()">
+                </div>
+              </div>
+              <div class="qw-field-row">
+                <div class="qw-label">Acceptance note</div>
+                <textarea class="qw-input" id="po-accepted-note" rows="2" placeholder="What the owner said yes to, timing, or decision context…" oninput="daScheduleSave()"></textarea>
+              </div>
+              <div class="qw-field-row">
+                <div class="qw-label">Accepted scope note</div>
+                <textarea class="qw-input" id="po-accepted-scope-note" rows="2" placeholder="Scope carried into activation…" oninput="daScheduleSave()"></textarea>
+              </div>
+              <div class="qw-field-row">
+                <div class="qw-label">Owner constraints / assumptions</div>
+                <textarea class="qw-input" id="po-accepted-assumptions" rows="2" placeholder="Access, timing, budget, exclusions, or assumptions to carry forward…" oninput="daScheduleSave()"></textarea>
+              </div>
+            </div>
+          </div>
         </section>
         <div class="da-step-nav">
           <div class="da-step-nav-left">
@@ -16423,6 +17655,7 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
               <div class="da-card-sub">Verify the offer type, kit, and hardening state before moving to packet.</div>
             </div>
           </div>
+          <div class="po-accepted-context" id="da-accepted-context-step4"></div>
           <div class="da-grid-2">
             <div>
               <div class="da-mini">Offer Type / Build</div>
@@ -16492,6 +17725,7 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
               <div class="da-card-sub">Track readiness, access, artifacts, and the packet state before deploy.</div>
             </div>
           </div>
+          <div class="po-accepted-context" id="da-accepted-context-step5"></div>
           <div class="da-grid-2">
             <div>
               <label class="da-mini">Activation Packet Status</label>
@@ -16602,6 +17836,7 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
             </div>
             <span class="tag" id="da-price-badge">Recommendation only</span>
           </div>
+          <div class="po-accepted-context" id="da-accepted-context-step6"></div>
           <div>
             <div class="da-mini">Suggested price guidance</div>
             <div class="da-price-range" id="da-price-range">Recommendation only</div>
@@ -16688,9 +17923,25 @@ async function updateDeliveryProfileByKey(key, profilePatch) {
               <button class="btn btn-ghost" onclick="daAction('access')">Request access</button>
               <button class="btn btn-ghost" onclick="daAction('agreement')">Mark agreement pending</button>
               <button class="btn btn-ghost" onclick="daAction('billing')">Mark invoice / deposit pending</button>
+              <button class="btn btn-ghost" onclick="poCreateActivationScope()">Use accepted scope</button>
+              <button class="btn btn-ghost" onclick="poOpenAcceptedDeliveryRun()">Open accepted run</button>
             </div>
           </div>
           <div style="margin-top:10px" class="da-status" id="da-save-note">Save the call, then use the action buttons to move it into delivery.</div>
+        </section>
+        <section class="da-card" style="margin-top:12px">
+          <div class="da-card-hdr">
+            <div>
+              <div class="da-card-title">Consultation Leave-Behind</div>
+              <div class="da-card-sub">Copy-ready summary of quick wins and recommended next steps for the client.</div>
+            </div>
+            <div class="lb-actions">
+              <button class="btn btn-ghost" style="font-size:11px" id="qw-lb-toggle-btn" onclick="qwToggleLeaveBehind()">📄 Preview Leave-Behind</button>
+              <button class="btn btn-ghost" style="font-size:11px" id="qw-lb-copy-btn" onclick="qwCopyLeaveBehind()">📋 Copy</button>
+            </div>
+          </div>
+          <pre class="lb-pre" id="qw-lb-pre"></pre>
+          <div style="font-size:10px;color:var(--muted);margin-top:6px">Pulls from: business name (Step 1), quick wins (Step 2), recommendation + simple options (Step 3), and quoted price (this step). Fill those steps first for the best output.</div>
         </section>
         <div class="da-step-nav">
           <div class="da-step-nav-left">
