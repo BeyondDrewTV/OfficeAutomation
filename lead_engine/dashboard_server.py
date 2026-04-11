@@ -1977,7 +1977,33 @@ def _normalize_delivery_profile(raw_profile: dict | None, row: dict | None = Non
 
 @app.route("/api/delivery_catalog")
 def api_delivery_catalog():
-    return jsonify({"ok": True, "catalog": get_catalog_payload()})
+    catalog = get_catalog_payload()
+    evidence = _compute_offer_evidence_summaries(_load_exec_log())
+    for item in catalog.get("hardening_items", []):
+        item["evidence_summary"] = evidence.get(item["key"], {
+            "total_runs": 0,
+            "closeout_captured_count": 0,
+            "ready_for_manual_review_count": 0,
+            "reviewed_complete_count": 0,
+            "reviewed_insufficient_count": 0,
+            "open_blocker_present": False,
+            "open_blocker_count": 0,
+            "proof_coverage_summary": "No delivery runs yet",
+            "evidence_presence": "No run evidence yet",
+            "last_reviewed_run_key": "",
+            "last_reviewed_business_name": "",
+            "last_reviewed_run_date": "",
+            "last_evidence_run_key": "",
+            "last_evidence_business_name": "",
+            "last_evidence_run_date": "",
+            "recent_runs": [],
+            "promotion_readiness": {
+                "status": "no_runs_yet",
+                "label": "No delivery runs yet",
+                "note": "No delivery evidence exists for this offer yet.",
+            },
+        })
+    return jsonify({"ok": True, "catalog": catalog})
 
 
 DELIVERY_EXEC_LOG = BASE_DIR / "data" / "delivery_execution_log.json"
@@ -1992,6 +2018,184 @@ def _load_exec_log():
 
 def _save_exec_log(data):
     DELIVERY_EXEC_LOG.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+_DR_REVIEW_STATUS_LABELS = {
+    "not_ready": "Not ready for review",
+    "ready_for_manual_review": "Ready for manual review",
+    "reviewed_complete": "Reviewed — complete",
+    "reviewed_insufficient": "Reviewed — insufficient",
+}
+
+
+def _build_review_row(run_key, state):
+    """Build a single delivery review queue row from an exec log entry."""
+    parts = run_key.split("|", 1)
+    lead_key = parts[0] if len(parts) == 2 else ""
+    offer_key = parts[1] if len(parts) == 2 else run_key
+    offer_label = DELIVERY_CATALOG.get(offer_key, {}).get("label", offer_key)
+    checks = state.get("checks") or {}
+    checks_done = sum(1 for v in checks.values() if v is True)
+    checks_tracked = len(checks)
+    proof_present = bool((state.get("proof_links") or "").strip())
+    blockers = (state.get("blockers") or "").strip()
+    blockers_present = bool(blockers)
+    artifact_refs_present = bool((state.get("artifact_refs") or "").strip())
+    closeout_status = state.get("closeout_status") or "open"
+    review_status = state.get("verification_review_status") or "not_ready"
+    owner_ack = state.get("owner_ack_status") or "pending"
+    candidate_for_review = (
+        closeout_status == "captured" and proof_present and not blockers_present
+    )
+    return {
+        "run_key": run_key,
+        "lead_key": lead_key,
+        "offer_key": offer_key,
+        "offer_label": offer_label,
+        "business_name": state.get("business_name") or "Practice run",
+        "updated_at": state.get("updated_at") or "",
+        "closeout_status": closeout_status,
+        "proof_present": proof_present,
+        "blockers_present": blockers_present,
+        "blockers": blockers,
+        "artifact_refs_present": artifact_refs_present,
+        "owner_ack_status": owner_ack,
+        "verification_review_status": review_status,
+        "verification_review_label": _DR_REVIEW_STATUS_LABELS.get(review_status, review_status),
+        "checks_done": checks_done,
+        "checks_tracked": checks_tracked,
+        "candidate_for_review": candidate_for_review,
+    }
+
+
+def _compute_offer_evidence_summaries(exec_log):
+    """
+    Aggregate exec log entries by offer_key into per-offer evidence summaries.
+    Returns {offer_key: evidence_summary_dict}.
+    Read-only — never mutates exec_log or catalog state.
+    """
+    from collections import defaultdict
+    by_offer = defaultdict(list)
+    for run_key, state in exec_log.items():
+        parts = run_key.split("|", 1)
+        offer_key = parts[1] if len(parts) == 2 else run_key
+        by_offer[offer_key].append((run_key, state))
+
+    summaries = {}
+    for offer_key, runs in by_offer.items():
+        total = len(runs)
+        closeout_captured = sum(1 for _, s in runs if s.get("closeout_status") == "captured")
+        review_ready = sum(1 for _, s in runs if s.get("verification_review_status") == "ready_for_manual_review")
+        reviewed_complete = sum(1 for _, s in runs if s.get("verification_review_status") == "reviewed_complete")
+        reviewed_insufficient = sum(1 for _, s in runs if s.get("verification_review_status") == "reviewed_insufficient")
+        open_blockers = [(rk, s) for rk, s in runs if (s.get("blockers") or "").strip()]
+        proof_runs = sum(1 for _, s in runs if (s.get("proof_links") or "").strip())
+
+        # Last reviewed run (reviewed_complete preferred, then ready_for_manual_review)
+        reviewed_runs = sorted(
+            [(rk, s) for rk, s in runs if s.get("verification_review_status") in ("reviewed_complete", "reviewed_insufficient", "ready_for_manual_review")],
+            key=lambda x: x[1].get("updated_at") or "",
+            reverse=True,
+        )
+        last_reviewed = reviewed_runs[0] if reviewed_runs else None
+
+        # Last evidence run (any run with closeout or proof)
+        evidence_runs = sorted(
+            [(rk, s) for rk, s in runs if s.get("closeout_status") == "captured" or (s.get("proof_links") or "").strip()],
+            key=lambda x: x[1].get("updated_at") or "",
+            reverse=True,
+        )
+        last_evidence = evidence_runs[0] if evidence_runs else None
+
+        # Recent runs for display (up to 3, sorted newest first)
+        sorted_runs = sorted(runs, key=lambda x: x[1].get("updated_at") or "", reverse=True)
+        recent_runs = [
+            {
+                "run_key": rk,
+                "lead_key": rk.split("|", 1)[0] if "|" in rk else "",
+                "business_name": s.get("business_name") or "Practice run",
+                "verification_review_label": _DR_REVIEW_STATUS_LABELS.get(
+                    s.get("verification_review_status") or "not_ready", "Not ready for review"
+                ),
+                "closeout_status": s.get("closeout_status") or "open",
+                "proof_present": bool((s.get("proof_links") or "").strip()),
+            }
+            for rk, s in sorted_runs[:3]
+        ]
+
+        # Proof coverage summary
+        if proof_runs == 0:
+            proof_summary = "No proof captured yet"
+        elif proof_runs == total:
+            proof_summary = f"Proof captured in all {total} run{'s' if total != 1 else ''}"
+        else:
+            proof_summary = f"Proof in {proof_runs} of {total} run{'s' if total != 1 else ''}"
+
+        # Evidence presence
+        if reviewed_complete > 0:
+            evidence_presence = f"{reviewed_complete} reviewed-complete run{'s' if reviewed_complete != 1 else ''}"
+        elif review_ready > 0:
+            evidence_presence = f"{review_ready} run{'s' if review_ready != 1 else ''} ready for review"
+        elif closeout_captured > 0:
+            evidence_presence = f"{closeout_captured} closeout{'s' if closeout_captured != 1 else ''} captured, review pending"
+        else:
+            evidence_presence = "No reviewed evidence yet"
+
+        # Promotion readiness (advisory only — never changes catalog state)
+        if total == 0:
+            readiness_status = "no_runs_yet"
+            readiness_label = "No delivery runs yet"
+            readiness_note = "No delivery evidence exists for this offer yet."
+        elif reviewed_complete == 0 and review_ready == 0:
+            readiness_status = "no_reviewed_runs"
+            readiness_label = "Evidence captured, waiting for manual review"
+            readiness_note = "Delivery runs exist but no reviewed-complete evidence. Mark a run as reviewed-complete in the Manual Review queue."
+        elif reviewed_complete > 0 and proof_runs == 0:
+            readiness_status = "reviewed_proof_incomplete"
+            readiness_label = "Reviewed evidence exists, but proof incomplete"
+            readiness_note = "At least one reviewed-complete run exists but no proof links were captured. Add before/after proof to advance."
+        elif reviewed_complete >= 1:
+            readiness_status = "criteria_partially_satisfied"
+            readiness_label = "Reviewed evidence exists, criteria partially supported"
+            readiness_note = "Evidence exists. A human operator should review whether promotion criteria are fully met before advancing this offer."
+        else:
+            readiness_status = "no_reviewed_runs"
+            readiness_label = "No reviewed runs yet"
+            readiness_note = "No reviewed-complete delivery evidence exists for this offer yet."
+
+        summaries[offer_key] = {
+            "total_runs": total,
+            "closeout_captured_count": closeout_captured,
+            "ready_for_manual_review_count": review_ready,
+            "reviewed_complete_count": reviewed_complete,
+            "reviewed_insufficient_count": reviewed_insufficient,
+            "open_blocker_present": bool(open_blockers),
+            "open_blocker_count": len(open_blockers),
+            "proof_coverage_summary": proof_summary,
+            "evidence_presence": evidence_presence,
+            "last_reviewed_run_key": last_reviewed[0] if last_reviewed else "",
+            "last_reviewed_business_name": last_reviewed[1].get("business_name") if last_reviewed else "",
+            "last_reviewed_run_date": (last_reviewed[1].get("updated_at") or "")[:10] if last_reviewed else "",
+            "last_evidence_run_key": last_evidence[0] if last_evidence else "",
+            "last_evidence_business_name": last_evidence[1].get("business_name") if last_evidence else "",
+            "last_evidence_run_date": (last_evidence[1].get("updated_at") or "")[:10] if last_evidence else "",
+            "recent_runs": recent_runs,
+            "promotion_readiness": {
+                "status": readiness_status,
+                "label": readiness_label,
+                "note": readiness_note,
+            },
+        }
+    return summaries
+
+
+@app.route("/api/delivery_review_queue")
+def api_delivery_review_queue():
+    """Return all delivery runs as review queue rows, sorted newest-first."""
+    exec_log = _load_exec_log()
+    rows = [_build_review_row(rk, state) for rk, state in exec_log.items()]
+    rows.sort(key=lambda r: r["updated_at"], reverse=True)
+    return jsonify({"ok": True, "rows": rows})
 
 
 @app.route("/api/delivery_run", methods=["GET"])
