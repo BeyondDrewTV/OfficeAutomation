@@ -62,7 +62,7 @@ def load_mail_settings() -> MailSettings:
     from_name = _env("COPPERLINE_FROM_NAME") or _env("SENDER_DISPLAY_NAME", DEFAULT_FROM_NAME)
     reply_to = _env("COPPERLINE_REPLY_TO", DEFAULT_REPLY_TO)
 
-    smtp_username = _env("GOOGLE_WORKSPACE_SMTP_USERNAME") or _env("GMAIL_ADDRESS") or from_email
+    smtp_username = _env("GOOGLE_WORKSPACE_SMTP_USERNAME") or _env("GMAIL_ADDRESS")
     smtp_password = _env("GOOGLE_WORKSPACE_SMTP_APP_PASSWORD") or _env("GMAIL_APP_PASSWORD")
     credential_source = "google_workspace"
     if not _env("GOOGLE_WORKSPACE_SMTP_USERNAME") and _env("GMAIL_ADDRESS"):

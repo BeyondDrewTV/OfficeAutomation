@@ -431,6 +431,11 @@ def send_next_due_email(pending_csv_path: str | Path) -> bool:
     Thread safety: acquires CSV_WRITE_LOCK around the read-modify-write.
     Never sends if now < send_after (enforced by _is_send_eligible via Pass 19).
     """
+    try:
+        validate_mail_settings(require_live=True)
+    except RuntimeError:
+        return False
+
     with CSV_WRITE_LOCK:
         rows = _read_pending_rows(pending_csv_path)
         now  = datetime.now()
