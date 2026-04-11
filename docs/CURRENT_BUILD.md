@@ -18,12 +18,14 @@ The queue/pipeline work is complete (passes 172–189). All public offers now ha
 
 ## Completed This Session
 
-### Workspace Sender Migration (this pass)
+### Workspace Sender Migration + Mail Config Hardening (this pass)
 - Centralized Copperline outbound sender identity in `lead_engine/send/mail_config.py`: from email, display name, reply-to, provider, SMTP login, and live-send mode.
 - Kept the current repo-truth SMTP architecture and migrated it to Google Workspace SMTP rather than introducing OAuth/Gmail API without an existing integration layer.
 - First-touch sends, scheduled sends, follow-up sends, reply checking, and sent reconciliation now use the same mail config.
 - Dashboard status now shows active sender identity and live/test mode; live sends are blocked until `COPPERLINE_LIVE_SEND_ENABLED=true`.
 - `.env.example`, README, and operator docs now list the Workspace SMTP variables and safe dry-run verification path.
+- Removed `smtp_username` fallback to `from_email` — `credentials_configured` and `sender_matches_login` now correctly report `False` when no SMTP username env var is set; status payload no longer shows misleading `sender_matches_login: true` with missing credentials.
+- Added explicit `validate_mail_settings(require_live=True)` gate at top of `send_next_due_email` — scheduler now fails fast before acquiring the CSV lock, matching the guard pattern in `process_pending_emails`.
 - No real outbound email was sent during verification.
 
 ### Offer Evidence Ledger + Promotion-Readiness Visibility (this pass)

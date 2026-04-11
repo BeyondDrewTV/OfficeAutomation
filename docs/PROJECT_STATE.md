@@ -1,6 +1,6 @@
 # Copperline Project State
 
-Last Updated: 2026-04-10
+Last Updated: 2026-04-10 (mail config hardening)
 Version: v0.4
 
 ## What Copperline Is

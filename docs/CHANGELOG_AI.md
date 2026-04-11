@@ -1,3 +1,17 @@
+### 2026-04-10 - Mail Config Hardening (post-migration fixes)
+
+**Goal:** Fix two correctness issues in the mail config boundary introduced in the Workspace sender migration.
+
+**Changes:**
+- `lead_engine/send/mail_config.py`: removed `or from_email` fallback from `smtp_username` resolution — when no SMTP username env var is set, `credentials_configured` and `sender_matches_login` now both correctly return `False` instead of producing a misleading `sender_matches_login: true` in the status payload.
+- `lead_engine/send/email_sender_agent.py`: added explicit `validate_mail_settings(require_live=True)` gate at the top of `send_next_due_email`, before the CSV lock is acquired — scheduler now fails fast and matches the upfront guard pattern used in `process_pending_emails`.
+
+**Protected-system status:** Queue schema, draft generation, and send path logic unchanged. No live email sent.
+
+**Commit:** `830bd0e`
+
+---
+
 ### 2026-04-10 - Workspace Sender Identity Migration
 
 **Goal:** Move Copperline outbound email to the official Google Workspace sender `drewyomantas@copperlineops.com` without widening the outreach system.
