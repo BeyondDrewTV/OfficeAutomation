@@ -38,7 +38,7 @@ The pipeline:
 |-------|-----------|
 | Backend | Python + Flask |
 | Frontend | Leaflet.js (interactive lead map) |
-| Email Integration | Gmail API |
+| Email Integration | Google Workspace SMTP |
 | Prospecting | Google Places API |
 | Deduplication | SHA-256 hashing |
 | Scheduling | Time-of-day + rate limiting logic |
@@ -60,7 +60,7 @@ The pipeline:
 
 ## Status
 
-Active / production. Pass 53 as of March 2026. 100+ emails sent, live replies in production.
+Active / production. April 2026. 100+ emails sent, live replies in production. Dashboard includes delivery execution, deploy activation wizard, and offer hardening pipeline.
 
 ---
 

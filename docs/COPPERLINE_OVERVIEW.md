@@ -61,8 +61,7 @@ OfficeAutomation/
 │   └── intelligence/
 │       └── website_scan_agent.py
 ├── docs/                           # AI control panel (this folder)
-├── automation-agency-office/       # Memory and brand assets
-└── missed_call_product/            # Product demo assets
+└── missed_call_service/            # Missed Call Recovery service
 ```
 
 ---
