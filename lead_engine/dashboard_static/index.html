@@ -17,9 +17,9 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 :root{
-  --bg:#080a0f;--surface:#0f1117;--surface2:#161b24;--surface3:#1d2330;
-  --border:#1e2535;--border-hi:#2d3a50;
-  --text:#e8eaf0;--muted:#6b7591;--dim:#3d4560;
+  --bg:#0d1018;--surface:#141820;--surface2:#1b2130;--surface3:#222938;
+  --border:#252e40;--border-hi:#344057;
+  --text:#eaecf2;--muted:#8892ad;--dim:#4a5570;
   --blue:#4f8ef7;--blue-glow:rgba(79,142,247,.18);
   --copper:#c8884a;--copper-glow:rgba(200,136,74,.22);--copper-bg:rgba(200,136,74,.12);
   --green:#3ecf72;--green-bg:rgba(62,207,114,.12);
@@ -31,8 +31,8 @@
   --mono:'DM Mono','Cascadia Code',monospace;
   --panel-w:500px;
   /* depth */
-  --card-shadow:0 4px 24px rgba(0,0,0,.35);
-  --btn-shadow:0 2px 8px rgba(0,0,0,.25);
+  --card-shadow:0 4px 24px rgba(0,0,0,.28);
+  --btn-shadow:0 2px 8px rgba(0,0,0,.2);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
@@ -1367,13 +1367,13 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
 .da-hdr h2{font-size:16px;font-weight:600}
 .da-hdr-sub{font-size:11px;color:var(--muted);margin-top:2px;max-width:680px;line-height:1.6}
 .da-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;align-items:start}
-.da-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px}
-.da-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
-.da-card-title{font-size:13px;font-weight:600}
-.da-card-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.5}
+.da-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px}
+.da-card-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
+.da-card-title{font-size:14px;font-weight:600;color:var(--text)}
+.da-card-sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.6}
 .da-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .da-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.da-mini{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px}
+.da-mini{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#9ba5be;margin-bottom:4px}
 .da-stack-box{border:1px solid rgba(79,142,247,.24);background:rgba(79,142,247,.08);border-radius:var(--rs);padding:12px}
 .da-stack-line{font-size:12px;font-weight:600;color:var(--text);line-height:1.5}
 .da-stack-meta{margin-top:5px;font-size:11px;color:var(--muted);line-height:1.5}
@@ -1419,24 +1419,42 @@ tbody tr.row-scheduled td:first-child{border-left:2px solid var(--amber)}
   .da-grid-2,.da-grid-3{grid-template-columns:1fr}
   .da-answer-row{grid-template-columns:1fr}
 }
-/* ── Deploy Activation Wizard (Pass 190) ─────────────────────────────────── */
-.da-wizard{display:flex;gap:16px;align-items:flex-start}
+/* ── Deploy Activation Wizard ─────────────────────────────────── */
+.da-wizard{display:flex;gap:20px;align-items:flex-start}
 .da-wizard-body{flex:1;min-width:0}
 .da-step-panel{display:none}
 .da-step-panel.active{display:block}
 .da-step-nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;gap:8px}
 .da-step-nav-left,.da-step-nav-right{display:flex;gap:8px}
-.da-progress{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.da-progress-step{display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);font-size:10px;font-weight:600;letter-spacing:.05em;color:var(--muted);cursor:pointer;white-space:nowrap;transition:border-color .15s,color .15s}
-.da-progress-step:hover{border-color:var(--border-hi);color:var(--text)}
+.da-progress{display:flex;align-items:center;gap:4px;margin-bottom:16px;flex-wrap:wrap}
+.da-progress-group{display:flex;flex-direction:column;gap:3px}
+.da-progress-group-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding-left:2px}
+.da-progress-steps{display:flex;gap:4px}
+.da-progress-divider{width:1px;height:28px;background:var(--border);margin:0 4px;align-self:flex-end;margin-bottom:4px}
+.da-progress-step{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--muted);cursor:pointer;white-space:nowrap;transition:border-color .15s,color .15s,background .15s}
+.da-progress-step:hover{border-color:var(--border-hi);color:var(--text);background:var(--surface3)}
 .da-progress-step.active{border-color:rgba(79,142,247,.5);background:rgba(79,142,247,.1);color:var(--blue)}
-.da-progress-step .da-ps-n{font-family:var(--mono);font-size:9px;opacity:.7}
-.da-summary-panel{width:220px;flex-shrink:0;position:sticky;top:16px;display:flex;flex-direction:column;gap:8px}
+.da-progress-step .da-ps-n{font-family:var(--mono);font-size:9px;opacity:.6}
+/* Activation-detail collapsible */
+.da-activation-gate{margin-top:0}
+.da-activation-gate-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:var(--rs);background:var(--surface2);border:1px solid var(--border);cursor:pointer;user-select:none;margin-bottom:0}
+.da-activation-gate-hdr:hover{border-color:var(--border-hi)}
+.da-activation-gate-title{font-size:12px;font-weight:600;color:var(--muted)}
+.da-activation-gate-title.active-stage{color:var(--text)}
+.da-activation-gate-toggle{font-size:10px;color:var(--dim);transition:transform .2s}
+.da-activation-gate.open .da-activation-gate-toggle{transform:rotate(180deg)}
+.da-activation-gate-body{display:none;padding-top:12px}
+.da-activation-gate.open .da-activation-gate-body{display:block}
+/* Action button groups */
+.da-action-group{margin-top:8px}
+.da-action-group-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
+.da-action-group-btns{display:flex;gap:6px;flex-wrap:wrap}
+.da-summary-panel{width:200px;flex-shrink:0;position:sticky;top:16px;display:flex;flex-direction:column;gap:8px}
 .da-summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px}
-.da-summary-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:8px}
-.da-summary-row{margin-bottom:6px}
-.da-summary-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px}
-.da-summary-val{font-size:11px;color:var(--text);line-height:1.5}
+.da-summary-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--copper);margin-bottom:10px;opacity:.8}
+.da-summary-row{margin-bottom:7px}
+.da-summary-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#5e6d87;margin-bottom:2px}
+.da-summary-val{font-size:12px;color:var(--text);line-height:1.5}
 .da-summary-val.blocked{color:var(--red)}
 .da-summary-val.eligible{color:var(--green)}
 .da-summary-chip{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:8px;margin-top:2px}
@@ -10798,23 +10816,34 @@ async function qwCopyLeaveBehind() {
   }
 }
 
+const _DA_STAGE_LABELS = {
+  call_booked: 'Consultation saved',
+  proposal_ready: 'Draft recommendation',
+  won: 'Activation scope set',
+  deployment_pending: 'Deploy ready',
+  live: 'Live',
+};
+const _DA_ACTIVATION_STAGES = new Set(['won', 'deployment_pending', 'live']);
+
 function _daUpdateSummaryPanel(state, rec, truth, gates) {
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
   const clientName = (state.snapshot.business_name || '').trim() || '—';
   const contactName = (state.snapshot.contact_name || '').trim();
   set('da-summary-client', escHtml(contactName ? `${clientName} · ${contactName}` : clientName));
+  const stageRaw = (document.getElementById('da-stage')?.value || state.profile?.stage || 'call_booked');
+  const stageLabel = _DA_STAGE_LABELS[stageRaw] || stageRaw;
+  const stageCls = _DA_ACTIVATION_STAGES.has(stageRaw) ? 'color:var(--green)' : 'color:var(--amber)';
+  set('da-summary-stage', `<span style="${stageCls}">${escHtml(stageLabel)}</span>`);
   const stackLabel = rec.packageLabel
     ? escHtml(rec.packageLabel) + (rec.selected_modules?.length ? `<br><span style="font-size:10px;color:var(--muted)">${escHtml(rec.selected_modules.join(', '))}</span>` : '')
     : 'No recommendation yet';
   set('da-summary-stack', stackLabel);
   const buildLabel = escHtml(truth.build_status ? (truth.build_status.charAt(0).toUpperCase() + truth.build_status.slice(1)) : 'Planned');
-  const buildCls = truth.build_status === 'ready' ? 'ok' : (truth.build_status === 'hardening' || truth.build_status === 'verification' ? 'wait' : 'wait');
+  const buildCls = truth.build_status === 'ready' ? 'ok' : 'wait';
   set('da-summary-build', `<span class="da-summary-chip ${buildCls}">${buildLabel}</span>`);
   const launchCls = truth.launch_eligible ? 'ok' : 'block';
   const launchLabel = truth.launch_eligible ? 'Eligible' : 'Blocked';
   set('da-summary-launch', `<span class="da-summary-chip ${launchCls}">${launchLabel}</span>`);
-  const urgency = state.snapshot.urgency || state.consult_builder?.urgency || '';
-  set('da-summary-urgency', escHtml(urgency || '—'));
   const nextStep = (document.getElementById('da-next-step')?.value || '').trim() || (truth.next_hardening_steps?.[0] || '—');
   set('da-summary-next-step', escHtml(nextStep));
   const blockersRaw = (document.getElementById('da-blockers')?.value || '').trim();
@@ -10822,10 +10851,22 @@ function _daUpdateSummaryPanel(state, rec, truth, gates) {
   const gateBlockers = (gates.blockers || []).map((b) => b.title);
   const allBlockers = [...new Set([...blockerLines, ...gateBlockers])];
   set('da-summary-blockers', allBlockers.length ? escHtml(allBlockers.slice(0, 3).join(' · ')) : '<span style="color:var(--green)">Clear</span>');
-  const accessNeeded = truth.access_requirements?.length ? escHtml(truth.access_requirements.slice(0, 2).join(', ')) : 'None surfaced';
-  const accessCollected = document.getElementById('da-access-collected')?.checked;
-  set('da-summary-access', accessCollected ? '<span style="color:var(--green)">Collected</span>' : escHtml(accessNeeded));
   set('da-summary-key', escHtml(_daActiveKey || 'Unsaved'));
+  // Auto-open activation gate when stage is activation-level
+  _daRefreshActivationGate(stageRaw);
+}
+
+function daToggleActivationGate() {
+  const gate = document.getElementById('da-activation-gate');
+  if (gate) gate.classList.toggle('open');
+}
+
+function _daRefreshActivationGate(stageRaw) {
+  const gate = document.getElementById('da-activation-gate');
+  if (!gate) return;
+  const shouldOpen = _DA_ACTIVATION_STAGES.has(stageRaw);
+  if (shouldOpen && !gate.classList.contains('open')) gate.classList.add('open');
+  // Never auto-close — operator may have manually opened it
 }
 
 function _daSnapshotPayload() {
@@ -17344,12 +17385,23 @@ function drOpenReviewRunFromButton(btn) {
 
       <!-- Progress Bar -->
       <div class="da-progress" id="da-progress-bar">
-        <div class="da-progress-step active" onclick="daGoToStep(1)"><span class="da-ps-n">1</span> Snapshot</div>
-        <div class="da-progress-step" onclick="daGoToStep(2)"><span class="da-ps-n">2</span> Discovery</div>
-        <div class="da-progress-step" onclick="daGoToStep(3)"><span class="da-ps-n">3</span> Recommend</div>
-        <div class="da-progress-step" onclick="daGoToStep(4)"><span class="da-ps-n">4</span> Confirm</div>
-        <div class="da-progress-step" onclick="daGoToStep(5)"><span class="da-ps-n">5</span> Packet</div>
-        <div class="da-progress-step" onclick="daGoToStep(6)"><span class="da-ps-n">6</span> Action</div>
+        <div class="da-progress-group">
+          <div class="da-progress-group-label">Consultation</div>
+          <div class="da-progress-steps">
+            <div class="da-progress-step active" onclick="daGoToStep(1)"><span class="da-ps-n">1</span> Snapshot</div>
+            <div class="da-progress-step" onclick="daGoToStep(2)"><span class="da-ps-n">2</span> Discovery</div>
+            <div class="da-progress-step" onclick="daGoToStep(3)"><span class="da-ps-n">3</span> Recommend</div>
+            <div class="da-progress-step" onclick="daGoToStep(4)"><span class="da-ps-n">4</span> Price &amp; Next Step</div>
+          </div>
+        </div>
+        <div class="da-progress-divider"></div>
+        <div class="da-progress-group">
+          <div class="da-progress-group-label">Activation</div>
+          <div class="da-progress-steps">
+            <div class="da-progress-step" onclick="daGoToStep(5)"><span class="da-ps-n">5</span> Packet</div>
+            <div class="da-progress-step" onclick="daGoToStep(6)"><span class="da-ps-n">6</span> Action</div>
+          </div>
+        </div>
       </div>
 
       <!-- ── Step 1: Business Snapshot ── -->
@@ -17443,25 +17495,31 @@ function drOpenReviewRunFromButton(btn) {
               <input class="form-input" id="da-consult-business-type" type="text" placeholder="Owner-operated plumbing shop" oninput="daScheduleSave()">
             </div>
           </div>
-          <div style="margin-top:10px">
-            <label class="da-mini">Current Tools / Accounts</label>
-            <textarea class="form-textarea da-note" id="da-consult-tools" placeholder="Current website host, Google/Facebook status, phone system, CRM, inbox, forms…" oninput="daScheduleSave()"></textarea>
+          <div class="da-grid-2" style="margin-top:12px">
+            <div>
+              <label class="da-mini">Business Context &amp; Tools</label>
+              <textarea class="form-textarea" style="min-height:90px" id="da-consult-tools" placeholder="Website host, Google/Facebook status, phone system, CRM, inbox, forms…" oninput="daScheduleSave()"></textarea>
+            </div>
+            <div>
+              <label class="da-mini">Owner Preferences</label>
+              <textarea class="form-textarea" style="min-height:90px" id="da-consult-preferences" placeholder="How they like updates, who gets leads, preferred channels, support expectations…" oninput="daScheduleSave()"></textarea>
+            </div>
           </div>
-          <div style="margin-top:10px">
-            <label class="da-mini">Owner Preferences</label>
-            <textarea class="form-textarea da-note" id="da-consult-preferences" placeholder="How they like updates, who should get leads, preferred channels, support expectations…" oninput="daScheduleSave()"></textarea>
+          <div style="margin-top:12px">
+            <label class="da-mini">Consult Notes</label>
+            <textarea class="form-textarea" style="min-height:100px" id="da-consult-freeform" placeholder="Raw call notes, transcript summary, or anything worth keeping before it becomes activation detail…" oninput="daScheduleSave()"></textarea>
           </div>
-          <div style="margin-top:10px">
+          <div style="margin-top:12px">
             <label class="da-mini">Transcript / Recording Summary</label>
-            <textarea class="form-textarea da-note" id="da-consult-transcript" placeholder="Short summary of the call or recording…" oninput="daScheduleSave()"></textarea>
+            <textarea class="form-textarea da-note" id="da-consult-transcript" placeholder="Short summary of the call or recording if separate from notes above…" oninput="daScheduleSave()" style="min-height:60px"></textarea>
           </div>
-          <div style="margin-top:10px">
-            <label class="da-mini">Freeform Consult Notes</label>
-            <textarea class="form-textarea da-note" id="da-consult-freeform" placeholder="Any raw notes worth keeping before they become activation details…" oninput="daScheduleSave()"></textarea>
-          </div>
-          <div style="margin-top:10px">
-            <label class="da-mini">Do Not Recommend</label>
-            <textarea class="form-textarea da-note" id="da-consult-do-not-recommend" placeholder="Any offer, module, channel, or tool you want the draft recommender to avoid…" oninput="daScheduleSave()"></textarea>
+          <div style="margin-top:8px">
+            <details style="border:1px solid var(--border);border-radius:var(--rs);overflow:hidden">
+              <summary style="padding:8px 10px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;user-select:none;background:var(--surface2);list-style:none">&#9656; Do Not Recommend <span style="font-size:10px;font-weight:400">(exclusions for recommender)</span></summary>
+              <div style="padding:10px">
+                <textarea class="form-textarea da-note" id="da-consult-do-not-recommend" placeholder="Any offer, module, channel, or tool you want the draft recommender to avoid…" oninput="daScheduleSave()"></textarea>
+              </div>
+            </details>
           </div>
           <div class="qw-section">
             <div class="qw-section-hdr">
@@ -17722,10 +17780,12 @@ function drOpenReviewRunFromButton(btn) {
           <div class="da-card-hdr">
             <div>
               <div class="da-card-title">Step 5 · Activation Packet</div>
-              <div class="da-card-sub">Track readiness, access, artifacts, and the packet state before deploy.</div>
+              <div class="da-card-sub">Track readiness, access, artifacts, and packet state. Expand when the path is accepted.</div>
             </div>
+            <button class="btn btn-ghost" style="font-size:11px" onclick="daToggleActivationGate()">Expand / Collapse</button>
           </div>
           <div class="po-accepted-context" id="da-accepted-context-step5"></div>
+          <div class="da-activation-gate" id="da-activation-gate">
           <div class="da-grid-2">
             <div>
               <label class="da-mini">Activation Packet Status</label>
@@ -17815,6 +17875,7 @@ function drOpenReviewRunFromButton(btn) {
             <div class="da-mini">Rollback / Safe Mode</div>
             <div class="da-list-box" id="da-rollback-plan"></div>
           </div>
+          </div><!-- /da-activation-gate -->
         </section>
         <div class="da-step-nav">
           <div class="da-step-nav-left">
@@ -17915,19 +17976,32 @@ function drOpenReviewRunFromButton(btn) {
           </div>
           <div class="da-primary-wrap">
             <button class="btn btn-primary da-primary-btn" id="da-primary-cta" onclick="daRunPrimaryAction()">Save Consultation</button>
-            <div class="da-secondary-row">
-              <button class="btn btn-ghost" onclick="daAction('follow_up')">Mark follow-up needed</button>
-              <button class="btn btn-ghost" onclick="daAction('estimate')">Create estimate</button>
-              <button class="btn btn-ghost" onclick="daAction('convert')">Convert to client</button>
-              <button class="btn btn-ghost" id="da-deploy-btn" onclick="daAction('deploy')">Launch deployment</button>
-              <button class="btn btn-ghost" onclick="daAction('access')">Request access</button>
-              <button class="btn btn-ghost" onclick="daAction('agreement')">Mark agreement pending</button>
-              <button class="btn btn-ghost" onclick="daAction('billing')">Mark invoice / deposit pending</button>
-              <button class="btn btn-ghost" onclick="poCreateActivationScope()">Use accepted scope</button>
-              <button class="btn btn-ghost" onclick="poOpenAcceptedDeliveryRun()">Open accepted run</button>
+            <div style="margin-top:10px" class="da-status" id="da-save-note">Save the consult, then advance the deal with the actions below.</div>
+            <div class="da-action-group">
+              <div class="da-action-group-label">Follow-up</div>
+              <div class="da-action-group-btns">
+                <button class="btn btn-ghost" onclick="daAction('follow_up')">Mark follow-up needed</button>
+                <button class="btn btn-ghost" onclick="daAction('estimate')">Create estimate</button>
+                <button class="btn btn-ghost" onclick="daAction('convert')">Convert to client</button>
+              </div>
+            </div>
+            <div class="da-action-group">
+              <div class="da-action-group-label">Financial</div>
+              <div class="da-action-group-btns">
+                <button class="btn btn-ghost" onclick="daAction('agreement')">Mark agreement pending</button>
+                <button class="btn btn-ghost" onclick="daAction('billing')">Mark invoice / deposit pending</button>
+              </div>
+            </div>
+            <div class="da-action-group">
+              <div class="da-action-group-label">Delivery</div>
+              <div class="da-action-group-btns">
+                <button class="btn btn-ghost" onclick="daAction('access')">Request access</button>
+                <button class="btn btn-ghost" onclick="poCreateActivationScope()">Use accepted scope</button>
+                <button class="btn btn-ghost" onclick="poOpenAcceptedDeliveryRun()">Open accepted run</button>
+                <button class="btn btn-ghost" id="da-deploy-btn" onclick="daAction('deploy')">Launch deployment</button>
+              </div>
             </div>
           </div>
-          <div style="margin-top:10px" class="da-status" id="da-save-note">Save the call, then use the action buttons to move it into delivery.</div>
         </section>
         <section class="da-card" style="margin-top:12px">
           <div class="da-card-hdr">
@@ -17956,12 +18030,16 @@ function drOpenReviewRunFromButton(btn) {
     <!-- ── Summary Panel ── -->
     <div class="da-summary-panel" id="da-summary-panel">
       <div class="da-summary-card">
-        <div class="da-summary-title">Stack at a Glance</div>
+        <div class="da-summary-title">Current Client</div>
         <div class="da-summary-row">
           <div class="da-summary-label">Client</div>
           <div class="da-summary-val" id="da-summary-client">—</div>
         </div>
         <div class="da-summary-row">
+          <div class="da-summary-label">Stage</div>
+          <div class="da-summary-val" id="da-summary-stage">—</div>
+        </div>
+        <div class="da-summary-row" style="padding-top:8px;border-top:1px solid var(--border)">
           <div class="da-summary-label">Stack</div>
           <div class="da-summary-val" id="da-summary-stack">No recommendation yet</div>
         </div>
@@ -17973,13 +18051,9 @@ function drOpenReviewRunFromButton(btn) {
           <div class="da-summary-label">Launch</div>
           <div class="da-summary-val" id="da-summary-launch"><span class="da-summary-chip block">Blocked</span></div>
         </div>
-        <div class="da-summary-row">
-          <div class="da-summary-label">Urgency</div>
-          <div class="da-summary-val" id="da-summary-urgency">—</div>
-        </div>
       </div>
       <div class="da-summary-card">
-        <div class="da-summary-title">Operator Status</div>
+        <div class="da-summary-title">Operator</div>
         <div class="da-summary-row">
           <div class="da-summary-label">Next step</div>
           <div class="da-summary-val" id="da-summary-next-step">—</div>
@@ -17988,15 +18062,11 @@ function drOpenReviewRunFromButton(btn) {
           <div class="da-summary-label">Blockers</div>
           <div class="da-summary-val" id="da-summary-blockers">—</div>
         </div>
-        <div class="da-summary-row">
-          <div class="da-summary-label">Access</div>
-          <div class="da-summary-val" id="da-summary-access">—</div>
-        </div>
         <div class="da-summary-row" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
           <div class="da-summary-label">Record</div>
           <div class="da-summary-val" id="da-summary-key">Unsaved</div>
         </div>
-        <div class="da-summary-row" style="margin-top:4px">
+        <div class="da-summary-row">
           <div class="da-summary-val" id="da-summary-save-status" style="font-size:10px;color:var(--muted)"></div>
         </div>
       </div>
